@@ -1,0 +1,61 @@
+name: [deploymentName]
+director_uuid: [directorUuid]
+releases:
+- name: [releaseName]
+  version: [releaseVersion]
+networks:
+  op_private:
+    subnets:
+    - range: [subnetRange]
+      gateway: [subnetGateway]
+      dns: [[subnetDns]]
+      reserved: [[subnetReserved]]
+      static: [[subnetStatic]]
+      cloud_properties:
+        subnet: [cloudNetId]
+        security_groups: [[cloudSecurityGroups]]
+
+jobs:
+- name: ha_proxy
+  networks:
+  - name: op_public
+    static_ips: [[proxyStaticIps]]
+
+properties:
+  domain: [domain]
+  description: [description]
+  system_domain_organization: [domainOrganization]
+  app_ssh:
+    host_key_fingerprint: [appSshFingerprint]
+
+  uaa:
+    clients:
+      login:
+        secret: [loginSecret]
+
+resource_pools:
+- name: small
+  cloud_properties:
+    instance_type: m1.small
+  env:
+    bosh:
+      password: [boshPassword]
+  stemcell:
+    name: [stemcellName]
+    version: [stemcellVersion]
+
+- name: medium
+  cloud_properties:
+    instance_type: m1.small
+
+- name: large
+  cloud_properties:
+    instance_type: m1.small
+
+- name: runner
+  cloud_properties:
+    instance_type: m1.small
+
+- name: router
+  cloud_properties:
+    instance_type: m1.medium

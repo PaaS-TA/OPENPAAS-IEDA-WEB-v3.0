@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.deploy.web.deploy.diego.dao.DiegoDAO">
+
+    <resultMap id="diego" type="org.openpaas.ieda.deploy.web.deploy.diego.dao.DiegoVO">
+        <id property="id" column="ID" />
+        <result property="iaasType" column="IAAS_TYPE"/>
+        <result property="createUserId" column="CREATE_USER_ID"/>
+        <result property="createDate" column="CREATE_DATE" />
+        <result property="updateUserId" column="UPDATE_USER_ID"/>
+        <result property="updateDate" column="UPDATE_DATE" />
+        <result property="deploymentName" column="DEPLOYMENT_NAME" />
+        <result property="directorUuid" column="DIRECTOR_UUID" />
+        <result property="diegoReleaseName" column="DIEGO_RELEASE_NAME" />
+        <result property="diegoReleaseVersion" column="DIEGO_RELEASE_VERSION" />
+        <result property="gardenReleaseName" column="GARDEN_RELEASE_NAME" />
+        <result property="gardenReleaseVersion" column="GARDEN_RELEASE_VERSION" />
+        <result property="etcdReleaseName" column="ETCD_RELEASE_NAME" />
+        <result property="etcdReleaseVersion" column="ETCD_RELEASE_VERSION" />
+        <result property="keyFile" column="KEY_FILE" />
+        <result property="deploymentFile" column="DEPLOYMENT_FILE" />
+        <result property="deployStatus" column="DEPLOY_STATUS" />
+        <result property="taskId" column="TASK_ID" />
+        <result property="cfDeployment" column="CF_DEPLOYMENT" />
+        <result property="cfName" column="CFNAME" />
+        <result property="cflinuxfs2rootfsreleaseName" column="CFLINUXFS2_ROOTFS_RELEASE_NAME" />
+        <result property="cflinuxfs2rootfsreleaseVersion" column="CFLINUXFS2_ROOTFS_RELEASE_VERSION" />
+        <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE" />
+        <result property="cadvisorDriverIp" column="CADVISOR_DRIVER_IP" />
+        <result property="cadvisorDriverPort" column="CADVISOR_DRIVER_PORT" />
+        <collection property="resource" ofType="org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceVO"  javaType="org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceVO">
+            <result property="id" column="RESOURCE_ID" />
+            <result property="deployType" column="RESOURCE_DEPLOY_TYPE"/>
+            <result property="boshPassword" column="BOSH_PASSWORD" />
+            <result property="stemcellName" column="STEMCELL_NAME" />
+            <result property="stemcellVersion" column="STEMCELL_VERSION" />
+            <result property="smallFlavor" column="SMALL_TYPE_FLAVOR"/>
+            <result property="mediumFlavor" column="MEDIUM_TYPE_FLAVOR" />
+            <result property="largeFlavor" column="LARGE_TYPE_FLAVOR" />
+            <result property="runnerFlavor" column="RUNNER_TYPE_FLAVOR" />
+            <result property="smallCpu" column="SMALL_TYPE_CPU" />
+            <result property="smallRam" column="SMALL_TYPE_RAM" />
+            <result property="smallDisk" column="SMALL_TYPE_DISK" />
+            <result property="mediumCpu" column="MEDIUM_TYPE_CPU" />
+            <result property="mediumRam" column="MEDIUM_TYPE_RAM" />
+            <result property="mediumDisk" column="MEDIUM_TYPE_DISK" />
+            <result property="largeCpu" column="LARGE_TYPE_CPU"/>
+            <result property="largeRam" column="LARGE_TYPE_RAM" />
+            <result property="largeDisk" column="LARGE_TYPE_DISK"/>
+            <result property="runnerCpu" column="RUNNER_TYPE_CPU" />
+            <result property="runnerRam" column="RUNNER_TYPE_RAM" />
+            <result property="runnerDisk" column="RUNNER_TYPE_DISK" />
+            <result property="createUserId" column="CREATE_USER_ID"/>
+            <result property="createDate" column="CREATE_DATE" />
+            <result property="updateUserId" column="UPDATE_USER_ID"/>
+            <result property="updateDate" column="UPDATE_DATE" />
+        </collection>
+    </resultMap>
+
+    <select id="selectDiegoListInfo" resultMap="diego">
+        /** DiegoDeploy.selectDiegoListInfo **/
+        Select 
+             d.id as id
+            ,d.iaas_type as iaas_type
+            ,deploy_status
+            ,cf_deployment
+            ,deployment_File
+            ,deployment_name
+            ,diego_release_name 
+            ,diego_release_version
+            ,cflinuxfs2_rootfs_release_name
+            ,cflinuxfs2_rootfs_release_version
+            ,director_uuid
+            ,garden_release_name
+            ,garden_release_version
+            ,etcd_release_name
+            ,etcd_release_version
+            ,paasta_monitoring_use
+            ,cadvisor_driver_ip
+            ,cadvisor_driver_port
+            ,task_id
+            ,d.update_date as update_date
+            ,d.create_date as create_date
+        From ieda_diego d
+        LEFT JOIN ieda_cf_diego a
+        ON d.id = a.diego_id
+         Where LOWER(d.iaas_type) = #{iaasType}
+        And (a.diego_id is null || d.deploy_status = 'error')
+    </select>
+    
+    <select id="selectDiegoInfo" resultMap="diego">
+        /** DiegoDeploy.selectDiegoInfo **/
+        Select 
+            a.id
+            ,a.iaas_type
+            ,a.create_date
+            ,a.deploy_status
+            ,a.deployment_file
+            ,a.cf_deployment
+            ,a.deployment_name
+            ,a.diego_release_name
+            ,a.diego_release_version
+            ,a.cflinuxfs2_rootfs_release_name
+            ,a.cflinuxfs2_rootfs_release_version
+            ,a.director_uuid
+            ,a.garden_release_name
+            ,a.garden_release_version
+            ,a.etcd_release_name
+            ,a.etcd_release_version
+            ,a.key_file
+            ,a.paasta_monitoring_use
+            ,a.cadvisor_driver_ip
+            ,a.cadvisor_driver_port
+            ,a.task_id
+            ,a.update_date
+            ,(select c.deployment_name from ieda_diego a, ieda_cf c where c.deployment_file = a.cf_deployment and a.id=#{id}) as cfName
+        From ieda_diego a
+      Where id = #{id}
+    </select>
+    
+    <insert id="insertDiegoDefaultInfo">
+        /** DiegoDeploy.insertDiegoDefaultInfo **/
+        Insert Into ieda_diego (
+             id
+            ,iaas_type
+            ,create_user_id
+            ,update_user_id
+            ,deployment_name
+            ,director_uuid
+            ,diego_release_name
+            ,diego_release_version
+            ,cflinuxfs2_rootfs_release_name
+            ,cflinuxfs2_rootfs_release_version
+            ,garden_release_name
+            ,garden_release_version
+            ,etcd_release_name
+            ,etcd_release_version
+            ,paasta_monitoring_use
+            ,cadvisor_driver_ip
+            ,cadvisor_driver_port
+            ,deployment_file
+            ,cf_deployment
+            ,key_file
+            ,create_date
+            ,update_date
+        ) values (
+             #{diego.id}
+            ,#{diego.iaasType}
+            ,#{diego.createUserId}
+            ,#{diego.updateUserId}
+            ,#{diego.deploymentName}
+            ,#{diego.directorUuid}
+            ,#{diego.diegoReleaseName}
+            ,#{diego.diegoReleaseVersion}
+            ,#{diego.cflinuxfs2rootfsreleaseName}
+            ,#{diego.cflinuxfs2rootfsreleaseVersion}
+            ,#{diego.gardenReleaseName}
+            ,#{diego.gardenReleaseVersion}
+            ,#{diego.etcdReleaseName}
+            ,#{diego.etcdReleaseVersion}
+            ,#{diego.paastaMonitoringUse}
+            ,#{diego.cadvisorDriverIp}
+            ,#{diego.cadvisorDriverPort}
+            ,#{diego.deploymentFile}
+            ,#{diego.cfDeployment}
+            ,#{diego.keyFile}
+            ,now()
+            ,now()
+        )
+        <selectKey keyProperty="diego.id" resultType="int" order="AFTER">
+            <if test="diego.id != 1"> SELECT LAST_INSERT_ID(); </if>
+            <if test="diego.id == 1"> SELECT 1 AS id from dual; </if>
+        </selectKey>
+    </insert>
+    
+    <select id="selectDiegoJobTemplatesByReleaseVersion" resultType="hashMap">
+    /** ieda.deploy.deploy.diego.diegoDeploy.selectDiegoJobTemplatesByReleaseVersion  **/
+        SELECT 
+               code_name 
+              ,code_value
+              ,release_version
+              ,iaas_type
+              ,deploy_type
+              ,parent_code
+              ,( SELECT code_description 
+                   FROM ieda_common_code cm2 
+                  WHERE parent_code = #{map.parentCode} 
+                    AND sub_group_code = common.code_value
+              ) as code_desc
+              ,seq
+          FROM ieda_job_template template INNER JOIN ieda_common_code common
+            ON common.code_value = template.job_code
+      GROUP BY code_name, code_value, iaas_type, release_version, deploy_type, parent_code, seq, sub_group_code
+        HAVING template.release_version=#{map.releaseVersion}
+           AND UPPER(iaas_type)=UPPER(#{map.iaasType})
+           AND deploy_type = #{map.deployType}
+           AND parent_code=#{map.parentCode}
+           AND sub_group_code is null
+      ORDER BY seq
+    </select>
+    
+    <select id="selectResourceInfoById" resultMap="diego">
+        /** DiegoDeploy.selectResourceInfoById **/
+        Select 
+             d.id as id 
+            ,iaas_type
+            ,deploy_status
+            ,cf_deployment
+            ,deployment_name
+            ,deployment_file
+            ,diego_release_name
+            ,diego_release_version
+            ,cflinuxfs2_rootfs_release_name
+            ,cflinuxfs2_rootfs_release_version
+            ,director_uuid
+            ,garden_release_name
+            ,garden_release_version
+            ,etcd_release_name
+            ,etcd_release_version
+            ,paasta_monitoring_use
+            ,cadvisor_driver_ip
+            ,cadvisor_driver_port
+            ,key_file
+            ,task_id
+            ,resource.id as resource_id
+            ,resource.deploy_type as resource_deploy_type
+            ,resource.bosh_password as bosh_password
+            ,resource.stemcell_name as stemcell_name
+            ,resource.stemcell_version as stemcell_version
+            ,resource.small_type_flavor as small_type_flavor
+            ,resource.small_type_cpu as small_type_cpu
+            ,resource.small_type_ram as small_type_ram
+            ,resource.small_type_disk as small_type_disk
+            ,resource.medium_type_flavor as medium_type_flavor
+            ,resource.medium_type_cpu as medium_type_cpu
+            ,resource.medium_type_ram as medium_type_ram
+            ,resource.medium_type_disk as medium_type_disk
+            ,resource.large_type_flavor as large_type_flavor
+            ,resource.large_type_cpu as large_type_cpu
+            ,resource.large_type_ram as large_type_ram
+            ,resource.large_type_disk as large_type_disk
+            ,resource.runner_type_flavor as runner_type_flavor
+            ,resource.runner_type_cpu as runner_type_cpu
+            ,resource.runner_type_ram as runner_type_ram
+            ,resource.runner_type_disk as runner_type_disk
+        From (select * from ieda_diego where id = #{id} ) as d
+         Left Join ieda_resource as resource
+               On d.id = resource.id
+            And resource.deploy_type=#{deployType}
+            And resource.id=#{id}
+    </select>
+    
+    <update id="updateDiegoDefaultInfo">
+        /** DiegoDeploy.updateDiegoDefaultInfo **/
+        Update ieda_diego Set
+            iaas_type=#{diego.iaasType},
+            deployment_name=#{diego.deploymentName},
+            director_uuid=#{diego.directorUuid}, 
+            diego_release_name=#{diego.diegoReleaseName}, 
+            diego_release_version=#{diego.diegoReleaseVersion}, 
+            cflinuxfs2_rootfs_release_name = #{diego.cflinuxfs2rootfsreleaseName},
+            cflinuxfs2_rootfs_release_version =#{diego.cflinuxfs2rootfsreleaseVersion},
+            cf_deployment = #{diego.cfDeployment},
+            garden_release_name=#{diego.gardenReleaseName}, 
+            garden_release_version=#{diego.gardenReleaseVersion}, 
+            etcd_release_name=#{diego.etcdReleaseName}, 
+            etcd_release_version=#{diego.etcdReleaseVersion},
+            paasta_monitoring_use = #{diego.paastaMonitoringUse},
+            cadvisor_driver_ip=#{diego.cadvisorDriverIp},
+            cadvisor_driver_port=#{diego.cadvisorDriverPort},
+            key_file=#{diego.keyFile},
+            deployment_file=#{diego.deploymentFile}, 
+            deploy_status=#{diego.deployStatus}, 
+            task_id=#{diego.taskId}, 
+            update_date=now() 
+        Where id=#{diego.id}
+    </update>
+    
+    <delete id="deleteDiegoInfoRecord">
+        /** DiegoDeploy.deleteDiegoInfoRecord **/
+        Delete From ieda_diego
+          Where id=#{id} 
+    </delete>
+    
+    <insert id="insertDiegoJobSettingInfo">
+        Insert into ieda_job_setting(
+             id
+            ,seq
+            ,deploy_type
+            ,job_code
+            ,instances
+            ,create_user_id
+            ,create_date
+            ,update_user_id
+            ,update_date
+        )Values
+        <foreach collection="maps" item="item" index="index"   separator="," >
+        (
+             #{item.id}
+            ,#{item.seq}
+            ,#{item.deploy_type}
+            ,#{item.job_code}
+            ,#{item.instances}
+            ,#{item.create_user_id}
+            ,now()
+            ,#{item.update_user_id}
+            ,now()
+        )
+        </foreach>
+    </insert>
+    
+    <select id="selectDiegoJobSettingInfoListBycfId" resultType="hashMap">
+        Select
+                id
+               ,seq
+               ,deploy_type
+               ,job_code
+               ,instances
+               ,job.create_user_id as create_user_id
+               ,job.create_date as create_date
+               ,job.update_user_id as update_user_id
+               ,job.update_date as update_date
+               ,common.code_name as code_name
+          From ieda_job_setting job, ieda_common_code common
+         Where job.job_code = common.code_value
+           And parent_code = #{parentCode}
+           And id =#{diegoId}
+           And deploy_type = #{deployType}
+    </select>
+    
+    <delete id="deleteDiegoJobSettingInfo">
+        Delete 
+          From ieda_job_setting
+         Where id = #{map.id}
+           And deploy_type = #{map.deploy_type}
+    </delete>
+    
+    
+</mapper>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.deploy.web.deploy.bootstrap.dao.BootstrapDAO">
+
+<resultMap id="bootstrap" type="org.openpaas.ieda.deploy.web.deploy.bootstrap.dao.BootstrapVO">
+    <id property="id" column="ID" />
+    <result property="iaasType" column="IAAS_TYPE"/>
+    <result property="iaasConfigId" column="CONFIG_ID"/>
+    <result property="createUserId" column="CREATE_USER_ID"/>
+    <result property="createDate" column="CREATE_DATE" />
+    <result property="updateUserId" column="UPDATE_USER_ID"/>
+    <result property="updateDate" column="UPDATE_DATE" />
+    <result property="deploymentName" column ="DEPLOYMENT_NAME"/>
+    <result property="directorName" column ="DIRECTOR_NAME"/>
+    <result property="boshRelease" column ="BOSH_RELEASE"/>
+    <result property="boshCpiRelease" column ="BOSH_CPI_RELEASE"/>
+    <result property="osConfRelease" column ="OS_CONF_RELEASE"/>
+    <result property="snapshotSchedule" column ="SNAPSHOT_SCHEDULE"/>
+    <result property="enableSnapshots" column ="ENABLE_SNAPSHOTS"/>
+    <result property="privateStaticIp" column ="PRIVATE_STATIC_IP"/>
+    <result property="subnetId" column ="SUBNET_ID"/>
+    <result property="networkName" column ="NETWORK_NAME"/>
+    <result property="subnetRange" column ="SUBNET_RANGE"/>
+    <result property="subnetGateway" column ="SUBNET_GATEWAY"/>
+    <result property="subnetDns" column ="SUBNET_DNS"/>
+    <result property="ntp" column ="NTP"/>
+    <result property="publicStaticIp" column ="PUBLIC_STATIC_IP"/>
+    <result property="publicSubnetId" column ="PUBLIC_SUBNET_ID"/>
+    <result property="publicSubnetRange" column ="PUBLIC_SUBNET_RANGE"/>
+    <result property="publicSubnetGateway" column ="PUBLIC_SUBNET_GATEWAY"/>
+    <result property="publicSubnetDns" column ="PUBLIC_SUBNET_DNS"/>
+    <result property="stemcell" column ="STEMCELL"/>
+    <result property="cloudInstanceType" column ="CLOUD_INSTANCE_TYPE"/>
+    <result property="resourcePoolCpu" column ="RESOURCE_POOL_CPU"/>
+    <result property="resourcePoolRam" column ="RESOURCE_POOL_RAM"/>
+    <result property="resourcePoolDisk" column ="RESOURCE_POOL_DISK"/>
+    <result property="boshPassword" column ="BOSH_PASSWORD"/>
+    <result property="deploymentFile" column ="DEPLOYMENT_FILE"/>
+    <result property="deployStatus" column ="DEPLOY_STATUS"/>
+    <result property="deployLog" column ="DEPLOY_LOG"/>
+    <collection property="iaasConfig"  ofType="org.openpaas.ieda.deploy.web.information.iassConfig.dao.IaasConfigMgntVO" javaType="String" >
+        <id property="id" column="IAAS_CONFIG_ID"/>
+        <result property="iaasConfigAlias" column="IAAS_CONFIG_ALIAS"/>
+        <result property="accountId" column="ACCOUNT_ID"/>
+        <result property="commonSecurityGroup" column ="COMMON_SECURITY_GROUP"/>
+        <result property="commonRegion" column="COMMON_REGION"/>
+        <result property="commonKeypairName" column ="COMMON_KEYPAIR_NAME"/>
+        <result property="commonKeypairPath" column ="COMMON_KEYPAIR_PATH"/>
+        <result property="commonAvailabilityZone" column="COMMON_AVAILABILITY_ZONE"/>
+        <result property="googlePublicKey" column="GOOGLE_PUBLIC_KEY"/>
+        <result property="vsphereVcentDataCenterName" column="VSPHERE_VCENTER_DATACENTER_NAME"/>
+        <result property="vsphereVcenterVmFolder" column="VSPHERE_VCENTER_VM_FOLDER"/>
+        <result property="vsphereVcenterTemplateFolder" column="VSPHERE_VCENTER_TEMPLATE_FOLDER"/>
+        <result property="vsphereVcenterDatastore" column="VSPHERE_VCENTER_DATASTORE"/>
+        <result property="vsphereVcenterPersistentDatastore" column="VSPHERE_VCENTER_PERSISTENT_DATASTORE"/>
+        <result property="vsphereVcenterDiskPath" column="VSPHERE_VCENTER_DISK_PATH"/>
+        <result property="vsphereVcenterCluster" column="VSPHERE_VCENTER_CLUSTER"/>
+    </collection>
+    <collection property="iaasAccount"  ofType="hashMap" javaType="String">
+        <id property="id" column="IAAS_ACCOUNT_ID"/>
+        <result property="iaasType" column="ACCOUNT_IAAS_TYPE"/>
+        <result property="accountName" column="ACCOUNT_NAME"/>
+        <result property="commonAccessEndpoint" column="COMMON_ACCESS_ENDPOINT"/>
+        <result property="commonAccessUser" column="COMMON_ACCESS_USER"/>
+        <result property="commonAccessSecret" column="COMMON_ACCESS_SECRET"/>
+        <result property="commonTenant" column="COMMON_TENANT"/>
+        <result property="commonProject" column="COMMON_PROJECT"/>
+        <result property="googleJsonKey" column="GOOGLE_JSON_KEY"/>
+    </collection>
+</resultMap>
+
+<select id="selectBootstrapList" resultMap="bootstrap">
+    /** ieda.deploy.deploy.bootstrap.selectBootstrapList  **/
+    Select  bootstrap.id as id
+        ,bootstrap.iaas_type as iaas_type
+        ,bootstrap.bosh_cpi_release as bosh_cpi_release
+        ,bootstrap.bosh_password as bosh_password
+        ,bootstrap.bosh_release as bosh_release
+        ,bootstrap.cloud_instance_type as cloud_instance_type
+        ,bootstrap.deploy_log as deploy_log
+        ,bootstrap.deploy_status as deploy_status
+        ,bootstrap.deployment_file as deployment_file
+        ,bootstrap.deployment_name as deployment_name
+        ,bootstrap.director_name as director_name
+        ,bootstrap.ntp as ntp
+        ,bootstrap.private_static_ip as private_static_ip
+        ,bootstrap.public_static_ip as public_static_ip
+        ,bootstrap.stemcell as stemcell
+        ,bootstrap.subnet_dns as subnet_dns
+        ,bootstrap.subnet_gateway as subnet_gateway
+        ,bootstrap.subnet_id as subnet_id
+        ,bootstrap.network_name as network_name
+        ,bootstrap.subnet_range as subnet_range
+        ,bootstrap.create_date as create_date
+        ,bootstrap.update_date as update_date
+        ,config.iaas_config_alias as iaas_config_alias
+        ,config.id as iaas_config_id
+    From ieda_bootstrap bootstrap Left Join ieda_iaas_config config
+      On bootstrap.iaas_config_id=config.id
+Order by iaas_type asc, update_date asc
+</select>
+    
+<select id="selectBootstrapInfo" resultMap="bootstrap">
+    /** ieda.deploy.deploy.bootstrap.selectBootstrapInfo  **/
+        Select  bootstrap.id as id
+            ,bootstrap.iaas_config_id as config_id
+            ,bootstrap.iaas_type as iaas_type
+            ,bootstrap.bosh_cpi_release as bosh_cpi_release
+            ,bootstrap.bosh_password as bosh_password
+            ,bootstrap.bosh_release as bosh_release
+            ,bootstrap.os_conf_release as os_conf_release
+            ,bootstrap.enable_snapshots as enable_snapshots
+            ,bootstrap.snapshot_schedule as snapshot_schedule
+            ,bootstrap.cloud_instance_type as cloud_instance_type
+            ,bootstrap.resource_pool_cpu as resource_pool_cpu
+            ,bootstrap.resource_pool_ram as resource_pool_ram
+            ,bootstrap.resource_pool_disk as resource_pool_disk
+            ,bootstrap.deploy_log as deploy_log
+            ,bootstrap.deploy_status as deploy_status
+            ,bootstrap.deployment_file as deployment_file
+            ,bootstrap.deployment_name as deployment_name
+            ,bootstrap.director_name as director_name
+            ,bootstrap.ntp as ntp
+            ,bootstrap.private_static_ip as private_static_ip
+            ,bootstrap.public_static_ip as public_static_ip
+            ,bootstrap.stemcell as stemcell
+            ,bootstrap.subnet_dns as subnet_dns
+            ,bootstrap.subnet_gateway as subnet_gateway
+            ,bootstrap.subnet_id as subnet_id
+            ,bootstrap.network_name as network_name
+            ,bootstrap.subnet_range as subnet_range
+            ,bootstrap.public_static_ip as public_static_ip
+            ,bootstrap.public_subnet_id as public_subnet_id
+            ,bootstrap.public_subnet_range as public_subnet_range
+            ,bootstrap.public_subnet_gateway as public_subnet_gateway
+            ,bootstrap.public_subnet_dns as public_subnet_dns
+            ,bootstrap.create_date as create_date
+            ,bootstrap.update_date as update_date
+            ,config.iaas_config_alias as iaas_config_alias
+            ,config.id as iaas_config_id
+            ,config.account_id as account_id
+            ,config.common_security_group as common_security_group
+            ,config.common_region as common_region
+            ,config.common_keypair_name as common_keypair_name
+            ,config.common_keypair_path as common_keypair_path
+            ,config.common_availability_zone as common_availability_zone
+            ,config.google_public_key as google_public_key
+            ,config.vsphere_vcenter_datacenter_name as vsphere_vcenter_datacenter_name
+            ,config.vsphere_vcenter_vm_folder as vsphere_vcenter_vm_folder
+            ,config.vsphere_vcenter_template_folder as vsphere_vcenter_template_folder
+            ,config.vsphere_vcenter_datastore as vsphere_vcenter_datastore
+            ,config.vsphere_vcenter_persistent_datastore as vsphere_vcenter_persistent_datastore
+            ,config.vsphere_vcenter_disk_path as vsphere_vcenter_disk_path
+            ,config.vsphere_vcenter_cluster as vsphere_vcenter_cluster
+            ,account.id as iaas_account_id
+            ,ifnull(account.common_access_endpoint, "") as common_access_endpoint
+            ,ifnull(account.common_access_user, "") as common_access_user
+            ,ifnull(account.common_access_secret, "") as common_access_secret
+            ,ifnull(account.common_tenant, "") as common_tenant
+            ,ifnull(account.common_project, "") as common_project
+            ,ifnull(account.google_json_key,"") as google_json_key
+            ,ifnull(account.openstack_keystone_version, "") as openstack_keystone_version
+        From ieda_bootstrap bootstrap
+   Left Join ieda_iaas_config config
+        Left Join ieda_iaas_account account
+               On config.account_id = account.id
+          On bootstrap.iaas_config_id= config.id
+       Where bootstrap.id = #{id}
+</select>
+    
+<insert id="insertBootStrapInfo" useGeneratedKeys="true" keyColumn="id" keyProperty="bootstrap.id">
+    /** ieda.deploy.deploy.bootstrap.insertBootStrapInfo  **/
+    INSERT INTO ieda_bootstrap (
+        id
+        ,iaas_type
+        ,iaas_config_id
+        ,create_date
+        ,create_user_id
+        ,update_user_id
+        ,update_date
+        ) 
+    VALUES(
+         <if test="bootstrap.testFlag != null">1</if>
+         <if test="bootstrap.testFlag == null">#{bootstrap.id}</if>
+        ,#{bootstrap.iaasType}
+        ,#{bootstrap.iaasConfigId}
+        ,now()
+        ,#{bootstrap.createUserId}
+        ,#{bootstrap.updateUserId}
+        ,now()
+    )
+    <selectKey keyProperty="bootstrap.id" resultType="int" order="AFTER">
+        <if test="bootstrap.id != 1"> SELECT LAST_INSERT_ID(); </if>
+        <if test="bootstrap.id == 1"> SELECT 1 AS id from dual; </if>
+    </selectKey>
+</insert>
+    
+<update id="updateBootStrapInfo">
+/** ieda.deploy.deploy.bootstrap.updateBootStrapInfo **/
+    Update ieda_bootstrap Set
+        iaas_config_id = #{bootstrap.iaasConfigId}
+        ,bosh_cpi_release = #{bootstrap.boshCpiRelease}
+        ,os_conf_release = #{bootstrap.osConfRelease}
+        ,bosh_password = #{bootstrap.boshPassword}
+        ,ntp= #{bootstrap.ntp}
+        ,bosh_release = #{bootstrap.boshRelease}
+        ,snapshot_schedule = #{bootstrap.snapshotSchedule}
+        ,enable_snapshots = #{bootstrap.enableSnapshots}
+        ,cloud_instance_type = #{bootstrap.cloudInstanceType}
+        ,deploy_log = #{bootstrap.deployLog}
+        ,deploy_status = #{bootstrap.deployStatus}
+        ,deployment_file = #{bootstrap.deploymentFile}
+        ,deployment_name = #{bootstrap.deploymentName}
+        ,director_name = #{bootstrap.directorName}
+        ,stemcell= #{bootstrap.stemcell}
+        ,resource_pool_cpu = #{bootstrap.resourcePoolCpu}
+        ,resource_pool_ram = #{bootstrap.resourcePoolRam}
+        ,resource_pool_disk = #{bootstrap.resourcePoolDisk}
+        ,private_static_ip = #{bootstrap.privateStaticIp}
+        ,subnet_id= #{bootstrap.subnetId}
+        ,network_name = #{bootstrap.networkName}
+        ,subnet_range= #{bootstrap.subnetRange}
+        ,subnet_gateway= #{bootstrap.subnetGateway}
+        ,subnet_dns= #{bootstrap.subnetDns}
+        ,public_static_ip = #{bootstrap.publicStaticIp}
+        ,public_subnet_id= #{bootstrap.publicSubnetId}
+        ,public_subnet_range= #{bootstrap.publicSubnetRange}
+        ,public_subnet_gateway= #{bootstrap.publicSubnetGateway}
+        ,public_subnet_dns= #{bootstrap.publicSubnetDns}
+        ,update_user_id=#{bootstrap.updateUserId}
+        ,update_date= now()
+    WHERE
+    id=#{bootstrap.id}
+</update>
+    
+<delete id="deleteBootstrapInfo">
+    /**ieda.deploy.deploy.deleteBootstrapInfo**/
+    Delete 
+      From ieda_bootstrap
+     Where id=#{id}
+</delete>
+    
+<select id="selectSnapshotInfo" resultType="int">
+     Select count(if(snapshot_schedule='',null,snapshot_schedule)) as count   
+       From ieda_bootstrap 
+     Where public_static_ip = #{director.directorUrl}
+        And director_name = (
+            Select director_name 
+              From ieda_director_config 
+             Where director_name = #{director.directorName} 
+               And director_cpi = #{director.directorCpi}
+               And director_url = #{director.directorUrl}
+        )
+</select>
+</mapper>

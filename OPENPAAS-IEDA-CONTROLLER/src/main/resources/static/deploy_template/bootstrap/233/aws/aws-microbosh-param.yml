@@ -1,0 +1,44 @@
+name: [deploymentName]
+releases:
+  bosh:
+    url: file:///[boshRelease]
+  bosh-aws-cpi:
+    url: file:///[boshCpiRelease]
+resource_pools:
+  vms:
+    stemcell: 
+      url: file://[stemcell]
+    env:
+      bosh:
+        password: [boshPassword] 
+    cloud_properties:
+      instance_type: [cloudInstanceType]
+      availability_zone: [availabilityZone]
+networks:
+  private:
+    subnets:
+    - range: [subnetRange]
+      gateway: [subnetGateway]
+      dns: [[subnetDns]]
+      cloud_properties: 
+        subnet: [subnetId]
+jobs:
+  bosh:
+    networks:
+      private:
+        static_ips: [[privateStaticIp]]
+      public:
+        static_ips: [[publicStaticIp]]
+    properties:
+      director: 
+        name: [directorName]
+      aws:
+        access_key_id: [accessKeyId]
+        secret_access_key: [secretAccessId]
+        default_key_name: [privateKeyName]
+        default_security_groups: [[defaultSecurityGroups]]
+        region: [region]
+      ntp: [[ntp]]
+cloud_provider:
+  ssh_tunnel:
+    private_key: [privateKeyPath]

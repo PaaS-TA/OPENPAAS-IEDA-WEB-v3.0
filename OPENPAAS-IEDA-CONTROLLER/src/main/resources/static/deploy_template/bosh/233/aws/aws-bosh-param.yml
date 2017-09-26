@@ -1,0 +1,44 @@
+name: [deploymentName]
+director_uuid: [directorUuid]
+release:
+  version: [releaseVersion]
+networks:
+  default:
+    subnets:
+    - static: [[subnetStatic]]
+      reserved: [subnetReserved]
+      range: [subnetRange]
+      gateway: [subnetGateway]
+      dns: [[subnetDns]]
+      cloud_properties:
+        subnet: [subnetId]
+        security_groups: [defaultSecurityGroups]
+resource_pools:
+  small:
+    stemcell:
+      name: [stemcellName]
+      version: [stemcellVersion]
+    cloud_properties:
+      instance_type: [smallInstanceType]
+  medium:
+    stemcell:
+      name: [stemcellName]
+      version: [stemcellVersion]
+    env:
+      bosh:
+        password: [boshPassword]
+    cloud_properties:
+      instance_type: [directorInstanceType]
+jobs:
+  director:
+    networks:
+      elastic:
+        static_ips: [[publicStaticIp]]
+properties:
+  aws:
+    access_key_id: [accessKeyId]
+    secret_access_key: [secretAccessKey]
+    region: [region]
+    default_key_name: [privateKeyName]
+    default_security_groups: [[defaultSecurityGroups]]
+

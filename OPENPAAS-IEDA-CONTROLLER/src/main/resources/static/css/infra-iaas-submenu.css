@@ -1,0 +1,116 @@
+.subnet-icon {
+	background: orange;
+}
+
+*, *:before, *:after {
+	box-sizing: border-box;
+}
+
+:after {
+	content: "";
+}
+
+nav {
+	float: right;
+	position: relative;
+	margin-top: 90px !important;
+	background: transparent;
+	z-index: 99999;
+}
+
+nav ul {
+	text-align: center;
+}
+
+nav ul li {
+	position: relative;
+	width: 70px;
+	height: 70px;
+	cursor: pointer;
+	background: #eee;
+	text-transform: uppercase;
+	transition: all .4s ease-out;
+}
+
+.sg-icon img {
+	margin-top: 15px;
+}
+
+.kpair-icon img {
+	margin-top: 30px;
+}
+
+nav ul li:hover {
+	background: orange;
+}
+
+nav ul li:after {
+	position: absolute;
+	background: orange;
+	color: #111;
+	font-size: 18px;
+	top: 0;
+	left: 70px;
+	width: 120px;
+	height: 100%;
+	opacity: .5;
+	transform: perspective(400px) rotateY(90deg);
+	transform-origin: 0 100%;
+	transition: all .4s ease-out;
+}
+
+nav ul li:nth-child(1):after {
+	content: "All";
+	line-height: 70px;
+}
+
+nav ul li:nth-child(2):after {
+	content: "Security Group";
+	padding-top: 14px;
+	line-height: 22px;
+}
+
+nav ul li:nth-child(3):after {
+	content: "Keypair";
+	line-height: 70px;
+}
+
+nav ul li:nth-child(4):after {
+	content: "VPC";
+	line-height: 70px;
+}
+
+nav ul li:nth-child(5):after {
+	content: "Subnet";
+	line-height: 70px;
+}
+
+nav ul li:nth-child(6):after {
+	content: "Elastic IP";
+	line-height: 70px;
+}
+
+nav ul li:nth-child(7):after {
+	content: "Internet Gateway";
+	padding-top: 14px;
+	line-height: 22px;
+}
+
+nav ul li:hover {
+	transform: translateX(-120px);
+}
+
+nav ul li:hover:after {
+	opacity: 1;
+	transform: perspective(0px) rotateY(0deg) scale(1);
+}
+
+nav ul li>div {
+	display: inline-block;
+	padding: 25px 0;
+	background: transparent;
+}
+
+nav ul li div {
+	position: relative;
+}

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntDAO">
+
+<select id="selectAllIaasAccountInfoList"  resultType="org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO">
+/** ieda.iaas.account.iaasMgnt.selectAllIaasAccountInfoList **/
+    Select 
+         id as id
+        ,id as recid
+        ,iaas_type as iaasType
+        ,account_name as accountName
+        ,common_access_endpoint as commonAccessEndpoint
+        ,common_access_user as commonAccessUser
+        ,common_access_secret as commonAccessSecret
+        ,openstack_keystone_version as openstackKeystoneVersion
+        ,common_tenant as commonTenant
+        ,common_project as commonProject
+        ,openstack_domain as openstackDomain
+        ,create_user_id as createUserId
+        ,update_user_id as updateUserId
+        ,create_date as createDate
+        ,update_date as updateDate
+        ,( Select if(count(*) = 0,'사용안함', '사용중') 
+             From ieda_iaas_config as config, ieda_iaas_account as account2
+            Where config.account_id = account2.id
+              And account.iaas_type = account2.iaas_type
+              And account.id = account2.id
+              And account2.create_user_id= #{userId}) as status
+    From ieda_iaas_account account 
+  Where create_user_id= #{userId}
+  Order by iaas_type asc, update_date asc;
+</select>
+
+<select id="selectIaasAccountInfoList"  resultType="org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO">
+/** ieda.iaas.account.iaasMgnt.selectIaasAccountInfoList **/
+    Select 
+         id as id
+        ,id as recid
+        ,iaas_type as iaasType
+        ,account_name as accountName
+        ,common_access_endpoint as commonAccessEndpoint
+        ,common_access_user as commonAccessUser
+        ,common_access_secret as commonAccessSecret
+        ,openstack_keystone_version as openstackKeystoneVersion
+        ,common_tenant as commonTenant
+        ,common_project as commonProject
+        ,openstack_domain as openstackDomain
+        ,google_json_key as googleJsonKeyPath
+        ,create_user_id as createUserId
+        ,update_user_id as updateUserId
+        ,create_date as createDate
+        ,update_date as updateDate
+        ,( Select if(count(*) = 0,'사용안함', '사용중') 
+             From ieda_iaas_config as config, ieda_iaas_account as account2
+            Where config.account_id = account2.id
+              And account.iaas_type = account2.iaas_type
+              And account.id = account2.id
+              And account2.create_user_id= #{userId}) as status
+    From ieda_iaas_account account
+    Where UPPER(iaas_type)=UPPER(#{iaasType})
+       And create_user_id= #{userId}
+</select>
+
+<select id="selectIaasAccountCount" resultType="hashMap">
+/** ieda.iaas.account.iaasMgnt.selectIaasAccountCount **/
+    Select 
+         (select count(*) from ieda_iaas_account where UPPER(iaas_type)='AWS' And create_user_id= #{userId}) as aws_cnt
+        ,(select count(*) from ieda_iaas_account where UPPER(iaas_type)='OPENSTACK' And create_user_id= #{userId}) as openstack_cnt
+        ,(select count(*) from ieda_iaas_account where UPPER(iaas_type)='GOOGLE' And create_user_id= #{userId}) as google_cnt
+        ,(select count(*) from ieda_iaas_account where UPPER(iaas_type)='VSPHERE' And create_user_id= #{userId}) as vsphere_cnt
+    From dual
+</select>
+
+<select id="selectIaasAccountDuplicationByInfraAccount" resultType="int">
+/** ieda.iaas.account.iaasMgnt.selectIaasAccountDuplicationByInfraAccount **/
+    Select count(*)
+      From ieda_iaas_account
+    Where iaas_type=#{account.iaasType}
+    AND create_user_id =#{account.createUserId}
+    <if test="account.iaasType != 'Google'">
+        And common_access_user= #{account.commonAccessUser}
+    </if>
+    <choose>
+        <when test="account.iaasType == 'Openstack'">
+            And common_access_endpoint = #{account.commonAccessEndpoint} 
+        </when>
+        <when test="account.iaasType == 'Google'">
+            And common_project=#{account.commonProject}
+            And google_json_key=#{account.googleJsonKeyPath}
+        </when>
+    </choose>
+</select>
+
+<select id="selectIaasAccountDuplicationByAccountName" resultType="int">
+/** ieda.iaas.account.iaasMgnt.selectIaasAccountDuplicationByAccountName **/
+    Select count(*)
+      From ieda_iaas_account
+    Where iaas_type=#{account.iaasType}
+       And account_name = #{account.accountName}
+       AND create_user_id =#{account.createUserId}
+</select>
+
+<insert id="insertIaasAccountInfo">
+/** ieda.iaas.account.iaasMgnt.insertIaasAccountInfo **/
+    Insert into ieda_iaas_account(
+         id
+        ,iaas_type
+        ,account_name
+        ,common_access_endpoint
+        ,common_access_user
+        ,common_access_secret
+        ,openstack_keystone_version
+        ,openstack_domain
+        ,common_tenant
+        ,common_project
+        ,google_json_key
+        ,default_yn
+        ,create_user_id
+        ,update_user_id
+        ,create_date
+        ,update_date
+    )Values(
+         #{account.id}
+        ,#{account.iaasType}
+        ,#{account.accountName}
+        ,#{account.commonAccessEndpoint}
+        ,#{account.commonAccessUser}
+        ,#{account.commonAccessSecret}
+        ,#{account.openstackKeystoneVersion}
+        ,#{account.openstackDomain}
+        ,#{account.commonTenant}
+        ,#{account.commonProject}
+        ,#{account.googleJsonKeyPath}
+        ,#{account.defaultYn}
+        ,#{account.createUserId}
+        ,#{account.updateUserId}
+        ,now()
+        ,now()
+    )
+</insert>
+
+<select id ="selectIaasAccountInfo" resultType="org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO">
+/** ieda.iaas.account.iaasMgnt.selectIaasAccountInfo **/
+    Select 
+         id as id
+        ,iaas_type as iaasType
+        ,account_name as accountName
+        ,common_access_endpoint as commonAccessEndpoint
+        ,common_access_user as commonAccessUser
+        ,common_access_secret as commonAccessSecret
+        ,openstack_keystone_version as openstackKeystoneVersion
+        ,common_tenant as commonTenant
+        ,common_project as commonProject
+        ,google_json_key as googleJsonKeyPath
+        ,openstack_domain as openstackDomain
+        ,create_user_id as createUserId
+        ,update_user_id as updateUserId
+        ,create_date as createDate
+        ,update_date as updateDate  
+    From ieda_iaas_account 
+    Where UPPER(iaas_type) = UPPER(#{iaasType}) 
+      And create_user_id = #{createUserId} 
+      And id = #{id}
+</select>
+
+<update id="updateIaasAccountInfo">
+/** ieda.iaas.account.iaasMgnt.updateIaasAccountInfo **/
+    Update ieda_iaas_account Set 
+         openstack_domain = #{account.openstackDomain}
+        ,common_tenant = #{account.commonTenant}
+        ,openstack_keystone_version = #{account.openstackKeystoneVersion}
+        ,common_project = #{account.commonProject}
+        ,common_access_secret = #{account.commonAccessSecret}
+        ,google_json_key = #{account.googleJsonKeyPath}
+    Where id = #{account.id}
+</update>
+
+<delete id="deleteIaasAccountInfo">
+/** ieda.iaas.account.iaasMgnt.deleteaasAccountInfo **/
+    Delete From ieda_iaas_account 
+    Where create_user_id = #{createUserId}
+      And id = #{id}
+</delete>
+
+</mapper>

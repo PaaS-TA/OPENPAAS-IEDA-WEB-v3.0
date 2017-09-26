@@ -1,0 +1,63 @@
+# The following line helps maintain current documentation at http://docs.cloudfoundry.org.
+# code_snippet cf-stub-openstack start
+---
+meta:
+  stemcell:
+    name: [stemcellName]
+    version: [stemcellVersion]
+
+  cf_release:
+    name: [releaseName]
+    version: [releaseVersion]
+
+  director-uuid: [directorUuid]
+
+  environment: [deploymentName]
+
+  elastic_static_ips: [[proxyStaticIps]]
+  
+  network-0-range: [subnetRange]
+  network-0-gateway: [subnetGateway]
+  network-0-reserved: [[subnetReserved]]
+  network-0-dns: [[subnetDns]]
+  network-0-static: [[subnetStatic]]
+  network-0-subnet-id: [cloudNetId]
+  network-0-security-groups: [[cloudSecurityGroups]]
+  network-0-availability-zone: [availabilityZone]
+
+  network-1-range: [subnetRange1]
+  network-1-gateway: [subnetGateway1]
+  network-1-reserved: [[subnetReserved1]]
+  network-1-dns: [[subnetDns1]]
+  network-1-static: [[subnetStatic1]]
+  network-1-subnet-id: [cloudNetId1]
+  network-1-security-groups: [[cloudSecurityGroups1]]
+  network-1-availability-zone: [availabilityZone1]
+
+  system-domain: [domain]
+  description: [description]
+  system-domain-organization: [domainOrganization]
+
+  login-password: [loginSecret]
+
+  # Default vcap & root password on deployed VMs (ie c1oudc0w)
+  # Generated using mkpasswd -m sha-512
+  vcap-password: [boshPassword]
+
+  ssh-key-fingerprint: [appSshFingerprint]
+
+  small-instance-type: [smallInstanceType]
+  medium-instance-type: [mediumInstanceType]
+  large-instance-type: [largeInstanceType]
+  runner-instance-type: [runnerInstanceType]
+
+  dea-next-disk-mb: [deaDiskMB]
+
+  dea-next-memory-mb: [deaMemoryMB]
+
+  ## Don't change
+  default_env:
+    bosh:
+      password: (( vcap-password ))
+
+  admin-password: (( cf-admin-password || "admin" ))

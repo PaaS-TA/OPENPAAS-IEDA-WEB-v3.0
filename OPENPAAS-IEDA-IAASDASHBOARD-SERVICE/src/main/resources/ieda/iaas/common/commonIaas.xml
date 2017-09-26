@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.iaasDashboard.web.common.dao.CommonIaasDAO">
+
+    <select id="selectdefaultIaasAccountInfo" resultType="hashMap">
+        /**ieda.iaas.common.commonIaas.selectdefaultIaasAccountInfo**/
+         Select
+             id as id
+             ,iaas_type as iaasType
+             ,account_name as accountName
+             ,common_access_endpoint as commonAccessEndpoint
+             ,common_access_user as commonAccessUser
+             ,common_access_secret as commonAccessSecret
+             ,openstack_keystone_version as openstackKeystoneVersion
+             ,common_tenant as commonTenant
+             ,common_project as commonProject
+             ,openstack_domain as openstackDomain
+             ,default_yn as defaultYn 
+             ,create_user_id as createUserId
+             ,update_user_id as updateUserId
+             ,create_date as createDate
+        From ieda_iaas_account
+        where default_Yn = #{defaultYn}
+        AND UPPER(iaas_type)=UPPER(#{iaasType})
+        
+    </select>
+    
+    <select id="selectParentCodeAndSubGroupCode" resultType="org.openpaas.ieda.iaasDashboard.web.common.dao.CommonCodeVO">
+       /**ieda.iaas.common.commonIaas.selectParentCodeAndSubGroupCode**/
+           Select
+                parent_code as parentCode, 
+                sub_group_code as subGroupCode,
+                code_description as codeDescription,
+                code_name as codeName, 
+                code_name_kr as codeNameKr,
+                code_value as codeValue 
+           From ieda_common_code
+           Where parent_code = #{parentCode}
+           And code_value not in ('33000','34000');
+    </select>
+    
+    <update id="updateDefaultIaasAccountInfo">
+        /**ieda.iaas.common.commonIaas.updateDefaultIaasAccountInfo**/
+        Update ieda_iaas_account Set 
+            default_yn =#{account.defaultYn}
+        Where id = #{account.id}
+        AND UPPER(iaas_type)=UPPER(#{account.iaasType})
+    </update>
+    
+    <select id="selectIngressRulesInfo" resultType="org.openpaas.ieda.iaasDashboard.web.common.dao.CommonCodeVO">
+        /**ieda.iaas.common.commonIaas.selectIngressRulesInfo**/
+        Select 
+            code_name as codeName
+           ,code_value as codeValue
+           ,code_name_kr as codeNameKr
+           ,code_description as codeDescription
+           ,sub_group_code as subGroupCode
+           ,usub_group_code as usubGroupCode
+           ,parent_code as parentCode
+        From ieda_common_code
+       Where parent_code = #{parentCode}
+         AND code_name_kr = #{codeNameKr}
+         AND usub_group_code is null
+         AND sub_group_code is null
+         <choose>
+            <when test="codeValue != null">
+                And code_value=#{codeValue}
+            </when>
+            <otherwise>
+                And code_value = 'N'
+            </otherwise>
+         </choose>
+    </select>
+    
+    <select id="selectIngressRulesInfoBySubGroupCode" resultType="org.openpaas.ieda.iaasDashboard.web.common.dao.CommonCodeVO">
+        /**ieda.iaas.common.commonIaas.selectIngressRulesInfoBySubGroupCode**/
+        Select 
+            code_name as codeName
+           ,code_value as codeValue
+           ,code_name_kr as codeNameKr
+           ,code_description as codeDescription
+           ,sub_group_code as subGroupCode
+           ,usub_group_code as usubGroupCode
+           ,parent_code as parentCode
+        From ieda_common_code
+       Where parent_code = #{parentCode}
+         AND code_name_kr like CONCAT('%(',#{codeNameKr},')') 
+         AND usub_group_code is null
+         AND sub_group_code = #{subGroupCode}
+    </select>
+    
+    <select id="selectIngressRulesInfoBySubGroupCodeAndUsubGroupCode" resultType="org.openpaas.ieda.iaasDashboard.web.common.dao.CommonCodeVO">
+        /**ieda.iaas.common.commonIaas."selectIngressRulesInfoByUsubGroupCode"**/
+        Select 
+            code_name as codeName
+           ,code_value as codeValue
+           ,code_name_kr as codeNameKr
+           ,code_description as codeDescription
+           ,sub_group_code as subGroupCode
+           ,usub_group_code as usubGroupCode
+           ,parent_code as parentCode
+        From ieda_common_code
+       Where parent_code= #{parentCode}
+         And code_value= #{codeValue} 
+         AND usub_group_code= #{uSubGroupCode}
+         AND sub_group_code= #{subGroupCode}
+    </select>
+</mapper>

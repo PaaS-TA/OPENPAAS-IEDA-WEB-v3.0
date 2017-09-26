@@ -1,0 +1,132 @@
+@CHARSET "UTF-8";
+
+/** 계정 관리 **/
+#infra_account_mgnt_wrap, #infra_account_mgnt_nowrap { width:100%; display:block; float:left }
+#infra_account_mgnt_wrap ul > li > ul { cursor:pointer; height:220px; width:20%; margin-right:6.5%; }
+#infra_account_mgnt_wrap ul > li > ul.vSphere-box {margin-right:0; }
+#infra_account_mgnt_wrap ul > li > ul > li:nth-of-type(2){ border-bottom: 1px solid gray; margin-bottom: 10px;}
+#infra_account_mgnt_wrap ul > li > ul > li { text-align:center; font-size:15px; font-weight:bolder; color:#2196f3  }
+#infra_account_mgnt_wrap .aws-icon {  width:60%; margin-top:15%; margin-bottom:15px;  }
+#infra_account_mgnt_wrap .openstack-icon {  width:60%; margin-top:17%; margin-bottom:10px; }
+#infra_account_mgnt_wrap .google-icon {  width:60%; margin-top:3%; margin-bottom:15px;}
+#infra_account_mgnt_wrap .vSphere-icon {  width:60%; margin-top:20%; margin-bottom:15px; }
+
+#main .well { background-color:#fff; border:1px solid #dcdcdc; border-radius:20px; }
+#main .well:hover { border:1px solid #3e80b5; }
+#main .caret { border-top:5px dashed; }
+#main .aws-go { color: gray;font-size: 12px;text-align: left; font-weight:100; }
+#main .dropdown a { font-weight:bolder; color:#2196F3; }
+#main .dropdown a.iaas-dropdown { width: 160px; border: 1px solid #e1e1e1; padding: 5px 10px; display: block;background-color:#fff; }
+#main .dropdown li>a {  font-weight: 600; font-size:13px; color: darkgray; }
+#main ul.alert-dropdown { width:0px; }
+
+
+/*리소스 사용량 */  
+#main .iaasTotalResourceUsageDiv {background-color: #183354;width: 100%;display: block;float: left;border-radius: 10px;padding: 10px 30px;}
+#main .iaasTotalResourceUsageDiv > ul:nth-of-type(1) {display: block;margin: 0 auto;width: 100%;}
+#main .iaasTotalResourceUsageDiv > ul:nth-of-type(1) > li {display: inline-block;width: 33%;margin:20px 0;} 
+#main .iaasTotalResourceUsageDiv > ul > li > ul > li { display: inline-block; color: #fff;  font-weight: bolder; width:30% }
+#main .iaasTotalResourceUsageDiv .totalResourceUsage-ul-Div img {vertical-align: middle;width: 100px;margin-right:20px;}
+#main .iaasTotalResourceUsageDiv .totalResourceUsage-ul-Div  > li:nth-of-type(1) > span{ display:inline-block; }
+#main .iaasTotalResourceUsageDiv .totalResourceUsage-ul-Div  > li:nth-of-type(2) {vertical-align: middle;font-size: 50px;width: 68%;}
+#main .iaasTotalResourceUsageDiv .totalResourceUsage-ul-Div  > li:nth-of-type(2) > span { display:inline-block; }
+#iaasResourceUsageWrap { display: block;float: left; width:100% }
+#iaasResourceUsageWrap .iaasResourceUsageDiv { background-color:#fff; width: 415px;float:left;border-radius: 10px;height: 458px;border: 2px solid;margin-right: 89px;cursor:pointer;}    
+#iaasResourceUsageWrap .iaasResourceUsageDiv > ul { text-overflow: ellipsis;overflow: hidden;height: 100%;  }
+#iaasResourceUsageWrap .iaasResourceUsageDiv > ul > li:nth-of-type(1) { border-bottom: 1px dashed #979797 }
+#iaasResourceUsageWrap .iaasResourceUsageDiv > ul > li > ul { margin:60px 20px 0 20px }
+#iaasResourceUsageWrap .iaasResourceUsageDiv li:nth-of-type(1) { text-align:center; margin-bottom:24px; }
+#iaasResourceUsageWrap .iaasResourceUsageDiv li:nth-of-type(1) img {  width: 293px;  text-align: center; }
+#iaasResourceUsageWrap .iaasResourceUsageDiv ul > li > ul > li:nth-of-type(2) { text-align:right; }
+#iaasResourceUsageWrap .iaasResourceUsageDiv li:nth-of-type(2) img {  width: 100px;  }
+#iaasResourceUsageWrap .iaasResourceUsageDiv .resource-li { padding: 10px 20px;font-size: 18px;font-weight: 700; color: #666;}
+#iaasResourceUsageWrap .iaasResourceUsageDiv .network-li { padding-bottom: 0px;}
+#iaasResourceUsageWrap .iaasResourceUsageDiv .resource-li-span1 {display: inline-block;width: 30%;text-align: right; color:#183354} 
+#iaasResourceUsageWrap .iaasResourceUsageDiv .resource-li-span2 {font-weight:bold;color:#000;padding-left: 20px;width: 250px;display: inline-block;}
+#iaasResourceUsageWrap .iaasResourceUsageDiv .resource-li-span3 {display: inline-block;width: 33%;font-size: 13px;color: #8b8b8b;position: relative;bottom: 10px;text-align: right;}
+
+
+/*AWS 리소스 사용량*/
+#instanceUsageWrap .account-sp,  #networkUsageWrap .account-sp, #volumeUsageWrap .account-sp, #billingUsageWrap .account-sp { display:inline-block; width:200px; vertical-align:super; font-weight:bold; font-size:16px; }
+#instanceUsageWrap .progress,  #networkUsageWrap .progress,  #volumeUsageWrap .progress, #billingUsageWrap .progress { display:inline-block; width:60%; margin-bottom:0; height:30px }
+#instanceUsageWrap .panel-body, #networkUsageWrap .panel-body, #volumeUsageWrap .panel-body, #billingUsageWrap .panel-body { padding:0; height:150px; }
+.instanceUsage, .networkUsage, .volumeUsage, .billingUsage {  float:left; width:70%; border-right:1px solid #337ab7; padding:15px; height:100%; }
+#instanceUsageWrap .summary-st, #networkUsageWrap .summary-st, #volumeUsageWrap .summary-st, #billingUsageWrap .summary-st {
+	font-size: 20px; font-weight: bold; color: #4b4b4b; 
+}
+
+.progress-bar { font-size:17px; font-weight:700; line-height:30px;   }
+#instanceUsageWrap .instanceSummary, #networkUsageWrap .networkSummary, #volumeUsageWrap .volumeSummary, #billingUsageWrap .billingSummary { font-size: 70px; font-weight: bolder;  color:#214a6e; text-align:right; }
+.instanceSummary > span, .networkSummary > span, .volumeSummary > span, .billingSummary > span { font-size:40px; }
+
+#awsMgntWrap { display: block;float: left; width:100%; margin-top: 10px;}
+#awsMgntWrap .awsMgntDiv {width: 260px;float:left;border-radius: 10px;height: 280px;border: 1px solid #e8e8e8; background-color:#fff; margin: 0 130px 30px 0px;cursor:pointer;}    
+#awsMgntWrap .awsMgntDiv:hover {border: 2px solid #f29201;border-image-outset: 30;}
+#awsMgntWrap .awsMgntDiv > ul > li:nth-of-type(1) { border-bottom: 1px dashed #ff9900 }
+#awsMgntWrap .awsMgntDiv > ul > li > ul { margin:60px 20px 0 20px }
+#awsMgntWrap .awsMgntDiv li:nth-of-type(1) { text-align:center; margin-bottom:36px; }
+#awsMgntWrap .awsMgntDiv li:nth-of-type(1) img {  width: 293px;  text-align: center; }
+#awsMgntWrap .awsMgntDiv li:nth-of-type(2) img {  width: 100px;  }
+#awsMgntWrap .awsMgntDiv .resource-li { padding: 10px 20px;font-size: 22px;font-weight: 700; color: #666;}
+#awsMgntWrap .awsMgntDiv .network-li { padding-bottom: 0px;}
+#awsMgntWrap .awsMgntDiv .aws-li-span1 {display: inline-block;width: 200px;font-size: 15px;} 
+#awsMgntWrap .awsMgntDiv .resource-li-span2 {font-weight:bold;color:#000;padding-left: 20px;width: 250px;display: inline-block;}
+#awsMgntWrap .awsMgntDiv .resource-li-span3 {display: inline-block;width: 100px;font-size: 14px;color: #8b8b8b;position: relative;bottom: 10px;text-align: right;}
+#awsMgntWrap .awsMgntDiv .aws-li { padding: 10px 20px;font-size: 22px;font-weight: 700; color: #666;}
+
+/* #awsMgntWrap .securityGroup:hover { content:url("../images/awsMgnt/securityGroup_b2.png"); width:50px} */
+
+#awsMain, #openstackMain{
+    position:absolute;
+    left:40px;
+    float:right;
+    width:90%;
+    min-height:760px;
+    margin-bottom: 50px;
+    margin-top:40px;
+}
+
+/*drop down css*/
+#awsMain .well, #openstack .well { background-color:f9f9f9; border:3px solid #3e80b5; border-radius:40px; }
+#awsMain .caret, #openstackMain .caret { border-top:5px dashed; }
+#awsMain .dropdown a, #openstackMain .dropdown a { font-weight:bolder;  color:#2196F3; }
+#awsMain .dropdown a.iaas-dropdown, #openstackMain .dropdown a.iaas-dropdown {width: 260px;border: 1px solid #e1e1e1;padding: 8px 10px;font-size: 15px;display: block;}
+#awsMain .dropdown li>a, #openstackMain .dropdown li>a {  font-weight: 600; font-size:15px; color: darkgray; }
+#awsMain ul.alert-dropdown, #openstackMain ul.alert-dropdown { width:0 }
+
+/* aws security group */
+#ingressRulesTable th{background-color:#f3f6fa; }
+#ingressRulesTable .rules{ text-align:left; color:#353535; } 
+#ingressRulesEditTable td{ border-top:1px solid #c5c5c5; text-align:center; padding: 8px 0; vertical-align:-webkit-baseline-middle;}
+#ingressRulesEditTable td > input, #ingressRulesEditTable td > select { width:90%; }
+
+#openstackMgntWrap { display: block;float: left; width:100%; margin-top: 10px;}
+#openstackMgntWrap .openstackMgntDiv {width: 260px;float:left;border-radius: 10px;height: 280px;background:#fff; border: 1px solid #dcdcdc; margin: 0 130px 30px 0px; cursor:pointer;}    
+#openstackMgntWrap .openstackMgntDiv:hover { border: 2px solid #bc1518;border-image-outset: 30; }
+#openstackMgntWrap .openstackMgntDiv > ul > li:nth-of-type(1) { border-bottom: 1px dashed #F44336; }
+#openstackMgntWrap .openstackMgntDiv > ul > li > ul { margin:60px 20px 0 20px }
+#openstackMgntWrap .openstackMgntDiv li:nth-of-type(1) { text-align:center; margin-bottom:36px; }
+#openstackMgntWrap .openstackMgntDiv li:nth-of-type(1) img {  width: 293px;  text-align: center; }
+#openstackMgntWrap .openstackMgntDiv li:nth-of-type(2) img {  width: 100px;  }
+#openstackMgntWrap .openstackMgntDiv .resource-li { padding: 10px 20px;font-size: 22px;font-weight: 700; color: #666;}
+#openstackMgntWrap .openstackMgntDiv .network-li { padding-bottom: 0px;}
+#openstackMgntWrap .openstackMgntDiv .openstack-li-span1 {display: inline-block;width: 200px;} 
+#openstackMgntWrap .openstackMgntDiv .resource-li-span2 {font-weight:bold;color:#000;padding-left: 20px;width: 250px;display: inline-block;}
+#openstackMgntWrap .openstackMgntDiv .resource-li-span3 {display: inline-block;width: 100px;font-size: 14px;color: #8b8b8b;position: relative;bottom: 10px;text-align: right;}
+#openstackMgntWrap .openstackMgntDiv .openstack-li { padding: 15px 20px;font-size: 15px;font-weight: 700; color: #666;}
+
+#awsMgnt { padding: 20px 5px; height: 80px; background-color: #ececec; border:1px dashed #d4d4d4; border-radius:3px; text-align: center; }
+#awsMgnt > ul > li { display:inline-block; margin:0 10px; }
+#awsMgnt .dropdown a.iaas-dropdown { width: 210px; text-align:left; border: 1px solid #e1e1e1; padding: 5px 10px; display:block;background-color:#fff; }
+#awsMgnt ul.alert-dropdown { width:210px; }
+
+#openstackMgnt {  padding: 20px 5px; height: 80px; background-color: #ececec; border:1px dashed #d4d4d4; border-radius:3px; text-align: center;  }
+#openstackMgnt > ul > li { display:inline-block; margin:0 10px; }
+#openstackMgnt .dropdown a.iaas-dropdown { width: 210px; text-align:left; border: 1px solid #e1e1e1; padding: 5px 10px; display:block;background-color:#fff; }
+#openstackMgnt ul.alert-dropdown { width:210px; }
+
+
+
+
+
+

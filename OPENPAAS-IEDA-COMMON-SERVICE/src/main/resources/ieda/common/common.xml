@@ -1,0 +1,53 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openpaas.ieda.common.web.common.dao.CommonDAO" >
+
+    <select id="selectAccountInfoList" resultType="hashMap">
+        /** ieda.common.account.selectAccountInfoList **/
+        Select
+             id as id
+             ,iaas_type as iaasType
+             ,account_name as accountName
+             ,common_access_endpoint as commonAccessEndpoint
+             ,common_access_user as commonAccessUser
+             ,common_access_secret as commonAccessSecret
+             ,openstack_keystone_version as openstackKeystoneVersion
+             ,common_tenant as commonTenant
+             ,common_project as commonProject
+             ,openstack_domain as openstackDomain
+             ,google_json_key as googleJsonKeyPath
+             ,default_yn as defaultYn 
+             ,create_user_id as createUserId
+             ,update_user_id as updateUserId
+             ,create_date as createDate
+        From ieda_iaas_account
+      Where create_user_id = #{userId}
+        <if test="iaasType != null">
+            And LOWER(iaas_type) = #{iaasType} 
+        </if>
+      Order By default_yn desc ,id asc
+    </select>
+    
+    <select id="selectAccountInfoById" resultType="hashMap">
+    /** ieda.common.account.selectAccountInfoById **/
+        Select
+             id as id
+             ,iaas_type as iaasType
+             ,account_name as accountName
+             ,common_access_endpoint as commonAccessEndpoint
+             ,common_access_user as commonAccessUser
+             ,common_access_secret as commonAccessSecret
+             ,openstack_keystone_version as openstackKeystoneVersion
+             ,common_tenant as commonTenant
+             ,common_project as commonProject
+             ,openstack_domain as openstackDomain
+             ,google_json_key as googleJsonKey
+             ,default_yn as defaultYn 
+             ,create_user_id as createUserId
+             ,update_user_id as updateUserId
+             ,create_date as createDate
+        From ieda_iaas_account
+      Where create_user_id = #{userId}
+         And id = #{id}
+    </select>
+    
+</mapper>

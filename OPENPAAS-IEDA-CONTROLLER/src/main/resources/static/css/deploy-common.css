@@ -1,0 +1,44 @@
+@CHARSET "UTF-8";
+
+/*popup  */
+.w2ui-popup .w2ui-msg-body { background-color: #FFF; }
+/**w2ui popup**/
+.navbar-inverse { background-color:#293846  }
+.w2ui-popup .w2ui-box1{ bottom:40px; }
+.panel { margin-bottom:0px; }
+
+/* 팝업창  input, textarea 한글 입력 금지 */
+.w2ui-box1 .w2ui-msg-body .w2ui-field input, textarea{	ime-mode:disabled; }
+
+/* isMessage(validation) 2015.12.28 */
+.w2ui-field div.isMessage{
+	display: inline-block;
+	padding-left:10px;
+	height:10px;
+	font-size: 10px;
+}
+
+/*common*/
+.display_none { display:none;  }
+.display_block { display:block }
+.w2ui-field-helper {  width:20px;  }
+.addBtn { position:relative; left:85%; }
+.delBtn { position:relative; left:85%; }
+.message { width:75%; text-align:center;  }
+
+/*drop down css*/
+/* #main .well { background-color:f9f9f9; border:3px solid #3e80b5; border-radius:40px; } */
+#main .caret { border-top:5px dashed; }
+#main .dropdown a { font-weight:bolder;  color:#2196F3; }
+#main .dropdown a.iaas-dropdown {width: 160px;border: 1px solid #e1e1e1;padding: 5px 10px;font-size: 13px;display: block;}
+#main .dropdown li>a {  font-weight: 600; font-size:13px; color: darkgray; }
+#main ul.alert-dropdown { width:0 }
+
+.select-control { 
+    width: 70%;
+    display: inline-block;
+    height: 30px;
+    font-size: 12px;
+    color: #818181;
+    padding: 0;
+}
