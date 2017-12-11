@@ -965,8 +965,7 @@ INSERT INTO ieda_manifest_template VALUES (92, 'DIEGO','openstack','paasta-conta
 INSERT INTO ieda_manifest_template VALUES (93, 'DIEGO','vsphere','paasta-container','1.25.3','3.0','generic_manifest_mask.yml','diego.yml', 'paasta_options.yml', 'diego_vsphere_settings.yml','diego_vsphere_network_1.yml','','diego_vsphere_network_2.yml','diego_stub_1.25.3.yml','diego_vsphere_inputs.yml','SYSTEM',now(),'SYSTEM',now());
 INSERT INTO ieda_manifest_template VALUES (94, 'DIEGO','google','paasta-container','1.25.3','3.0','generic_manifest_mask.yml','diego.yml', 'paasta_options.yml', 'diego_google_settings.yml','diego_google_network_1.yml','','diego_google_network_2.yml','diego_stub_1.25.3.yml','diego_google_inputs.yml','SYSTEM',now(),'SYSTEM',now());
 
-
-
+#ieda_job_template
 INSERT INTO ieda_job_template VALUES ( '1000', '0', 'DEPLOY_TYPE_CF', '236', '273', 'true', 'true', 'false',  'nats', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '1001', '1', 'DEPLOY_TYPE_CF', '236', '273', 'true', 'false', 'false',  'blobstore', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '1002', '2', 'DEPLOY_TYPE_CF', '236', '273', 'true', 'true', 'false',  'router', 'SYSTEM', now(), 'SYSTEM', now());
@@ -976,31 +975,16 @@ INSERT INTO ieda_job_template VALUES ( '1005', '5', 'DEPLOY_TYPE_CF', '236', '27
 INSERT INTO ieda_job_template VALUES ( '1006', '6', 'DEPLOY_TYPE_CF', '236', '273', 'true', 'true', 'false',  'consul', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '1007', '7', 'DEPLOY_TYPE_CF', '236', '247', 'true', 'true', 'false',  'hm9000', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '1008', '8', 'DEPLOY_TYPE_CF', '236', '247', 'true', 'true', 'false',  'runner', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '1009', '9', 'DEPLOY_TYPE_CF', '273', '273', 'true', 'true', 'false',  'clock', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_job_template VALUES ( '1009', '9', 'DEPLOY_TYPE_CF', '272', '273', 'true', 'true', 'false',  'clock', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '1010', '10', 'DEPLOY_TYPE_CF', '236', '247', 'true', 'false', 'false',  'clock_global', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '1011', '11', 'DEPLOY_TYPE_CF', '236', '273', 'true', 'false', 'false',  'stats', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '1012', '12', 'DEPLOY_TYPE_CF', '236', '247', 'true', 'true', 'false',  'api_worker', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '1013', '13', 'DEPLOY_TYPE_CF', '236', '247', 'true', 'true', 'false',  'api', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '1014', '14', 'DEPLOY_TYPE_CF', '236', '247', 'true', 'true', 'false',  'uaa', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '1015', '15', 'DEPLOY_TYPE_CF', '2.0', '3.0', 'true', 'true', 'false',  'nats', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '1016', '16', 'DEPLOY_TYPE_CF', '2.0', '3.0', 'true', 'false', 'false',  'blobstore', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '1017', '17', 'DEPLOY_TYPE_CF', '2.0', '3.0', 'true', 'true', 'false',  'router', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '1018', '18', 'DEPLOY_TYPE_CF', '2.0', '3.0', 'true', 'true', 'false',  'loggregator_trafficcontroller', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '1019', '19', 'DEPLOY_TYPE_CF', '2.0', '3.0', 'true', 'true', 'false',  'doppler', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '1020', '20', 'DEPLOY_TYPE_CF', '2.0', '3.0', 'true', 'true', 'false',  'etcd', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '1021', '21', 'DEPLOY_TYPE_CF', '2.0', '3.0', 'true', 'true', 'false',  'consul', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '1022', '22', 'DEPLOY_TYPE_CF', '3.0', '3.0', 'true', 'true', 'false',  'clock', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '1023', '23', 'DEPLOY_TYPE_CF', '2.0', '3.0', 'true', 'false', 'false',  'stats', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '2000', '0', 'DEPLOY_TYPE_DIEGO', '0.1481.0', '1.25.3', 'true', 'true', 'true',  'database', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '2001', '1', 'DEPLOY_TYPE_DIEGO', '0.1481.0', '1.25.3', 'true', 'true', 'true',  'access', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '2002', '2', 'DEPLOY_TYPE_DIEGO', '0.1481.0', '1.25.3', 'true', 'true', 'true',  'cc_bridge', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '2003', '3', 'DEPLOY_TYPE_DIEGO', '0.1481.0', '1.25.3', 'true', 'true', 'true',  'cell', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_job_template VALUES ( '2004', '4', 'DEPLOY_TYPE_DIEGO', '0.1481.0', '1.25.3', 'true', 'true', 'true',  'brain', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '2005', '5', 'DEPLOY_TYPE_DIEGO', '2.0', '3.0', 'true', 'true', 'true',  'database', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '2006', '6', 'DEPLOY_TYPE_DIEGO', '2.0', '3.0', 'true', 'true', 'true',  'access', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '2007', '7', 'DEPLOY_TYPE_DIEGO', '2.0', '3.0', 'true', 'true', 'true',  'cc_bridge', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '2008', '8', 'DEPLOY_TYPE_DIEGO', '2.0', '3.0', 'true', 'true', 'true',  'cell', 'SYSTEM', now(), 'SYSTEM', now());
-INSERT INTO ieda_job_template VALUES ( '2009', '9', 'DEPLOY_TYPE_DIEGO', '2.0', '3.0', 'true', 'true', 'true',  'brain', 'SYSTEM', now(), 'SYSTEM', now());
-
 
 

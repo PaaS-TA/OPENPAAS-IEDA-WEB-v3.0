@@ -275,7 +275,7 @@ function defaultInfoPopup() {
             event.onComplete = function() {
                 //릴리즈 정보 popup over
                  $('[data-toggle="popover"]').popover();
-                 $(".paastaMonitoring-info").attr('data-content', "paasta-controller v2.0 이상에서 지원")
+                 $(".paastaMonitoring-info").attr('data-content', "paasta-controller v3.0 이상에서 지원")
                 
                  getReleaseVersionList();
                  //cf & diego 통합 설치일 경우 fingerprint readonly

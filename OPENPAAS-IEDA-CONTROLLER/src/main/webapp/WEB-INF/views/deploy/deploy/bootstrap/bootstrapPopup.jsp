@@ -365,6 +365,8 @@ function defaultInfoPop(iaas){
         onOpen:function(event){
             event.onComplete = function(){
                 $(".w2ui-msg-body input[name='ingestorIp']").attr("disabled", true);
+                $('[data-toggle="popover"]').popover();
+                $(".paastaMonitoring-info").attr('data-content', "paasta-controller v3.0 이상에서 지원")
                 if( !checkEmpty(boshInfo) && boshInfo != "" ){
                     $(".w2ui-msg-body input[name='deploymentName']").val(boshInfo.deploymentName);
                     $(".w2ui-msg-body input[name='directorName']").val(boshInfo.directorName);

@@ -262,7 +262,7 @@ function defaultPopup() {
                  $(".gardenRelease-info").attr('data-content', "https://github.com/cloudfoundry/diego-cf-compatibility");
                  $(".cflinux-info").attr('data-content', "https://github.com/cloudfoundry/diego-cf-compatibility");
                  $(".etcd-info").attr('data-content', "https://github.com/cloudfoundry/diego-cf-compatibility");
-                 $(".paastaMonitoring-info").attr('data-content', "paasta-container v2.0 이상에서 지원")
+                 $(".paastaMonitoring-info").attr('data-content', "paasta-container v3.0 이상에서 지원")
                  
                 if( menu == "cfDiego") {
                     $('.w2ui-msg-buttons #defaultPopupBtn').show();
