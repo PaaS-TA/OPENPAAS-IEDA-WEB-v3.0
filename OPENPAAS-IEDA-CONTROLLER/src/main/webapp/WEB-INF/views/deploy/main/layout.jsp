@@ -55,7 +55,7 @@
 <script type="text/javascript" src="<c:url value='/js/stomp.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/yaml.js'/>"></script>
 <!-- Common -->
-<script type="text/javascript" src="<c:url value='/js/common.js?ver=1'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/common.js?ver=2'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/common-deploy.js?ver=1'/>"></script>
 
 <script type="text/javascript">

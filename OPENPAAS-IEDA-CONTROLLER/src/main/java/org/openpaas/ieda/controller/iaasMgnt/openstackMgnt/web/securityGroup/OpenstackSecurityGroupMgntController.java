@@ -27,8 +27,8 @@ public class OpenstackSecurityGroupMgntController {
     
     /***************************************************
     * @project : OPENSTACK 인프라 관리 대시보드
-    * @description : OPENSTACK 네트워크 관리 화면 이동
-    * @title : goOpenstackNetwork
+    * @description : OPENSTACK 보안 그룹 관리 화면 이동
+    * @title : goOpenstackSecurityGroupMgnt
     * @return : String
     ***************************************************/
     @RequestMapping(value="/openstackMgnt/securityGroup", method=RequestMethod.GET)
@@ -42,11 +42,11 @@ public class OpenstackSecurityGroupMgntController {
     /***************************************************
     * @project : OPENSTACK 인프라 관리 대시보드
     * @description : OPENSTACK 보안 그룹 목록 정보 조회
-    * @title : getOpenstackSecrityGroupInfoList
+    * @title : getOpenstackSecurityGroupInfoList
     * @return : ResponseEntity<HashMap<String, Object>>
     ***************************************************/
     @RequestMapping(value="/openstackMgnt/securityGroup/list/{accountId}", method=RequestMethod.GET)
-    public ResponseEntity<HashMap<String, Object>> getOpenstackSecrityGroupInfoList(Principal principal, @PathVariable int accountId){
+    public ResponseEntity<HashMap<String, Object>> getOpenstackSecurityGroupInfoList(Principal principal, @PathVariable int accountId){
         if (LOG.isInfoEnabled()) {
             LOG.info("================================================> OPENSTACK 보안 그룹 목록 정보 조회");
         }

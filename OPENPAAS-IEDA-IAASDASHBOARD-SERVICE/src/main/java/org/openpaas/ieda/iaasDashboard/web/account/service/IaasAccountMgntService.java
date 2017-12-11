@@ -1,3 +1,4 @@
+
 package org.openpaas.ieda.iaasDashboard.web.account.service;
 
 import java.io.BufferedOutputStream;
@@ -44,6 +45,12 @@ public class IaasAccountMgntService {
     @Autowired MessageSource message;
     @Autowired IaasAccountMgntApiService api;
     
+    final private static String IAAS_AWS = "AWS";
+    final private static String IAAS_OPENSTACK = "OPENSTACK";
+    final private static String IAAS_GOOGLE = "GOOGLE";
+    final private static String IAAS_VSPHERE = "VSPHERE";
+    
+    final private static String SEPARATOR = System.getProperty("file.separator");
     final private static String JSON_KEY_DIR=LocalDirectoryConfiguration.getKeyDir();
     final private static Logger LOGGER = LoggerFactory.getLogger(IaasAccountMgntService.class);
     
@@ -154,18 +161,17 @@ public class IaasAccountMgntService {
         
         //API를 통해 계정 존재 확인
         boolean flag = false;
-        if( iaasType.toUpperCase().trim().equals("AWS") ){
+        if( iaasType.toUpperCase().trim().equalsIgnoreCase(IAAS_AWS) ){
             flag = api.getAccountInfoFromAWS(commonAccessUser, commonAccessSecret );
-        } else  if( iaasType.toUpperCase().trim().equals("OPENSTACK") ){
-            if( vo.getOpenstackKeystoneVersion().equals("v2") ){
+        } else  if( iaasType.toUpperCase().trim().equalsIgnoreCase(IAAS_OPENSTACK) ){
+            if( vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2") ){
                 flag = api.getAccountInfoFromOpenstackV2(vo.getCommonAccessEndpoint(), vo.getCommonTenant(), commonAccessUser, commonAccessSecret);
             }else{
-                flag = api.getAccountInfoFromOpenstackV3(vo.getCommonAccessEndpoint(), vo.getOpenstackDomain(), vo.getCommonProject(),
-                        commonAccessUser, commonAccessSecret);
+                flag = api.getAccountInfoFromOpenstackV3(vo.getCommonAccessEndpoint(), vo.getOpenstackDomain(), vo.getCommonProject(),commonAccessUser, commonAccessSecret);
             }
-        } else if( iaasType.toUpperCase().trim().equals("VSPHERE") ){
+        } else if( iaasType.toUpperCase().trim().equalsIgnoreCase(IAAS_VSPHERE) ){
             flag = api.getAccountInfoFromVsphere(vo.getCommonAccessEndpoint(), commonAccessUser, commonAccessSecret);
-        }else if( iaasType.toUpperCase().trim().equals("GOOGLE") ){
+        }else if( iaasType.toUpperCase().trim().equalsIgnoreCase(IAAS_GOOGLE) ){
             flag = api.getAccountInfoFromGoogle(vo.getGoogleJsonKeyPath(), vo.getCommonProject());
         }
        
@@ -205,17 +211,21 @@ public class IaasAccountMgntService {
     *****************************************************************/
     public List<String> getJsonKeyFileList(){
         File keyPathFile = new File(JSON_KEY_DIR);
-        if( !keyPathFile.isDirectory() ) return null;
+        if( !keyPathFile.isDirectory() ) {
+            return null;
+        }
         
         List<String> localFiles = null;
         File[] listFiles = keyPathFile.listFiles();
         if(listFiles != null){
             for (File file : listFiles) {
-                if(!file.getName().toLowerCase().endsWith(".json"))
+                if(!file.getName().toLowerCase().endsWith(".json")) {
                     continue;
+                }
 
-                if ( localFiles == null )
+                if ( localFiles == null ) {
                     localFiles = new ArrayList<String>();
+                }
 
                 localFiles.add(file.getName());
             }
@@ -238,7 +248,7 @@ public class IaasAccountMgntService {
             BufferedOutputStream stream = null;
             MultipartFile mpf = request.getFile(itr.next());
             try {
-                String keyFilePath = LocalDirectoryConfiguration.getKeyDir() + System.getProperty("file.separator") + mpf.getOriginalFilename();
+                String keyFilePath = JSON_KEY_DIR + SEPARATOR + mpf.getOriginalFilename();
                 byte[] bytes = mpf.getBytes();
                 File isKeyFile = new File(keyFilePath);
                 stream = new BufferedOutputStream(new FileOutputStream(isKeyFile));
@@ -256,7 +266,9 @@ public class IaasAccountMgntService {
                 if(LOGGER.isErrorEnabled()){ LOGGER.error(e.getMessage()); }
             } finally{
                 try {
-                    if( stream != null ) stream.close();
+                    if( stream != null ) {
+                        stream.close();
+                    }
                 } catch (IOException e) {
                     if( LOGGER.isErrorEnabled() ){ LOGGER.error( e.getMessage() ); }
                 }

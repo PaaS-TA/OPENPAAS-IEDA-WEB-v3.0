@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.security.Principal;
 
 import javax.ws.rs.core.Application;
@@ -26,8 +27,6 @@ import org.openpaas.ieda.deploy.web.common.base.BaseDeployControllerUnitTest;
 import org.openpaas.ieda.deploy.web.config.systemRelease.dao.ReleaseManagementDAO;
 import org.openpaas.ieda.deploy.web.config.systemRelease.dao.ReleaseManagementVO;
 import org.openpaas.ieda.deploy.web.config.systemRelease.dto.ReleaseManagementDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -37,7 +36,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ReleaseManagementDownloadServiceUnitTest extends BaseDeployControllerUnitTest{
     
-    final static Logger LOGGER = LoggerFactory.getLogger(ReleaseManagementDownloadServiceUnitTest.class);
     final private static String RELEASE_REAL_PATH = LocalDirectoryConfiguration.getReleaseDir() +  "/bosh-openstack-cpi-release-20.tgz";
     final private static String RELEASE_LOCK_PATH = LocalDirectoryConfiguration.getLockDir()+System.getProperty("file.separator")+"bosh-openstack-cpi-release-20-download.lock";
     final private static String RELEASE_TMP_PATH = LocalDirectoryConfiguration.getTmpDir()+"/bosh-openstack-cpi-release-20.tgz";
@@ -63,12 +61,9 @@ public class ReleaseManagementDownloadServiceUnitTest extends BaseDeployControll
         MockitoAnnotations.initMocks(this);
         principal = getLoggined();
         File file = new File(RELEASE_TMP_PATH);
-        FileWriter writer = null;
-        try{
-            writer = new FileWriter(file);
-            writer.write("test"); 
-        }catch (Exception e) {
-        }
+        FileWriter writer = new FileWriter(file);
+        writer.write("test"); 
+        writer.close();
     }
     
     /***************************************************
@@ -79,7 +74,6 @@ public class ReleaseManagementDownloadServiceUnitTest extends BaseDeployControll
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testCheckSystemReleaseDownloadFileFromEmptyReleaseNameCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  릴리즈 다운로드 중 릴리즈 명 값이 빈 값일 경우 TEST START  ================="); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoUrl("nomal");
         ReleaseManagementVO vo =  getRegistSystemReleaseUploadInfo("empty");
         when(mockReleaseManagementDao.selectSystemReleaseById(dto.getId())).thenReturn(vo);
@@ -93,13 +87,15 @@ public class ReleaseManagementDownloadServiceUnitTest extends BaseDeployControll
     ***************************************************/
     @Test
     public void testCheckSystemReleaseDownloadFile(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  릴리즈 다운로드 TEST START  ================="); }
         FileWriter writer = null;
-        try{
+        try {
             writer = new FileWriter(RELEASE_REAL_PATH);
             writer.write("test"); 
-        }catch (Exception e) {
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoUrl("nomal");
         ReleaseManagementVO vo =  getRegistSystemReleaseUploadInfo("nomal");
         when(mockReleaseManagementDao.selectSystemReleaseById(dto.getId())).thenReturn(vo);
@@ -115,13 +111,13 @@ public class ReleaseManagementDownloadServiceUnitTest extends BaseDeployControll
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testCheckSystemReleaseDownloadFileFromOverlayfalseCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  릴리즈 다운로드 중 릴리즈 파일이 존재하고 덮어쓰기 체크가 안되어 있을 경우 TEST START  ================="); }
         File file = new File(RELEASE_REAL_PATH);
         FileWriter writer = null;
         try{
             writer = new FileWriter(file);
             writer.write("test"); 
         }catch (Exception e) {
+            e.printStackTrace();
         }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoUrl("conflict");
         ReleaseManagementVO vo =  getRegistSystemReleaseUploadInfo("nomal");
@@ -138,13 +134,13 @@ public class ReleaseManagementDownloadServiceUnitTest extends BaseDeployControll
     ***************************************************/
     @Test
     public void testDeleteLockFile(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  릴리즈 다운로드 완료 후 Lock 파일 삭제 TEST START  ================="); }
         File file = new File(RELEASE_LOCK_PATH);
         FileWriter writer = null;
         try{
             writer = new FileWriter(file);
             writer.write("test"); 
         }catch (Exception e) {
+            e.printStackTrace();
         }
         mockReleaseManagementDownloadService.deleteLockFile("bosh-openstack-cpi-release-20.tgz");
     }
@@ -157,7 +153,6 @@ public class ReleaseManagementDownloadServiceUnitTest extends BaseDeployControll
     ***************************************************/
     @Test
     public void testSaveSystemReleseInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  릴리즈 다운로드 정보 저장 TEST START  ================="); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoUrl("nomal");
         ReleaseManagementVO vo = getRegistSystemReleaseUploadInfo("nomal");
         when(mockReleaseManagementDao.selectSystemReleaseById(anyInt())).thenReturn(vo);
@@ -172,7 +167,6 @@ public class ReleaseManagementDownloadServiceUnitTest extends BaseDeployControll
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveSystemReleseInfoFromExceptionCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  릴리즈 다운로드 정보 저장 중 Null Point Error가 발생 한 경우 TEST START  ================="); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoUrl("nomal");
         when(mockReleaseManagementDao.selectSystemReleaseById(anyInt())).thenReturn(null);
         mockReleaseManagementDownloadService.saveSystemReleseInfo(dto, principal);
@@ -186,7 +180,6 @@ public class ReleaseManagementDownloadServiceUnitTest extends BaseDeployControll
     ***************************************************/
     @Test
     public void testGetSystemReleaseInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  릴리즈 정보 조회 TEST START  ================="); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoUrl("nomal");
         ReleaseManagementVO vo = getRegistSystemReleaseUploadInfo("nomal");
         when(mockReleaseManagementDao.selectSystemReleaseById(anyInt())).thenReturn(vo);
@@ -207,7 +200,6 @@ public class ReleaseManagementDownloadServiceUnitTest extends BaseDeployControll
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testGetSystemReleaseInfoFromBadRequestCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  릴리즈 정보 조회가 존재 하지 않을 경우 TEST START  ================="); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoUrl("nomal");
         when(mockReleaseManagementDao.selectSystemReleaseById(anyInt())).thenReturn(null);
         mockReleaseManagementDownloadService.getSystemReleaseInfo(dto);
@@ -221,7 +213,6 @@ public class ReleaseManagementDownloadServiceUnitTest extends BaseDeployControll
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testCheckSystemReleaseDownloadFileFromMoveException(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  릴리즈 파일 복사 중 에러가 발생 한 경우 TEST START  ================="); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoUrl("nomal");
         ReleaseManagementVO vo = getRegistSystemReleaseUploadInfo("nomal");
         File tmpFile = new File(RELEASE_TMP_PATH);

@@ -2,14 +2,12 @@ package org.openpaas.ieda.awsMgnt.web.keypair.service;
 
 import java.util.List;
 
-
 import org.openpaas.ieda.common.web.common.service.CommonApiService;
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
-
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
@@ -49,7 +47,7 @@ public class AwsKeypairMgntApiService {
      * @return : void
      ***************************************************/
     public String createAwsKeypairApiFromAws(IaasAccountMgntVO vo, String keyPairName, String region){
-    	AWSStaticCredentialsProvider provider = 
+        AWSStaticCredentialsProvider provider = 
                 commonApiService.getAwsStaticCredentialsProvider(vo.getCommonAccessUser(), vo.getCommonAccessSecret());
         AmazonEC2Client ec2 =
                 (AmazonEC2Client)AmazonEC2ClientBuilder
@@ -61,7 +59,7 @@ public class AwsKeypairMgntApiService {
         CreateKeyPairResult cresult = ec2.createKeyPair(createKeyPairRequest);
         String content = "";
         //요청 결과 정보
-        content = cresult.getKeyPair().getKeyMaterial().toString().replace("\n", "\r\n");
+        content = cresult.getKeyPair().getKeyMaterial().replace("\n", "\r\n");
         
         return content;
     }

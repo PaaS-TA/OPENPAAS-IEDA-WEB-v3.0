@@ -21,8 +21,6 @@ import org.openpaas.ieda.awsMgnt.web.subnet.dao.AwsSubnetMgntVO;
 import org.openpaas.ieda.awsMgnt.web.subnet.dto.AwsSubnetMgntDTO;
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 
 import com.amazonaws.regions.Region;
@@ -35,7 +33,6 @@ import com.amazonaws.services.ec2.model.SubnetIpv6CidrBlockAssociation;
 public class AwsSubnetMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     
     private Principal principal = null;
-    final static Logger LOGGER = LoggerFactory.getLogger(AwsSubnetMgntServiceUnitTest.class);
     
     @InjectMocks AwsSubnetMgntService mockAwsSubnetMgntService;
     @Mock AwsSubnetMgntApiService mockAwsSubnetMgntApiService;
@@ -61,7 +58,6 @@ public class AwsSubnetMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
      ***************************************************/
      @Test
      public void testGetAwsSubnetcInfoList(){
-         if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testGetAwsSubnetcInfoList ================="); }
          getAwsAccountInfo();
          getAwsRegionInfo();
          List<Subnet>  subnetList = getResultSubnetListInfo();
@@ -87,7 +83,6 @@ public class AwsSubnetMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
    @SuppressWarnings("unchecked")
    @Test
    public void testDefaultGetAwsSubnetDetailInfo(){
-       if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testDefaultGetAwsSubnetDetailInfo ================="); }
        getAwsAccountInfo();
        getAwsRegionInfo();
        HashMap<String, Object> subnetMap = getResultSubnetDetailInfo();
@@ -116,7 +111,6 @@ public class AwsSubnetMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     ***************************************************/
     @Test
     public void testSaveAwsSubnetInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testSaveAwsSubnetInfo ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         AwsSubnetMgntDTO dto = setAwsSubnetInfo();
@@ -131,7 +125,6 @@ public class AwsSubnetMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
      ***************************************************/
      @Test
      public void testDeleteAwsSubnetInfo(){
-         if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testDeleteAwsSubnetInfo  ================="); }
          getAwsAccountInfo();
          getAwsRegionInfo();
          AwsSubnetMgntDTO dto = setAwsSubnetInfo();

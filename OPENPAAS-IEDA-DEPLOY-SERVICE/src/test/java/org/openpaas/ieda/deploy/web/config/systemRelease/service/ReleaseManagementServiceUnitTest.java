@@ -36,8 +36,6 @@ import org.openpaas.ieda.deploy.web.config.systemRelease.dao.ReleaseManagementDA
 import org.openpaas.ieda.deploy.web.config.systemRelease.dao.ReleaseManagementVO;
 import org.openpaas.ieda.deploy.web.config.systemRelease.dto.ReleaseManagementDTO;
 import org.openpaas.ieda.deploy.web.management.code.dao.CommonCodeDAO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -68,7 +66,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     @Mock
     private MessageSource mockMessageSource;
     
-    final static Logger LOGGER = LoggerFactory.getLogger(ReleaseManagementServiceUnitTest.class);
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -91,7 +88,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     *****************************************************************/
     @Test
     public void testGetSystemReleaseListFromInfoExistCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGetSystemReleaseListFromInfoExistCase"); }
         List<ReleaseManagementVO> releaseList = getReleaseListInfo("exist");
         when(mockReleaseManagemetDao.selectSystemReleaseList()).thenReturn(releaseList);
         List<ReleaseManagementVO> resultList = mockReleaseManagementService.getSystemReleaseList();
@@ -114,7 +110,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     *****************************************************************/
     @Test
     public void testDownloadStatusNullGetSystemReleaseList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testDownloadStatusNullGetSystemReleaseList"); }
         List<ReleaseManagementVO> releaseList = getReleaseListInfo("null");
         when(mockReleaseManagemetDao.selectSystemReleaseList()).thenReturn(releaseList);
         List<ReleaseManagementVO> resultList = mockReleaseManagementService.getSystemReleaseList();
@@ -137,7 +132,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     *****************************************************************/
     @Test
     public void testDownloadStatusDownLoadedGetSystemReleaseList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testDownloadStatusDownLoadedGetSystemReleaseList"); }
         List<ReleaseManagementVO> releaseList = getReleaseListInfo("downloaded");
         when(mockReleaseManagemetDao.selectSystemReleaseList()).thenReturn(releaseList);
         doNothing().when(mockReleaseManagemetDao).deleteSystemRelase(any());
@@ -160,7 +154,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     *****************************************************************/
     @Test
     public void testGetSystemReleaseTypeList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGetSystemReleaseTypeList"); }
         List<String> releaseTypeList = setReleaseTypeListInfo();
         when(mockCommonCodeDao.selectReleaseTypeList("RELEASE_TYPE")).thenReturn(releaseTypeList);
         List<String> resultList = mockReleaseManagementService.getSystemReleaseTypeList();
@@ -182,7 +175,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     *****************************************************************/
     @Test
     public void testGetLocalReleaseList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGetLocalReleaseList"); }
         List<String> downLoadReleaseList = setReleaseTypeListInfo();
         when(mockReleaseManagemetDao.selectLocalReleaseList(anyString(), anyString())).thenReturn(downLoadReleaseList);
         List<String> resultList = mockReleaseManagementService.getLocalReleaseList(anyString(), anyString());
@@ -204,7 +196,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     *****************************************************************/
     @Test
     public void testGetLocalDownloadReleaseList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGetLocalDownloadReleaseList"); }
         mockReleaseManagementService.getLocalReleaseFileList();
     }
 
@@ -216,7 +207,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     *****************************************************************/
     @Test(expected=CommonException.class)
     public void testDeleteLockFileFromStringIndexOutOfBoundsException(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testDeleteLockFileFromStringIndexOutOfBoundsException"); }
         mockReleaseManagementService.deleteLockFile("error","error");
     }
     
@@ -228,8 +218,8 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     *****************************************************************/
     @Test(expected=CommonException.class)
     public void testSaveSystemReleaseFileUploadInfoFromPreconditonFail(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSaveSystemReleaseFileUploadInfoFromPreconditonFail"); }
         ReleaseManagementDTO.Regist dto = setRegistSystemReleaseUploadInfo("precondition");
+        when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("message");
         mockReleaseManagementService.saveSystemReleaseFileUploadInfo(dto, principal);
     }
     
@@ -241,7 +231,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     *****************************************************************/
     @Test(expected=CommonException.class)
     public void testSaveSystemReleaseFileUploadInfoFromBadRequestCase() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSaveSystemReleaseFileUploadInfoFromBadRequestCase"); }
         File file = new File(RELEASE_LOCK_DIR);
         FileWriter writer = new FileWriter(file);
         writer.write("test"); 
@@ -259,7 +248,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test
     public void testInsertSystemReleaseInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testInsertSystemReleaseInfo"); }
         ReleaseManagementDTO.Regist dto = setRegistSystemReleaseUploadInfo("nomal");
         when(mockReleaseManagemetDao.selectSystemRelease(anyString())).thenReturn(null);
         ReleaseManagementVO result = mockReleaseManagementService.saveSystemReleaseInfo(dto, principal);
@@ -274,7 +262,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test
     public void testSaveSystemReleaseInfoFromUpdateCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSaveSystemReleaseInfoFromUpdateCase"); }
         ReleaseManagementDTO.Regist dto = setRegistSystemReleaseUploadInfo("nomal");
         ReleaseManagementVO vo = getRegistSystemReleaseUploadInfo("nomal");
         when(mockReleaseManagemetDao.selectSystemRelease(anyString())).thenReturn(vo);
@@ -294,7 +281,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveSystemReleaseInfoFromExceptionCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSaveSystemReleaseInfoFromExceptionCase"); }
         ReleaseManagementDTO.Regist dto = null;
         when(mockReleaseManagemetDao.selectSystemRelease(anyString())).thenReturn(null);
         doNothing().when(mockReleaseManagemetDao).insertSystemRelease(null);
@@ -309,7 +295,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveSystemReleaseFileUploadInfoFromConflictCase() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSaveSystemReleaseFileUploadInfoFromConflictCase"); }
         ReleaseManagementDTO.Regist dto = setRegistSystemReleaseUploadInfo("conflict");
         File file = new File(RELEASE_DIR);
         FileWriter writer = null;
@@ -317,11 +302,12 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
             writer = new FileWriter(file);
             writer.write("test"); 
         }catch (CommonException e) {
-            LOGGER.error(e.getMessage());
+            e.printStackTrace();
         }finally {
             mockReleaseManagementService.saveSystemReleaseFileUploadInfo(dto,principal);
-            writer.flush();
-            writer.close();
+            if( writer != null ) {
+                writer.close();
+            }
         }
     }
     
@@ -333,7 +319,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testCheckSystemReleaseDownloadedFileInfoByWgetFromBadRequestCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testCheckSystemReleaseDownloadedFileInfoByWgetFromBadRequestCase"); }
         ReleaseManagementDTO.Regist dto = setReleaseDownload("notfound");
         dto.setReleaseFileName("");
         mockReleaseManagementService.checkSystemReleaseDownloadedFileInfoByWget(dto, principal);
@@ -347,7 +332,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testCheckSystemReleaseDownloadedFileInfoByWgetFromConflictCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testCheckSystemReleaseDownloadedFileInfoByWgetFromConflictCase"); }
         ReleaseManagementDTO.Regist dto = setReleaseDownload("nomal");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(false);
         mockReleaseManagementService.checkSystemReleaseDownloadedFileInfoByWget(dto, principal);
@@ -361,7 +345,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testDownloadLinkNull(){
-        if(LOGGER.isInfoEnabled()) LOGGER.info("=================================> testDownloadLinkNull");
         ReleaseManagementDTO.Regist dto = new ReleaseManagementDTO.Regist();
         dto.setDownloadLink(null);
         mockReleaseManagementService.getSystemReleaseInfoByWget(dto, principal);
@@ -375,7 +358,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testRegistSystemReleaseDownloadInfoConflictError() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testRegistSystemReleaseDownloadInfoConflictError"); }
         ReleaseManagementDTO.Regist dto = setReleaseDownload("conflict");
         dto.setReleaseFileName("bosh-openstack-cpi-release-20.tgz");
         File file = new File(RELEASE_DIR);
@@ -385,11 +367,12 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
             writer.write("test"); 
             when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
         }catch (CommonException e) {
-            LOGGER.error(e.getMessage());
+            e.printStackTrace();
         }finally {
             mockReleaseManagementService.checkSystemReleaseDownloadedFileInfoByWget(dto,principal);
-            writer.flush();
-            writer.close();
+            if( writer != null ) {
+                writer.close();
+            }
         }
     }
     
@@ -401,7 +384,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSetDownloadBaseURLByReleaseVersionFromConflicException(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSetDownloadBaseURLByReleaseVersionFromConflicException"); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoVersion("bosh-cpi");
         dto.setReleaseFileName("bosh-openstack-cpi-release-20.tgz");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(false);
@@ -416,7 +398,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test
     public void testSetDownloadBaseURLByReleaseVersionFromEtcd(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSetDownloadBaseURLByReleaseVersionFromEtcd"); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoVersion("etcd");
         String etcdDownloadLink = "https://bosh.io/d/github.com/cloudfoundry-incubator/etcd-release?v=20";
         String result = mockReleaseManagementService.setDownloadBaseURLByReleaseVersion(dto);
@@ -430,7 +411,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test
     public void testSetDownloadBaseURLByReleaseVersionFromBoshRelease(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSetDownloadBaseURLByReleaseVersionFromBoshRelease"); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoVersion("bosh");
         String result = mockReleaseManagementService.setDownloadBaseURLByReleaseVersion(dto);
         String boshDownloadLink = "https://bosh.io/d/github.com/cloudfoundry/bosh?v=20";
@@ -445,39 +425,10 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test
     public void testSetDownloadBaseURLByReleaseVersionFromCfRelease(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGetReleaseVersionTypeDownloadCfURL"); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoVersion("cf");
         String result = mockReleaseManagementService.setDownloadBaseURLByReleaseVersion(dto);
         String cfDownloadLink = "https://bosh.io/d/github.com/cloudfoundry/cf-release?v=20";
         assertEquals(cfDownloadLink, result);
-    }
-    
-    /****************************************************************
-     * @project : Paas 플랫폼 설치 자동화
-     * @description : os conf 릴리즈 시스템 릴리즈 다운로드 중 URL 생성 
-     * @title : testSetDownloadBaseURLByReleaseVersionFromOsConfRelease
-     * @return : void
-    *****************************************************************/
-    @Test
-    public void testSetDownloadBaseURLByReleaseVersionFromOsConfRelease(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSetDownloadBaseURLByReleaseVersionFromOsConfRelease"); }
-        ReleaseManagementDTO.Regist dto = setReleaseRegistInfoVersion("os_conf");
-        String result = mockReleaseManagementService.setDownloadBaseURLByReleaseVersion(dto);
-        String osConfDownloadLink = "https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=20";
-        assertEquals(osConfDownloadLink, result);
-    }
-    
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
-    * @description : 삭제 할 릴리즈 파일이 존재 하지 않을 경우
-    * @title : testDeleteSystemReleaseFromBadRequest
-    * @return : void
-    ***************************************************/
-    @Test(expected=CommonException.class)
-    public void testDeleteSystemReleaseFromBadRequest() throws SQLException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testDeleteSystemReleaseFromBadRequest"); }
-        ReleaseManagementDTO.Delete dto = setReleaseDelete();
-        mockReleaseManagementService.deleteSystemRelease(dto);
     }
     
     /****************************************************************
@@ -488,18 +439,18 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     *****************************************************************/
     @Test
     public void testDeleteSystemRelease() throws IOException, SQLException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testDeleteSystemRelease"); }
         ReleaseManagementDTO.Delete dto = setReleaseDelete();
         FileWriter writer = null;
         try{
             writer = new FileWriter(RELEASE_DIR);
             writer.write("test"); 
         }catch (CommonException e) {
-            LOGGER.error(e.getMessage());
+            e.printStackTrace();
         }finally {
             mockReleaseManagementService.deleteSystemRelease(dto);
-            writer.flush();
-            writer.close();
+            if( writer != null ) {
+                writer.close();
+            }
         }
     }
     
@@ -511,7 +462,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     *****************************************************************/
     @Test 
     public void testSaveSystemReleaseFileUploadInfo() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSaveSystemReleaseFileUploadInfo"); }
         ReleaseManagementDTO.Regist dto = setRegistSystemReleaseUploadInfo("nomal");
         ReleaseManagementVO result = mockReleaseManagementService.saveSystemReleaseFileUploadInfo(dto, principal);
         assertEquals(result, null);
@@ -525,7 +475,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveSystemReleaseUrlInfoFromEmptyFileInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSaveSystemReleaseUrlInfoFromEmptyFileInfo"); }
         ReleaseManagementDTO.Regist dto = new ReleaseManagementDTO.Regist();
         dto.setReleasePathUrl("");
         dto.setReleasePathVersion("");
@@ -540,7 +489,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test
     public void testCheckSystemReleaseDownloadedFileInfoByWget(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testCheckSystemReleaseDownloadedFileInfoByWget"); }
         ReleaseManagementDTO.Regist dto = setReleaseDownload("nomal");
         ReleaseManagementVO vo = getRegistSystemReleaseUploadInfo("nomal");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
@@ -561,7 +509,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test
     public void testSetReleaseDownloadLink(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSetReleaseDownloadLink"); }
         ReleaseManagementDTO.Regist dto = setReleaseDownload("nomal");
         mockReleaseManagementService.setReleaseDownloadLink(dto);
     }
@@ -574,7 +521,6 @@ public class ReleaseManagementServiceUnitTest extends BaseDeployControllerUnitTe
     ***************************************************/
     @Test
     public void testSetReleaseDownloadLinkFromBoshCpi(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSetReleaseDownloadLinkFromBoshCpi"); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistInfoVersion("bosh-cpi");
         mockReleaseManagementService.setReleaseDownloadLink(dto);
     }

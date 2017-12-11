@@ -12,11 +12,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 public class apiTest {
-	
-	
-	
-	@Test
-	public void testGetVpcList(){
-		
-	}
+
+@Test
+public void testGetVpcList(){
+
+}
 }

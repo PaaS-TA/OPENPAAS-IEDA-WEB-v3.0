@@ -185,7 +185,7 @@ public class DirectorConfigService  {
         
         director.setDefaultYn((directorConfig == null ) ? "Y":"N");
         
-        if( director.getDefaultYn().equals("Y") ) {
+        if( director.getDefaultYn().equalsIgnoreCase("Y") ) {
             setBoshConfigFile(director, boshConfigFileName);
         }
 
@@ -220,9 +220,10 @@ public class DirectorConfigService  {
         //1. 해당 설치관리자가 존재하는지 확인한다.
         DirectorConfigVO directorConfig = dao.selectDirectorConfigBySeq(updateDto.getIedaDirectorConfigSeq());
         
-        if ( directorConfig == null )
+        if ( directorConfig == null ) {
             throw new CommonException("notfound.director_update.exception",
                     "디렉터가 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
         
         //2. 설치관리자 정보를 확인한다.
         DirectorInfoDTO info = getDirectorInfo(directorConfig.getDirectorUrl()
@@ -230,9 +231,10 @@ public class DirectorConfigService  {
                 , updateDto.getUserId()
                 , updateDto.getUserPassword());
         
-        if ( info == null || StringUtils.isEmpty(info.getUser()) )
+        if ( info == null || StringUtils.isEmpty(info.getUser()) ) {
             throw new CommonException("unauthenticated.director.exception",
                     "디렉터에 로그인 실패하였습니다.", HttpStatus.BAD_REQUEST);
+        }
         
         updateDirectorinfo(updateDto, directorConfig, principal, boshConfigFileName);
     }
@@ -306,7 +308,9 @@ public class DirectorConfigService  {
                 if(fileWriter != null){
                     fileWriter.close();
                 }
-                if(input != null) input.close();
+                if(input != null) {
+                    input.close();
+                }
             } catch (IOException e) {
                 throw new CommonException("server.director.exception",
                         "읽어오는중 오류가 발생했습니다!", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -400,7 +404,7 @@ public class DirectorConfigService  {
                 //bosh_config 파일을 로드하여 Map<String, Object>에 parse한다.
                 Map<String, Object> object = (Map<String, Object>)yaml.load(input);
                 
-                if ( directorConfig.getDefaultYn().equals("Y")) {
+                if ( directorConfig.getDefaultYn().equalsIgnoreCase("Y")) {
                     object.put("target", directorLink);
                     object.put("target_name", directorConfig.getDirectorName());
                     object.put("target_version", directorConfig.getDirectorVersion());
@@ -439,8 +443,12 @@ public class DirectorConfigService  {
                         "설치관리자 관리 파일을 읽어오는 중 오류가 발생했습니다.", HttpStatus.NOT_FOUND);
             }  finally {
                 try {
-                    if(fileWriter != null) fileWriter.close();
-                    if(input != null) input.close();
+                    if(fileWriter != null) {
+                        fileWriter.close();
+                    }
+                    if(input != null) {
+                        input.close();
+                    }
                 } catch (IOException e) {
                     throw new CommonException("taretDirector.director.exception",
                             "읽어오는중 오류가 발생했습니다!", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -451,13 +459,12 @@ public class DirectorConfigService  {
             try {
                 Map<String, Object> newConfig = new HashMap<String, Object>();
                 
-                if ( directorConfig.getDefaultYn().equals("Y")) {
+                if ( directorConfig.getDefaultYn().equalsIgnoreCase("Y")) {
                     newConfig.put("target", directorLink);
                     newConfig.put("target_name", directorConfig.getDirectorName());
                     newConfig.put("target_version", directorConfig.getDirectorVersion());
                     newConfig.put("target_uuid", directorConfig.getDirectorUuid());
-                }
-                else {
+                } else {
                     DirectorConfigVO directorVo = getDefaultDirector();
                     newConfig.put("target", "https://" + directorVo.getDirectorUrl() + ":" + directorVo.getDirectorPort());
                     newConfig.put("target_name", directorVo.getDirectorName());
@@ -497,7 +504,9 @@ public class DirectorConfigService  {
                         "설치관리자 설정 파일 생성 중 오류 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
             } finally {
                 try {
-                    if(osw!=null) osw.close();
+                    if(osw!=null) {
+                        osw.close();
+                    }
                 } catch (IOException e) {
                     throw new CommonException("taretDirector.director.exception",
                             "읽어오는 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);

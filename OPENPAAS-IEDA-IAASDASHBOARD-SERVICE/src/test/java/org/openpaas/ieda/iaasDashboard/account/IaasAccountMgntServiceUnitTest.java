@@ -35,14 +35,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openpaas.ieda.common.exception.CommonException;
-import org.openpaas.ieda.common.web.common.service.CommonApiService;
 import org.openpaas.ieda.iaasDashboard.api.account.IaasAccountMgntApiService;
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntDAO;
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.iaasDashboard.web.account.dto.IaasAccountMgntDTO;
 import org.openpaas.ieda.iaasDashboard.web.account.service.IaasAccountMgntService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -67,11 +64,8 @@ public class IaasAccountMgntServiceUnitTest {
     @Mock
     private MessageSource mockMessageSource;
     @Mock
-    private CommonApiService mockIaasCommonApiService;
-    @Mock
     private IaasAccountMgntApiService mockIaasAccountMgntApiService;
     
-    final static Logger LOGGER = LoggerFactory.getLogger(IaasAccountMgntServiceUnitTest.class);
     
     /***************************************************
      * @project : 인프라 관리 대시보드
@@ -108,7 +102,6 @@ public class IaasAccountMgntServiceUnitTest {
     @Test
     public void testGetAllIaasAccountInfoList(){
         
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testGetAllIaasAccountInfoList"); }
         List<IaasAccountMgntVO> list = setAllIaasAccountMgntListInfo();
         when(mockIaasAccountMgntDao.selectAllIaasAccountInfoList(principal.getName())).thenReturn(list);
         
@@ -141,7 +134,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testGetIaasAccountCount(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testGetIaasAccountCount"); }
         HashMap<String, Integer>  list = setIaasAccountCountInfo();
         when(mockIaasAccountMgntDao.selectIaasAccountCount(principal.getName())).thenReturn(list);
         HashMap<String, Integer> result = mockIaasAccountMgntService.getIaasAccountCount(principal); //요청
@@ -163,7 +155,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testGetIaasAccountInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testGetIaasAccountInfoList"); }
 
         List<IaasAccountMgntVO> list = setIaasAccountInfoList();
         when(mockIaasAccountMgntDao.selectIaasAccountInfoList(principal.getName(), "openstack")).thenReturn(list);
@@ -197,7 +188,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testGetIaasAccountInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testGetIaasAccountInfo"); }
 
         IaasAccountMgntVO expectedVo = setIaasAccountInfo();
         when(mockIaasAccountMgntDao.selectIaasAccountInfo(principal.getName(), "aws",1 )).thenReturn(expectedVo);
@@ -221,7 +211,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSaveIaasAccountInfoRegistCaseFromAWS(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=================> testSaveIaasAccountInfoRegistCaseFromAWS"); }
         
         HttpServletRequest req = new MockHttpServletRequest();
         PublicKey publicKey = setPublicKey(req, "success");
@@ -245,7 +234,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSaveIaasAccountInfoRegistCaseFromOpenstackV2(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testSaveIaasAccountInfoRegistCaseFromOpenstackV2"); }
         
         HttpServletRequest req = new MockHttpServletRequest();
         PublicKey publicKey = setPublicKey(req, "success");
@@ -269,7 +257,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSaveIaasAccountInfoRegistCaseFromOpenstackV3(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testSaveIaasAccountInfoRegistCaseFromOpenstackV3"); }
         
         HttpServletRequest req = new MockHttpServletRequest();
         PublicKey publicKey = setPublicKey(req, "success");
@@ -293,7 +280,6 @@ public class IaasAccountMgntServiceUnitTest {
     *****************************************************************/
     @Test
     public void testSaveIaasAccountInfoRegistCaseFromGoogle(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testSaveIaasAccountInfoRegistCaseFromGoogle"); }
         
         HttpServletRequest req = new MockHttpServletRequest();
         PublicKey publicKey = setPublicKey(req, "success");
@@ -317,7 +303,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSaveIaasAccountInfoRegistCaseFromVSphere(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testSaveIaasAccountInfoRegistCaseFromVSphere"); }
         
         HttpServletRequest req = new MockHttpServletRequest();
         PublicKey publicKey = setPublicKey(req, "success");
@@ -341,7 +326,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveIaasAccountInfoRegistInfraAccountDuplicationError(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testSaveIaasAccountInfoRegistInfraAccountDuplicationError"); }
         
         HttpServletRequest req = new MockHttpServletRequest();
         PublicKey publicKey = setPublicKey(req, "success");
@@ -363,7 +347,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveIaasAccountInfoRegistAccountNameDuplicationError(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testSaveIaasAccountInfoRegistAccountNameDuplicationError"); }
         
         HttpServletRequest req = new MockHttpServletRequest();
         PublicKey publicKey = setPublicKey(req, "success");
@@ -385,7 +368,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveIaasAccountInfoRegistSessionPrivateKeyNullError(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testSaveIaasAccountInfoRegistSessionPrivateKeyNullError"); }
         HttpServletRequest req = new MockHttpServletRequest();
         PublicKey publicKey = setPublicKey(req, "fail");
         
@@ -403,7 +385,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveIaasAccountInfoRegistAccountNotFoundError(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testSaveIaasAccountInfoRegistAccountNotFoundError"); }
         
         HttpServletRequest req = new MockHttpServletRequest();
         PublicKey publicKey = setPublicKey(req, "success");
@@ -425,7 +406,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSaveIaasAccountInfoUpdateCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testSaveIaasAccountInfoUpdateCase"); }
         
         HttpServletRequest req = new MockHttpServletRequest();
         PublicKey publicKey = setPublicKey(req, "success");
@@ -450,7 +430,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testDeleteIaasAccountInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testDeleteIaasAccountInfo"); }
         IaasAccountMgntDTO dto = setIaasAccountInfoDto();
         when(mockIaasAccountMgntDao.deleteIaasAccountInfo(principal.getName(), 1)).thenReturn(1);
         mockIaasAccountMgntService.deleteIaasAccountInfo(dto, principal);
@@ -469,7 +448,6 @@ public class IaasAccountMgntServiceUnitTest {
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testDeleteIaasAccountInfoBadRequestError(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testDeleteIaasAccountInfoBadRequestError"); }
         IaasAccountMgntDTO dto = new IaasAccountMgntDTO();
         dto.setId("");
         dto.setIaasType("aws");
@@ -486,7 +464,6 @@ public class IaasAccountMgntServiceUnitTest {
     *****************************************************************/
     @Test
     public void testGetJsonKeyFileList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testGetJsonKeyFileList"); }
         mockIaasAccountMgntService.getJsonKeyFileList();
     }
     
@@ -498,7 +475,6 @@ public class IaasAccountMgntServiceUnitTest {
     *****************************************************************/
     @Test
     public void testUploadJsonKeyFile(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testUploadJsonKeyFile"); }
         MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
         mockIaasAccountMgntService.uploadJsonKeyFile(request);
     }
@@ -703,7 +679,7 @@ public class IaasAccountMgntServiceUnitTest {
         IaasAccountMgntDTO dto = new IaasAccountMgntDTO();
         dto.getDefaultYn();
         dto.setTestFlag("Y");
-        if( iaasType.equals("aws") ){
+        if( iaasType.equalsIgnoreCase("aws") ){
             dto.setIaasType("aws");
             dto.setAccountName("aws-test1");
             dto.setCommonAccessEndpoint("");
@@ -711,9 +687,9 @@ public class IaasAccountMgntServiceUnitTest {
             dto.setOpenstackKeystoneVersion("");
             dto.setOpenstackDomain("");
             dto.setCommonProject("");
-        }else if(iaasType.equals("openstack")) {
+        }else if(iaasType.equalsIgnoreCase("openstack")) {
             dto.setIaasType("openstack");
-            if( openstackKeystoneVersion.equals("v2")){
+            if( openstackKeystoneVersion.equalsIgnoreCase("v2")){
                 dto.setAccountName("openstack-v2-test");
                 dto.setCommonAccessEndpoint("http://10.10.10.1:5000/v2.0");
                 dto.setCommonAccessUser("bosh-v2");
@@ -733,7 +709,7 @@ public class IaasAccountMgntServiceUnitTest {
                 dto.setOpenstackDomain("v3domain");
                 dto.setCommonTenant("");
             }
-        }else if(iaasType.equals("vsphere")){
+        }else if(iaasType.equalsIgnoreCase("vsphere")){
             dto.setIaasType("vsphere");
             dto.setAccountName("vsphere-test1");
             dto.setCommonAccessEndpoint("10.0.0.1");
@@ -743,7 +719,7 @@ public class IaasAccountMgntServiceUnitTest {
             dto.setOpenstackKeystoneVersion("");
             dto.setOpenstackDomain("");
             dto.setCommonProject("");
-        }else if( iaasType.equals("google") ){
+        }else if( iaasType.equalsIgnoreCase("google") ){
             dto.setIaasType("google");
             dto.setCommonProject("paas-ta");
             dto.setGoogleJsonKeyPath("google-key.json");
@@ -762,6 +738,7 @@ public class IaasAccountMgntServiceUnitTest {
             dto.setCommonAccessSecret(Base64.encodeBase64URLSafeString(commonAccessSecretCipherData));
             
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return dto;
     }
@@ -784,14 +761,14 @@ public class IaasAccountMgntServiceUnitTest {
             PrivateKey privateKey = keyPair.getPrivate();
             HttpSession session = req.getSession();
             
-            if( valid.equals("success") ){
+            if( valid.equalsIgnoreCase("success") ){
              // 세션에 공개키의 문자열을 키로하여 개인키를 저장한다.
                 session.setAttribute("__rsaPrivateKey__", privateKey);
             }
             
             
         }catch (NoSuchAlgorithmException e1) {
-           
+           e1.printStackTrace();
         }
         return pubKey;
     }

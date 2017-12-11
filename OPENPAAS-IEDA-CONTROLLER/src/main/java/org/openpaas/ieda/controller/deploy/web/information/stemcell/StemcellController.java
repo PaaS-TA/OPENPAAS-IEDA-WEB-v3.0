@@ -35,6 +35,7 @@ public class StemcellController extends BaseController {
     @Autowired private StemcellDeleteAsyncService stemcellDeleteService;
     @Autowired private StemcellUploadAsyncService stemcellUploadService;
     
+    final private static String STEMCELL_DIR = LocalDirectoryConfiguration.getStemcellDir();
     final private static Logger LOGGER = LoggerFactory.getLogger(StemcellController.class);
 
     /****************************************************************
@@ -79,8 +80,9 @@ public class StemcellController extends BaseController {
         
         HashMap<String, Object> result = new HashMap<String, Object>();
         int size = 0;
-        if( contents != null )  size = contents.size();
-
+        if( contents != null ) {
+            size = contents.size();
+        }
         result.put("total", size);
         result.put("records", contents);
         return new ResponseEntity<HashMap<String, Object>>(result, HttpStatus.OK);
@@ -96,7 +98,7 @@ public class StemcellController extends BaseController {
     @SendTo("/info/stemcell/upload/logs")
     public ResponseEntity<Object> uploadStemcell(@RequestBody @Valid StemcellDTO.Upload dto, Principal principal) {
         if(LOGGER.isInfoEnabled()){ LOGGER.info("=======================> /info/stemcell/upload/stemcellUploading"); }
-        stemcellUploadService.uploadStemcellAsync(LocalDirectoryConfiguration.getStemcellDir(), dto.getFileName(), principal.getName());
+        stemcellUploadService.uploadStemcellAsync(STEMCELL_DIR, dto.getFileName(), principal.getName());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

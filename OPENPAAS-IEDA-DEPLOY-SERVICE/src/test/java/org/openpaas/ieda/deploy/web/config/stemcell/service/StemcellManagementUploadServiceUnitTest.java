@@ -18,8 +18,6 @@ import org.openpaas.ieda.common.exception.CommonException;
 import org.openpaas.ieda.deploy.web.common.base.BaseDeployControllerUnitTest;
 import org.openpaas.ieda.deploy.web.config.stemcell.dao.StemcellManagementDAO;
 import org.openpaas.ieda.deploy.web.config.stemcell.dto.StemcellManagementDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -35,7 +33,6 @@ public class StemcellManagementUploadServiceUnitTest extends BaseDeployControlle
     StemcellManagementDAO mockStemcellDao;
     @Mock
     MessageSource mockMessageSource;
-    final static Logger LOGGER = LoggerFactory.getLogger(StemcellManagementDownloadAsyncServiceUnitTest.class);
     private Principal principal = null;
     
     /****************************************************************
@@ -58,7 +55,6 @@ public class StemcellManagementUploadServiceUnitTest extends BaseDeployControlle
     ***************************************************/
     @Test
     public void testSavePublicStemcell(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================================> testSavePublicStemcell"); }
         StemcellManagementDTO.Regist dto = setReleaseDownloadInfo();
         StemcellManagementUploadService.saveStemcellInfo(dto, principal);
     }
@@ -71,7 +67,6 @@ public class StemcellManagementUploadServiceUnitTest extends BaseDeployControlle
     *****************************************************************/
     @Test(expected=CommonException.class)
     public void testSaveStemcellInfoFromBadRequestCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================================> testSaveStemcellInfoFromBadRequestCase"); }
         when(mockMessageSource.getMessage(anyString(), anyObject(), anyObject())).thenReturn("null");
         StemcellManagementDTO.Regist dto = null;
         StemcellManagementUploadService.saveStemcellInfo(dto, principal);

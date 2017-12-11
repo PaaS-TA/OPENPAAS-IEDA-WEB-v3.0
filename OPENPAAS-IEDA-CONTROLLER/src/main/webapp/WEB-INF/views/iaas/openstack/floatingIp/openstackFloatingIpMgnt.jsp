@@ -34,7 +34,6 @@ $(function(){
                    , {field: 'pool', caption: 'Floating IP Pool', size: '30%', style: 'text-align:left'}
                    ],
            onLoad:function(event){
-        	   
             if(event.xhr.status == 403){
                 location.href = "/abuse";
                 event.preventDefault();
@@ -49,20 +48,20 @@ $(function(){
     $("#allocateBtn").click(function(){
         
        w2popup.open({
-           title     : "<b>OPENSTACK Floating IP 할당 </b>",
-           width     : 700,
-           height    : 230,
-           modal    : true,
+           title   : "<b>OPENSTACK Floating IP 할당 </b>",
+           width   : 700,
+           height  : 220,
+           modal   : true,
            body    : $("#allocatePopupDiv").html(),
            buttons : $("#allocatePopupBtnDiv").html(),
-           onOpen : function(event){
+           onOpen  : function(event){
                event.onComplete = function(){
                    getPools();
-               }                   
+               }
            },
            onClose : function(event){
-        	   event.onComplete = function(){
-        		   initsetting();//기본 설정값 초기화
+               event.onComplete = function(){
+                   initsetting();//기본 설정값 초기화
             }
            }
        });
@@ -71,10 +70,9 @@ $(function(){
 
 /********************************************************
  * 설명 : Openstack Floating IP 할 버튼 클릭
- * Function : saveFloatingIpInfo
+ * 기능 : saveFloatingIpInfo
  *********************************************************/ 
 function saveFloatingIpInfo(){
-     
      w2utils.lock($("#layout_layout_panel_main"),save_lock_msg, true);
      var floatingIpInfo ={
              accountId : $("select[name='accountId']").val()
@@ -109,7 +107,6 @@ function saveFloatingIpInfo(){
 function getPools() {
     w2popup.lock("Pool "+search_lock_msg, true);
     var accountId = $("select[name=accountId]").val();
-   
     $.ajax({
         type : "GET",
         url : "/openstackMgnt/floatingIp/save/pool/list/"+accountId,
@@ -123,6 +120,7 @@ function getPools() {
         }
     });
 }
+
 /****************************************************
  * 기능 : setupPools
  * 설명 : Floating IP에 대한 Pool설정 
@@ -140,46 +138,47 @@ function setupPools(data){
      w2popup.unlock();
      $(".w2ui-msg-body select[name='pools']").html(options);
 }
-    /********************************************************
-     * 설명 : Openstack Floating IP 목록 조회 Function 
-     * Function : doSearch
-     *********************************************************/
-    function doSearch() {
-        w2ui['openstack_floatingIpGrid'].load('/openstackMgnt/floatingIp/list/'+accountId+'');
-    }
-    
-    /********************************************************
-     * 기능 : initsetting
-     * 설명 : 기본 설정값 초기화
-     *********************************************************/
-    function initsetting(){
-    	bDefaultAccount="";
-        poolInfo="";
-        w2ui['openstack_floatingIpGrid'].clear();
-        doSearch();
-     }
 
+/********************************************************
+ * 설명 : Openstack Floating IP 목록 조회 Function 
+ * 기능 : doSearch
+ *********************************************************/
+function doSearch() {
+    w2ui['openstack_floatingIpGrid'].load('/openstackMgnt/floatingIp/list/'+accountId+'');
+}
 
-    /****************************************************
-     * 기능 : clearMainPage
-     * 설명 : 다른페이지 이동시 호출
-    *****************************************************/
-    function clearMainPage() {
-        $().w2destroy('openstack_floatingIpGrid');
-    }
+/********************************************************
+ * 기능 : initsetting
+ * 설명 : 기본 설정값 초기화
+ *********************************************************/
+function initsetting(){
+    bDefaultAccount="";
+    poolInfo="";
+    w2ui['openstack_floatingIpGrid'].clear();
+    doSearch();
+ }
 
-    /****************************************************
-     * 기능 : resize
-     * 설명 : 화면 리사이즈시 호출
-    *****************************************************/
-    $( window ).resize(function() {
-      setLayoutContainerHeight();
-    });
+/****************************************************
+ * 기능 : clearMainPage
+ * 설명 : 다른페이지 이동시 호출
+*****************************************************/
+function clearMainPage() {
+    $().w2destroy('openstack_floatingIpGrid');
+}
+
+/****************************************************
+ * 기능 : resize
+ * 설명 : 화면 리사이즈시 호출
+*****************************************************/
+$( window ).resize(function() {
+  setLayoutContainerHeight();
+});
     
 </script>
 
 <div id="main">
-    <div id="openstackMgnt">
+    <div class="page_site pdt20">인프라 관리 > OPENSTACK 관리 > <strong>OPENSTACK Floating IP 관리 </strong></div>
+    <div id="openstackMgnt" class="pdt20">
         <ul>
             <li>
                 <label style="font-size: 14px">OPENSTACK 관리 화면</label> &nbsp;&nbsp;&nbsp; 
@@ -187,8 +186,6 @@ function setupPools(data){
                     <a href="#" class="dropdown-toggle iaas-dropdown" data-toggle="dropdown" aria-expanded="false">
                         &nbsp;&nbsp;Floating IP 관리<b class="caret"></b>
                     </a>
-                    
-                    
                     <ul class="dropdown-menu alert-dropdown">
                         <sec:authorize access="hasAuthority('OPENSTACK_NETWORK_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/openstackMgnt/network"/>', 'Openstack Network');">Network 관리</a></li>
@@ -222,10 +219,10 @@ function setupPools(data){
     </div>
     
     <div class="pdt20">
-        <div class="title fl">OPENSTACK Floating IP 목록</div>
+        <div class="title fl">Openstack Floating IP 목록</div>
         <div class="fr"> 
             <sec:authorize access="hasAuthority('OPENSTACK_FLOATING_IP_ALLOCATE')">
-            <span id="allocateBtn" class="btn btn-primary" style="width:120px">Floating IP 할당</span>
+            <span id="allocateBtn" class="btn btn-primary" style="width:120px">할당</span>
             </sec:authorize>
         </div>
     </div>
@@ -233,31 +230,29 @@ function setupPools(data){
 
     
     <!-- Floating IP 할당 팝업 -->
-	<div id="allocatePopupDiv" hidden="true">
-	    <form id="openstackFloatingIpForm" action="POST" style="padding:5px 0 5px 0;margin:0;">
-	        <div class="panel panel-info" style="height: 120px; margin-top: 7px;"> 
-	            <div class="panel-heading"><b>OPENSTACK Floating IP 할당</b></div>
-	            <div class="panel-body" style="padding:20px 10px; overflow-y:auto;">
-	                <input type="hidden" name="accountId"/>
-	                
-	                <div class="w2ui-field">
-	                    <label style="width:36%;text-align: left; padding-left: 20px;">Pool</label>
-	                    <div>
-	                        <select style="width: 320px;" name="pools">
-	                            <option value=""></option>
-	                        </select>
-	                    </div>
-	                </div>
-	                
-	            </div>
-	        </div>
-	    </form> 
-	</div>
-	<div id="allocatePopupBtnDiv" hidden="true">
-	     <button class="btn" id="registBtn" onclick="$('#openstackFloatingIpForm').submit();">확인</button>
-	     <button class="btn" id="popClose"  onclick="w2popup.close();">취소</button>
-	</div>
-
+    <div id="allocatePopupDiv" hidden="true">
+        <form id="openstackFloatingIpForm" action="POST">
+            <div class="panel panel-info" style="height: 120px; margin-top: 7px;"> 
+                <div class="panel-heading"><b>Floating IP 할당 정보</b></div>
+                <div class="panel-body" style="padding:20px 10px; overflow-y:auto;">
+                    <input type="hidden" name="accountId"/>
+                    <div class="w2ui-field">
+                        <label style="width:36%;text-align: left; padding-left: 20px;">Pool</label>
+                        <div>
+                            <select style="width: 320px;" name="pools">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </form> 
+    </div>
+    <div id="allocatePopupBtnDiv" hidden="true">
+         <button class="btn" id="registBtn" onclick="$('#openstackFloatingIpForm').submit();">확인</button>
+         <button class="btn" id="popClose"  onclick="w2popup.close();">취소</button>
+    </div>
 </div>
 
 <script>

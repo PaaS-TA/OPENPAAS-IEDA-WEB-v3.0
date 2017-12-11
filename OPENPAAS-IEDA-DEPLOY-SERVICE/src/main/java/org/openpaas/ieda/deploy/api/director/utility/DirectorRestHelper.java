@@ -15,9 +15,11 @@ import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.openpaas.ieda.common.api.LocalDirectoryConfiguration;
 import org.openpaas.ieda.deploy.api.director.dto.ResponseTaskOuput;
 import org.openpaas.ieda.deploy.api.task.TaskInfoDTO;
 import org.openpaas.ieda.deploy.api.task.TaskOutputDTO;
+import org.openpaas.ieda.deploy.web.common.service.CommonDeployUtils;
 import org.openpaas.ieda.deploy.web.config.setting.dao.DirectorConfigVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +33,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DirectorRestHelper {
     
-    private final static Logger LOGGER = LoggerFactory.getLogger(DirectorRestHelper.class);
+    final private static String LOCK_DIR = LocalDirectoryConfiguration.getLockDir();
     final private static int THREAD_SLEEP_TIME = 2 * 1000;
     final private static String HTTPS = "https";
     final private static String CANCELLED = "cancelled";
     final private static String STARTED = "started";
     final private static String ERROR = "error";  
     final private static String DONE = "done";
+    private final static Logger LOGGER = LoggerFactory.getLogger(DirectorRestHelper.class);
     
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -274,9 +277,9 @@ public class DirectorRestHelper {
      * @title : getManifestURI
      * @return : String
     ***************************************************/
-    public static String getManifestURI(String host, int port, String deployment_nm ){
+    public static String getManifestURI(String host, int port, String deploymentNm ){
         return UriComponentsBuilder.newInstance().scheme(HTTPS).host(host).port(port).path("deployments/{deployment_name}")
-                .build().expand(deployment_nm).toUri().toString();
+                .build().expand(deploymentNm).toUri().toString();
     }
 
     
@@ -286,9 +289,9 @@ public class DirectorRestHelper {
      * @title : getJobStateURI
      * @return : String
     ***************************************************/
-    public static String getJobStateURI(String host, int port, String deployment_name, String job, String index, String state ){
+    public static String getJobStateURI(String host, int port, String deploymentName, String job, String index, String state ){
         return UriComponentsBuilder.newInstance().scheme(HTTPS).host(host).port(port).path("deployments/{deployment_name}/jobs/{job}/{index_or_id}")
-                .queryParam("state", state).build().expand(deployment_name, job, index).toUri().toString();
+                .queryParam("state", state).build().expand(deploymentName, job, index).toUri().toString();
     }
 
     /***************************************************
@@ -297,9 +300,9 @@ public class DirectorRestHelper {
      * @title : getTakeSnapshotURI
      * @return : String
     ***************************************************/
-    public static String getTakeSnapshotURI(String host, int port, String deployment_name, String job, String index ){
+    public static String getTakeSnapshotURI(String host, int port, String deploymentName, String job, String index ){
         return UriComponentsBuilder.newInstance().scheme(HTTPS).host(host).port(port).path("deployments/{deployment_name}/jobs/{job}/{index_or_id}/snapshots")
-                .build().expand(deployment_name, job, index).toUri().toString();
+                .build().expand(deploymentName, job, index).toUri().toString();
     }
 
     /***************************************************
@@ -462,7 +465,7 @@ public class DirectorRestHelper {
                         offset = Integer.parseInt(splited[1]);
                     }
 
-                    if ( "debug".equals(logType) ) {
+                    if ( "debug".equalsIgnoreCase(logType) ) {
                         String[] outputs = getTaskOutput.getResponseBodyAsString().split("\n");
                         
                         for ( String output : outputs ) {
@@ -481,18 +484,18 @@ public class DirectorRestHelper {
                         List<String> responseMessage = new ArrayList<String>();
                         for (TaskOutputDTO output : taskOutputList) {
     
-                            if (output.getStage() != null && (lastStage == null || !lastStage.equals(output.getStage()))) {
+                            if (output.getStage() != null && (lastStage == null || !lastStage.equalsIgnoreCase(output.getStage()))) {
                                     responseMessage.add("");
                                     responseMessage.add("  Started    " + output.getStage());
                             }
     
                             if (output.getStage() != null) {
     
-                                if (output.getState().equals("started")) {
+                                if (output.getState().equalsIgnoreCase("started")) {
                                     responseMessage.add("  Started    " + output.getStage() + " > " + output.getTask());
-                                } else if (output.getState().equals("finished")) {
+                                } else if (output.getState().equalsIgnoreCase("finished")) {
                                     responseMessage.add("  Done       " + output.getStage() + " > " + output.getTask());
-                                } else if (output.getState().equals("failed")) {
+                                } else if (output.getState().equalsIgnoreCase("failed")) {
                                     responseMessage.add("  Failed      " + output.getStage() + " > " + output.getTask());
                                 } else {
                                     responseMessage.add("  Processing " + output.getStage() + " > " + output.getTask() + " " + output.getProgress() + "%");
@@ -510,8 +513,8 @@ public class DirectorRestHelper {
                     }
                 }
                 
-                if(messageEndpoint.equals("/info/task/list/eventLog/socket")){ 
-                    if(eventLog.equals("done")){
+                if(messageEndpoint.equalsIgnoreCase("/info/task/list/eventLog/socket")){ 
+                    if(eventLog.equalsIgnoreCase("done")){
                         sendTaskOutput(userId, messageTemplate, messageEndpoint, eventLog, Arrays.asList("", "Task " + taskId));
                         break;
                     }else{
@@ -566,20 +569,15 @@ public class DirectorRestHelper {
     public static String trackToTaskLineOne(DirectorConfigVO defaultDirector, SimpMessagingTemplate messageTemplate,
         String messageEndpoint, HttpClient client, String taskId, String logType, String userId) {
         String status = "";
-
         try {
             sendTaskOutput(userId, messageTemplate, messageEndpoint, STARTED, Arrays.asList("Director task " + taskId));
-
             ObjectMapper mapper = new ObjectMapper();
 
             int offset = 0;
             while (true) {
-                
                 //1. Task 상태 정보 요청
-                GetMethod getTaskStaus = new GetMethod(DirectorRestHelper
-                        .getTaskStatusURI(defaultDirector.getDirectorUrl(), defaultDirector.getDirectorPort(), taskId));
-                getTaskStaus = (GetMethod) DirectorRestHelper.setAuthorization(defaultDirector.getUserId(),
-                        defaultDirector.getUserPassword(), (HttpMethodBase) getTaskStaus);
+                GetMethod getTaskStaus = new GetMethod(DirectorRestHelper.getTaskStatusURI(defaultDirector.getDirectorUrl(), defaultDirector.getDirectorPort(), taskId));
+                getTaskStaus = (GetMethod) DirectorRestHelper.setAuthorization(defaultDirector.getUserId(),defaultDirector.getUserPassword(), (HttpMethodBase) getTaskStaus);
                 
                 int statusCode = client.executeMethod(getTaskStaus);
                 
@@ -590,16 +588,14 @@ public class DirectorRestHelper {
                 }
                 
                 TaskInfoDTO taskInfo = mapper.readValue(getTaskStaus.getResponseBodyAsString(), TaskInfoDTO.class);
-                GetMethod getTaskOutput = new GetMethod(DirectorRestHelper.getTaskOutputURI(
-                        defaultDirector.getDirectorUrl(), defaultDirector.getDirectorPort(), taskId, logType));
-                getTaskOutput = (GetMethod) DirectorRestHelper.setAuthorization(defaultDirector.getUserId(),
-                        defaultDirector.getUserPassword(), (HttpMethodBase) getTaskOutput);
+                GetMethod getTaskOutput = new GetMethod(DirectorRestHelper.getTaskOutputURI( defaultDirector.getDirectorUrl(), defaultDirector.getDirectorPort(), taskId, logType));
+                getTaskOutput = (GetMethod) DirectorRestHelper.setAuthorization(defaultDirector.getUserId(), defaultDirector.getUserPassword(), (HttpMethodBase) getTaskOutput);
                 String range = "bytes=" + offset + "-";
                 getTaskOutput.setRequestHeader("Range", range);
                 statusCode = client.executeMethod(getTaskOutput);
 
-                if ( statusCode == HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE.value() || statusCode == HttpStatus.PARTIAL_CONTENT.value()) {
-                    if (taskInfo.getState().equalsIgnoreCase("done")) {
+                if ( statusCode == HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE.value() ) {
+                    if (taskInfo.getState().equalsIgnoreCase("done") ) {
                         sendTaskOutput(userId, messageTemplate, messageEndpoint, DONE, Arrays.asList("", "Task " + taskId + " done"));
                         status = DONE;
                         break;
@@ -638,19 +634,21 @@ public class DirectorRestHelper {
 
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : 설치 관리자에 파일 업로드 및 실행 로그 정보와 상태 응답
+     * @description : 설치 관리자에 스템셀 및 릴리즈 업로드 로그 정보와 상태 응답
      * @title : trackToTaskWithTag
      * @return : String
     ***************************************************/
     public static String trackToTaskWithTag(DirectorConfigVO defaultDirector, SimpMessagingTemplate messageTemplate, 
-            String messageEndpoint, String tag, HttpClient client, String taskId, String logType, String userId) {
-        
+                                            String messageEndpoint, String tag, HttpClient client, String taskId, 
+                                            String logType, String userId) {
         String status = "";
         try {
+            LOGGER.debug("tag ::" + tag);
             sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, STARTED, tag, Arrays.asList("Director task " + taskId));
             ObjectMapper mapper = new ObjectMapper();
 
             String lastStage = null;
+            String lastState = null;
             int offset = 0;
             while (true) {
                 GetMethod getTaskStaus = new GetMethod(DirectorRestHelper
@@ -686,7 +684,6 @@ public class DirectorRestHelper {
                 }
 
                 if (statusCode == HttpStatus.OK.value() || statusCode == HttpStatus.PARTIAL_CONTENT.value()) {
-
                     Header contentRange = getTaskOutput.getResponseHeader("Content-Range");
                     if (contentRange == null) {
                         Thread.sleep(THREAD_SLEEP_TIME);
@@ -697,7 +694,7 @@ public class DirectorRestHelper {
                         offset = Integer.parseInt(splited[1]);
                     }
 
-                    if ( "debug".equals(logType) ) {
+                    if ( "debug".equalsIgnoreCase(logType) ) {
                         String[] outputs = getTaskOutput.getResponseBodyAsString().split("\n");
                         
                         for ( String output : outputs ) {
@@ -710,24 +707,23 @@ public class DirectorRestHelper {
                         String outputs2 = outputs1.substring(0, outputs1.length() - 1).replace("\n", ",");
                         String outputs = "[" + outputs2 + "]";
     
-                        List<TaskOutputDTO> taskOutputList = mapper.readValue(outputs, new TypeReference<List<TaskOutputDTO>>() {
-                        });
+                        List<TaskOutputDTO> taskOutputList = mapper.readValue(outputs, new TypeReference<List<TaskOutputDTO>>() {});
     
                         List<String> responseMessage = new ArrayList<String>();
                         for (TaskOutputDTO output : taskOutputList) {
-    
-                            if (output.getStage() != null && ( lastStage == null || !lastStage.equals(output.getStage()) )) {
+                            if (output.getStage() != null && ( lastStage == null || !lastStage.equalsIgnoreCase(output.getStage()) )) {
                                 responseMessage.add("");
                                 responseMessage.add("  Started    " + output.getStage());
                             }
-    
                             if (output.getStage() != null) {
-    
-                                if (output.getState().equals("started")) {
+                                if( LOGGER.isDebugEnabled() ) {
+                                    LOGGER.debug(output.getState());
+                                }
+                                if (output.getState().equalsIgnoreCase("started")) {
                                     responseMessage.add("  Started    " + output.getStage() + " > " + output.getTask());
-                                } else if (output.getState().equals("finished")) {
+                                } else if (output.getState().equalsIgnoreCase("finished") || output.getState().equalsIgnoreCase("Done") ) {
                                     responseMessage.add("  Done       " + output.getStage() + " > " + output.getTask());
-                                } else if (output.getState().equals("failed")) {
+                                } else if (output.getState().equalsIgnoreCase("failed")) {
                                     responseMessage.add("  Failed      " + output.getStage() + " > " + output.getTask());
                                 } else {
                                     responseMessage.add("  Processing " + output.getStage() + " > " + output.getTask() + " " + output.getProgress() + "%");
@@ -735,48 +731,42 @@ public class DirectorRestHelper {
                             }else {
                                 HashMap<String, String> error = output.getError();
                                 if (error != null) {
-                                    responseMessage.add(
-                                            "  Error Code : " + error.get("code") + ", Message :" + error.get("message"));
+                                    responseMessage.add("  Error Code : " + error.get("code") + ", Message :" + error.get("message"));
                                 }
                             }
                             lastStage = output.getStage();
+                            lastState = output.getState();
                         }
-                        //업로드 상태 및  결과 정보를 담아 subscribe에 보낸다.
+                        //업로드 상태 및 결과 정보를 담아 subscribe에 보낸다.
                         sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, STARTED, tag, responseMessage);
                     }
                 }
 
-                if (taskInfo.getState().equalsIgnoreCase("done")) {
-                    sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, DONE, tag,
-                            Arrays.asList("", "Task " + taskId + " done"));
+                if (taskInfo.getState().equalsIgnoreCase("done") || lastState.equalsIgnoreCase("finished")) {
+                    LOGGER.debug("done && taskInfo "+ taskInfo.getState());
+                    sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, DONE, tag, Arrays.asList("", "Task " + taskId + " done"));
                     status = DONE;
                     break;
-                }
-                else if (taskInfo.getState().equalsIgnoreCase("error")) {
-                    sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, ERROR, tag, 
-                            Arrays.asList("", "An error occurred while executing the task " + taskId));
+                }else if (taskInfo.getState().equalsIgnoreCase("error")) {
+                    sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, ERROR, tag,  Arrays.asList("", "An error occurred while executing the task " + taskId));
                     status = ERROR;
                     break;
-                }
-                else if (taskInfo.getState().equalsIgnoreCase("cancelled")) {
-                    sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, CANCELLED, tag, 
-                            Arrays.asList("", "Canceled Task " + taskId));
+                } else if (taskInfo.getState().equalsIgnoreCase("cancelled")) {
+                    sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, CANCELLED, tag, Arrays.asList("", "Canceled Task " + taskId));
                     status = CANCELLED;
                     break;
                 }
-
                 Thread.sleep(THREAD_SLEEP_TIME);
             }
         }catch (RuntimeException e) {
-            sendTaskOutput(userId, messageTemplate, messageEndpoint, ERROR,
-                    Arrays.asList("", "An exception occurred while executing the task " + taskId));
+            sendTaskOutput(userId, messageTemplate, messageEndpoint, ERROR, Arrays.asList("", "An exception occurred while executing the task " + taskId));
             status = ERROR;
         }catch (Exception e) {
-            sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, ERROR, tag,
-                    Arrays.asList("", "An exception occurred while executing the task " + taskId));
+            sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, ERROR, tag, Arrays.asList("", "An exception occurred while executing the task " + taskId));
             status = ERROR;
+        }finally {
+            CommonDeployUtils.deleteFile(LOCK_DIR, tag.split(".tgz")[0]+"-upload.lock");
         }
-        
         return status;
     }
 

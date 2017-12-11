@@ -2,6 +2,7 @@ package org.openpaas.ieda.deploy.web.deploy.cf.service;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 
 import org.apache.commons.httpclient.Header;
@@ -46,22 +47,20 @@ public class CfDeleteDeployAsyncService {
      * @return : void
     *****************************************************************/
     public void deleteDeploy(CfParamDTO.Delete dto, String platform, Principal principal) {
-        String error_msg = message.getMessage("common.internalServerError.message", null, Locale.KOREA);
-        String message_endpoint = platform.equalsIgnoreCase("cf") ? CF_MESSAGE_ENDPOINT : CF_DIEGO_MESSAGE_ENDPOINT;
+        String errorMsg = message.getMessage("common.internalServerError.message", null, Locale.KOREA);
+        String messageEndpoint = platform.equalsIgnoreCase("cf") ? CF_MESSAGE_ENDPOINT : CF_DIEGO_MESSAGE_ENDPOINT;
         String deploymentName = "";
         
         CfVO vo  = cfDao.selectCfInfoById(Integer.parseInt(dto.getId()));
-        if ( vo != null ){
-            deploymentName = vo.getDeploymentName();
-        }
+        deploymentName = vo != null ?vo.getDeploymentName() : "";
             
         if ( StringUtils.isEmpty(deploymentName) ) {
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), 
                     message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
-        String delete_status_name = message.getMessage("common.deploy.status.deleting", null, Locale.KOREA);
+        String deleteStatusName = message.getMessage("common.deploy.status.deleting", null, Locale.KOREA);
         if ( vo != null ) {
-            vo.setDeployStatus(delete_status_name);
+            vo.setDeployStatus(deleteStatusName);
             vo.setUpdateUserId(principal.getName());
             saveDeployStatus(vo);
         }
@@ -77,16 +76,15 @@ public class CfDeleteDeployAsyncService {
             if( statusCode == HttpStatus.MOVED_PERMANENTLY.value() || statusCode == HttpStatus.MOVED_TEMPORARILY.value() ) {
                 Header location = deleteMethod.getResponseHeader("Location");
                 String taskId = DirectorRestHelper.getTaskId(location.getValue());
-                DirectorRestHelper.trackToTask(defaultDirector, messagingTemplate, message_endpoint, httpClient, taskId, "event", principal.getName());
-
+                DirectorRestHelper.trackToTask(defaultDirector, messagingTemplate, messageEndpoint, httpClient, taskId, "event", principal.getName());
             }else {
-                DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, message_endpoint, "done", Arrays.asList("CF 삭제가 완료되었습니다."));
+                DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "done", Arrays.asList("CF 삭제가 완료되었습니다."));
             }
             deleteCfInfo(vo);
         } catch(RuntimeException e){
-            DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, message_endpoint, "error", Arrays.asList(error_msg));
+            DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(errorMsg));
         } catch ( Exception e) {
-            DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, message_endpoint, "error", Arrays.asList(error_msg));
+            DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(errorMsg));
         }
     }
     
@@ -99,16 +97,20 @@ public class CfDeleteDeployAsyncService {
     @Transactional
     public void deleteCfInfo( CfVO vo ){
         if ( vo != null ) {
-            String cf_deploy_type = message.getMessage("common.deploy.type.cf.name", null, Locale.KOREA);
+            String cfDeployType = message.getMessage("common.deploy.type.cf.name", null, Locale.KOREA);
             cfDao.deleteCfInfoRecord(vo.getId());
-            networkDao.deleteNetworkInfoRecord( vo.getId(), cf_deploy_type );
-            resourceDao.deleteResourceInfo( vo.getId(), cf_deploy_type);
+            networkDao.deleteNetworkInfoRecord( vo.getId(), cfDeployType );
+            resourceDao.deleteResourceInfo( vo.getId(), cfDeployType);
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put("id", vo.getId().toString());
+            map.put("deploy_type", cfDeployType);
+            cfDao.deleteCfJobSettingListById(map);
         }
     }
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : CF 배포 상태 저장
+     * @description : CF 배포 삭제 상태 저장
      * @title : saveDeployStatus
      * @return : CfVO
     *****************************************************************/

@@ -85,7 +85,7 @@ public class ReleaseManagementController extends BaseController{
     public ResponseEntity<ReleaseManagementVO> saveSystemReleaseInfo(@RequestBody ReleaseManagementDTO.Regist dto, Principal principal){
         if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> /config/systemRelease/regist"); }
         ReleaseManagementVO result = null;
-        if("file".equals(dto.getFileType())){
+        if("file".equalsIgnoreCase(dto.getFileType())){
             result = service.saveSystemReleaseFileUploadInfo(dto, principal);
         }else {
             result = service.saveSystemReleaseUrlInfo(dto, principal);

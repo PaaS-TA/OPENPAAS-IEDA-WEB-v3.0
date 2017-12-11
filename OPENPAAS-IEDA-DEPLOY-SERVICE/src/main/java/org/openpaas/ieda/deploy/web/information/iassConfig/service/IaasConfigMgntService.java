@@ -87,7 +87,6 @@ public class IaasConfigMgntService{
         vo.setCommonKeypairPath(dto.getCommonKeypairPath());
         vo.setCommonSecurityGroup(dto.getCommonSecurityGroup());
         vo.setCommonAvailabilityZone(dto.getCommonAvailabilityZone());
-        vo.setGooglePublicKey(dto.getGooglePublicKey());
         vo.setVsphereVcentDataCenterName(dto.getVsphereVcenterDataCenterName());
         vo.setVsphereVcenterVmFolder(dto.getVsphereVcenterVmFolder());
         vo.setVsphereVcenterTemplateFolder(dto.getVsphereVcenterTemplateFolder());

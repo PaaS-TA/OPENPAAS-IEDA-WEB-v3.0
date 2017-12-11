@@ -8,9 +8,6 @@ meta:
   ## BOSH-CPI-RELEASE 파일경로 및 파일명
   bosh-cpi-release-url: file:///[boshCpiRelease]
   
-  ## OS-CONF-RELEASE 파일경로 및 파일명
-  os-conf-release-url: file:///[osConfRelease]
-  
   ## STEMCELL 파일경로 및 파일명
   stemcell-url: file:///[stemcell]
   
@@ -46,9 +43,6 @@ meta:
   
   ## Google Comute Platform Json key path
   json-key: [jsonKey]
-  
-  ## Google Comute Platform SSH Public Key
-  public-key: [googlePublicKey]
   
   ##Google Comute platform zone
   zone: [availabilityZone]

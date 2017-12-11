@@ -16,103 +16,96 @@ var deleteClient = null;
 var bDefaultDirector = "";
 var iaas = "";
 $(function() {
-    
-    /********************************************************
-      * 설명 : 기본 설치 관리자 정보 조회
-      *********************************************************/
-      bDefaultDirector = getDefaultDirector("<c:url value='/common/use/director'/>");
-     /********************************************************
-     * 설명 :  업로드된 스템셀 목록
-     *********************************************************/
-     $('#us_uploadStemcellsGrid').w2grid({
-        name    : 'us_uploadStemcellsGrid',
-        show: {selectColumn: true, footer: true},
-        multiSelect: false,
-        method: 'GET',
-        msgAJAXerror : '업로드 된 스템셀 조회 실패',
-        style: 'text-align:center',
-        columns    :[
-                   {field: 'recid', caption: 'recid', hidden: true}
-                 , {field: 'os', caption: '운영체계', size: '30%'}
-                 , {field: 'stemcellFileName', caption: '스템셀명', size: '40%'}
-                 , {field: 'stemcellVersion', caption: '스템셀버전', size: '30%'}
-                 ],
-         onSelect: function(event) {
-            event.onComplete = function() {
-                $("#doDeleteStemcell").attr("disabled", false);
-            }
-        },
-        onUnselect: function(event) {
-            event.onComplete = function() {
-                $("#doDeleteStemcell").attr("disabled", true);
-                
-            }
-        },
-           onLoad:function(event){
-            if(event.xhr.status == 403){
-                location.href = "/abuse";
-                event.preventDefault();
-            }
-        }, onError:function(evnet){
-            
-        }
-    });
-    
-     /********************************************************
-     * 설명 :  다운로드된 스템셀 목록
-     *********************************************************/
-     $('#us_localStemcellsGrid').w2grid({
-        name: 'us_localStemcellsGrid',
-        header: '<b>Local Stemcell 목록</b>',
-        show: {selectColumn: true, footer: true},
-        multiSelect: false,
-        method: 'GET',
-        style: 'text-align:center',
-        columns:[
-             {field: 'recid', caption: '운영체계', hidden: true}
-            ,{field: 'os', caption: '운영체계', size: '10%'}
-            ,{field: 'osVersion', caption: '버전', size: '10%'}
-            ,{field: 'iaas', caption: 'IaaS', size: '10%', sortable: true}
-            ,{field: 'stemcellVersion', caption: '스템셀버전', size: '10%'}
-            ,{field: 'stemcellFileName', caption: '파일명', size: '60%', style: 'text-align:left'}
-        ],
-        onSelect: function(event) {
-            event.onComplete = function() {
-                $("#doUploadStemcell").attr("disabled", false);
-            }
-        },
-        onUnselect: function(event) {
-            event.onComplete = function() {
-                $("#doUploadStemcell").attr("disabled", true);
-            }
-        },
-           onLoad:function(event){
-            if(event.xhr.status == 403){
-                location.href = "/abuse";
-                event.preventDefault();
-            }
-        }, onError:function(evnet){
-        }
-    });
+   bDefaultDirector = getDefaultDirector("<c:url value='/common/use/director'/>");
      
-     initView(bDefaultDirector);
-     
-     /********************************************************
-     * 설명 :  스템셀 삭제
-     *********************************************************/
-     $("#doDeleteStemcell").click(function(){
-         if($("#doDeleteStemcell").attr('disabled') == "disabled") return;
-         doDeleteStemcell();
-    });
-     
-     /********************************************************
-     * 설명 :  스템셀 업로드
-     *********************************************************/
-     $("#doUploadStemcell").click(function(){
-         if($("#doUploadStemcell").attr('disabled') == "disabled") return;
-         doUploadStemcell();
-    });
+   /********************************************************
+    * 설명 :  업로드된 스템셀 목록
+   *********************************************************/
+   $('#us_uploadStemcellsGrid').w2grid({
+      name    : 'us_uploadStemcellsGrid',
+      show: {selectColumn: true, footer: true},
+      multiSelect: false,
+      method: 'GET',
+      msgAJAXerror : '업로드 된 스템셀 조회 실패',
+      style : 'text-align:center',
+      columns :[
+           {field: 'recid', caption: 'recid', hidden: true}
+          , {field: 'os', caption: '운영체계', size: '30%'}
+          , {field: 'stemcellFileName', caption: '스템셀명', size: '40%'}
+          , {field: 'stemcellVersion', caption: '스템셀버전', size: '30%'}
+      ], onSelect: function(event) {
+          event.onComplete = function() {
+              $("#doDeleteStemcell").attr("disabled", false);
+          }
+      }, onUnselect: function(event) {
+          event.onComplete = function() {
+              $("#doDeleteStemcell").attr("disabled", true);
+              
+          }
+      }, onLoad:function(event){
+          if(event.xhr.status == 403){
+              location.href = "/abuse";
+              event.preventDefault();
+          }
+      }, onError:function(evnet){
+          
+      }
+  });
 
+   /********************************************************
+    * 설명 :  다운로드된 스템셀 목록
+   *********************************************************/
+   $('#us_localStemcellsGrid').w2grid({
+      name: 'us_localStemcellsGrid',
+      header: '<b>Local Stemcell 목록</b>',
+      show: {selectColumn: true, footer: true},
+      multiSelect: false,
+      method: 'GET',
+      style: 'text-align:center',
+      columns:[
+           {field: 'recid', caption: '운영체계', hidden: true}
+          ,{field: 'os', caption: '운영체계', size: '10%'}
+          ,{field: 'osVersion', caption: '버전', size: '10%'}
+          ,{field: 'iaas', caption: 'IaaS', size: '10%', sortable: true}
+          ,{field: 'stemcellVersion', caption: '스템셀버전', size: '10%'}
+          ,{field: 'stemcellFileName', caption: '파일명', size: '60%', style: 'text-align:left'}
+      ],
+      onSelect: function(event) {
+          event.onComplete = function() {
+              $("#doUploadStemcell").attr("disabled", false);
+          }
+      },
+      onUnselect: function(event) {
+          event.onComplete = function() {
+              $("#doUploadStemcell").attr("disabled", true);
+          }
+      },
+         onLoad:function(event){
+          if(event.xhr.status == 403){
+              location.href = "/abuse";
+              event.preventDefault();
+          }
+      }, onError:function(evnet){
+      }
+  });
+
+   initView(bDefaultDirector);
+
+  /********************************************************
+   * 설명 :  스템셀 삭제
+  *********************************************************/
+  $("#doDeleteStemcell").click(function(){
+       if($("#doDeleteStemcell").attr('disabled') == "disabled") return;
+       doDeleteStemcell();
+  });
+   
+  /********************************************************
+   * 설명 :  스템셀 업로드
+  *********************************************************/
+  $("#doUploadStemcell").click(function(){
+       if($("#doUploadStemcell").attr('disabled') == "disabled") return;
+       doUploadStemcell();
+  });
 });
 
 /********************************************************
@@ -151,12 +144,12 @@ function doSearchUploadedStemcells() {
 function doSearchLocalStemcells() {
         var directorName = $("#directorName").text().toUpperCase();
         if( directorName.indexOf("_CPI") > 0  ) {
-        	var start = directorName.indexOf("(");
-        	var end = directorName.indexOf("_CPI)", start+1);
-        	iaas = directorName.substring(start+1, end)
+            var start = directorName.indexOf("(");
+            var end = directorName.indexOf("_CPI)", start+1);
+            iaas = directorName.substring(start+1, end)
         }
         if( !checkEmpty(iaas) ){
-        	w2ui['us_localStemcellsGrid'].load("<c:url value='/info/stemcell/list/local/"+iaas+"'/>");
+            w2ui['us_localStemcellsGrid'].load("<c:url value='/info/stemcell/list/local/"+iaas+"'/>");
         }
     
 }
@@ -189,8 +182,8 @@ function doUploadStemcell() {
             version: record.stemcellVersion
         };
     w2confirm({ 
-    	msg            : '스템셀  <br>' + record.stemcellFileName + '을(를)<br> 설치관리자에 업로드하시겠습니까?'
-        ,title         : '스템셀 업로드'
+        msg            : '스템셀  <br>' + record.stemcellFileName + '을(를)<br> 설치관리자에 업로드하시겠습니까?'
+        ,title         : '<b>스템셀 업로드</b>'
         ,yes_text      :'확인'
         ,no_text       :'취소'
         , width        : 550
@@ -246,12 +239,11 @@ function uploadLogPopup(requestParameter){
 function doUploadConnect(requestParameter){
     
     var message = requestParameter.version + " 버전의 스템셀(" + requestParameter.fileName + ") ";
-    
     var socket = new SockJS('/info/stemcell/upload/stemcellUploading');
     uploadClient = Stomp.over(socket); 
     uploadClient.connect({}, function(frame) {
         uploadClient.subscribe('/user/info/stemcell/upload/logs', function(data){
-        	var response = JSON.parse(data.body);
+            var response = JSON.parse(data.body);
             if(requestParameter.fileName == response.tag){
                 if ( response.messages != null ) {
                     if(  response.state.toLowerCase() != "progress" ) {
@@ -260,15 +252,15 @@ function doUploadConnect(requestParameter){
                         }
                         
                         if ( response.state.toLowerCase() != "started" ) {
-	                        if ( response.state.toLowerCase() == "done" )    message = message + " 업로드 되었습니다."; 
-	                        if ( response.state.toLowerCase() == "error" ) message = message + " 업로드 중 오류가 발생하였습니다.";
-	                        if ( response.state.toLowerCase() == "cancelled" ) message = message + " 업로드 중 취소되었습니다.";
-	                             
-	                        uploadClient.disconnect();
-	                        w2alert(message, "스템셀 업로드");
+                            if ( response.state.toLowerCase() == "done" )    message = message + " 업로드 되었습니다."; 
+                            if ( response.state.toLowerCase() == "error" ) message = message + " 업로드 중 오류가 발생하였습니다.";
+                            if ( response.state.toLowerCase() == "cancelled" ) message = message + " 업로드 중 취소되었습니다.";
+                                 
+                            uploadClient.disconnect();
+                            w2alert(message, "스템셀 업로드");
                         }
                     }else{
-                    	//progressbar
+                        //progressbar
                         if( response.messages < 100){
                             $(".w2ui-box1 .progress-bar").css("width", response.messages+"%").text("Uploading "+response.messages+"% ");
                         }else if( response.messages = 100){
@@ -294,13 +286,13 @@ function doDeleteStemcell() {
     if ( record == "" || record == null) return;
 
     var requestParameter = {
-    		stemcellName : record.stemcellFileName,
+            stemcellName : record.stemcellFileName,
             version  : record.stemcellVersion
     };
     
     w2confirm({
-    	msg            : record.stemcellVersion + '버전의 스템셀 <br>' + record.stemcellFileName + '<br>을 삭제하시겠습니까?'
-        , title        : '스템셀 삭제'
+        msg            : record.stemcellVersion + '버전의 스템셀 <br>' + record.stemcellFileName + '<br>을 삭제하시겠습니까?'
+        , title        : '<b>스템셀 삭제</b>'
         , width        : 550
         , height       : 220
         , yes_text     : '확인'
@@ -361,7 +353,6 @@ function doDeleteConnect(requestParameter){
                    for ( var i=0; i < response.messages.length; i++) {
                        $("textarea[name='logAppendArea']").append(response.messages[i] + "\n").scrollTop($("textarea[name='logAppendArea']")[0].scrollHeight);
                    }
-                   
                    if ( response.state.toLowerCase() != "started" ) {
                     if ( response.state.toLowerCase() == "done" )    message = message + " 삭제되었습니다."; 
                     if ( response.state.toLowerCase() == "error" ) message = message + " 삭제 중 오류가 발생하였습니다.";

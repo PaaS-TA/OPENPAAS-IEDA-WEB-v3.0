@@ -21,6 +21,7 @@ var select_fail_msg='<spring:message code="common.grid.selected.fail"/>';//선�
 var popup_delete_msg='<spring:message code="common.popup.delete.message"/>';//삭제 하시겠습니까?
 var text_required_msg='<spring:message code="common.text.vaildate.required.message"/>';//을(를) 입력하세요.
 var text_injection_msg='<spring:message code="common.text.validate.sqlInjection.message"/>';//입력하신 값은 입력하실 수 없습니다.
+
 $(function() {
     $('#vSphere_accountGrid').w2grid({
         name: 'vSphere_accountGrid',
@@ -28,8 +29,8 @@ $(function() {
         method  : 'GET',
         multiSelect: false,
         show: {
-        	selectColumn: true,
-        	footer: true},
+            selectColumn: true,
+            footer: true},
         columns : [
                    {field: 'id', caption: 'recid', hidden: true}
                    , {field: 'status', caption: '환경 설정 정보 사용 여부', size: '10%', style: 'text-align:center'}
@@ -39,21 +40,21 @@ $(function() {
                    , {field: 'createDate', caption: '계정 생성 일자', size: '10%', style: 'text-align:center'}
                    , {field: 'updateDate', caption: '계정 수정 일자', size: '10%', style: 'text-align:center'}
         ],onError: function(event) {
-        	w2alert(search_grid_fail_msg, "vSPhere 계정 목록");
+            w2alert(search_grid_fail_msg, "vSPhere 계정 목록");
         },onLoad : function(event){
-        	$("#rsaPublicKeyModulus").val(  JSON.parse(event.xhr.responseText).publicKeyModulus );
+            $("#rsaPublicKeyModulus").val(  JSON.parse(event.xhr.responseText).publicKeyModulus );
             $("#rsaPublicKeyExponent").val(  JSON.parse(event.xhr.responseText).publicKeyExponent );
         },onSelect : function(event) {
-	        event.onComplete = function(){
-	        	$("#updateAccountBtn").attr('disabled', false);
-	        	$("#deleteAccountBtn").attr('disabled', false);
-	        }
-	    },onUnselect : function(event) {
-	    	event.onComplete = function(){
-	    		$("#updateAccountBtn").attr('disabled', true);
-	    		$("#deleteAccountBtn").attr('disabled', true);
-	        }
-	    }
+            event.onComplete = function(){
+                $("#updateAccountBtn").attr('disabled', false);
+                $("#deleteAccountBtn").attr('disabled', false);
+            }
+        },onUnselect : function(event) {
+            event.onComplete = function(){
+                $("#updateAccountBtn").attr('disabled', true);
+                $("#deleteAccountBtn").attr('disabled', true);
+            }
+        }
     });
     
     doSearch(); 
@@ -69,13 +70,13 @@ $("#registAccountBtn").click(function(){
         modal   : true,
         body    : $("#registPopupDiv").html(),
         buttons : $("#registPopupBtnDiv").html(),
-        onOpen : function(event){
+        onOpen  : function(event){
             event.onComplete = function(){
-            	//popup size 값 설정
-            }                   
+                //popup size 값 설정
+            }
         },onClose:function(event){
-        	w2ui['vSphere_accountGrid'].reset();
-        	initsetting();
+            w2ui['vSphere_accountGrid'].reset();
+            initsetting();
             doSearch();
         }
     });
@@ -85,33 +86,33 @@ $("#registAccountBtn").click(function(){
  * 설명 :  vSphere 수정 팝업 화면
  *********************************************************/
 $("#updateAccountBtn").click(function(){
-	if( $("#updateAccountBtn").attr("disabled") == "disabled" ) return;
+    if( $("#updateAccountBtn").attr("disabled") == "disabled" ) return;
     w2popup.open({
-        title      : "<b>vSphere 계정 수정</b>",
-        width    : 650,
-        height   : 315,
+        title   : "<b>vSphere 계정 수정</b>",
+        width   : 650,
+        height  : 315,
         modal   : true,
-        body     : $("#registPopupDiv").html(),
+        body    : $("#registPopupDiv").html(),
         buttons : $("#registPopupBtnDiv").html(),
-        onOpen : function(event){
+        onOpen  : function(event){
             event.onComplete = function(){
-            	//input readonly 설정
-            	$(".w2ui-msg-body input[name='accountName']").attr("readonly", true);
-            	$(".w2ui-msg-body input[name='commonAccessEndpoint']").attr("readonly", true);
-            	$(".w2ui-msg-body input[name='commonAccessUser']").attr("readonly", true);
-            	
-            	//grid record
-            	var selected = w2ui['vSphere_accountGrid'].getSelection();
+                //input readonly 설정
+                $(".w2ui-msg-body input[name='accountName']").attr("readonly", true);
+                $(".w2ui-msg-body input[name='commonAccessEndpoint']").attr("readonly", true);
+                $(".w2ui-msg-body input[name='commonAccessUser']").attr("readonly", true);
+                
+                //grid record
+                var selected = w2ui['vSphere_accountGrid'].getSelection();
                 if( selected.length == 0 ){
                     w2alert(select_fail_msg, "vSphere 계정 수정");
                     return;
                 }
                 var record = w2ui['vSphere_accountGrid'].get(selected);
-            	setVsphereAccountInfo(record.id);
-            }                   
+                setVsphereAccountInfo(record.id);
+            }
         },onClose:function(event){
-        	w2ui['vSphere_accountGrid'].reset();
-        	initsetting();
+            w2ui['vSphere_accountGrid'].reset();
+            initsetting();
             doSearch();
         }
     });
@@ -121,8 +122,8 @@ $("#updateAccountBtn").click(function(){
  * 설명 : vSphere 삭제 팝업 화면
  *********************************************************/
 $("#deleteAccountBtn").click(function(){
-	if( $("#deleteAccountBtn").attr("disabled") == "disabled" ) return;
-	 //grid record
+    if( $("#deleteAccountBtn").attr("disabled") == "disabled" ) return;
+     //grid record
     var selected = w2ui['vSphere_accountGrid'].getSelection();
     if( selected.length == 0 ){
         w2alert(select_fail_msg, "MS Azure 계정 삭제");
@@ -135,7 +136,7 @@ $("#deleteAccountBtn").click(function(){
     }
     
     w2confirm({
-        title    : "vSphere 계정 정보 삭제",
+        title    : "<b>vSphere 계정 정보 삭제</b>",
         msg      : msg,
         yes_text : "확인",
         no_text  : "취소",
@@ -145,7 +146,7 @@ $("#deleteAccountBtn").click(function(){
             w2ui['vSphere_accountGrid'].reset();
         },
         no_callBack: function(event){
-        	initsetting();
+            initsetting();
             w2ui['vSphere_accountGrid'].reset();
             doSearch();
         }
@@ -158,7 +159,7 @@ $("#deleteAccountBtn").click(function(){
  * 설명 : 조회기능
  *********************************************************/
 function doSearch() {
-	$("#updateAccountBtn").attr('disabled', true);
+    $("#updateAccountBtn").attr('disabled', true);
     $("#deleteAccountBtn").attr('disabled', true);
     w2ui['vSphere_accountGrid'].load("<c:url value='/iaasMgnt/account/vSphere/list'/>","",function(event){}); 
 }
@@ -169,32 +170,31 @@ function doSearch() {
  *********************************************************/
 function setVsphereAccountInfo( id ){
      w2popup.lock( search_lock_msg, true);
-     
-    $.ajax({
-        type : "GET",
-        url : "/iaasMgnt/account/vSphere/save/detail/"+id,
-        contentType : "application/json",
-        dataType : "json",
-        async : true,
-        success : function(data, status) {
-            $(".w2ui-msg-body input[name='accountId']").val(data.id);
-            $(".w2ui-msg-body input[name='accountName']").val(data.accountName);
-            $(".w2ui-msg-body input[name='commonAccessEndpoint']").val(data.commonAccessEndpoint);
-            $(".w2ui-msg-body input[name='commonAccessUser']").val(data.commonAccessUser);
-            $(".w2ui-msg-body input[name='commonAccessSecret']").val(data.commonAccessSecret);
-            w2popup.unlock();
-        },
-        error : function(request, status, error) {
-            w2popup.unlock();
-            var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message);
-        }
-    });
-}
+     $.ajax({
+         type : "GET",
+         url : "/iaasMgnt/account/vSphere/save/detail/"+id,
+         contentType : "application/json",
+         dataType : "json",
+         async : true,
+         success : function(data, status) {
+             $(".w2ui-msg-body input[name='accountId']").val(data.id);
+             $(".w2ui-msg-body input[name='accountName']").val(data.accountName);
+             $(".w2ui-msg-body input[name='commonAccessEndpoint']").val(data.commonAccessEndpoint);
+             $(".w2ui-msg-body input[name='commonAccessUser']").val(data.commonAccessUser);
+             $(".w2ui-msg-body input[name='commonAccessSecret']").val(data.commonAccessSecret);
+             w2popup.unlock();
+         },
+         error : function(request, status, error) {
+             w2popup.unlock();
+             var errorResult = JSON.parse(request.responseText);
+             w2alert(errorResult.message);
+         } 
+     });
+ }
 
 /********************************************************
  * 기능 : deleteVsphereAccountInfo
- * 설명 : vSphere계정 정보 삭제
+ * 설명 : vSphere 계정 정보 삭제
  *********************************************************/
 function deleteVsphereAccountInfo(record){ 
     if( $("#deleteAccountBtn").attr("disabled") == "disabled" ) return;
@@ -207,24 +207,24 @@ function deleteVsphereAccountInfo(record){
     w2popup.lock( delete_lock_msg, true);
     
      $.ajax({
-            type : "DELETE",
-            url : "/iaasMgnt/account/vSphere/delete",
-            contentType : "application/json",
-            dataType: "json",
-            async : true,
-            data : JSON.stringify(accountInfo),
-            success : function(status) {
-                w2popup.unlock();
-                w2popup.close();    
-                initsetting();
-                doSearch(); 
-            },
-            error : function(request, status, error) {
-                w2popup.unlock();
-                var errorResult = JSON.parse(request.responseText);
-                w2alert(errorResult.message);
-            }
-        });
+         type : "DELETE",
+         url : "/iaasMgnt/account/vSphere/delete",
+         contentType : "application/json",
+         dataType: "json",
+         async : true,
+         data : JSON.stringify(accountInfo),
+         success : function(status) {
+             w2popup.unlock();
+             w2popup.close();
+             initsetting();
+             doSearch(); 
+         },
+         error : function(request, status, error) {
+             w2popup.unlock();
+             var errorResult = JSON.parse(request.responseText);
+             w2alert(errorResult.message);
+         }
+     });
 }
 
 /********************************************************
@@ -253,6 +253,7 @@ $( window ).resize(function() {
 
 </script>
 <div id="main">
+    <div class="page_site">계정 관리 > <strong>vSphere 계정 관리 </strong></div>
      <div class="pdt20">
         <div class="fl" style="width:100%">
             <div class="dropdown">
@@ -336,10 +337,10 @@ $( window ).resize(function() {
 
 <script>
 $(function() {
-	$.validator.addMethod("sqlInjection", function(value, element, params) {
+    $.validator.addMethod("sqlInjection", function(value, element, params) {
         return checkInjectionBlacklist(params);
       },text_injection_msg);
-	
+    
     $("#vSphereAccountForm").validate({
         ignore : "",
         success: "valid",
@@ -347,27 +348,27 @@ $(function() {
         rules: {
             accountName : { 
                 required : function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='accountName']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='accountName']").val().trim() );
                 }, sqlInjection : function(){
                     return $(".w2ui-msg-body input[name='accountName']").val();
                 }
             }, commonAccessEndpoint: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessEndpoint']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessEndpoint']").val().trim() );
                 }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='commonAccessEndpoint']").val();
+                    return $(".w2ui-msg-body input[name='commonAccessEndpoint']").val().trim();
                 }
             }, commonAccessUser: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessUser']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessUser']").val().trim() );
                 }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='commonAccessUser']").val();
+                    return $(".w2ui-msg-body input[name='commonAccessUser']").val().trim();
                 }
             }, commonAccessSecret: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessSecret']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessSecret']").val().trim() );
                 }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='commonAccessSecret']").val();
+                    return $(".w2ui-msg-body input[name='commonAccessSecret']").val().trim();
                 }
             }
         }, messages: {
@@ -390,15 +391,15 @@ $(function() {
                 setInvalidHandlerStyle(errors, validator);
             }
         },submitHandler: function (form) {
-        	w2popup.lock( save_lock_msg, true);
-        	try {
+            w2popup.lock( save_lock_msg, true);
+            try {
                 var rsa = new RSAKey();
                 rsa.setPublic($("#rsaPublicKeyModulus").val(), $("#rsaPublicKeyExponent").val() );
             } catch(err) {
                 w2alert(err);
             }
-        	//vSphere계정 정보 등록
-        	accountInfo = {
+            //vSphere계정 정보 등록
+            accountInfo = {
                     iaasType : "vSphere"
                     ,id : $(".w2ui-msg-body input[name='accountId']").val()
                     ,accountName : $(".w2ui-msg-body input[name='accountName']").val()

@@ -16,76 +16,73 @@
 <script type="text/javascript">
 var bDefaultDirector;
 $(function() {
-    /************************************************
-      * 설명: 기본 설치 관리자 정보 조회
-     ************************************************/
-     bDefaultDirector = getDefaultDirector("<c:url value='/common/use/director'/>");
+   /************************************************
+     * 설명: 기본 설치 관리자 정보 조회
+   ************************************************/
+   bDefaultDirector = getDefaultDirector("<c:url value='/common/use/director'/>");
     
-     /************************************************
-      * 설명: 스냅샷 조회 그리드
-     ************************************************/
-     $('#us_snapshotGrid').w2grid({
-        name: 'us_snapshotGrid',
-        header: '<b>스냅샷 조회</b>',
-        style    : 'text-align:center',
-        method    : 'GET',
-        msgAJAXerror : '스냅샷 조회 실패',
-        multiSelect: false,
-        show: {    
-            selectColumn: true,
-            footer: true},
-        style: 'text-align: center',
-        columns    : [
-                     {field: 'recid',     caption: 'recid', hidden: true}
-                   , {fiello: 'deploymentName', caption: 'deploymentName', hidden: true}
-                      , {field: 'job', caption: 'JobName', size: '180px', style: 'text-align:center'}
-                      , {field: 'uuid', caption: 'Uuid', size: '350', style: 'text-align:center'}
-                      , {field: 'snapshot_cid', caption: 'SnapshotCid', size: '240px', style: 'text-align:center'}
-                      , {field: 'created_at', caption: 'CreatedAt', size: '180px', style: 'text-align:center'}
-                      , {field: 'clean', caption: 'Clean', size: '120px', style: 'text-align:center'}
-                   ],
-           onSelect: function(event) {
-            var grid = this;
-            event.onComplete = function() {
-                $('#deleteSnapshot').attr('disabled', false);
-                $('#deleteAllSnapshot').attr('disabled', false);
-            }
-        },
-        onUnselect: function(event) {
-            event.onComplete = function() {
-                $('#deleteAllSnapshot').attr('disabled', false);
-                $('#deleteSnapshot').attr('disabled', true);
-            }
-        },
-        onLoad:function(event){
-            if(event.xhr.status == 403){
-                location.href = "/abuse";
-                event.preventDefault();
-            }
-            if(event.status=="nocontent"){
-                $('#deleteAllSnapshot').attr('disabled', true);
-                return;
-            }
-            event.onComplete = function() {
-                $('#deleteAllSnapshot').attr('disabled', false);
-            }
-        }, onError:function(evnet){
-        }
-    });
-     //초기 설정
-     initView(bDefaultDirector);
-     
-     /************************************************
-      * 설명: 스냅샷 조회
-     ************************************************/
-     $("#doSearch").click(function(){
-         doSearch($("#deployments").val());
-     });
+   /************************************************
+    * 설명: 스냅샷 조회 그리드
+   ************************************************/
+   $('#us_snapshotGrid').w2grid({
+       name   : 'us_snapshotGrid',
+       header : '<b>스냅샷 조회</b>',
+       style  : 'text-align:center',
+       method : 'GET',
+       msgAJAXerror : '스냅샷 조회 실패',
+       multiSelect: false,
+       show : { selectColumn: true, footer: true},
+       style : 'text-align: center',
+       columns : [
+            {field: 'recid',     caption: 'recid', hidden: true}
+           , {fiello: 'deploymentName', caption: 'deploymentName', hidden: true}
+           , {field: 'job', caption: 'JobName', size: '180px', style: 'text-align:center'}
+           , {field: 'uuid', caption: 'Uuid', size: '350', style: 'text-align:center'}
+           , {field: 'snapshot_cid', caption: 'SnapshotCid', size: '240px', style: 'text-align:center'}
+           , {field: 'created_at', caption: 'CreatedAt', size: '180px', style: 'text-align:center'}
+           , {field: 'clean', caption: 'Clean', size: '120px', style: 'text-align:center'}
+       ],
+       onSelect: function(event) {
+           var grid = this;
+           event.onComplete = function() {
+               $('#deleteSnapshot').attr('disabled', false);
+               $('#deleteAllSnapshot').attr('disabled', false);
+           }
+       },
+       onUnselect: function(event) {
+           event.onComplete = function() {
+               $('#deleteAllSnapshot').attr('disabled', false);
+               $('#deleteSnapshot').attr('disabled', true);
+           }
+       }, onLoad:function(event){
+           if(event.xhr.status == 403){
+               location.href = "/abuse";
+               event.preventDefault();
+           }
+           if(event.status=="nocontent"){
+               $('#deleteAllSnapshot').attr('disabled', true);
+               return;
+           }
+           event.onComplete = function() {
+               $('#deleteAllSnapshot').attr('disabled', false);
+           }
+       }, onError:function(evnet){
+       }
+  });
+  //초기 설정
+  initView(bDefaultDirector);
+   
+  /************************************************
+   * 설명: 스냅샷 조회
+  ************************************************/
+  $("#doSearch").click(function(){
+      doSearch($("#deployments").val());
+  });
 });
 
 /********************************************************
- * 설명            : 초기 설정
- * Function    : initView
+ * 설명 : 초기 설정
+ * 기능 : initView
  *********************************************************/
 function initView(bDefaultDirector) {
      if ( bDefaultDirector ) {
@@ -98,8 +95,8 @@ function initView(bDefaultDirector) {
 }
 
 /********************************************************
- * 설명            : 배포 조회
- * Function    : getDeploymentList
+ * 설명 : 배포 조회
+ * 기능 : getDeploymentList
  *********************************************************/
 function getDeploymentList(){
     jQuery.ajax({
@@ -125,8 +122,8 @@ function getDeploymentList(){
     });
 }
 /********************************************************
- * 설명            : 스냅샷 조회
- * Function    : doSearch
+ * 설명 : 스냅샷 조회
+ * 기능 : doSearch
  *********************************************************/
 function doSearch(deployment) {
     if( deployment != null ){
@@ -141,8 +138,8 @@ function doSearch(deployment) {
 }
 
 /********************************************************
- * 설명            : 스냅샷 삭제 정보
- * Function    : deleteSnapshotInfo
+ * 설명 : 스냅샷 삭제 정보
+ * 기능 : deleteSnapshotInfo
  *********************************************************/
 function deleteSnapshotInfo(type){
      if( type == "part" && $("#deleteSnapshot").attr('disabled') == "disabled" ){
@@ -173,8 +170,8 @@ function deleteSnapshotInfo(type){
 }
 
 /********************************************************
- * 설명            : 스냅샷 삭제
- * Function    : deleteSnapshot
+ * 설명 : 스냅샷 삭제
+ * 기능 : deleteSnapshot
  *********************************************************/
 function deleteSnapshot(type, snapshotParam){
     $.ajax({
@@ -202,16 +199,16 @@ function deleteSnapshot(type, snapshotParam){
     });
 }
 /********************************************************
- * 설명            : 다른페이지 이동시 호출
- * Function    : clearMainPage
+ * 설명 : 다른페이지 이동시 호출
+ * 기능 : clearMainPage
  *********************************************************/
 function clearMainPage() {
     $().w2destroy('us_snapshotGrid');
 }
 
 /********************************************************
- * 설명            : 화면 리사이즈시 호출
- * Function    : resize
+ * 설명 : 화면 리사이즈시 호출
+ * 기능 : resize
  *********************************************************/
 $( window ).resize(function() {
     setLayoutContainerHeight();
@@ -241,7 +238,7 @@ $( window ).resize(function() {
             <span class="btn btn-primary" style="width:120px" id="deleteSnapshot" onclick="deleteSnapshotInfo('part');">스냅샷 삭제</span>
             </sec:authorize>
             <sec:authorize access="hasAuthority('INFO_SNAPSHOT_DELETE')">
-            <span class="btn btn-danger" style="width:120px" id="deleteAllSnapshot" onclick="deleteSnapshotInfo('all');">스냅샷 전체 삭제</span>
+            <span class="btn btn-danger" style="width:140px" id="deleteAllSnapshot" onclick="deleteSnapshotInfo('all');">스냅샷 전체 삭제</span>
             </sec:authorize>
             <!-- //Btn -->
         </div>

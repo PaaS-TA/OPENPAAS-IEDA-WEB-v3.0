@@ -1,13 +1,16 @@
 package org.openpaas.ieda.deploy.web.deploy.cf.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.core.Application;
@@ -30,8 +33,6 @@ import org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceDAO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceVO;
 import org.openpaas.ieda.deploy.web.deploy.common.dto.network.NetworkDTO;
 import org.openpaas.ieda.deploy.web.deploy.common.dto.resource.ResourceDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -48,7 +49,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     @Mock ResourceDAO mockResourceDAO;
     @Mock MessageSource mockMessageSource;
     
-    final private static Logger LOGGER = LoggerFactory.getLogger(CfSaveServiceUnitTest.class);
     
     private Principal principal = null;
     /****************************************************************
@@ -65,13 +65,12 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : CF 기본 정보 삽입 TEST
+    * @description : CF 기본 정보 삽입 테스트
     * @title : testSaveDefaultInfoInsert
     * @return : void
     ***************************************************/
     @Test
     public void testSaveDefaultInfoInsert(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> CF 기본 정보 삽입 TEST ");}
         CfParamDTO.Default dto = setCfDefaultParamInfo("insert");
         when(mockCfDAO.selectCfDeploymentNameDuplication(anyString(), anyString(), anyInt())).thenReturn(0);
         CfVO resultVo = mockCfSaveService.saveDefaultInfo(dto, principal);
@@ -84,13 +83,12 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : CF 기본 정보 수정 TEST
+    * @description : CF 기본 정보 수정 테스트
     * @title : testSaveDefaultInfoUpdate
     * @return : void
     ***************************************************/
     @Test
     public void testSaveDefaultInfoUpdate(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> CF 기본 정보 수정 TEST ");}
         CfParamDTO.Default dto = setCfDefaultParamInfo("update");
         CfVO expectVo = setCfInfo("default");
         when(mockCfDAO.selectCfInfoById(anyInt())).thenReturn(expectVo);
@@ -105,13 +103,12 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : CF 기본 정보 삽입 시 배포 파일 명이 존재 할 경우 TEST
+    * @description : CF 기본 정보 삽입 시 배포 파일 명이 존재 할 경우 테스트
     * @title : testSaveDefaultInfoDepmoymentFileNameConflict
     * @return : void
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveDefaultInfoDepmoymentFileNameConflict(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> CF 기본 정보 수정 TEST ");}
         CfParamDTO.Default dto = setCfDefaultParamInfo("update");
         CfVO expectVo = setCfInfo("default");
         when(mockCfDAO.selectCfInfoById(anyInt())).thenReturn(expectVo);
@@ -121,67 +118,87 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : 배포 파일명 설정 TEST
+    * @description : 배포 파일명 설정 테스트
     * @title : testMakeDeploymentName
     * @return : void
     ***************************************************/
     @Test
     public void testMakeDeploymentName(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> 배포 파일명 설정 TEST ");}
         CfVO expectVo = setCfInfo("default");
         mockCfSaveService.makeDeploymentName(expectVo);
     }
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : 배포 파일명 설정 중 인프라 환경 타입 값이 존재 하지 않을 경우  TEST
+    * @description : 배포 파일명 설정 중 인프라 환경 타입 값이 존재 하지 않을 경우  테스트
     * @title : testMakeDeploymentNameIaasNull
     * @return : void
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testMakeDeploymentNameIaasNull(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> 배포 파일명 설정 TEST ");}
         CfVO expectVo = setCfInfo("iaasTypeNull");
         mockCfSaveService.makeDeploymentName(expectVo);
     }
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : 네트워크 정보 삽입 TEST
+    * @description : 네트워크 정보 삽입 테스트
     * @title : testSaveNetworkInfo
     * @return : void
     ***************************************************/
     @Test
     public void testSaveNetworkInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> 네트워크 정보 삽입 TEST ");}
         List<NetworkDTO> dto = expectNetworkList("default");
         mockCfSaveService.saveNetworkInfo(dto, principal);
     }
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : 네트워크 정보 삽입 시 네투워크 사이즈가 2개 이상일 경우 TEST
+    * @description : 네트워크 정보 삽입 시 네투워크 사이즈가 2개 이상일 경우 테스트
     * @title : testSaveNetworkInfoSize2
     * @return : void
     ***************************************************/
     @Test
     public void testSaveNetworkInfoSize2(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> 네트워크 정보 삽입 TEST ");}
         List<NetworkDTO> dto = expectNetworkList("size");
         List<NetworkVO> vo = setNetworkInfoList("size");
         when(mockNetworkDAO.selectNetworkList(anyInt(), anyString())).thenReturn(vo);
+        List<HashMap<String, Object>> jobs =  setJobSettingInfoList();
+        when(mockCfDAO.selectCfJobSettingInfoListBycfId(anyString(), anyInt())).thenReturn(jobs);
+        doNothing().when(mockCfDAO).deleteCfJobSettingRecordsByIdAndZone(anyInt(), anyString());
         mockCfSaveService.saveNetworkInfo(dto, principal);
     }
     
     /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : cf jobs 목록 설정
+     * @title : setJobSettingInfoList
+     * @return : List<HashMap<String,Object>>
+    ***************************************************/
+    public List<HashMap<String, Object>> setJobSettingInfoList(){
+        List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("id", 1);
+        map.put("seq", 1);
+        map.put("deploy_type", "DEPLOY_TYPE_CF");
+        map.put("job_id", 1);
+        map.put("instances", 3);
+        map.put("zone", "z2");
+        map.put("create_user_id", "admin");
+        map.put("update_user_id", "admin");
+        map.put("job_name", "consul");
+        list.add(map);
+        return list;
+    }
+    
+    /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : Key 생성 정보 저장 TEST
+    * @description : Key 생성 정보 저장 테스트
     * @title : testSaveKeyInfo
     * @return : void
     ***************************************************/
     @Test
     public void testSaveKeyInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> Key 생성 정보 저장 TEST ");}
         CfVO expectVo = setCfInfo("default");
         when(mockCfDAO.selectCfInfoById(anyInt())).thenReturn(expectVo);
         KeyInfoDTO dto = cfKeyInfo();
@@ -190,13 +207,12 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : Key 생성 정보 저장 시 해당 KEY에 관련 한 정보가 존재 하지 않을 경우 TEST
+    * @description : Key 생성 정보 저장 시 해당 KEY에 관련 한 정보가 존재 하지 않을 경우 테스트
     * @title : testSaveKeyInfoCfInfoNull
     * @return : void
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveKeyInfoCfInfoNull(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> Key 생성 정보 저장 시 해당 KEY에 관련 한 정보가 존재 하지 않을 경우 TEST ");}
         when(mockCfDAO.selectCfInfoById(anyInt())).thenReturn(null);
         KeyInfoDTO dto = cfKeyInfo();
         mockCfSaveService.saveKeyInfo(dto, principal);
@@ -204,13 +220,12 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : CF 리소스 정보 저장 및 배포 파일명 설정 TEST
+    * @description : CF 리소스 정보 저장 및 배포 파일명 설정 테스트
     * @title : testSaveResourceInfo
     * @return : void
     ***************************************************/
     @Test
     public void testSaveResourceInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> CF 리소스 정보 저장 및 배포 파일명 설정 TEST ");}
         ResourceDTO dto = cfResourceInfo();
         CfVO expectVo = setCfInfo("default");
         when(mockMessageSource.getMessage(anyString(), anyObject(), anyObject())).thenReturn("DEPLOY_TYPE_CF");
@@ -220,13 +235,12 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : CF 리소스 정보 저장 및 배포 파일 명이 존해하지 않을 경우 TEST
+    * @description : CF 리소스 정보 저장 및 배포 파일 명이 존해하지 않을 경우 테스트
     * @title : testSaveResourceInfoDeploymentFileNull
     * @return : void
     ***************************************************/
     @Test
     public void testSaveResourceInfoDeploymentFileNameNull(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> CF 리소스 정보 저장 및 배포 파일명 설정 TEST ");}
         ResourceDTO dto = cfResourceInfo();
         CfVO expectVo = setCfInfo("null");
         when(mockMessageSource.getMessage(anyString(), anyObject(), anyObject())).thenReturn("DEPLOY_TYPE_CF");
@@ -236,13 +250,12 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : CF 리소스 정보가 존재 할 경우 TEST
+    * @description : CF 리소스 정보가 존재 할 경우 테스트
     * @title : testSaveResourceInfoDeploymentFileNull
     * @return : void
     ***************************************************/
     @Test
     public void testSaveResourceInfoUpdate(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> CF 리소스 정보가 존재 할 경우 TEST ");}
         ResourceDTO dto = cfResourceInfo();
         CfVO expectVo = setCfInfo("resource");
         when(mockMessageSource.getMessage(anyString(), anyObject(), anyObject())).thenReturn("DEPLOY_TYPE_CF");
@@ -252,18 +265,52 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : CF VSPHERE 환경의 리소스 정보 저장 TEST
+    * @description : CF VSPHERE 환경의 리소스 정보 저장 테스트
     * @title : testSaveResourceInfoVsphere
     * @return : void
     ***************************************************/
     @Test
     public void testSaveResourceInfoVsphere(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> CF VSPHERE 환경의 리소스 정보 저장 TEST ");}
         ResourceDTO dto = cfResourceInfo();
         CfVO expectVo = setCfInfo("vsphere");
         when(mockMessageSource.getMessage(anyString(), anyObject(), anyObject())).thenReturn("DEPLOY_TYPE_CF");
         when(mockCfDAO.selectCfResourceInfoById(anyInt(), anyString())).thenReturn(expectVo);
         mockCfSaveService.saveResourceInfo(dto, principal);
+    }
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description :  cf jobs 정보 저장
+     * @title : testSaveCfJobsInfo
+     * @return : void
+    ***************************************************/
+    @Test
+    public void testSaveCfJobsInfo() {
+        List<HashMap<String, Object>> jobs =  setJobSettingInfoList();
+        when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("DEPLOY_TYPE_CF");
+        when(mockCfDAO.selectCfJobSettingInfoListBycfId(anyString(), anyInt())).thenReturn(jobs);
+        doNothing().when(mockCfDAO).insertCfJobSettingInfo(any());
+        mockCfSaveService.saveCfJobsInfo(setCfJObsInfo(), principal);
+    }
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : CF Job 정보 저장 데이터 설정
+     * @title : setCfJObsInfo
+     * @return : List<HashMap<String,String>>
+    ***************************************************/
+    public List<HashMap<String, String>> setCfJObsInfo(){
+        List<HashMap<String, String>> maps = new ArrayList<HashMap<String, String>>();
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("id", "1");
+        map.put("seq", "1");
+        map.put("deploy_type", "DEPLOY_TYPE_CF");
+        map.put("job_name", "consul");
+        map.put("job_id", "1000");
+        map.put("instances", "3");
+        map.put("zone", "z1");
+        maps.add(map);
+        return maps;
     }
     
     /***************************************************
@@ -463,7 +510,7 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
 
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : CF 상세 정보 조회 TEST
+     * @description : CF 상세 정보 조회 테스트
      * @title : testGetCfInfo
      * @return : void
      ***************************************************/
@@ -497,7 +544,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
         vo.setPaastaMonitoringUse("yes");
         vo.setOrganizationName("pass-ta");
         vo.setIngestorIp("172.16.100.100");
-        vo.setIngestorPort("25555");
         vo.setKeyFile("cf-key.yml");
         vo.setLocalityName("mapo");
         vo.setLoginSecret("test");
@@ -559,7 +605,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
         dto.setDomain("domain");
         dto.setIaas("openstack");
         dto.setIngestorIp("172.16.100.1");
-        dto.setIngestorPort("25555");
         dto.setLoginSecret("login");
         dto.setDomainOrganization("paas-ta");
         dto.setPaastaMonitoringUse("yes");

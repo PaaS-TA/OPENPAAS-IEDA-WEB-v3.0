@@ -18,6 +18,7 @@ var text_required_msg='<spring:message code="common.text.vaildate.required.messa
 var select_required_msg='<spring:message code="common.select.vaildate.required.message"/>';//을(를) 선택하세요.
 var delete_lock_msg='<spring:message code="common.delete.data.lock"/>';//삭제 중 입니다.
 var text_cidr_msg='<spring:message code="common.text.validate.cidr.message"/>';//CIDR 대역을 확인 하세요.
+var delete_confirm_msg='<spring:message code="common.popup.delete.message"/>';//을(를) 삭제 하시겠습니까?
 
 var ingressRules="";//ingress rules array
 var groupInfo=""; //group info
@@ -94,7 +95,7 @@ $(function() {
                     getVpcIds();//vpc id 목록조회
                 }
             },onClose:function(event){
-            	$("#ingressRulesTable .ingressRulesData").html("");
+                $("#ingressRulesTable .ingressRulesData").html("");
                 initsetting();
                 doSearch();
             }
@@ -114,17 +115,16 @@ $(function() {
         else {
             var record = w2ui['aws_securityGroupGrid'].get(selected);
             w2confirm({
-                title : "Security Group 삭제",
-                msg : "Security Group (" + record.groupId + ")을 삭제하시겠습니까?",
+                title    : "<b>Security Group 삭제</b>",
+                msg      : "Security Group (" + record.groupId + ")"+ delete_confirm_msg,
                 yes_text : "확인",
-                no_text : "취소",
-                height : 200,
+                no_text  : "취소",
+                height   : 200,
                 yes_callBack: function(event){
-                    w2utils.lock($("#layout_layout_panel_main"),delete_lock_msg, true);
                     deleteAwsSecurityGroupInfo(record);
                 },
                 no_callBack    : function(){
-                	$("#ingressRulesTable .ingressRulesData").html("");
+                    $("#ingressRulesTable .ingressRulesData").html("");
                     w2ui['aws_securityGroupGrid'].clear();
                     accountId = record.accountId;
                     initsetting();
@@ -152,7 +152,7 @@ function doSearch() {
  * 기능 : saveAwsSecurityGroupInfo
  *********************************************************/ 
 function saveAwsSecurityGroupInfo(){
-     w2utils.lock($("#layout_layout_panel_main"),save_lock_msg, true);
+     w2popup.lock(save_lock_msg, true);
      var ingressRules = setIngressRulesInfo($(".w2ui-msg-body input:radio[name='ingressRuleType']:checked").val());
      var vpcidss = $(".w2ui-msg-body select[name='vpcId']").val();
      var groupInfo ={
@@ -173,13 +173,11 @@ function saveAwsSecurityGroupInfo(){
          data: JSON.stringify(groupInfo),
          success : function(status){
              w2popup.unlock();
-             w2utils.unlock($("#layout_layout_panel_main"));
              w2popup.close();
              accountId = groupInfo.accountId;
              doSearch();
          }, error : function(request, status, error){
              w2popup.unlock();
-             w2utils.unlock($("#layout_layout_panel_main"));
              var errorResult = JSON.parse(request.responseText).message;
              var idx = errorResult.indexOf("(");
              var message = errorResult.substring(0, idx);
@@ -193,22 +191,22 @@ function saveAwsSecurityGroupInfo(){
  * 기능 : getIngressRulesInfo
  *********************************************************/
  function setIngressRulesInfo(type){
-	  var list = new Array();
-	  if( type == "boshSecurity" ){
-		  $(".w2ui-msg-body .bosh_security_rules").each(function(index){
-			  var protocol = "tcp";
-			  if( ($(this).attr("name")).indexOf("Udp") > -1 ){
-				  protocol = "udp";
-			  }
-			  var ingressRule = {
-					 protocol: protocol
-					,portRange : $(this).val()
-	          }
-			  list.push(ingressRule);
-		  });
-		  return list;
+      var list = new Array();
+      if( type == "boshSecurity" ){
+          $(".w2ui-msg-body .bosh_security_rules").each(function(index){
+              var protocol = "tcp";
+              if( ($(this).attr("name")).indexOf("Udp") > -1 ){
+                  protocol = "udp";
+              }
+              var ingressRule = {
+                     protocol: protocol
+                    ,portRange : $(this).val()
+              }
+              list.push(ingressRule);
+          });
+          return list;
       }else if( type == "cfSecurity" ){
-    	  $(".w2ui-msg-body .cf_security_rules").each(function(index){
+          $(".w2ui-msg-body .cf_security_rules").each(function(index){
               var protocol = "tcp";
               if( ($(this).attr("name")).indexOf("Udp") > -1 ){
                   protocol = "udp";
@@ -241,36 +239,36 @@ function doSearchGroupInboudRules(accountId, groupId){
              w2utils.unlock($("#layout_layout_panel_main"));
              if( !checkEmpty(data) ){
                  for( var i=0; i<data.length; i++ ){
-                	var html = "";
-                	var trafficType = checkEmpty(data[i].trafficType) ? "-" : data[i].trafficType;
-                	var protocol = checkEmpty(data[i].protocol) ? "-" : data[i].protocol;
-                	var source = checkEmpty(data[i].source) ? "-" : data[i].source;
-                	var portRange = checkEmpty(data[i].portRange) ? "-" : data[i].portRange;
-                	
-                	html +="<tr class='ingressRulesData'>";
+                    var html = "";
+                    var trafficType = checkEmpty(data[i].trafficType) ? "-" : data[i].trafficType;
+                    var protocol = checkEmpty(data[i].protocol) ? "-" : data[i].protocol;
+                    var source = checkEmpty(data[i].source) ? "-" : data[i].source;
+                    var portRange = checkEmpty(data[i].portRange) ? "-" : data[i].portRange;
+                    
+                    html +="<tr class='ingressRulesData'>";
                     html +="<td class='rules'>"+trafficType+"</td>";
                     html +="<td class='rules'>"+protocol   +"</td>";
                     html +="<td class='rules'>"+portRange  +"</td>";
                     html +="<td class='rules'>"+source     +"</td>";
                     html +="</tr>";
                     if( i == 0 ){
-                    	$("#ingressRulesTable .ingressRulesData").remove()
+                        $("#ingressRulesTable .ingressRulesData").remove()
                     }
                     $("#ingressRulesTable").append(html);
                  }
              }else{
-            	 var html = "";
-            	 var style="style='text-align:center'";
-            	 html +="<tr class='ingressRulesData'>";
+                 var html = "";
+                 var style="style='text-align:center'";
+                 html +="<tr class='ingressRulesData'>";
                  html +="<td "+style+">-</td><td "+style+">-</td><td "+style+">-</td><td "+style+">-</td>";
                  html +="</tr>";
-            	 $("#ingressRulesTable .ingressRulesData").remove()
-            	 $("#ingressRulesTable").append(html);
+                 $("#ingressRulesTable .ingressRulesData").remove()
+                 $("#ingressRulesTable").append(html);
              }
              return;
          },
          error : function(request, status, error) {
-        	 w2utils.unlock($("#layout_layout_panel_main"));
+             w2utils.unlock($("#layout_layout_panel_main"));
              var errorResult = JSON.parse(request.responseText);
              w2alert(errorResult.message, "Security Group Inbound Rules정보");
          } 
@@ -345,8 +343,8 @@ function setStyleBySourceType(event){
         $(".w2ui-msg-body input[name='sourceIp_"+index+"']").css("display","inline-block").css("borderColor", "#bababa");
     }
     if( $(".w2ui-msg-body input[name='sourceIp_"+index+"']").next().is("p") || $(".w2ui-msg-body input[name='sourceGroupId_"+index+"']").next().is("p") ){
-    	$(".w2ui-msg-body input[name='sourceIp_"+index+"']").next().remove();
-    	$(".w2ui-msg-body input[name='sourceGroupId_"+index+"']").next().remove();
+        $(".w2ui-msg-body input[name='sourceIp_"+index+"']").next().remove();
+        $(".w2ui-msg-body input[name='sourceGroupId_"+index+"']").next().remove();
     }
 }
 
@@ -357,32 +355,32 @@ function setStyleBySourceType(event){
   * 설명 : 인바운드 규칙 유효성 검사 추가
  *****************************************************/
  function addIngressRulesValidation(index){
-	  $("[name*='trafficType_"+index+"']").rules("add", {
-	         required: function(){
-	             return checkEmpty($(".w2ui-msg-body select[name='trafficType_"+index+"']").val());
-	         }, messages: {required: "type"+select_required_msg}
-	  });
-	  $("[name*='portRange_"+index+"']").rules("add", {
+      $("[name*='trafficType_"+index+"']").rules("add", {
+             required: function(){
+                 return checkEmpty($(".w2ui-msg-body select[name='trafficType_"+index+"']").val());
+             }, messages: {required: "type"+select_required_msg}
+      });
+      $("[name*='portRange_"+index+"']").rules("add", {
           required: function(){
               return checkEmpty($(".w2ui-msg-body input[name='portRange_"+index+"']").val());
           }, messages: {required: "portRange"+text_required_msg}
-	  });
-	 $("[name*='sourceIp_"+index+"']").rules("add", {
+      });
+     $("[name*='sourceIp_"+index+"']").rules("add", {
          required: function(){
-        	 if( $(".w2ui-msg-body select[name='sourceType_"+index+"']").val()  == "cidr"){
-        		 return checkEmpty($(".w2ui-msg-body input[name='sourceIp_"+index+"']").val());
-        	 }else{
-        		 return false;
-        	 }
+             if( $(".w2ui-msg-body select[name='sourceType_"+index+"']").val()  == "cidr"){
+                 return checkEmpty($(".w2ui-msg-body input[name='sourceIp_"+index+"']").val());
+             }else{
+                 return false;
+             }
          },ipv4Range : function(){
-        	 if( $(".w2ui-msg-body select[name='sourceType_"+index+"']").val()  == "cidr"){
-        		 return $(".w2ui-msg-body input[name='sourceIp_"+index+"']").val();	 
-        	 }else{
-        		 return "0.0.0.0/0";
-        	 }
+             if( $(".w2ui-msg-body select[name='sourceType_"+index+"']").val()  == "cidr"){
+                 return $(".w2ui-msg-body input[name='sourceIp_"+index+"']").val();     
+             }else{
+                 return "0.0.0.0/0";
+             }
          }, messages: {required: "source"+text_required_msg}
      });
-	 $("[name*='sourceGroupId_"+index+"']").rules("add", {
+     $("[name*='sourceGroupId_"+index+"']").rules("add", {
          required: function(){
              if( $(".w2ui-msg-body select[name='sourceType_"+index+"']").val()  == "securityId"){
                  return checkEmpty($(".w2ui-msg-body select[name='sourceGroupId_"+index+"']").val());
@@ -400,81 +398,32 @@ function setStyleBySourceType(event){
  function removeIngressRules(event){
       $(event).parent().parent().remove();
  }
-    
-/********************************************************
- * 설명 : AWS Security Group Ingress Rule 생성
- * 기능 : saveAwsSecurityGroupIngressRule
- *********************************************************/
-function saveAwsSecurityGroupIngressRule(){
-    w2utils.lock($("#layout_layout_panel_main"),save_lock_msg, true);
-    var selected = w2ui['aws_securityGroupGrid'].getSelection();
-    var record = w2ui['aws_securityGroupGrid'].get(selected);
-    
-    var ingressRules = new Array();
-    var index = $(".w2ui-msg-body #ingressRulesEditTable").find("tr").length;
-    for( var i=1; i<index; i++ ){
-    	var index = $($(".w2ui-msg-body #ingressRulesEditTable").find("tr")[i]).attr("class").split("_")[1];
-    	var ingressRuleInfo = {
-   	        accountId : $("select[name='accountId']").val(),
-   	        groupId :record.groupId,
-   	        groupName : record.groupName,
-   	        protocol : $(".w2ui-msg-body input[name='protocol_"+index+"']").val(),
-   	        toPort : $(".w2ui-msg-body input[name='portRange_"+index+"']").val(),
-   	        sourceType : $(".w2ui-msg-body select[name='sourceType_"+index+"']").val(),
-   	        sourceIp : $(".w2ui-msg-body input[name='sourceIp_"+index+"']").val(),
-   	        sourceGroupId : $(".w2ui-msg-body select[name='sourceGroupId_"+index+"']").val()
-    	}
-    	ingressRules.push(ingressRuleInfo);
-    }
-    
-    $.ajax({
-        type : "PUT",
-        url : "/awsMgnt/securityGroup/ingressRuleEdit",
-        contentType : "application/json",
-        async : true,
-        data : JSON.stringify(ingressRules),
-        success : function(status) {
-            w2popup.unlock();
-            w2utils.unlock($("#layout_layout_panel_main"));
-            w2popup.close();
-            accountId = ingressRuleInfo.accountId;
-            doSearch();
-        }, error : function(request, status, error) {
-            w2popup.unlock();
-            w2popup.close();
-            w2utils.unlock($("#layout_layout_panel_main"));
-            var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message);
-        }
-    });
-}
 
 /********************************************************
  * 설명 : AWS SecurityGroup 삭제
  * 기능 : deleteAwsSecurityGroupInfo
 *********************************************************/
 function deleteAwsSecurityGroupInfo(record){
+     w2popup.lock(delete_lock_msg, true);
      var groupInfo = {
              accountId : record.accountId,
              groupId : record.groupId,
              region :  $("select[name='region']").val()
      }
      $.ajax({
-         type : "DELETE",
-         url : "/awsMgnt/securityGroup/delete",
-         contentType : "application/json",
+         type  : "DELETE",
+         url   : "/awsMgnt/securityGroup/delete",
          async : true,
-         data : JSON.stringify(groupInfo),
+         data  : JSON.stringify(groupInfo),
+         contentType : "application/json",
          success : function(status) {
              w2popup.unlock();
              w2popup.close();
-             w2utils.unlock($("#layout_layout_panel_main"));
              accountId = groupInfo.accountId;
              doSearch();
          },error : function(request, status, error) {
              w2popup.unlock();
              initsetting();
-             w2utils.unlock($("#layout_layout_panel_main"));
              var errorResult = JSON.parse(request.responseText);
              w2alert(errorResult.message);
          }
@@ -522,7 +471,8 @@ $( window ).resize(function() {
 </script>
 
 <div id="main">
-    <div id="awsMgnt">
+    <div class="page_site pdt20">인프라 관리 > AWS 관리 > <strong>AWS Security Group 관리 </strong></div>
+    <div id="awsMgnt" class="pdt20">
         <ul>
             <li>
                 <label style="font-size: 14px">AWS 관리 화면</label> &nbsp;&nbsp;&nbsp; 
@@ -568,8 +518,8 @@ $( window ).resize(function() {
             <span id="deleteBtn" class="btn btn-danger" style="width: 120px">삭제</span>
         </div>
     </div>
-    <!-- AWS Security Group Inbound Rules 목록 Div -->    
-    <div id="aws_securityGroupGrid" style="width: 100%; height: 330px"></div>
+    <!-- AWS Security Group 목록 Div -->    
+    <div id="aws_securityGroupGrid" style="width: 100%; height: 405px"></div>
 
     <!-- AWS Security Group Inbound Rule Div -->
     <div class="pdt20">
@@ -709,7 +659,6 @@ $(function() {
                 setInvalidHandlerStyle(errors, validator);
             }
         }, submitHandler: function (form) {
-            w2popup.lock(save_lock_msg, true);
             saveAwsSecurityGroupInfo();
         }
     });

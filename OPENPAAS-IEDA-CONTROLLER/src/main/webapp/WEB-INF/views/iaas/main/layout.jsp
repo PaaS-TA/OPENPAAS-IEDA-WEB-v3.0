@@ -29,7 +29,7 @@
 <link rel="stylesheet" type="text/css" href="<c:url value='/css/default.css'/>"/>
 <link rel="stylesheet" type="text/css" href="<c:url value='/css/infra-guide.css?ver=1'/>"/>
 <link rel="stylesheet" type="text/css" href="<c:url value='/css/infra-content.css?ver=1'/>"/>
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/infra-init.css?ver=1'/>"/>
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/infra-init.css?ver=2'/>"/>
 
 <!-- JQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -46,7 +46,7 @@
 <script type="text/javascript" src="<c:url value='/webjars/w2ui/1.4.2/w2ui.min.js'/>"></script>
 
 <!-- Common -->
-<script type="text/javascript" src="<c:url value='/js/common.js?ver=2'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/common.js?ver=3'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/common-iaas.js'/>"></script>
 
 <!-- RSA 암호화 js -->

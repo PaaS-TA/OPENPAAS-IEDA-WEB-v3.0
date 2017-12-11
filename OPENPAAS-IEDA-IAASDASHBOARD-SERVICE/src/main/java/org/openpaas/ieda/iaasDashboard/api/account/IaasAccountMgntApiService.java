@@ -67,7 +67,7 @@ public class IaasAccountMgntApiService {
             CommonApiService credentials = new CommonApiService();
             OSClientV2 os = credentials.getOSClientFromOpenstackV2(endpoint, tenant, user, secret);
             
-            if( !StringUtils.isEmpty(os.getAccess().getToken().toString()) ){
+            if( !StringUtils.isEmpty(os.getAccess().getToken().getId()) ){
                 flag = true;
             }
         }catch(Exception e){
@@ -88,8 +88,8 @@ public class IaasAccountMgntApiService {
             CommonApiService credentials = new CommonApiService();
             OSClientV3 osV3 = credentials.getOSClientFromOpenstackV3(endpoint, domain, project, user, secret);
             
-            if( StringUtils.isEmpty(osV3.getToken().toString()) ){
-                flag = false;
+            if( !StringUtils.isEmpty(osV3.getToken().getId()) ){
+                flag = true;
             }
         }catch(Exception e){
             if( LOGGER.isErrorEnabled() ){ LOGGER.error(e.getMessage()); }
@@ -129,6 +129,7 @@ public class IaasAccountMgntApiService {
         boolean flag = false;
         HttpTransport httpTransport = null;
         JsonFactory jsonFactory = null;
+        
         try {
             httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             jsonFactory = JacksonFactory.getDefaultInstance();

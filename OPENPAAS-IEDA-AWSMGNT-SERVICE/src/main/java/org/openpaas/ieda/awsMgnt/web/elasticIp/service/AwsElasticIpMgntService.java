@@ -58,7 +58,7 @@ public class AwsElasticIpMgntService {
     public HashMap<String, Object> getAwsElasticIpDetailInfo(int accountId, String publicIp, Principal principal, String regionName) {
          IaasAccountMgntVO vo =  getAwsAccountInfo(principal, accountId);
          Region region = getAwsRegionInfo(regionName);
-         HashMap<String, Object> result = awsElasticIpMgntApiService.getAwsElasticIpDetailInfoFromAws(vo, publicIp, region);
+         HashMap<String, Object> result = awsElasticIpMgntApiService.getAwsElasticIpDetailInfoFromAws(vo, region);
          
          List<Address> addressList = (List<Address>) result.get("addressList");
          HashMap<String, Object> apiAwsAddressInfo = new HashMap<String, Object>();
@@ -78,7 +78,7 @@ public class AwsElasticIpMgntService {
                  if( ! StringUtils.isEmpty(networkInterfaceId) ){
                      DescribeNetworkInterfacesRequest request = new DescribeNetworkInterfacesRequest();
                      request.withNetworkInterfaceIds(networkInterfaceId);
-                     List<NetworkInterface> interfaces = awsElasticIpMgntApiService.getNetworkInterfaces(vo, networkInterfaceId, request, region);
+                     List<NetworkInterface> interfaces = awsElasticIpMgntApiService.getNetworkInterfaces(vo, request, region);
                      String publicDns = "";
                      for( int j=0; j<interfaces.size(); j++ ){
                          if( interfaces.size() == j+1 ){

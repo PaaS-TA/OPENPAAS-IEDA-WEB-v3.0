@@ -14,14 +14,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix = "spring" uri = "http://www.springframework.org/tags" %>
 <style>
-/*     .popover{ */
-/*         max-width:280px */
-/*     } */
-/*     .popover-content { */
-/*         width:275px; */
-/*          max-height: 300px; */
-/*          overflow-y: auto; */
-/*     } */
+.popover{
+    max-width:280px
+}
+.popover-content {
+    width:275px;
+     max-height: 300px;
+     overflow-y: auto;
+}
 </style>
 <script type="text/javascript">
 var search_data_fail_msg = '<spring:message code="common.data.select.fail"/>'//목록을 가져오는데 실패하였습니다.
@@ -50,6 +50,7 @@ var deploymentFile = "";
 var installStatus ="";
 var countryCodes = null;
 var keyFile ="";
+var config = "";
 
 $(function() {
     $(document).delegate(".w2ui-popup","click",function(e){
@@ -60,107 +61,49 @@ $(function() {
         });
     });
     
-    $('.btn-number').click(function(e){
-        e.preventDefault();
-        
-        fieldName = $(this).attr('data-field');
-        type      = $(this).attr('data-type');
-        var input = $("input[name='"+fieldName+"']");
-        var currentVal = parseInt(input.val());
-        if (!isNaN(currentVal)) {
-            if(type == 'minus') {
-                
-                if(currentVal > input.attr('min')) {
-                    input.val(currentVal - 1).change();
-                } 
-                if(parseInt(input.val()) == input.attr('min')) {
-                    $(this).attr('disabled', true);
-                }
-
-            } else if(type == 'plus') {
-
-                if(currentVal < input.attr('max')) {
-                    input.val(currentVal + 1).change();
-                }
-                if(parseInt(input.val()) == input.attr('max')) {
-                    $(this).attr('disabled', true);
-                }
-
-            }
-        } else {
-            input.val(0);
-        }
-    });
-    $('.input-number').focusin(function(){
-       $(this).data('oldValue', $(this).val());
-    });
-    $('.input-number').change(function() {
-        
-        minValue =  parseInt($(this).attr('min'));
-        maxValue =  parseInt($(this).attr('max'));
-        valueCurrent = parseInt($(this).val());
-        
-        name = $(this).attr('name');
-        if(valueCurrent >= minValue) {
-            $(".btn-number[data-type='minus'][data-field='"+name+"']").removeAttr('disabled')
-        } else {
-            alert('Sorry, the minimum value was reached');
-            $(this).val($(this).data('oldValue'));
-        }
-        if(valueCurrent <= maxValue) {
-            $(".btn-number[data-type='plus'][data-field='"+name+"']").removeAttr('disabled')
-        } else {
-            alert('Sorry, the maximum value was reached');
-            $(this).val($(this).data('oldValue'));
-        }
-        
-        
-    });
-    $(".input-number").keydown(function (e) {
-         // Allow: backspace, delete, tab, escape, enter and .
-         if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 190]) !== -1 ||
-              // Allow: Ctrl+A
-             (e.keyCode == 65 && e.ctrlKey === true) || 
-              // Allow: home, end, left, right
-             (e.keyCode >= 35 && e.keyCode <= 39)) {
-                  // let it happen, don't do anything
-                  return;
-         }
-         // Ensure that it is a number and stop the keypress
-         if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-             e.preventDefault();
-         }
-     });
-    
 });
 
 /********************************************************
  * 설명 : cf 고급 설정 레이아웃 추가
  *********************************************************/
-var pstyle = 'width:615px;height:595;';
-var config = {
-      layout2: {
-          name: 'layout2',
-          padding: 4,
-          panels: [
-              { type: 'left', size: 200, hidden: true, content: 'left' },
-              {type: 'main', style:pstyle }
-          ]
-      }
- };
+// var pstyle = 'width:615px;height:595;';
+// var config = {
+//       layout2: {
+//           name: 'layout2',
+//           padding: 4,
+//           panels: [
+//               { type: 'left', size: 200, hidden: true, content: 'left' },
+//               {type: 'main', style:pstyle }
+//           ]
+//       }
+//  };
  
 /********************************************************
  * 설명 : cf 고급 설정 레이아웃 초기화
  *********************************************************/
 $(function () {
     // initialization in memory
-    $().w2layout(config.layout2);
+    setW2layout()
 });
  
+function setW2layout(){
+    var pstyle = 'width:615px;height:595;';
+    config = {
+          layout2: {
+              name: 'layout2',
+              padding: 4,
+              panels: [
+                  { type: 'left', size: 200, hidden: true, content: 'left' },
+                  {type: 'main', style:pstyle }
+              ]
+          }
+     };
+    $().w2layout(config.layout2);
+}
 
 /********************************************************
  * 설명 : CF 릴리즈 설치 지원 버전 목록 조회
- * Function : getReleaseVersionList
+ * 기능 : getReleaseVersionList
  *********************************************************/
 function getReleaseVersionList(){
      var contents = "";
@@ -241,8 +184,6 @@ function setCfData(contents) {
         loginSecret            : contents.loginSecret,
         paastaMonitoringUse    : contents.paastaMonitoringUse,
         ingestorIp             : contents.ingestorIp,
-        ingestorPort           : contents.ingestorPort
-        
     }
     //네트워크 정보 
     for(var i=0; i<contents.networks.length; i++){
@@ -283,13 +224,13 @@ function setCfData(contents) {
                 id           : contents.jobs[i].id,
                 seq          : contents.jobs[i].seq,
                 deploy_type  : contents.jobs[i].deploy_type,
-                job_name     : contents.jobs[i].code_name,
-                job_code     : contents.jobs[i].job_code,
-                instances    : contents.jobs[i].instances
+                job_name     : contents.jobs[i].job_name,
+                job_id       : contents.jobs[i].job_id,
+                instances    : contents.jobs[i].instances,
+                zone         : contents.jobs[i].zone
         }
         jobsInfo.push(job);
     }
-    
     //resource
     if(contents.resource != null && contents.resource != undefined && contents.resource != ""){
         resourceInfo = {
@@ -326,7 +267,7 @@ function defaultInfoPopup() {
     w2popup.open({
         title : "<b>CF 설치</b>",
         width : 750,
-        height :860,
+        height :825,
         modal : true,
         body    : $("#defaultInfoDiv").html(),
         buttons : $("#DefaultInfoButtonDiv").html(),
@@ -360,7 +301,6 @@ function defaultInfoPopup() {
                         $(".w2ui-msg-body input:checkbox[name='paastaMonitoring']").attr("checked", true);
                         checkPaasTAMonitoringUseYn();
                         $(".w2ui-msg-body input[name='ingestorIp']").val(defaultInfo.ingestorIp);
-                        $(".w2ui-msg-body input[name='ingestorPort']").val(defaultInfo.ingestorPort);
                     }
                 } else{
                     if( !checkEmpty($("#directorUuid").text()) ){
@@ -393,6 +333,7 @@ function getCfRelease() {
                 w2popup.unlock();
                 var option = "<option value=''>CF 릴리즈를 선택하세요.</option>";
                 data.records.map(function(obj) {
+                    releases.push(obj.version);
                     if( defaultInfo.releaseName == obj.name && defaultInfo.releaseVersion == obj.version){
                         option += "<option value='"+obj.name+"/"+obj.version+"' selected>"+obj.name+"/"+obj.version+"</option>";
                     }else{
@@ -401,6 +342,36 @@ function getCfRelease() {
                 });
             }
             $(".w2ui-msg-body select[name='releases']").html(option);
+            setInputDisplay(defaultInfo.releaseName+"/"+defaultInfo.releaseVersion);
+            setDisabledMonitoring(defaultInfo.releaseName+"/"+defaultInfo.releaseVersion);
+        },
+        error : function(e, status) {
+            w2popup.unlock();
+            w2alert("Cf Release List 를 가져오는데 실패하였습니다.", "CF 설치");
+        }
+    });
+}
+
+/********************************************************
+ * 설명 : Loggregator 릴리즈 조회
+ * 기능 : getLoggregatorRelease
+ *********************************************************/
+function getLoggregatorRelease(){
+    $.ajax({
+        type : "GET",
+        url : "/common/deploy/release/list/loggregator",
+        contentType : "application/json",
+        success : function(data, status) {
+            w2popup.unlock();
+            var option = "";
+            if( data.records.length > 0){
+                data.records.map(function(obj) {
+                    option += "<option value='"+obj.name+"/"+obj.version+"'>"+obj.name+"/"+obj.version+"</option>";
+                });
+            }else{
+                option ="<option value=''>loggregator 릴리즈가 필요합니다.</option>"
+            }
+            $(".w2ui-msg-body select[name='loggregatorReleases']").html(option);
         },
         error : function(e, status) {
             w2popup.unlock();
@@ -411,15 +382,13 @@ function getCfRelease() {
 
 
 /********************************************************
- * 설명 : paasta-controller v2.0 이상에서 지원
+ * 설명 : paasta-controller v2.0 이상에서 지원 
  * 기능 : setDisabledMonitoring
  *********************************************************/
 function setDisabledMonitoring(val){
-     
     if( !checkEmpty(val) && val != "undefined/undefined"){
         var cfReleaseName = val.split("/")[0];
         var cfReleaseVersion = val.split("/")[1];
-        
         //paasta-controller v2.0.0 이상 PaaS-TA 모니터링 지원 checkbox
         if( cfReleaseName.indexOf("paasta-controller") > -1 && compare(cfReleaseVersion, "2.0") > -1 ){
             $('.w2ui-msg-body #paastaMonitoring').attr('disabled',false);
@@ -435,6 +404,33 @@ function setDisabledMonitoring(val){
 }
 
 /********************************************************
+ * 설명 : 272 이상일 경우 화면 설정
+ * 기능 : setInputDisplay
+ *********************************************************/
+function setInputDisplay(val){
+    var name = val.split("/")[0];
+    var version = val.split("/")[1];
+    if( Number(version) >= 272 || (name.indexOf("paasta-controller") > -1 && compare(version, "3.0") > -1)){
+        //핑거프린트 자동 입력
+        $(".w2ui-msg-body #fingerprint").css("display", "none");
+        $(".w2ui-msg-body #deaDiskmbDiv").css("display", "none");
+        $(".w2ui-msg-body #deaMemorymbDiv").css("display", "none");
+        $(".w2ui-msg-body #loggregator").css("display", "block");
+        $(".w2ui-msg-body input[name='appSshFingerprint']").val("");
+        $(".w2ui-msg-body input[name='deaMemoryMB']").val("");
+        $(".w2ui-msg-body input[name='deaDiskMB']").val("");
+    }else{
+        if( diegoUse == "true" ){
+            $(".w2ui-msg-body #fingerprint").css("display", "block");
+        }
+        $(".w2ui-msg-body #loggregator").css("display", "none");
+        $(".w2ui-msg-body #deaDiskmbDiv").css("display", "block");
+        $(".w2ui-msg-body #deaMemorymbDiv").css("display", "block");
+    }
+    getLoggregatorRelease();
+}
+
+/********************************************************
  * 설명 : PaaS-TA 모니터링 사용 체크 검사
  * 기능 : checkPaasTAMonitoringUseYn
  *********************************************************/
@@ -442,17 +438,12 @@ function checkPaasTAMonitoringUseYn(value){
     var cnt = $("input[name=paastaMonitoring]:checkbox:checked").length;
     if(cnt > 0 ){
         $(".w2ui-msg-body input[name='ingestorIp']").attr("disabled", false);
-        $(".w2ui-msg-body input[name='ingestorPort']").attr("disabled", false);
-        
     }else{
         $(".w2ui-msg-body input[name='ingestorIp']").css({"border-color" : "rgb(187, 187, 187)"}).parent().find(".isMessage").text("");
-        $(".w2ui-msg-body input[name='ingestorPort']").css({"border-color" : "rgb(187, 187, 187)"}).parent().find(".isMessage").text("");
         //값 초기화
         $(".w2ui-msg-body input[name='ingestorIp']").val("");
-        $(".w2ui-msg-body input[name='ingestorPort']").val("");
         //Read-only
         $(".w2ui-msg-body input[name='ingestorIp']").attr("disabled", true);
-        $(".w2ui-msg-body input[name='ingestorPort']").attr("disabled", true);
     }
      
 }
@@ -463,6 +454,7 @@ function checkPaasTAMonitoringUseYn(value){
  *********************************************************/
 function saveDefaultInfo() {
     var release = $(".w2ui-msg-body select[name='releases']").val();
+    var loggregatorRelease = $(".w2ui-msg-body select[name='loggregatorReleases']").val();
     defaultInfo = {
                 id                   : (cfId) ? cfId : "",
                 iaas                 : iaas.toUpperCase(),
@@ -472,6 +464,8 @@ function saveDefaultInfo() {
                 directorUuid         : $(".w2ui-msg-body input[name='directorUuid']").val(),
                 releaseName          : release.split("/")[0],
                 releaseVersion       : release.split("/")[1],
+                loggregatorReleaseName    : loggregatorRelease.split("/")[0],
+                loggregatorReleaseVersion : loggregatorRelease.split("/")[1],
                 appSshFingerprint    : $(".w2ui-msg-body input[name='appSshFingerprint']").val(),
                 deaMemoryMB          : $(".w2ui-msg-body input[name='deaMemoryMB']").val(),
                 deaDiskMB            : $(".w2ui-msg-body input[name='deaDiskMB']").val(),
@@ -481,9 +475,7 @@ function saveDefaultInfo() {
                 loginSecret          : $(".w2ui-msg-body input[name='loginSecret']").val(),
                 paastaMonitoringUse  : $(".w2ui-msg-body input:checkbox[name='paastaMonitoring']").is(":checked") == true ? "true" : "false",
                 ingestorIp           : $(".w2ui-msg-body input[name='ingestorIp']").val(),
-                ingestorPort         : $(".w2ui-msg-body input[name='ingestorPort']").val()
     }
-    
     $.ajax({
         type : "PUT",
         url : "/deploy/"+menu+"/install/saveDefaultInfo",
@@ -524,6 +516,10 @@ function defaultNetworkPopup(div, height){
                 if ( networkInfo.length > 0 ) {
                     networkId = networkInfo[0].id;
                     setNetworkInfo(networkInfo);
+                }
+                if( iaas.toUpperCase() == "AWS" ){
+                    $(".w2ui-msg-body #availabilityZoneDiv").show();
+                    $(".w2ui-msg-body #availabilityZoneDiv").css("display", "block");
                 }
             }
         },
@@ -827,7 +823,7 @@ function saveNetworkInfo(type, form) {
      //Internal
      var cnt = 1
      if( $("#"+form).find(".panel-body").length > 1 ){
-         cnt = ($("#"+form).find(".panel-body").length);
+         cnt = $("#"+form).find(".panel-body").length;
      }
      for(var i=1; i < cnt; i++){
          var internal = {
@@ -849,7 +845,6 @@ function saveNetworkInfo(type, form) {
              cloudSecurityGroups : $(".w2ui-msg-body input[name='cloudSecurityGroups_"+i+"']").val(),
              availabilityZone    : $(".w2ui-msg-body input[name='availabilityZone_"+i+"']").val()
          }
-         
          networkInfo.push(internal);
      }
      
@@ -863,7 +858,6 @@ function saveNetworkInfo(type, form) {
                  w2popup.clear();
                  getCountryCodes();
                  keyInfoPopup();
-             
              },error : function(e, status) {
                  networkInfo = [];
                  w2alert("Cf Network 등록에 실패 하였습니다.", "Cf 설치");
@@ -971,6 +965,7 @@ function createKeyConfirm(){
                     organizationName    : $(".w2ui-msg-body input[name='organizationName']").val(), //회사명
                     unitName            : $(".w2ui-msg-body input[name='unitName']").val(), //부서명
                     email               : $(".w2ui-msg-body input[name='email']").val(), //email
+                    version             : defaultInfo.releaseVersion,
                     status              : "Y"
             }
            $('#KeyInfoForm').submit();
@@ -1002,6 +997,8 @@ function createKeyInfo(){
            w2popup.unlock();
            var errorResult = JSON.parse(request.responseText);
            w2alert(errorResult.message, "CF Key 생성");
+           keyInfo.status = "";
+           keyFile = "";
        }
    });
 }
@@ -1065,6 +1062,11 @@ function resourceInfoPopup(div, height) {
         showMax : false,
         onOpen : function(event) {
             event.onComplete = function() {
+                if(defaultInfo.releaseVersion >= 272 || (defaultInfo.releaseName.indexOf("paasta-controller") > -1 && compare(defaultInfo.releaseVersion, "3.0") > -1)){
+                    $(".w2ui-msg-body #runnerTypeDiv").css('display', 'none');
+                }else {
+                    $(".w2ui-msg-body #runnerTypeDiv").css('display', 'block');
+                }
                 if (resourceInfo != "") {
                     $(".w2ui-msg-body input[name='boshPassword']").val(resourceInfo.boshPassword);
                     $(".w2ui-msg-body input[name='smallFlavor']").val(resourceInfo.smallFlavor);
@@ -1133,11 +1135,19 @@ function getStamcellList() {
 
 /********************************************************
  * 설명 : CF 고급 기능
- * 기능 : resourceAdvancedSettingsPop
+ * 기능 : resourceJobSettingsPop
  *********************************************************/
-function resourceAdvancedSettingsPop(){
+function resourceJobSettingsPop(){
+    var flag = false;
+    for( var i=0; i < releases.length; i++ ){
+        if( releases[i] == defaultInfo.releaseVersion ) flag = true;
+    }
+    if( !flag ){
+        w2alert("지원하지 않는 릴리즈 입니다. ",true);
+        return;
+    }
     w2popup.open({
-        title   : 'CF 고급 설정',
+        title   : '<b>CF 고급 설정</b>',
         width   : 625,
         height  : 685,
         showMax : true,
@@ -1145,6 +1155,9 @@ function resourceAdvancedSettingsPop(){
         buttons :$("#cfDetailButtons").html(),
         onOpen  : function (event) {
             event.onComplete = function () {
+                if( checkEmpty(config.layout) ){
+                    setW2layout();
+                }
                 $('#w2ui-popup #cfDetailDiv').w2render('layout2');
                 w2ui['layout2'].content('main', $('#cfDetailPopDiv').html());
                 settingCfJobs();
@@ -1167,7 +1180,9 @@ function saveCfJobsInfo(){
      $(".w2ui-msg-body #cfJobListDiv li > ul").each(function(){
          var input = $($(this).children()[0]).find("input");
          if ($(input).val != "" && $(input).val() >=0 && $(input).val() <=3) {
-         }else flag = false;
+         }else{
+             flag = false;
+         }
      });
      
      jobsInfo = [];
@@ -1175,18 +1190,20 @@ function saveCfJobsInfo(){
          var input = $($(this).children()[0]).find("input");
          var pwd_input = $($(this).children()[1]).find("input");
          i ++;
+         var index = $(input).attr("name").split("_z").length-1;
+         var z_index = $(input).attr("name").split("_").length-1;
          var job = {
                  id           : cfId,
                  seq          : i,
                  deploy_type  : deploy_type,
-                 job_name     : $(input).attr("id"),
-                 job_code     : $(input).attr("name"),
+                 job_name     : $(input).attr("name").split("_z")[index-1],
+                 job_id       : $(input).attr("id"),
                  instances    : $(input).val(),
-                 password     : $(pwd_input).val()
-                 
+                 zone         : $(input).attr("name").split("_")[z_index]
          }
          jobsInfo.push(job);
      });
+     
      if( flag ){
          $.ajax({
                 type : "PUT",
@@ -1201,6 +1218,9 @@ function saveCfJobsInfo(){
                     w2popup.unlock();
                 }
             });
+     }else{
+         w2popup.unlock();
+         w2alert("인스턴스 수는 0부터 3까지만 가능합니다.");
      }
 }
 
@@ -1209,6 +1229,8 @@ function saveCfJobsInfo(){
  * 기능 : jobPopupComplete
  *********************************************************/
 function jobPopupComplete(){
+    config = "";
+    $().w2destroy('layout2');
     if( iaas.toUpperCase() == "VSPHERE" ){
         resourceInfoPopup("#vSphereResourceInfo", 695);
     }else{
@@ -1222,13 +1244,13 @@ function jobPopupComplete(){
  *********************************************************/
 function settingCfJobs(){
     var release_version = defaultInfo.releaseVersion;
+    release_version = settingReleaseVersion(release_version);
     $.ajax({
         type : "GET",
-        url : "/deploy/cf/install/save/job/list/"+release_version+"/"+iaas,
+        url : "/deploy/cf/install/save/job/list/"+release_version+"/"+'DEPLOY_TYPE_CF',
         contentType : "application/json",
         success : function(data, status) {
             if( !checkEmpty(data) ){
-                console.log(data);
                 var div = "";
                 var html = "";
                 html += '<div class="panel panel-info" style="height: 100%;overflow: auto;" >';
@@ -1237,39 +1259,23 @@ function settingCfJobs(){
                 html += '<div id="cfJobListDiv">';
                 html += '<p style="color:red;">- 고급 설정 값을 변경하지 않을 경우 아래에 입력 된 기본 값으로 자동 설정됩니다.</p>';
                 html += '<p style="color:red;">- 해당 Job의 인스턴스 수는 0-3까지 입력하실 수 있습니다.</p>';
-                for( var i=0; i<data.length; i++ ){
-                    html += '<ul class="w2ui-field" style="border: 1px solid #c5e3f3;padding: 10px;">';
-                    html +=     '<li style="display:inline-block; width:35%;">';
-                    html +=         '<label style="text-align: left;font-size:11px;">'+data[i].code_name+'_z1</label>';
-                    if( !checkEmpty(data[i].password) ){
-                        html +=          '&nbsp;&nbsp;<span class="glyphicon glyphicon glyphicon-question-sign" style="cursor:pointer;" data-toggle="tooltip" title="'+data[i].code_desc+'"></span>';
+                for( var j=1; j<networkInfo.length; j++ ){
+                    html += "<p style='color: #565656;font-size: 13px;font-weight:bolder;margin-top: 20px;'>[Internal 네트워크_"+ j+ "]</p>"
+                    for( var i=0; i<data.length; i++ ){
+                        if( j == 1 && data[i].zone_z1 == "true" ){
+                            html += setJobSettingHtml(data[i], j );
+                        }else if( j == 2 && data[i].zone_z2 == "true"  ){
+                            html += setJobSettingHtml(data[i], j);
+                        }
                     }
-                    html +=     '</li>';
-                    html +=     '<li style="display:inline-block; width:60%;vertical-align:middle; line-height:3; text-align:right;">';
-                    html +=         '<ul>';
-                    html +=             '<li>';
-                    html +=                 '<label style="display:inline-block;">인스턴스 수 : </label>&nbsp;&nbsp;&nbsp;';
-                    html +=                 '<input class="form-control" style="width:60%; display:inline-block;" onblur="instanceControl(this);" onfocusin="instanceControl(this);" onfocusout="instanceControl(this);" maxlength="1" type="number" min="0" max="3" value="1" id="'+data[i].code_name+'" name="'+data[i].code_value+'"/>';
-                    html +=              '</li>';
-                    if( !checkEmpty(data[i].password) ){
-                        html +=              '<li>';
-                        html +=                  '<label style="display:inline-block;">비밀번호 : </label>&nbsp;&nbsp;&nbsp;';
-                        html +=                  '<input class="form-control" style="width:60%; display:inline-block;" type="text" value="'+data[i].password+'" maxLength="20"  name="'+data[i].code_value+'_pwd"/>';
-                        html +=               '</li>';
-                    }
-                    html +=         '</ul>';
-                    html +=     '</li>';
-                    html += '</ul>';
                 }
                 html +='</div></div></div>';
-                
                 $("#cfDetailForm").html(html);
                 $(".w2ui-msg-body #cfDetailForm").html(html);
                
                 if( jobsInfo.length > 0 ){
-                    console.log(jobsInfo);
                     for( var i=0; i<jobsInfo.length; i++ ){
-                        $(".w2ui-msg-body input[name='"+jobsInfo[i].job_code+"']").val(jobsInfo[i].instances);
+                        $(".w2ui-msg-body input[name='"+jobsInfo[i].job_name+"_"+jobsInfo[i].zone+"']").val(jobsInfo[i].instances);
                     }
                 }
             }
@@ -1281,8 +1287,57 @@ function settingCfJobs(){
 }
 
 /********************************************************
+ * 설명 : CF 고급 설정 paasta release version 설정
+ * 기능 : settingReleaseVersion
+ *********************************************************/
+function settingReleaseVersion( version ){
+    var releaseVersion = version;
+     if( version == "3.0" ){
+        releaseVersion = "272";
+    }else if( version == "2.0" ){
+        releaseVersion = "247"
+    }
+    return releaseVersion;
+}
+
+/********************************************************
+ * 설명 : CF 고급 설정 HTML 설정
+ * 기능 : setJobSettingHtml
+ *********************************************************/
+function setJobSettingHtml(data, j){
+    var html = "";
+    if( (iaas.toLowerCase() != "vsphere" && data.job_name =="stats") || 
+            (iaas.toLowerCase() == "openstack" && data.job_name == "api_worker") ||
+            (j == 1 && (data.job_name == "api" || data.job_name == "uaa" || data.job_name == "api_worker")) ){
+        return html;
+    }else{
+        if( !(diegoUse == "true" && ( data.job_name == "hm9000" || data.job_name == "stats" || data.job_name == "runner")) ){
+            html += '<ul class="w2ui-field" style="border: 1px solid #c5e3f3;padding: 10px;">';
+            html +=     '<li style="display:inline-block; width:35%;">';
+            html +=         '<label style="text-align: left;font-size:11px;">'+data.job_name+'_z'+j+'</label>';
+            html +=     '</li>';
+            html +=     '<li style="display:inline-block; width:60%;vertical-align:middle; line-height:3; text-align:right;">';
+            html +=         '<ul>';
+            html +=             '<li>';
+            html +=                 '<label style="display:inline-block;">인스턴스 수 : </label>&nbsp;&nbsp;&nbsp;';
+            if( iaas.toLowerCase() == "vsphere" && networkInfo.length > 2 && j == 1 && ( data.job_name == "consul" || data.job_name == "etcd" ) ){
+                //vsphere Internal 네트워크가 2개 이상일 경우 etcd_z1, consul_z1의 instance 2 
+                html +=                 '<input class="form-control" style="width:60%; display:inline-block;" onblur="instanceControl(this);" onfocusin="instanceControl(this);" onfocusout="instanceControl(this);" maxlength="1" type="number" min="0" max="3" value="2" id="'+data.id+'" name="'+data.job_name+'_z'+j+'"/>';
+            }else{
+                html +=                 '<input class="form-control" style="width:60%; display:inline-block;" onblur="instanceControl(this);" onfocusin="instanceControl(this);" onfocusout="instanceControl(this);" maxlength="1" type="number" min="0" max="3" value="1" id="'+data.id+'" name="'+data.job_name+'_z'+j+'"/>';
+            }
+            html +=              '</li>';
+            html +=         '</ul>';
+            html +=     '</li>';
+            html += '</ul>';
+        }
+    }
+    return html;
+}
+
+/********************************************************
  * 설명 : CF Jobs 유효성 추가
- * 기능 : addCfDetailValidate
+ * 기능 : instanceControl
  *********************************************************/
 function instanceControl(e){
      if ( e.value != "" && e.value >=0 && e.value<=3) {
@@ -1290,19 +1345,19 @@ function instanceControl(e){
              $(e).parent().find("p").remove();
          }
      }else{
-         if( $(e).parent().find("p").length == 0 ){
-             $(e).parent().append("<p>0부터 3까지 숫자만 입력 가능 합니다.</p>");
-         }
          var name = $(e).attr("name");
          if( jobsInfo.length >0 ){
              for( var i=0; i<jobsInfo.length; i++ ){
-                 if( $(e).attr("name") == jobsInfo[i].job_code ){
-                     e.value= jobsInfo[i].instances;
+                 if( $(e).attr("name") == jobsInfo[i].job_name+"_"+jobsInfo[i].zone ){
+//                      e.value= jobsInfo[i].instances;
                  }
-             }     
+             }
          }else{
-             $(e).val("1");
+//              $(e).val("1");
          }
+	     if( $(e).parent().find("p").length == 0 ){
+	         $(e).parent().append("<p>0부터 3까지 숫자만 입력 가능 합니다.</p>");
+	     }
      }
 }
 
@@ -1381,9 +1436,9 @@ function createSettingFile(id){
             var errorResult = JSON.parse(request.responseText);
             w2alert(errorResult.message, "CF  배포 파일 생성");
             if(iaas.toLowerCase() == "vsphere"){
-                vSphereResourceInfoPopup();    
+                resourceInfoPopup("#vSphereResourceInfo", 695);
             }else{
-                resourceInfoPopup();
+                resourceInfoPopup("#resourceInfo", 690);
             }
         }
     });
@@ -1449,7 +1504,7 @@ function cfDeploy(type) {
         if ( menu =="cf" ){
             w2confirm({
                 msg : "설치하시겠습니까?",
-                title : w2utils.lang('CF 설치'),
+                title : "<b>"+w2utils.lang('CF 설치') + "</b>",
                 yes_text : "예",
                 no_text : "아니오",
                 yes_callBack : installPopup
@@ -1480,7 +1535,7 @@ function installPopup(){
     w2popup.open({
         title   : "<b>CF 설치</b>",
         width   : 750,
-        height  : 550,
+        height  : 600,
         body    : $("#installDiv").html(),
         buttons : $("#installButtons").html(),
         modal   : true,
@@ -1631,7 +1686,7 @@ function deletePopup(record){
                 }
             }
         });
-    }
+    }        
 }
 
 /********************************************************
@@ -1703,8 +1758,8 @@ function popupComplete(){
         msg = $(".w2ui-msg-title b").text() + " 화면을 닫으시겠습니까?<BR>(닫은 후에도 완료되지 않는 설치 또는 삭제 작업은 계속 진행됩니다.)";
     }
     w2confirm({
-        title     : $(".w2ui-msg-title b").text(),
-        msg        : msg,
+        title   : "<b>"+ $(".w2ui-msg-title b").text() +"</b>",
+        msg     : msg,
         yes_text: "확인",
         yes_callBack : function(envent){
             w2popup.close();
@@ -1720,7 +1775,7 @@ function popupComplete(){
  * 기능 : popupClose
  *********************************************************/
 function popupClose() {
-     $().w2destroy(config.layout2);
+     $().w2destroy('layout2');
     //params init
     initSetting();
     //grid Reload
@@ -1775,13 +1830,20 @@ function gridReload() {
                         </div>
                     </div>
                     <div class="w2ui-field">
-                        <label style="text-align: left; width: 36%; font-size: 11px;">
-                            CF 릴리즈
-                        <span class="glyphicon glyphicon glyphicon-question-sign cf-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="click" data-html="true" title="설치 지원 버전 목록"></span>
+                        <label style="text-align: left; width: 36%; font-size: 11px;">CF 릴리즈
+                        <span class="glyphicon glyphicon glyphicon-question-sign cf-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="click" data-html="true" title="<b>설치 지원 버전 목록</b>"></span>
                         </label>
                         <div>
-                            <select name="releases" onchange='setDisabledMonitoring(this.value);' style="display:inline-block; width: 70%;">
+                            <select name="releases" onchange='setDisabledMonitoring(this.value); setInputDisplay(this.value);' style="display:inline-block; width: 70%;">
                                 <option value="">CF 릴리즈를 선택하세요.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="w2ui-field" id="loggregator" style="display:none;">
+                        <label style="text-align: left; width: 36%; font-size: 11px;">LOGGREGATOR 릴리즈</label>
+                        <div>
+                            <select name="loggregatorReleases" style="display:inline-block; width: 70%;">
+                                <option value="">LOGGREGATOR 릴리즈를 선택하세요.</option>
                             </select>
                         </div>
                     </div>
@@ -1798,13 +1860,13 @@ function gridReload() {
                             <input name="domainOrganization" type="text" style="display:inline-block;width:70%;" placeholder="기본 조직명을 입력하세요." />
                         </div>
                     </div>
-                    <div class="w2ui-field">
+                    <div class="w2ui-field" id="deaDiskmbDiv">
                         <label style="text-align: left; width: 36%; font-size: 11px;">DEA DISK 사이즈</label>
                         <div>
                             <input name="deaDiskMB" type="text" style="display:inline-block;width:70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="예) 32768" />
                         </div>
                     </div>
-                    <div class="w2ui-field">
+                    <div class="w2ui-field" id="deaMemorymbDiv">
                         <label style="text-align: left; width: 36%; font-size: 11px;">DEA MEMORY 사이즈</label>
                         <div>
                             <input name="deaMemoryMB" type="text" style="display:inline-block;width:70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="예) 8192" />
@@ -1853,12 +1915,6 @@ function gridReload() {
                         <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 Ingestor 서버 IP</label>
                         <div>
                             <input name="ingestorIp" type="text" style="display:inline-blcok; width: 70%;" disabled placeholder="예)10.0.0.0" />
-                        </div>
-                    </div>
-                    <div class="w2ui-field">
-                        <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 Ingestor 서버 PORT</label>
-                        <div>
-                            <input name="ingestorPort" type="text" style="display:inline-blcok; width: 70%;" disabled  placeholder="예)2514" />
                         </div>
                     </div>
                 </div>
@@ -1962,7 +2018,7 @@ function gridReload() {
         </div>
     </form>
     <div class="w2ui-buttons" id="defaultNetworkInfoButtons" hidden="true">
-        <button class="btn" style="float: left;" onclick="saveNetworkInfo('before');" >이전</button>
+        <button class="btn" style="float: left;" onclick="saveNetworkInfo('before', 'defaultNetworkInfoForm');" >이전</button>
         <button class="btn" style="float: right; padding-right: 15%" onclick="$('#defaultNetworkInfoForm').submit();" >다음>></button>
     </div>
 </div>
@@ -2065,7 +2121,7 @@ function gridReload() {
         </div>
     </form>
     <div class="w2ui-buttons" id="googleNetworkInfoButtons" hidden="true">
-        <button class="btn" style="float: left;" onclick="saveNetworkInfo('before', '#googleNetworkInfoForm');" >이전</button>
+        <button class="btn" style="float: left;" onclick="saveNetworkInfo('before', 'googleNetworkInfoForm');" >이전</button>
         <button class="btn" style="float: right; padding-right: 15%" onclick="$('#googleNetworkInfoForm').submit();" >다음>></button>
     </div>
 </div>
@@ -2164,7 +2220,7 @@ function gridReload() {
                         </div>
                     </div>
                     <div class="w2ui-field">
-                        <label style="text-align: left; width: 36%; font-size: 11px;">IP할당 대역</label>
+                        <label style="text-align: left; width: 36%; font-size: 11px;">IP할당 대역(최소 20개)</label>
                         <div>
                             <input name="subnetStaticFrom_1" type="text" style="display:inline-block;width:32%;" placeholder="예) 10.0.0.100" />
                             <span style="width: 4%; text-align: center;">&nbsp;&ndash; &nbsp;</span>
@@ -2178,7 +2234,7 @@ function gridReload() {
         </div>
     </form>
     <div class="w2ui-buttons" id="VsphereNetworkInfoButtons" hidden="true">
-        <button class="btn" style="float: left;" onclick="saveNetworkInfo('before', '#vSphereNetworkInfoForm');" >이전</button>
+        <button class="btn" style="float: left;" onclick="saveNetworkInfo('before', 'vSphereNetworkInfoForm');" >이전</button>
         <button class="btn" style="float: right; padding-right: 15%" onclick="$('#vSphereNetworkInfoForm').submit();" >다음>></button>
     </div>
 </div>
@@ -2256,7 +2312,7 @@ function gridReload() {
 <!-- Resource  설정 DIV -->
 <div id="resourceInfoDiv" style="width: 100%; height: 100%;" hidden="true">
     <form id="resourceInfoForm">
-        <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
+        <div style="margin-left:2%;display:inline-block;width:97%;padding-top:15px;">
             <ul class="progressStep_6">
                 <li class="pass">기본 정보</li>
                 <li class="pass">네트워크 정보</li>
@@ -2270,7 +2326,7 @@ function gridReload() {
             <div class="panel panel-info">    
                 <div class="panel-heading" style="position:relative"><b>리소스 정보</b>
                     <div style="position: absolute;right: 10px ;top: 2px; ">
-                        <a class="btn btn-info btn-sm" onclick="resourceAdvancedSettingsPop();">고급 기능</a>
+                        <a class="btn btn-info btn-sm" onclick="resourceJobSettingsPop();">고급 기능</a>
                     </div>
                 </div>
                 
@@ -2324,7 +2380,7 @@ function gridReload() {
                     </div>
                 </div>
             </div>
-            <div class="panel panel-info" style="margin-top:10px;">
+            <div class="panel panel-info" style="margin-top:10px;" id="runnerTypeDiv">
                 <div class="panel-heading"><b>Runner Resource Type</b></div>
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
@@ -2357,8 +2413,12 @@ function gridReload() {
             </ul>
         </div>
         <div class="w2ui-page page-0" style="margin-top:15px;padding:0 3%;">
-            <div class="panel panel-info" style="margin-top:20px;">    
-                <div class="panel-heading"><b>리소스 정보</b></div>
+            <div class="panel panel-info">    
+                <div class="panel-heading" style="position:relative"><b>리소스 정보</b>
+                    <div style="position: absolute;right: 10px ;top: 2px; ">
+                        <a class="btn btn-info btn-sm" onclick="resourceJobSettingsPop();">고급 기능</a>
+                    </div>
+                </div>
                 <div class="panel-body" style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">Stemcell</label>
@@ -2433,7 +2493,7 @@ function gridReload() {
                     </div>
                 </div>
             </div>
-            <div class="panel panel-info">    
+            <div class="panel panel-info" id="runnerTypeDiv" style="margin-top:20px;">
                 <div class="panel-heading"><b>Runner Resource Type</b></div>
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">

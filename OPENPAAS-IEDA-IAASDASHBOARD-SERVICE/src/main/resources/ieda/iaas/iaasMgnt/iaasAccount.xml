@@ -24,7 +24,7 @@
         ,( Select if(count(*) = 0,'사용안함', '사용중') 
              From ieda_iaas_config as config, ieda_iaas_account as account2
             Where config.account_id = account2.id
-              And account.iaas_type = account2.iaas_type
+              And account.iaas_type = config.iaas_type
               And account.id = account2.id
               And account2.create_user_id= #{userId}) as status
     From ieda_iaas_account account 
@@ -54,7 +54,7 @@
         ,( Select if(count(*) = 0,'사용안함', '사용중') 
              From ieda_iaas_config as config, ieda_iaas_account as account2
             Where config.account_id = account2.id
-              And account.iaas_type = account2.iaas_type
+              And account.iaas_type = config.iaas_type
               And account.id = account2.id
               And account2.create_user_id= #{userId}) as status
     From ieda_iaas_account account

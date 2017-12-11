@@ -65,13 +65,13 @@ jobs:
     instances: (( merge || 1 ))
     networks:
       - name: cf1
-        static_ips: (( static_ips(1) ))
+        static_ips: (( static_ips(2, 3, 4) ))
 
   - name: nats_z2
     instances: (( merge || 0 ))
     networks:
       - name: cf2
-        static_ips: (( static_ips(1) ))
+        static_ips: (( static_ips(2, 3, 4) ))
 
   - name: stats_z1
     instances: (( merge || 1 ))
@@ -82,7 +82,7 @@ jobs:
     instances: (( merge || 0 ))
     networks:
       - name: cf1
-        static_ips: (( static_ips(2) ))
+        static_ips: (( static_ips(5) ))
 
   - name: blobstore_z1
     instances: (( merge || 1 ))
@@ -93,13 +93,13 @@ jobs:
     instances: (( merge || 1 ))
     networks:
       - name: cf1
-        static_ips: (( static_ips(12) ))
+        static_ips: (( static_ips(8) ))
 
   - name: uaa_z1
     instances: (( merge || 1 ))
     networks:
       - name: cf1
-      
+
   - name: uaa_z2
     instances: (( merge || 0 ))
     networks:
@@ -109,39 +109,38 @@ jobs:
     instances: (( merge || 1 ))
     networks:
       - name: cf1
-      
+
   - name: api_z2
     instances: (( merge || 0 ))
     networks:
       - name: cf2
-        static_ips: (( static_ips(8) ))
 
   - name: clock_global
     instances: (( merge || 1 ))
     networks:
       - name: cf1
-      
+
   - name: api_worker_z1
     instances: (( merge || 1 ))
     networks:
       - name: cf1
-      
+
   - name: api_worker_z2
     instances: (( merge || 0 ))
     networks:
       - name: cf2
-      
+
   - name: router_z1
     instances: (( merge || 1 ))
     networks:
       - name: cf1
-        static_ips: (( static_ips(5, 6) ))
+        static_ips: (( static_ips(9, 10, 11) ))
 
   - name: router_z2
     instances: (( merge || 0 ))
     networks:
       - name: cf2
-        static_ips: (( static_ips(5, 6) ))
+        static_ips: (( static_ips(9, 10, 11) ))
 
   - name: loggregator_z1
     instances: (( merge || 0 ))
@@ -177,13 +176,13 @@ jobs:
     instances: (( merge || 1 ))
     networks:
       - name: cf1
-        static_ips: (( static_ips(14, 15) ))
+        static_ips: (( static_ips(12, 13, 14) ))
 
   - name: etcd_z2
     instances: (( merge || 0 ))
     networks:
       - name: cf2
-        static_ips: (( static_ips(13) ))
+        static_ips: (( static_ips(12, 13, 14) ))
 
   - name: consul_z1
     instances: (( merge || 1 ))
@@ -196,7 +195,7 @@ jobs:
     networks:
       - name: cf2
         static_ips: (( static_ips(17, 18, 19) ))
-        
+
   - name: hm9000_z1
     instances: (( merge || 1 ))
     networks:
@@ -211,12 +210,12 @@ jobs:
     instances: (( meta.runner_z1_instances ))
     networks:
       - name: cf1
-    
+
   - name: runner_z2
     instances: (( merge || 0 ))
     networks:
       - name: cf2
-        
+
   - name: smoke_tests
     instances: 1
 

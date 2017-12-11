@@ -25,10 +25,12 @@ public class BootstrapVO {
     private String directorName; // 디렉터명
     private String boshRelease; // BOSH 릴리즈
     private String boshCpiRelease; // BOSH API 릴리즈
-    private String osConfRelease; //Google OS CONF 릴리즈
     private String snapshotSchedule;//스냅샷 스케줄
     private String enableSnapshots;//스냅샷 사용 유무
     private String ntp; // NTP
+    private String paastaMonitoringUse; //PaaS-TA 모니터링 사용 유무
+    private String paastaMonitoringIp; //PaaS-TA 모니터링 사용시 ingrestorIP
+    private String paastaMonitoringRelease; //PaaS-TA 모니터링 사용시 릴리즈
 
     /** Network Info **/
     private String subnetId; // 네트워크id
@@ -305,12 +307,28 @@ public class BootstrapVO {
         this.testFlag = testFlag;
     }
 
-    public String getOsConfRelease() {
-        return osConfRelease;
+    public String getPaastaMonitoringUse() {
+        return paastaMonitoringUse;
     }
 
-    public void setOsConfRelease(String osConfRelease) {
-        this.osConfRelease = osConfRelease;
+    public void setPaastaMonitoringUse(String paastaMonitoringUse) {
+        this.paastaMonitoringUse = paastaMonitoringUse;
+    }
+
+    public String getPaastaMonitoringIp() {
+        return paastaMonitoringIp;
+    }
+
+    public void setPaastaMonitoringIp(String paastaMonitoringIp) {
+        this.paastaMonitoringIp = paastaMonitoringIp;
+    }
+
+    public String getPaastaMonitoringRelease() {
+        return paastaMonitoringRelease;
+    }
+
+    public void setPaastaMonitoringRelease(String paastaMonitoringRelease) {
+        this.paastaMonitoringRelease = paastaMonitoringRelease;
     }
     
 

@@ -16,7 +16,6 @@ public class IaasConfigMgntDTO {
     private String commonKeypairName; //Key Pair 이름
     private String commonKeypairPath; // Key Pair 경로
     private String commonAvailabilityZone; //공통 영역
-    private String googlePublicKey;//ssh key
     private String vsphereVcenterDataCenterName;    
     private String vsphereVcenterVmFolder; //vCenter
     private String vsphereVcenterTemplateFolder; //vCenter
@@ -52,12 +51,12 @@ public class IaasConfigMgntDTO {
         this.iaasConfigAlias = iaasConfigAlias;
     }
     public String getCommonSecurityGroup() {
-		return commonSecurityGroup;
-	}
-	public void setCommonSecurityGroup(String commonSecurityGroup) {
-		this.commonSecurityGroup = commonSecurityGroup;
-	}
-	public String getCommonRegion() {
+        return commonSecurityGroup;
+    }
+    public void setCommonSecurityGroup(String commonSecurityGroup) {
+        this.commonSecurityGroup = commonSecurityGroup;
+    }
+    public String getCommonRegion() {
         return commonRegion;
     }
     public void setCommonRegion(String commonRegion) {
@@ -129,12 +128,5 @@ public class IaasConfigMgntDTO {
     public void setCommonAvailabilityZone(String commonAvailabilityZone) {
         this.commonAvailabilityZone = commonAvailabilityZone;
     }
-    public String getGooglePublicKey() {
-        return googlePublicKey;
-    }
-    public void setGooglePublicKey(String googlePublicKey) {
-        this.googlePublicKey = googlePublicKey;
-    }
-    
 
 }

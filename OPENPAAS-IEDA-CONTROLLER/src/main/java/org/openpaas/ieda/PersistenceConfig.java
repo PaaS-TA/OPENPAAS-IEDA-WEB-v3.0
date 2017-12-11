@@ -19,29 +19,29 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 @MapperScan(value = { "org.openpaas.ieda"})
 public class PersistenceConfig {
-	
-	/***************************************************
-	 * @project          : Paas 플랫폼 설치 자동화
-	 * @description   : xml mybatis 셋팅
-	 * @title               : sqlSEssionFactory
-	 * @return            : SqlSessionFactory
-	***************************************************/
-	@Bean
-    public static SqlSessionFactory sqlSEssionFactory(DataSource dataSource) throws Exception {
-    	SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
-    	sessionFactory.setDataSource(dataSource);
-    	
-    	Resource[] res = new PathMatchingResourcePatternResolver().getResources("classpath*:ieda/**/**/**/*.xml");
-    	sessionFactory.setMapperLocations(res);
-    	
-    	return sessionFactory.getObject();
-    }
-	
+    
     /***************************************************
-     * @project          : Paas 플랫폼 설치 자동화
-     * @description   : DataSourceTransactionManager 객체 생성
-     * @title               : transactionManager
-     * @return            : PlatformTransactionManager
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : xml mybatis 셋팅
+     * @title : sqlSEssionFactory
+     * @return : SqlSessionFactory
+    ***************************************************/
+    @Bean
+    public static SqlSessionFactory sqlSEssionFactory(DataSource dataSource) throws Exception{
+        SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
+        sessionFactory.setDataSource(dataSource);
+        
+        Resource[] res = new PathMatchingResourcePatternResolver().getResources("classpath*:ieda/**/**/**/*.xml");
+        sessionFactory.setMapperLocations(res);
+        
+        return sessionFactory.getObject();
+    }
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : DataSourceTransactionManager 객체 생성
+     * @title : transactionManager
+     * @return : PlatformTransactionManager
     ***************************************************/
     @Bean
     public static PlatformTransactionManager transactionManager(DataSource dataSource) {

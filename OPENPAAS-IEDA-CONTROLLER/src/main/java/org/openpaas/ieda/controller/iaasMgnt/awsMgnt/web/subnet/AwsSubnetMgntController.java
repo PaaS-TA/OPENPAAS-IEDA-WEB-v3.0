@@ -108,7 +108,6 @@ public class AwsSubnetMgntController {
     ***************************************************/
     @RequestMapping(value="/awsMgnt/subnet/save/vpcs/{accountId}/{region}", method=RequestMethod.GET)
     public ResponseEntity<List<AwsVpcMgntVO>> getAwsVpc(Principal principal, @PathVariable int accountId, @PathVariable String region){
-        
         List<AwsVpcMgntVO> vpcs= vpsService.getAwsVpcInfoList(accountId, region, principal);
         return new ResponseEntity<List<AwsVpcMgntVO>> (vpcs, HttpStatus.CREATED);
     }

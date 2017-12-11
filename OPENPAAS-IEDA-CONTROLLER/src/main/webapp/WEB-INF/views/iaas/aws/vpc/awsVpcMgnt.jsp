@@ -18,11 +18,13 @@ var detail_Vpc_lock_msg='<spring:message code="common.search.detaildata.lock"/>'
 var delete_lock_msg='<spring:message code="common.delete.data.lock"/>';//삭제 중 입니다.
 var text_required_msg='<spring:message code="common.text.vaildate.required.message"/>';//을(를) 입력하세요.
 var text_cidr_msg='<spring:message code="common.text.validate.cidr.message"/>';//CIDR 대역을 확인 하세요.
-
+var delete_confirm_msg='<spring:message code="common.popup.delete.message"/>';//을(를) 삭제 하시겠습니까?
+        
 var accountId ="";
 var bDefaultAccount = "";
 var setAwsRegion = "";
 var region = "";
+
 $(function() {
     
     bDefaultAccount = setDefaultIaasAccountList("aws");
@@ -97,10 +99,10 @@ $(function() {
     $("#addBtn").click(function(){
         if($("#addBtn").attr('disabled') == "disabled") return;
        w2popup.open({
-           title     : "<b>AWS VPC 생성</b>",
-           width     : 580,
-           height    : 370,
-           modal    : true,
+           title   : "<b>AWS VPC 생성</b>",
+           width   : 580,
+           height  : 370,
+           modal   : true,
            body    : $("#registPopupDiv").html(),
            buttons : $("#registPopupBtnDiv").html(),
            onClose : function(event){
@@ -132,17 +134,16 @@ $(function() {
            result += "</table><br/>"
            var record = w2ui['aws_vpcGrid'].get(selected);
            w2confirm({
-               title : "VPC 삭제",
-               msg : "VPC (" + record.vpcId + ")을 삭제하시겠습니까?<br/>"
-                      +"<strong><font color='red'>VPC와 연동 된</font></strong><br/>"
-                      + result
-                         +"<strong><font color='red'>등이 삭제 될 수 있습니다.</font></strong><br/>"
-                         +"<strong><font color='red'>그래도 삭제 하시 겠습니까?</strong><red>"   ,
+               title   : "<b>VPC 삭제</b>",
+               msg     : "VPC (" + record.vpcId + ")"+ delete_confirm_msg +"<br/>"
+                                      +"<strong><font color='red'>VPC와 연동 된</font></strong><br/>"
+                                      + result
+                                      +"<strong><font color='red'>등이 삭제 될 수 있습니다.</font></strong><br/>"
+                                      +"<strong><font color='red'>그래도 삭제 하시 겠습니까?</strong><red>"   ,
                yes_text : "확인",
                no_text : "취소",
                height : 350,
                yes_callBack: function(event){
-                   w2utils.lock($("#layout_layout_panel_main"),delete_lock_msg, true);
                    deleteAwsVpcInfo(record);
                },
                no_callBack    : function(){
@@ -158,7 +159,7 @@ $(function() {
 
 /********************************************************
  * 설명 : VPC 목록 조회 Function 
- * Function : doSearch
+ * 기능 : doSearch
  *********************************************************/
 function doSearch() {
     region = $("select[name='region']").val();
@@ -170,7 +171,7 @@ function doSearch() {
 
 /********************************************************
  * 설명 : VPC 정보 상세 조회 Function 
- * Function : doSearchVpcDetail
+ * 기능 : doSearchVpcDetail
  *********************************************************/
 function doSearchVpcDetailInfo(accountId, vpcId, region){
     w2utils.lock($("#layout_layout_panel_main"), detail_Vpc_lock_msg, true);
@@ -225,10 +226,10 @@ function doSearchVpcDetailInfo(accountId, vpcId, region){
 
 /********************************************************
  * 설명 : AWS VPC 생성
- * Function : saveAwsVpcInfo
+ * 기능 : saveAwsVpcInfo
  *********************************************************/
 function saveAwsVpcInfo(){
-    w2utils.lock($("#layout_layout_panel_main"),save_lock_msg, true);
+     w2popup.lock(save_lock_msg, true);
     var vpcInfo = {
         region : $("select[name='region']").val(),	
         accountId : $("select[name='accountId']").val(),
@@ -245,14 +246,11 @@ function saveAwsVpcInfo(){
         data : JSON.stringify(vpcInfo),
         success : function(status) {
             w2popup.unlock();
-            w2utils.unlock($("#layout_layout_panel_main"));
             w2popup.close();
             accountId = vpcInfo.accountId;
             doSearch();
         }, error : function(request, status, error) {
             w2popup.unlock();
-            w2popup.close();
-            w2utils.unlock($("#layout_layout_panel_main"));
             var errorResult = JSON.parse(request.responseText);
             w2alert(errorResult.message);
         }
@@ -261,9 +259,10 @@ function saveAwsVpcInfo(){
 
 /********************************************************
  * 설명 : AWS VPC 삭제
- * Function : deleteAwsVpcInfo
+ * 기능 : deleteAwsVpcInfo
  *********************************************************/
 function deleteAwsVpcInfo(record){
+     w2popup.lock(delete_lock_msg, true);
     var vpcInfo = {
             region : $("select[name='region']").val(),
             accountId : record.accountId,
@@ -278,14 +277,12 @@ function deleteAwsVpcInfo(record){
         success : function(status) {
             w2popup.unlock();
             w2popup.close();
-            w2utils.unlock($("#layout_layout_panel_main"));
             accountId = vpcInfo.accountId;
             w2ui['aws_vpcGrid'].clear();
             $("#vpcDetailTable td").html("");
             doSearch();
         }, error : function(request, status, error) {
             w2popup.unlock();
-            w2utils.unlock($("#layout_layout_panel_main"));
             $("#vpcDetailTable td").html("");
             w2ui['aws_vpcGrid'].clear();
             var errorResult = JSON.parse(request.responseText);
@@ -296,7 +293,7 @@ function deleteAwsVpcInfo(record){
 
 /********************************************************
  * 설명 : 초기 버튼 스타일
- * Function : doButtonStyle
+ * 기능 : doButtonStyle
  *********************************************************/
 function doButtonStyle() {
     $('#deleteBtn').attr('disabled', true);
@@ -332,7 +329,8 @@ td {
  
 </style>
 <div id="main">
-     <div id="awsMgnt">
+     <div class="page_site pdt20">인프라 관리 > AWS 관리 > <strong>AWS VPC 관리 </strong></div>
+     <div id="awsMgnt" class="pdt20">
         <ul>
             <li>
                 <label style="font-size: 14px">AWS 관리 화면</label> &nbsp;&nbsp;&nbsp; 
@@ -384,7 +382,7 @@ td {
             </sec:authorize>
         </div>
     </div>
-    <div id="aws_vpcGrid" style="width:100%; height:475px"></div>
+    <div id="aws_vpcGrid" style="width:100%; height:405px"></div>
 
 <!-- VPC 생성 팝업 -->
 <div id="registPopupDiv" hidden="true">
@@ -527,7 +525,6 @@ $(function() {
                 setInvalidHandlerStyle(errors, validator);
             }
         }, submitHandler: function (form) {
-            w2popup.lock(save_lock_msg, true);
             saveAwsVpcInfo();
         }
     });

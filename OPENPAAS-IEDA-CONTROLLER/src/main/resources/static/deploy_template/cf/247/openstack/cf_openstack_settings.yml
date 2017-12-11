@@ -209,19 +209,19 @@ jobs:
     instances: (( merge || 0 ))
     networks:
       - name: cf2
-        static_ips: (( static_ips(11, 12, 13) ))
+        static_ips: (( static_ips(9, 10, 11) ))
 
   - name: etcd_z2
     instances: (( merge || 0 ))
     networks:
       - name: cf2
-        static_ips: (( static_ips(14, 15, 16) ))
+        static_ips: (( static_ips(12, 13, 14) ))
 
   - name: consul_z2
     instances: (( merge || 0 ))
     networks:
       - name: cf2
-        static_ips: (( static_ips(17, 18, 19) ))
+        static_ips: (( static_ips(15, 16, 17) ))
 
   - name: loggregator_z2
     instances: (( merge || 0 ))

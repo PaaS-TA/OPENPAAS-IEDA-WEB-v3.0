@@ -5,32 +5,32 @@ import java.util.Date;
 
 public class BootstrapListDTO {
 
-	private Integer recid; //recid
-	private Integer id; //id
-	private String iaasConfigAlias;
-	private String deployStatus; //배포상태
-	private String deploymentName; //배포명
-	private String directorName;//디렉터명
-	private String iaas; //IaaS
-	private String boshRelease; //BOSH 릴리즈
-	private String boshCpiRelease; //BOSH CPI 릴리즈
-	private String subnetId; //서브넷 ID(NET ID)
-	private String subnetRange; //서브넷 범위
-	private String publicStaticIp; //디렉터 공인 IP
-	private String privateStaticIp; //디렉터 내부 IP
-	private String subnetGateway; //게이트웨이
-	private String subnetDns; //DNS
-	private String ntp; //NTP
-	private String stemcell; //스템셀
-	private String instanceType; //인스턴스 유형
-	private String boshPassword; //VM 비밀번호
-	private String deploymentFile; //배포 파일명
-	private String deployLog; //배포로그
-	private Date createDate; // 생성일자
-	private Date updateDate; // 수정일자
-	
-	
-	public Integer getRecid() {
+    private Integer recid; //recid
+    private Integer id; //id
+    private String iaasConfigAlias;
+    private String deployStatus; //배포상태
+    private String deploymentName; //배포명
+    private String directorName;//디렉터명
+    private String iaas; //IaaS
+    private String boshRelease; //BOSH 릴리즈
+    private String boshCpiRelease; //BOSH CPI 릴리즈
+    private String subnetId; //서브넷 ID(NET ID)
+    private String subnetRange; //서브넷 범위
+    private String publicStaticIp; //디렉터 공인 IP
+    private String privateStaticIp; //디렉터 내부 IP
+    private String subnetGateway; //게이트웨이
+    private String subnetDns; //DNS
+    private String ntp; //NTP
+    private String stemcell; //스템셀
+    private String instanceType; //인스턴스 유형
+    private String boshPassword; //VM 비밀번호
+    private String deploymentFile; //배포 파일명
+    private String deployLog; //배포로그
+    private Date createDate; // 생성일자
+    private Date updateDate; // 수정일자
+    
+    
+    public Integer getRecid() {
         return recid;
     }
 
@@ -199,37 +199,37 @@ public class BootstrapListDTO {
     }
 
     public void setUpdateDate(Date updateDate) {
-		if(updateDate == null) {
-			this.updateDate = null;
-		} else {
-			this.updateDate = new Date(updateDate.getTime());
-		}
-	}
+        if(updateDate == null) {
+            this.updateDate = null;
+        } else {
+            this.updateDate = new Date(updateDate.getTime());
+        }
+    }
 
-	public Date getUpdateDate() {
-		if(updateDate == null) {
-			return null;
-		} else {
-			return new Date(updateDate.getTime());
-		}
-	}
+    public Date getUpdateDate() {
+        if(updateDate == null) {
+            return null;
+        } else {
+            return new Date(updateDate.getTime());
+        }
+    }
 
-	public Date getCreateDate() {
-		if(createDate == null) {
-			return null;
-		} else {
-			return new Date(createDate.getTime());
-		}
-	}
-	
-	public void setCreateDate(Date createDate) {
-		if(createDate == null) {
-			this.createDate = null;
-		} else {
-			this.createDate = new Date(createDate.getTime());
-		}
-	}
-	
-	
-	
+    public Date getCreateDate() {
+        if(createDate == null) {
+            return null;
+        } else {
+            return new Date(createDate.getTime());
+        }
+    }
+    
+    public void setCreateDate(Date createDate) {
+        if(createDate == null) {
+            this.createDate = null;
+        } else {
+            this.createDate = new Date(createDate.getTime());
+        }
+    }
+    
+    
+    
 }

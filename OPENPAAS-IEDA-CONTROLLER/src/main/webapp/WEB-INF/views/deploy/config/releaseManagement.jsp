@@ -20,7 +20,6 @@
 //private common variable
 var downloadClient = "";
 var downloadStatus = "";
-var IAAS_TYPE_CODE = '100';
 var releaseTyps = "";
 var iaasTypes = "";
 var completeButton = '<div><div class="btn btn-success btn-xs" style="width:100px; padding:3px;">Downloaded</div></div>';
@@ -28,6 +27,8 @@ var downloadingButton = '<div class="btn btn-info btn-xs" style="width:100px;">D
 var progressBarDiv = '<div class="progress">';
     progressBarDiv += '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" >';
     progressBarDiv += '</div></div>';
+
+var IAAS_TYPE_CODE='<spring:message code="common.code.iaasType.code.parent"/>';//100
 var text_required_msg='<spring:message code="common.text.vaildate.required.message"/>';//을(를) 입력하세요.
 var text_injection_msg='<spring:message code="common.text.validate.sqlInjection.message"/>';//입력하신 값은 입력하실 수 없습니다.
 $(function() {
@@ -87,7 +88,7 @@ $(function() {
          w2popup.open({
              title   : "<b>릴리즈 등록</b>",
              width   : 635,
-             height  : 500,
+             height  : 505,
              modal   : true,
              body    : $("#regPopupDiv").html(),
              buttons : $("#regPopupBtnDiv").html(),
@@ -101,7 +102,7 @@ $(function() {
          $('[data-toggle="popover"]').popover();
           //스템셀 버전 정보
           $(".release-info").attr('data-content', "http://bosh.io/releases");
-         getReleaseTyps();
+          getReleaseTypes();
           //다른 곳 클릭 시 popover hide 이벤트
           $('.w2ui-popup').on('click', function (e) {
               $('[data-toggle="popover"]').each(function () {
@@ -150,10 +151,10 @@ $(function() {
 
 
 /******************************************************************
- * 기능 : getReleaseTyps
+ * 기능 : getReleaseTypes
  * 설명 : 릴리즈 유형 조회
  ***************************************************************** */
-function getReleaseTyps() {
+function getReleaseTypes() {
     var releaseTypeList = "";
     $.ajax({
         type : "GET",
@@ -348,8 +349,8 @@ function releaseRegist(){
 }
 
 /********************************************************
- * 설명         : lock 검사
- * Function     : lockFileSet
+ * 설명 : lock 검사
+ * 기능 : lockFileSet
  *********************************************************/
 var lockFile = false;
 function lockFileSet(releaseFile){
@@ -372,37 +373,33 @@ function lockFileSet(releaseFile){
  *********************************************************/
 function releaseInfoSave(releaseInfo){
     lock( '등록 중입니다.', true);
-    //유효성 검사
-    if (popupValidation()){
-        $.ajax({
-            type : "POST",
-            url : "/config/systemRelease/regist",
-            contentType : "application/json",
-            async : true,
-            data : JSON.stringify(releaseInfo),
-            success : function(data, status) {
-                w2popup.close();
-                console.log(data);
-                releaseInfo.id = data.id; 
-                releaseInfo.downloadStatus = data.downloadStatus;
-                initView();//재조회
-                if(releaseInfo.fileType == 'file'){
-                    releaseFileUpload(releaseInfo);
-                }else{
-                    socketDwonload(releaseInfo);
-                }
-            }, error : function(request, status, error) {
-                w2popup.unlock();
-                var errorResult = JSON.parse(request.responseText);
-                w2alert(errorResult.message);
+    $.ajax({
+        type : "POST",
+        url : "/config/systemRelease/regist",
+        contentType : "application/json",
+        async : true,
+        data : JSON.stringify(releaseInfo),
+        success : function(data, status) {
+            w2popup.close();
+            releaseInfo.id = data.id; 
+            releaseInfo.downloadStatus = data.downloadStatus;
+            initView();//재조회
+            if(releaseInfo.fileType == 'file'){
+                releaseFileUpload(releaseInfo);
+            }else{
+                socketDwonload(releaseInfo);
             }
-        });
-    }
+        }, error : function(request, status, error) {
+            w2popup.unlock();
+            var errorResult = JSON.parse(request.responseText);
+            w2alert(errorResult.message);
+        }
+    });
 }
 
 
 /********************************************************
- * 설명            : 릴리즈 다운로드
+ * 설명 : 릴리즈 다운로드
  * 기능 : socketDwonload
  *********************************************************/
 var fail_count = 0;
@@ -642,10 +639,10 @@ $(window).resize(function() {
         <input name="releaseSize" type="hidden" />
         <input name="id" type="hidden" />
         <form id="settingForm" action="POST">
-            <div class="w2ui-page page-0" style="margin-top:15px;padding:0 1%;">
-	            <div class="panel panel-info" >    
+            <div class="w2ui-page page-0">
+	            <div class="panel panel-info" style="margin-top:5px;" >
 	                <div class="panel-heading"><b>릴리즈 기본 정보</b></div>
-	                <div class="panel-body" style="padding:5px 5px 10px 5px;">
+	                <div class="panel-body">
 	                    <div class="w2ui-field">
 	                        <label style="width:30%;text-align: left;padding-left: 20px;">릴리즈 명</label>
 	                        <div style="width: 70%;">
@@ -663,10 +660,10 @@ $(window).resize(function() {
 	                </div>
 	            </div>
 	        </div>
-	        <div class="w2ui-page page-0" style="margin-top:15px;padding:0 1%;">
-	            <div class="panel panel-info" style='margin: 20px 0;'>
+	        <div class="w2ui-page page-0">
+	            <div class="panel panel-info" style='margin: 10px 0;'>
 	                <div class="panel-heading"><b>릴리즈 다운 유형</b></div>
-	                <div class="panel-body" style="padding:5px 5px 10px 5px;">
+	                <div class="panel-body">
 	                    <div class="w2ui-field">
 	                        <input type="radio" name="fileType" id="fileTypLocal" value="file" style="float:left; margin-left:15px;" onchange='setRegistType(this.value);'/>
 	                        <label for="fileTypLocal" style="width:25.5%;text-align:left;">&nbsp;&nbsp;로컬에서 선택</label>
@@ -682,7 +679,7 @@ $(window).resize(function() {
 	                        <input type="radio" name="fileType" id="fileTypeUrl" style="float:left; margin-left:15px;" value="url" onchange='setRegistType(this.value);'/>
 	                        <label for="fileTypeUrl" for="fileTypeUrl" style="width:25.5%;text-align: left;">
 	                            &nbsp;&nbsp;릴리즈 Url
-	                            <img alt="release-help-info" class="release-info" style="width:18px;vertical-align:middle;" data-toggle="popover" title="공개 릴리즈 참조 사이트"  data-html="true" src="../images/help-Info-icon.png">
+	                            <span class="glyphicon glyphicon glyphicon-question-sign release-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="click" data-html="true" title="<b>공개 릴리즈 참조 사이트</b>"></span>
 	                        </label>
 	                        <div>
 	                            <input type="text" id="releasePathUrl" name="releasePathUrl" style="width:53%;" readonly   placeholder="릴리즈 다운로드 Url을 입력 하세요."/>

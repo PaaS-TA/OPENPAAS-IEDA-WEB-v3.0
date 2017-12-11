@@ -67,7 +67,7 @@ public class AwsKeypairMgntService {
                 //Content-Disposition : 브라우저에서 다운로드 창을 띄우는 역할
                 response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
                 //문자열 데이터를 파일에 쓴다.
-                IOUtils.write(content, response.getOutputStream());
+                IOUtils.write(content, response.getOutputStream(), "UTF-8");
             } catch (IOException e) {
                 throw new CommonException(
                         message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);

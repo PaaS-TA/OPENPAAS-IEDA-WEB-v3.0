@@ -102,51 +102,55 @@ public class AwsSecurityGroupMgntService {
      * @return : HashMap<String,Object>
     *****************************************************************/
     public HashMap<String, Object> setIpProtocolInfo(IpPermission ipPermission){
-        final Integer parent_code = Integer.parseInt(message.getMessage("common.code.ingress.rules.parent", null, Locale.KOREA));
+        final Integer parentCode = Integer.parseInt(message.getMessage("common.code.ingress.rules.parent", null, Locale.KOREA));
         final String icmp = message.getMessage("common.code.ingress.rules.icmp", null, Locale.KOREA);
         final String customProtocolRule = message.getMessage("common.code.ingress.rules.customProtocolRule", null, Locale.KOREA);
         HashMap<String, Object> map = new HashMap<String, Object>();
         String trafficType = null;
         String protocol = null;
         String portRange = null;
+        CommonCodeVO vo = null;
         
-        String port_range = ipPermission.getFromPort() != null ? String.valueOf(ipPermission.getFromPort()) : null;
+        String portRange2 = ipPermission.getFromPort() != null ? String.valueOf(ipPermission.getFromPort()) : null;
         if( ipPermission.getToPort() != null ){
-            port_range += (int)ipPermission.getToPort() == (int)ipPermission.getFromPort() ? "" : "-"+ipPermission.getToPort();
-        }else port_range = "-1";
-
+            portRange2 += (int)ipPermission.getToPort() == (int)ipPermission.getFromPort() ? "" : "-"+ipPermission.getToPort();
+        }else {
+            portRange2 = "-1";
+        }
         
-        CommonCodeVO vo = new CommonCodeVO();
         if( StringUtils.isNumeric(ipPermission.getIpProtocol()) ){ 
-            CommonCodeVO customProtocol = commonIaasDao
-                    .selectIngressRulesInfoBySubGroupCode(parent_code, ipPermission.getIpProtocol(), Integer.parseInt(customProtocolRule));
+            CommonCodeVO customProtocol = commonIaasDao.selectIngressRulesInfoBySubGroupCode(
+                    parentCode
+                   ,ipPermission.getIpProtocol()
+                   ,Integer.parseInt(customProtocolRule));
             trafficType = "Custom Protocol Rule";
             protocol = customProtocol.getCodeName();
             portRange = customProtocol.getCodeValue();
         }else{
             if( ipPermission.getIpProtocol().equals("icmp") && ipPermission.getFromPort() > -1){
-                vo = commonIaasDao.selectIngressRulesInfo(parent_code, icmp, ipPermission.getIpProtocol());
+                vo = new CommonCodeVO();
+                vo = commonIaasDao.selectIngressRulesInfo(parentCode, icmp, ipPermission.getIpProtocol());
                 trafficType = vo.getCodeName();
                 protocol = vo.getCodeDescription();
                 if( vo.getCodeNameKr().equals("icmp") && Integer.parseInt(vo.getCodeValue()) > 30000 ){
-                    port_range = ipPermission.getToPort() + "";
-                    String from_port = String.valueOf(ipPermission.getFromPort());
-                    String to_port = String.valueOf(ipPermission.getToPort());
-                    CommonCodeVO icmpProtocol = commonIaasDao.selectIngressRulesInfoBySubGroupCode(parent_code,  from_port, Integer.parseInt(icmp));
+                    portRange2 = ipPermission.getToPort() + "";
+                    String fromPort = String.valueOf(ipPermission.getFromPort());
+                    String toPort = String.valueOf(ipPermission.getToPort());
+                    CommonCodeVO icmpProtocol = commonIaasDao.selectIngressRulesInfoBySubGroupCode(parentCode, fromPort, Integer.parseInt(icmp));
                     portRange = icmpProtocol.getCodeName();
                     if( Integer.parseInt(icmpProtocol.getCodeValue()) > 31000  ){
-                        CommonCodeVO icmpProtocolDetail = commonIaasDao.selectIngressRulesInfoBySubGroupCodeAndUsubGroupCode(parent_code, to_port,
+                        CommonCodeVO icmpProtocolDetail = commonIaasDao.selectIngressRulesInfoBySubGroupCodeAndUsubGroupCode(parentCode, toPort,
                                 Integer.parseInt(icmp), Integer.parseInt(icmpProtocol.getCodeValue()));
                         
                         portRange = icmpProtocolDetail.getCodeName();
                     }
                 }
             }else{
-                vo = commonIaasDao.selectIngressRulesInfo(parent_code, port_range, ipPermission.getIpProtocol());
+                vo = commonIaasDao.selectIngressRulesInfo(parentCode, portRange2, ipPermission.getIpProtocol());
                 if( vo == null ){
                     trafficType = "Custom " + ipPermission.getIpProtocol().toUpperCase() + " Rule";
                     protocol = ipPermission.getIpProtocol().toUpperCase();
-                    portRange = port_range;
+                    portRange = portRange2;
                 }else{
                     trafficType = vo.getCodeName();
                     protocol = vo.getCodeDescription();
@@ -157,7 +161,9 @@ public class AwsSecurityGroupMgntService {
         }
         map.put("trafficType", trafficType);
         map.put("protocol", protocol);
-        map.put("portRange", (portRange.equals("-1") || portRange.equals("0-65535") )? "ALL" : portRange );
+        if( portRange != null  ) {
+            map.put("portRange", (portRange.equals("-1") || portRange.equals("0-65535") )? "ALL" : portRange );
+        }
         
         String source = setIpProtocolSourceInfo(ipPermission);
         map.put("source",source);
@@ -175,7 +181,7 @@ public class AwsSecurityGroupMgntService {
         if( ipPermission.getIpv4Ranges().size() >0 ){
             for( int k = 0; k<ipPermission.getIpv4Ranges().size(); k++ ){
                 Object cidrIp = ipPermission.getIpv4Ranges().get(k).getCidrIp();
-                source = (cidrIp != null ? cidrIp.toString() : "-" );
+                source = cidrIp != null ? cidrIp.toString() : "-";
             }
         }else if( ipPermission.getUserIdGroupPairs().size() >0 ){
             for( int k=0; k<ipPermission.getUserIdGroupPairs().size(); k++ ){

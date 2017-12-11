@@ -24,6 +24,7 @@ import com.amazonaws.services.ec2.model.DeleteSecurityGroupResult;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsRequest;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
 import com.amazonaws.services.ec2.model.IpPermission;
+import com.amazonaws.services.ec2.model.IpRange;
 import com.amazonaws.services.ec2.model.SecurityGroup;
 import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.ec2.model.UserIdGroupPair;
@@ -126,17 +127,20 @@ public class AwsSecurityGroupMgntApiService {
             AuthorizeSecurityGroupIngressRequest ingressRequest =new AuthorizeSecurityGroupIngressRequest();
             IpPermission ipPermission = new IpPermission();
             String[] ports = dto.getIngressRules().get(i).get("portRange").split("-");
-            int fromPort = Integer.valueOf(ports[0]);
-            int toPort = ports.length == 2 ? Integer.valueOf(ports[1]) : fromPort;
+            String portRanges = ports[0];
+            int fromPort = Integer.valueOf(portRanges);
+            int toPort = ports.length == 2 ? Integer.valueOf(portRanges) : fromPort;
             
             //if security id
             UserIdGroupPair userIdGroupPairs = new UserIdGroupPair();
             userIdGroupPairs.withGroupId(dto.getGroupId()).withVpcId(dto.getVpcId());
-            ipPermission.withUserIdGroupPairs(userIdGroupPairs)
+            IpRange ipRange = new IpRange();
+            ipRange.setCidrIp("0.0.0.0/0");
+            ipPermission.withIpv4Ranges(ipRange)
                         .withIpProtocol(dto.getIngressRules().get(i).get("protocol"))
                         .withFromPort(fromPort)
                         .withToPort(toPort);
-                
+
             ingressRequest.withGroupId(dto.getGroupId()).withIpPermissions(ipPermission);
             AuthorizeSecurityGroupIngressResult ingressResult = ec2.authorizeSecurityGroupIngress(ingressRequest);
             if( ingressResult.getSdkHttpMetadata().getHttpStatusCode() == 200 ){

@@ -61,6 +61,13 @@ body {height:100%;overflow-x:hidden;}
 	margin-top:25px;	
 }
 
+.leftMenu_05 {
+    width:235px;
+    height:41px;
+    background:url(../images/left_menu5.jpg);
+    margin-top:25px;    
+}
+
 .leftMenu_ti{
 	padding:10px 0 0 56px;
 	font-size:15px;

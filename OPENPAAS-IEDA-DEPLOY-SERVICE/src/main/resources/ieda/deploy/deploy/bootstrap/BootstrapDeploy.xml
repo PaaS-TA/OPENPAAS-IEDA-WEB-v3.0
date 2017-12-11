@@ -11,11 +11,13 @@
     <result property="createDate" column="CREATE_DATE" />
     <result property="updateUserId" column="UPDATE_USER_ID"/>
     <result property="updateDate" column="UPDATE_DATE" />
+    <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE" />
+    <result property="paastaMonitoringIp" column="PAASTA_MONITORING_IP" />
+    <result property="paastaMonitoringRelease" column="PAASTA_MONITORING_RELEASE" />
     <result property="deploymentName" column ="DEPLOYMENT_NAME"/>
     <result property="directorName" column ="DIRECTOR_NAME"/>
     <result property="boshRelease" column ="BOSH_RELEASE"/>
     <result property="boshCpiRelease" column ="BOSH_CPI_RELEASE"/>
-    <result property="osConfRelease" column ="OS_CONF_RELEASE"/>
     <result property="snapshotSchedule" column ="SNAPSHOT_SCHEDULE"/>
     <result property="enableSnapshots" column ="ENABLE_SNAPSHOTS"/>
     <result property="privateStaticIp" column ="PRIVATE_STATIC_IP"/>
@@ -48,7 +50,6 @@
         <result property="commonKeypairName" column ="COMMON_KEYPAIR_NAME"/>
         <result property="commonKeypairPath" column ="COMMON_KEYPAIR_PATH"/>
         <result property="commonAvailabilityZone" column="COMMON_AVAILABILITY_ZONE"/>
-        <result property="googlePublicKey" column="GOOGLE_PUBLIC_KEY"/>
         <result property="vsphereVcentDataCenterName" column="VSPHERE_VCENTER_DATACENTER_NAME"/>
         <result property="vsphereVcenterVmFolder" column="VSPHERE_VCENTER_VM_FOLDER"/>
         <result property="vsphereVcenterTemplateFolder" column="VSPHERE_VCENTER_TEMPLATE_FOLDER"/>
@@ -66,7 +67,10 @@
         <result property="commonAccessSecret" column="COMMON_ACCESS_SECRET"/>
         <result property="commonTenant" column="COMMON_TENANT"/>
         <result property="commonProject" column="COMMON_PROJECT"/>
+        <result property="commonRegion" column="COMMON_Region"/>
         <result property="googleJsonKey" column="GOOGLE_JSON_KEY"/>
+        <result property="openstackVersion" column="openstack_keystone_version"/>
+        <result property="openstackDomain" column="openstack_domain"/>
     </collection>
 </resultMap>
 
@@ -94,6 +98,9 @@
         ,bootstrap.subnet_range as subnet_range
         ,bootstrap.create_date as create_date
         ,bootstrap.update_date as update_date
+        ,bootstrap.paasta_monitoring_use as paasta_monitoring_use
+        ,bootstrap.paasta_monitoring_ip as paasta_monitoring_ip
+        ,bootstrap.paasta_monitoring_release as paasta_monitoring_release
         ,config.iaas_config_alias as iaas_config_alias
         ,config.id as iaas_config_id
     From ieda_bootstrap bootstrap Left Join ieda_iaas_config config
@@ -109,7 +116,6 @@ Order by iaas_type asc, update_date asc
             ,bootstrap.bosh_cpi_release as bosh_cpi_release
             ,bootstrap.bosh_password as bosh_password
             ,bootstrap.bosh_release as bosh_release
-            ,bootstrap.os_conf_release as os_conf_release
             ,bootstrap.enable_snapshots as enable_snapshots
             ,bootstrap.snapshot_schedule as snapshot_schedule
             ,bootstrap.cloud_instance_type as cloud_instance_type
@@ -137,6 +143,9 @@ Order by iaas_type asc, update_date asc
             ,bootstrap.public_subnet_dns as public_subnet_dns
             ,bootstrap.create_date as create_date
             ,bootstrap.update_date as update_date
+            ,bootstrap.paasta_monitoring_use as paasta_monitoring_use
+            ,bootstrap.paasta_monitoring_ip as paasta_monitoring_ip
+            ,bootstrap.paasta_monitoring_release as paasta_monitoring_release
             ,config.iaas_config_alias as iaas_config_alias
             ,config.id as iaas_config_id
             ,config.account_id as account_id
@@ -145,7 +154,6 @@ Order by iaas_type asc, update_date asc
             ,config.common_keypair_name as common_keypair_name
             ,config.common_keypair_path as common_keypair_path
             ,config.common_availability_zone as common_availability_zone
-            ,config.google_public_key as google_public_key
             ,config.vsphere_vcenter_datacenter_name as vsphere_vcenter_datacenter_name
             ,config.vsphere_vcenter_vm_folder as vsphere_vcenter_vm_folder
             ,config.vsphere_vcenter_template_folder as vsphere_vcenter_template_folder
@@ -157,6 +165,7 @@ Order by iaas_type asc, update_date asc
             ,ifnull(account.common_access_endpoint, "") as common_access_endpoint
             ,ifnull(account.common_access_user, "") as common_access_user
             ,ifnull(account.common_access_secret, "") as common_access_secret
+            ,ifnull(account.openstack_domain, "") as openstack_domain
             ,ifnull(account.common_tenant, "") as common_tenant
             ,ifnull(account.common_project, "") as common_project
             ,ifnull(account.google_json_key,"") as google_json_key
@@ -179,6 +188,9 @@ Order by iaas_type asc, update_date asc
         ,create_user_id
         ,update_user_id
         ,update_date
+        ,paasta_monitoring_use
+        ,paasta_monitoring_ip
+        ,paasta_monitoring_release
         ) 
     VALUES(
          <if test="bootstrap.testFlag != null">1</if>
@@ -189,6 +201,9 @@ Order by iaas_type asc, update_date asc
         ,#{bootstrap.createUserId}
         ,#{bootstrap.updateUserId}
         ,now()
+        ,#{bootstrap.paastaMonitoringUse}
+        ,#{bootstrap.paastaMonitoringIp}
+        ,#{bootstrap.paastaMonitoringRelease}
     )
     <selectKey keyProperty="bootstrap.id" resultType="int" order="AFTER">
         <if test="bootstrap.id != 1"> SELECT LAST_INSERT_ID(); </if>
@@ -201,7 +216,6 @@ Order by iaas_type asc, update_date asc
     Update ieda_bootstrap Set
         iaas_config_id = #{bootstrap.iaasConfigId}
         ,bosh_cpi_release = #{bootstrap.boshCpiRelease}
-        ,os_conf_release = #{bootstrap.osConfRelease}
         ,bosh_password = #{bootstrap.boshPassword}
         ,ntp= #{bootstrap.ntp}
         ,bosh_release = #{bootstrap.boshRelease}
@@ -230,6 +244,9 @@ Order by iaas_type asc, update_date asc
         ,public_subnet_dns= #{bootstrap.publicSubnetDns}
         ,update_user_id=#{bootstrap.updateUserId}
         ,update_date= now()
+        ,paasta_monitoring_use=#{bootstrap.paastaMonitoringUse}
+        ,paasta_monitoring_ip=#{bootstrap.paastaMonitoringIp}
+        ,paasta_monitoring_release=#{bootstrap.paastaMonitoringRelease}
     WHERE
     id=#{bootstrap.id}
 </update>

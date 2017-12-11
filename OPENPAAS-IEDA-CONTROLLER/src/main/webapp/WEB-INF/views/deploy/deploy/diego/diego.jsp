@@ -233,13 +233,13 @@ $(function() {
         
         var selected = w2ui['config_diegoGrid'].getSelection();
         var record = w2ui['config_diegoGrid'].get(selected);
-
         var message = "";
 
-        if (record.deploymentName)
+        if (record.deploymentName){
             message = "DIEGO (배포명 :" + record.deploymentName + ")를 삭제하시겠습니까?";
-        else
+        }else{
             message = "선택된 DIEGO를 삭제하시겠습니까?";
+        }
 
         w2confirm({
             title :"DIEGO 삭제",
@@ -264,8 +264,8 @@ $(function() {
 });
 
 /********************************************************
- * 설명         :  Diego 조회
- * Function : Diego 조회
+ * 설명 : Diego 조회
+ * 기능 : doSearch
  *********************************************************/
 function doSearch() {
     //iaas 추출
@@ -284,8 +284,8 @@ function doSearch() {
 }
 
 /********************************************************
- * 설명         :  Iaas Select Confirm
- * Function : selectIaas
+ * 설명 : 클라우드 환경 확인
+ * 기능 : selectIaas
  *********************************************************/
 function selectIaas() {
     //Bootstrap 
@@ -310,16 +310,15 @@ function selectIaas() {
 
 
  /********************************************************
- * 설명        : 버튼 스타일 변경
- * Function    : doButtonStyle
+ * 설명 : 버튼 스타일 변경
+ * 기능 : doButtonStyle
  *********************************************************/
 function doButtonStyle() {
     if ( !bDefaultDirector ) {
         $('#installBtn').attr('disabled', true);
         $('#modifyBtn').attr('disabled', true);
         $('#deleteBtn').attr('disabled', true);
-    } 
-    else {
+    } else {
         $('#installBtn').attr('disabled', false);
         $('#modifyBtn').attr('disabled', true);
         $('#deleteBtn').attr('disabled', true);
@@ -327,8 +326,8 @@ function doButtonStyle() {
 } 
 
 /********************************************************
- * 설명        : 다른페이지 이동시 호출
- * Function    : clearMainPage
+ * 설명 : 다른페이지 이동시 호출
+ * 기능 : clearMainPage
  *********************************************************/
 function clearMainPage() {
     $().w2destroy('config_diegoGrid');

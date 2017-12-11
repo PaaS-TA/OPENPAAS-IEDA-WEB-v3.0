@@ -40,13 +40,13 @@ public class AwsInternetGatewayMgntService {
         IaasAccountMgntVO vo =  getAwsAccountInfo(principal, accountId);
         Region region = getAwsRegionInfo(regionName);
         List<AwsInternetGatewayMgntVO> list = new ArrayList<AwsInternetGatewayMgntVO>();
-        List<InternetGateway> apiList = awsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(vo, accountId, region);
+        List<InternetGateway> apiList = awsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(vo, region);
         int i = 1;
         for(InternetGateway internetGateway : apiList ){
             String tagName = "";
             String statue = "";
             String vpcId = "";
-            AwsInternetGatewayMgntVO InternetGatewayVO = new AwsInternetGatewayMgntVO();
+            AwsInternetGatewayMgntVO internetGatewayVO = new AwsInternetGatewayMgntVO();
             if(internetGateway.getAttachments().size() != 0){
                 for(int j = 0; j < internetGateway.getAttachments().size(); j ++){
                     statue += internetGateway.getAttachments().get(j).getState();
@@ -54,7 +54,7 @@ public class AwsInternetGatewayMgntService {
                         statue += ", ";
                     }
                 }
-                InternetGatewayVO.setStatus(statue);
+                internetGatewayVO.setStatus(statue);
                 for(int k = 0; k < internetGateway.getAttachments().size(); k++){
                     if(internetGateway.getAttachments().get(k).getVpcId()!=null){
                         vpcId += internetGateway.getAttachments().get(k).getVpcId();
@@ -63,7 +63,7 @@ public class AwsInternetGatewayMgntService {
                         }
                     }
                 }
-                InternetGatewayVO.setVpcId(vpcId);
+                internetGatewayVO.setVpcId(vpcId);
             }
             if(internetGateway.getTags().size() != 0){
                 for(int j=0; j < internetGateway.getTags().size(); j++){
@@ -72,13 +72,13 @@ public class AwsInternetGatewayMgntService {
                         tagName += ", ";
                     }
                 }
-                InternetGatewayVO.setInternetGatewayName(tagName);
+                internetGatewayVO.setInternetGatewayName(tagName);
             }
-            InternetGatewayVO.setInternetGatewayId(internetGateway.getInternetGatewayId());
-            InternetGatewayVO.setRecid(i);
-            InternetGatewayVO.setAccountId(accountId);
+            internetGatewayVO.setInternetGatewayId(internetGateway.getInternetGatewayId());
+            internetGatewayVO.setRecid(i);
+            internetGatewayVO.setAccountId(accountId);
             i++;
-            list.add(InternetGatewayVO);
+            list.add(internetGatewayVO);
         }
         return list;
     }
@@ -128,7 +128,7 @@ public class AwsInternetGatewayMgntService {
         IaasAccountMgntVO vo =  getAwsAccountInfo(principal, accountId);
         Region region = getAwsRegionInfo(regionName);
         List<Vpc> apiVpcList = awsVpcMgntApiService.getAwsVpcInfoListApiFromAws(vo, region.getName());
-        List<InternetGateway> apiInternetList = awsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(vo, accountId, region);
+        List<InternetGateway> apiInternetList = awsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(vo, region);
         List<AwsInternetGatewayMgntVO> resultList = new ArrayList<AwsInternetGatewayMgntVO>();
         
         for(int i=0;i<apiVpcList.size();i++){

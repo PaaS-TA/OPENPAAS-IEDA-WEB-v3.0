@@ -16,8 +16,6 @@ import org.openpaas.ieda.deploy.web.config.setting.service.DirectorConfigService
 import org.openpaas.ieda.deploy.web.deploy.cf.dao.CfDAO;
 import org.openpaas.ieda.deploy.web.deploy.cf.dao.CfVO;
 import org.openpaas.ieda.deploy.web.deploy.cf.dto.CfParamDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -35,7 +33,6 @@ public class CfDeployAsyncServiceUnitTest extends BaseDeployControllerUnitTest {
     @Mock CfDAO mockCfDAO;
     @Mock MessageSource mockMessageSource;
     
-    final private static Logger LOGGER = LoggerFactory.getLogger(CfDeleteDeployAsyncServiceUnitTest.class);
     private Principal principal = null;
     
     /****************************************************************
@@ -58,7 +55,6 @@ public class CfDeployAsyncServiceUnitTest extends BaseDeployControllerUnitTest {
     ***************************************************/
     @Test
     public void testDeleteDeploy(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> CF 설치 상태 저장 TEST ");}
         CfVO vo = setCfInfo("default");
         mockCfDeployAsyncService.saveDeployStatus(vo);
     }
@@ -71,7 +67,6 @@ public class CfDeployAsyncServiceUnitTest extends BaseDeployControllerUnitTest {
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testCfDeployInfoNull(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> CF 설치 중 CF 정보가 존재 하지 않을 경우 TEST ");}
         CfParamDTO.Install dto = new CfParamDTO.Install();
         dto.setIaas("openstack");
         dto.setId("1");
@@ -119,7 +114,6 @@ public class CfDeployAsyncServiceUnitTest extends BaseDeployControllerUnitTest {
         vo.setPaastaMonitoringUse("yes");
         vo.setOrganizationName("pass-ta");
         vo.setIngestorIp("172.16.100.100");
-        vo.setIngestorPort("25555");
         vo.setKeyFile("cf-key.yml");
         vo.setLocalityName("mapo");
         vo.setLoginSecret("test");

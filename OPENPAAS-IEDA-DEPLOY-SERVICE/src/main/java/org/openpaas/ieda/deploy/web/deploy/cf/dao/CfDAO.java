@@ -74,7 +74,7 @@ public interface CfDAO {
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : CF 릴리즈 버전 및 인프라 별 Job 목록 조회
+     * @description : CF 릴리즈 버전 및 배포 유형 별 Job 목록 조회
      * @title : selectCfJobTemplatesByReleaseVersion
      * @return : List<HashMap<String,String>>
     *****************************************************************/
@@ -94,14 +94,21 @@ public interface CfDAO {
      * @title : selectCfJobSettingInfoListBycfId
      * @return : List<HashMap<String,String>>
     *****************************************************************/
-    List<HashMap<String, Object>> selectCfJobSettingInfoListBycfId(
-            @Param("deployType")String deployType, @Param("cfId")int cfId, @Param("parentCode")String parentCode);
+    List<HashMap<String, Object>> selectCfJobSettingInfoListBycfId(@Param("deployType")String deployType, @Param("cfId")int cfId);
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : CF 고급 설정 정보 삭제
+     * @description : CF 고급 설정 정보 목록 삭제
      * @title : deleteCfJobSettingInfo
      * @return : void
     *****************************************************************/
-    void deleteCfJobSettingInfo(@Param("map")HashMap<String, String> map);
+    void deleteCfJobSettingListById(@Param("map")HashMap<String, String> map);
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : cf id 및 해당 zone에 일치하는 레코드 삭제
+     * @title : deleteCfJobSettingRecords
+     * @return : void
+    ***************************************************/
+    void deleteCfJobSettingRecordsByIdAndZone(@Param("id")int id, @Param("zone") String zone );
 }

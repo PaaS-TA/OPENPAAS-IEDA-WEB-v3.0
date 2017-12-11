@@ -16,6 +16,7 @@ var accountId ="";
 var bDefaultAccount = "";
 var setAwsRegion = "";
 var region = "";
+var search_lock_msg = '<spring:message code="common.search.data.lock"/>';//조회 중 입니다.
 $(function() {
     
     bDefaultAccount = setDefaultIaasAccountList("aws");
@@ -83,8 +84,8 @@ $(function() {
 
 
 /********************************************************
- * 설명        : Elastic IP 목록 조회 Function
- * Function    : doSearch
+ * 설명 : Elastic IP 목록 조회 Function
+ * 기능 : doSearch
  *********************************************************/
 function doSearch() {
     region = $("select[name='region']").val();
@@ -93,22 +94,20 @@ function doSearch() {
 }
 
 /********************************************************
- * 설명        : Elastic IP 상세 조회 Function
- * Function    : doSearchElasticIpDetail
+ * 설명 : Elastic IP 상세 조회
+ * 기능 : doSearchElasticIpDetail
  *********************************************************/
 function doSearchElasticIpDetail(accountId, publicIp){
     var accountId =  $("select[name='accountId']").val();
     var region = $("select[name='region']").val();
-    w2utils.lock($("#layout_layout_panel_main"), "Elastic IP 상세 정보 조회 중", true);
+    w2utils.lock($("#layout_layout_panel_main"), search_lock_msg, true);
     
     $.ajax({
         type : "GET",
         url : "/awsMgnt/elasticIp/save/detail/"+accountId+"/"+publicIp+"/"+region+"",
         contentType : "application/json",
         success : function(data, status) {
-            
             w2utils.unlock($("#layout_layout_panel_main"));
-            
             if(data != null){
                 $(".elasticIp").html(data.publicIp+"");
                 $(".allocationId").html(data.allocationId+"");
@@ -229,7 +228,8 @@ td {
 </style>
 
 <div id="main">
-    <div id="awsMgnt">
+     <div class="page_site pdt20">인프라 관리 > AWS 관리 > <strong>AWS Elastic IPs 관리 </strong></div>
+     <div id="awsMgnt" class="pdt20">
         <ul>
             <li>
                 <label style="font-size: 14px">AWS 관리 화면</label> &nbsp;&nbsp;&nbsp; 
@@ -277,8 +277,8 @@ td {
             
         </div>
     </div>
-    <div id="aws_elasticIpGrid" style="width:100%; height:475px"></div>
-    <div class="title fl">AWS Elastic IP 상세 목록</div>
+    <div id="aws_elasticIpGrid" style="width:100%; height:425px"></div>
+    <div class="title fl">AWS Elastic IP 상세 정보</div>
     <div id="aws_elasticIpDetailGrid" style="width:100%; height:128px; margin-top:50px; border-top: 2px solid #c5c5c5; ">
         <table id= "elasticIpDetailTable" class="table table-condensed table-hover">
               <tr>
@@ -318,7 +318,6 @@ td {
                 <div class="w2ui-field">
                     <label style="width:70%;text-align: left; padding-left: 20px;">새로운 Elastic IP 주소 할당</label>
                 </div>
-                
             </div>
         </div>
     </div> 

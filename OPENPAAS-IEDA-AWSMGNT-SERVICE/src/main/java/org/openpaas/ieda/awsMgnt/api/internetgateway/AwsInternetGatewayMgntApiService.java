@@ -48,7 +48,7 @@ public class AwsInternetGatewayMgntApiService {
     * @title : getAwsInternetGatewayInfoListFromAws
     * @return : List<InternetGateway>
     ***************************************************/
-    public List<InternetGateway> getAwsInternetGatewayInfoListFromAws(IaasAccountMgntVO vo, int accountId, Region region) {
+    public List<InternetGateway> getAwsInternetGatewayInfoListFromAws(IaasAccountMgntVO vo, Region region) {
         AmazonEC2Client ec2 =  getAmazonEC2Client(vo, region);
         List<InternetGateway> list = ec2.describeInternetGateways().getInternetGateways();
         return list;

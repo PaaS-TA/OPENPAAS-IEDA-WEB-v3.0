@@ -25,8 +25,6 @@ import org.openpaas.ieda.deploy.web.deploy.common.dao.network.NetworkDAO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.network.NetworkVO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceDAO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceVO;
-import org.openpaas.ieda.deploy.web.management.code.dao.CommonCodeDAO;
-import org.openpaas.ieda.deploy.web.management.code.dao.CommonCodeVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,6 @@ public class CfService {
     @Autowired private CommonDeployDAO commonDao;
     @Autowired private NetworkDAO networkDao;
     @Autowired private ResourceDAO resourceDao;
-    @Autowired private CommonCodeDAO codeDao;
     @Autowired MessageSource message;
     
     final private static String SEPARATOR = System.getProperty("file.separator");
@@ -59,8 +56,8 @@ public class CfService {
      * @return : List<CfListDTO>
     *****************************************************************/
     public List<CfListDTO> getCfLIst(String iaas, String platform) {
-        List<CfListDTO> cfList = new ArrayList<>();
-        String code_name= setMessageSourceValue("common.deploy.type.cf.name");
+        List<CfListDTO> cfList = new ArrayList<CfListDTO>();
+        String codeName= setMessageSourceValue("common.deploy.type.cf.name");
         List<CfVO> listCf  = cfDao.selectCfList(iaas, platform);
         if( !listCf.isEmpty()){
             int recid = 0;
@@ -84,18 +81,18 @@ public class CfService {
                 cfInfo.setDomainOrganization(vo.getDomainOrganization());
                 cfInfo.setPaastaMonitoringUse(vo.getPaastaMonitoringUse());
                 cfInfo.setIngestorIp(vo.getIngestorIp());
-                cfInfo.setIngestorPort(vo.getIngestorPort());
-                
+                cfInfo.setKeyFile(vo.getKeyFile());
                 //NETWORK
-                cfInfo = setNetworkInfoList(cfInfo, vo, code_name);
+                cfInfo = setNetworkInfoList(cfInfo, vo, codeName);
                 
                 //Resource
-                cfInfo =setResourceListInfo(cfInfo, vo, code_name);
+                cfInfo =setResourceListInfo(cfInfo, vo, codeName);
                 
                 cfInfo.setDeployStatus(vo.getDeployStatus());
                 cfInfo.setDeploymentFile(vo.getDeploymentFile());
-                if( !StringUtils.isEmpty( vo.getTaskId() ) ) cfInfo.setTaskId(vo.getTaskId());
-
+                if( !StringUtils.isEmpty(vo.getTaskId()) ) {
+                    cfInfo.setTaskId(vo.getTaskId());
+                }
                 cfList.add(cfInfo);
             }
         }
@@ -108,8 +105,8 @@ public class CfService {
      * @title : setNetworkInfoList
      * @return : CfListDTO
     *****************************************************************/
-    public CfListDTO setNetworkInfoList(CfListDTO cfListInfo, CfVO vo, String code_name){
-        List<NetworkVO> netowrks = networkDao.selectNetworkList(vo.getId(), code_name);
+    public CfListDTO setNetworkInfoList(CfListDTO cfListInfo, CfVO vo, String codeName){
+        List<NetworkVO> netowrks = networkDao.selectNetworkList(vo.getId(), codeName);
         String br = "";
         int cnt = 0;
         String subnetRange , subnetGateway , subnetDns , subnetReservedIp;
@@ -123,8 +120,9 @@ public class CfService {
                     cnt ++;
                     if( cnt > 1  && cnt < netowrks.size() ){
                         br = ""; 
-                    }else br = "<br>";
-
+                    }else {
+                        br = "<br>";
+                    }
                     subnetRange += networkVO.getSubnetRange()  + br;
                     subnetGateway += networkVO.getSubnetGateway() + br;
                     subnetDns += networkVO.getSubnetDns() + br;
@@ -153,8 +151,8 @@ public class CfService {
      * @title : setResourceListInfo
      * @return : CfListDTO
     *****************************************************************/
-    public CfListDTO setResourceListInfo(CfListDTO cfListInfo, CfVO vo, String code_name){
-        ResourceVO resource = resourceDao.selectResourceInfo(vo.getId(), code_name);
+    public CfListDTO setResourceListInfo(CfListDTO cfListInfo, CfVO vo, String codeName){
+        ResourceVO resource = resourceDao.selectResourceInfo(vo.getId(), codeName);
         if( resource != null ){
             cfListInfo.setStemcellName(resource.getStemcellName());
             cfListInfo.setStemcellVersion(resource.getStemcellVersion());
@@ -170,16 +168,15 @@ public class CfService {
      * @return : CfVO
     *****************************************************************/
     public CfVO getCfInfo(int id) {
-        String code_name= setMessageSourceValue("common.deploy.type.cf.name");
+        String codeName= setMessageSourceValue("common.deploy.type.cf.name");
         CfVO vo = cfDao.selectCfInfoById(id);
         if( vo == null ){
             throw new CommonException(setMessageSourceValue("common.badRequest.exception.code"), 
                     setMessageSourceValue("common.badRequest.message"), HttpStatus.BAD_REQUEST);
         }
-        vo.setNetworks(networkDao.selectNetworkList(id,  code_name) );
-        vo.setResource(resourceDao.selectResourceInfo(id,  code_name));
-        vo.setJobs(cfDao.selectCfJobSettingInfoListBycfId(
-                setMessageSourceValue("common.deploy.type.cf.name"), id, setMessageSourceValue("common.code.deploy.jobs.parent")));
+        vo.setNetworks(networkDao.selectNetworkList(id, codeName) );
+        vo.setResource(resourceDao.selectResourceInfo(id, codeName));
+        vo.setJobs(cfDao.selectCfJobSettingInfoListBycfId(codeName, id));
         return vo;
     }
 
@@ -200,12 +197,10 @@ public class CfService {
      * @title : getJobTemplateList
      * @return : List<HashMap<String,String>>
     *****************************************************************/
-    public List<HashMap<String, String>> getJobTemplateList(String iaasType, String releaseVersion){
+    public List<HashMap<String, String>> getJobTemplateList(String deployType, String releaseVersion){
         HashMap<String, String> map = new HashMap<String, String>();
-        map.put("iaasType", iaasType);
         map.put("releaseVersion", releaseVersion);
-        map.put("deployType", setMessageSourceValue("common.deploy.type.cf.name"));
-        map.put("parentCode", setMessageSourceValue("common.code.deploy.jobs.parent"));
+        map.put("deployType", deployType);
         List<HashMap<String, String>> list = cfDao.selectCfJobTemplatesByReleaseVersion(map);
         return list;
     }
@@ -220,7 +215,6 @@ public class CfService {
         String content = "";
         ManifestTemplateVO result = null;
         InputStream inputs  = null;
-        
         try {
             //1. get Manifest Template info
             result = commonDao.selectManifetTemplate(vo.getIaasType(), vo.getReleaseVersion(), "CF", vo.getReleaseName());
@@ -232,6 +226,8 @@ public class CfService {
                 
                 manifestTemplate = new ManifestTemplateVO();
                 manifestTemplate = setOptionManifestTemplateInfo(result, manifestTemplate, vo);
+                manifestTemplate.setDeployType("CF");
+                manifestTemplate.setIaasType(vo.getIaasType());
             }else {
                 throw new CommonException(setMessageSourceValue("common.badRequest.exception.code"), 
                         setMessageSourceValue("common.badRequest.manifest_template.message"), HttpStatus.BAD_REQUEST);
@@ -241,11 +237,11 @@ public class CfService {
                 content = content.replace(item.getTargetItem(), item.getSourceItem());
             }
             if( LOGGER.isDebugEnabled() ) {
-            LOGGER.debug("content: " + content);
+                LOGGER.debug("content: " + content);
             }
             
             IOUtils.write(content, new FileOutputStream(TEMP_DIR + SEPARATOR + vo.getDeploymentFile()), "UTF-8");
-            CommonDeployUtils.setSpiffMerge(vo.getIaasType().toLowerCase(), vo.getId(), vo.getKeyFile(),  vo.getDeploymentFile(),  manifestTemplate);
+            CommonDeployUtils.setSpiffMerge(vo.getKeyFile(),  vo.getDeploymentFile(),  manifestTemplate, vo.getPaastaMonitoringUse());
         } catch (IOException e) {
             throw new CommonException(setMessageSourceValue("common.internalServerError.exception.code"), 
                     setMessageSourceValue("common.file.internalServerError.message"), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -296,18 +292,18 @@ public class CfService {
             manifestTemplate.setOptionNetworkTemplate("");
         }
         //resource Template File 
-        if( vo.getJobs().size() > 0 && result.getOptionResourceTemplate() != null && !(StringUtils.isEmpty( result.getOptionResourceTemplate())) ){
+        if( !vo.getJobs().isEmpty() && result.getOptionResourceTemplate() != null && !(StringUtils.isEmpty( result.getOptionResourceTemplate())) ){
             manifestTemplate.setOptionResourceTemplate(MANIFEST_TEMPLATE_LOCATION + result.getTemplateVersion() + SEPARATOR + vo.getIaasType().toLowerCase() + SEPARATOR + result.getOptionResourceTemplate() );
         }else{
             manifestTemplate.setOptionResourceTemplate("");
         }
-        //diego use Template File
+        //option etc Template File
         if( "true".equals(vo.getPaastaMonitoringUse().toLowerCase()) && result.getCommonOptionTemplate() != null  && !(StringUtils.isEmpty( result.getCommonOptionTemplate()) )){
             manifestTemplate.setCommonOptionTemplate(MANIFEST_TEMPLATE_LOCATION + result.getTemplateVersion() + SEPARATOR + "common" + SEPARATOR + result.getCommonOptionTemplate() );
         }else{
             manifestTemplate.setCommonOptionTemplate("");
         }
-        //option etc Template File
+        //diego use Template File
         if( "true".equals(vo.getDiegoYn().toLowerCase()) && result.getOptionEtc() != null  && !(StringUtils.isEmpty( result.getOptionEtc()) )){
             manifestTemplate.setOptionEtc(MANIFEST_TEMPLATE_LOCATION + result.getTemplateVersion() + SEPARATOR + "common" + SEPARATOR + result.getOptionEtc() );
         }else{
@@ -331,18 +327,21 @@ public class CfService {
         items.add(new ReplaceItemDTO("[directorUuid]", vo.getDirectorUuid()));
         items.add(new ReplaceItemDTO("[releaseName]", vo.getReleaseName()));
         items.add(new ReplaceItemDTO("[releaseVersion]",  "\"" +vo.getReleaseVersion() + "\""));
-
+        
+        items.add(new ReplaceItemDTO("[loggregatorReleaseName]", vo.getLoggregatorReleaseName()));
+        items.add(new ReplaceItemDTO("[loggregatorReleaseVersion]",  "\"" +vo.getLoggregatorReleaseVersion() + "\""));
+        
         // 2 기본정보
-        setReplaceItemsDefaultInfo(vo, iaas, items);
+        setReplaceItemsDefaultInfo(vo, items);
         
         // 3. 네트워크 정보
-        setReplaceItemsFromNetworkInfo(vo, iaas, items);
+        setReplaceItemsFromNetworkInfo(vo, items);
         
         // 4. 리소스 정보
-        setReplaceItemsFromResourceInfo(vo, iaas, items);
+        setReplaceItemsFromResourceInfo(vo, items);
         
         //5. 고급 설정 정보
-        setReplaceItmesFromJobsInfo(vo, iaas, items);
+        setReplaceItmesFromJobsInfo(vo, items);
         return items;
     }
     
@@ -352,7 +351,7 @@ public class CfService {
      * @title : setReplaceItemsDefaultInfo
      * @return : List<ReplaceItemDTO>
     *****************************************************************/
-    public List<ReplaceItemDTO> setReplaceItemsDefaultInfo(CfVO vo, String iaas, List<ReplaceItemDTO> items){
+    public List<ReplaceItemDTO> setReplaceItemsDefaultInfo(CfVO vo,List<ReplaceItemDTO> items){
         items.add(new ReplaceItemDTO("[domain]", vo.getDomain()));
         items.add(new ReplaceItemDTO("[description]", vo.getDescription()));
         items.add(new ReplaceItemDTO("[domainOrganization]", vo.getDomainOrganization()));
@@ -366,8 +365,6 @@ public class CfService {
             items.add(new ReplaceItemDTO("[appSshFingerprint]", ""));
         }
         items.add(new ReplaceItemDTO("[ingestorIp]", vo.getIngestorIp()));
-        items.add(new ReplaceItemDTO("[ingestorPort]", vo.getIngestorPort()));
-        
         return items;
     }
     /****************************************************************
@@ -376,12 +373,12 @@ public class CfService {
      * @title : setReplaceItemsFromNetworkInfo
      * @return : List<ReplaceItemDTO>
     *****************************************************************/
-    public List<ReplaceItemDTO> setReplaceItemsFromNetworkInfo(CfVO vo, String iaas, List<ReplaceItemDTO> items){
-        int InternalCnt = 0;
+    public List<ReplaceItemDTO> setReplaceItemsFromNetworkInfo(CfVO vo, List<ReplaceItemDTO> items){
+        int internalCnt = 0;
         for( int i=0; i<vo.getNetworks().size(); i++ ){
             if( "INTERNAL".equalsIgnoreCase(vo.getNetworks().get(i).getNet()) ){
-                InternalCnt ++;
-                if(InternalCnt  == 1 ){
+                internalCnt ++;
+                if(internalCnt  == 1 ){
                     items.add(new ReplaceItemDTO("[subnetRange]", vo.getNetworks().get(i).getSubnetRange()));
                     items.add(new ReplaceItemDTO("[subnetGateway]", vo.getNetworks().get(i).getSubnetGateway()));
                     items.add(new ReplaceItemDTO("[subnetDns]", vo.getNetworks().get(i).getSubnetDns()));
@@ -397,7 +394,7 @@ public class CfService {
                             items.add(new ReplaceItemDTO("[networkName]", vo.getNetworks().get(i).getNetworkName()));
                         }
                     }
-                }else if( InternalCnt > 1){
+                }else if( internalCnt > 1){
                     items.add(new ReplaceItemDTO("[subnetRange1]", vo.getNetworks().get(i).getSubnetRange()));
                     items.add(new ReplaceItemDTO("[subnetGateway1]", vo.getNetworks().get(i).getSubnetGateway()));
                     items.add(new ReplaceItemDTO("[subnetDns1]", vo.getNetworks().get(i).getSubnetDns()));
@@ -425,13 +422,14 @@ public class CfService {
                 items.add(new ReplaceItemDTO("[proxyStaticIps]", vo.getNetworks().get(i).getSubnetStaticFrom()) );
             }
         } 
-        if( InternalCnt < 2 ){
+        if( internalCnt < 2 ){
             items.add(new ReplaceItemDTO("[subnetRange1]", ""));
             items.add(new ReplaceItemDTO("[subnetGateway1]", ""));
             items.add(new ReplaceItemDTO("[subnetDns1]", ""));
             items.add(new ReplaceItemDTO("[subnetReserved1]", ""));
             items.add(new ReplaceItemDTO("[subnetStatic1]", ""));
-            items.add(new ReplaceItemDTO("[cloudNetId1]", ""));            
+            items.add(new ReplaceItemDTO("[networkName1]", ""));
+            items.add(new ReplaceItemDTO("[cloudNetId1]", ""));
             items.add(new ReplaceItemDTO("[cloudSecurityGroups1]", ""));
             items.add(new ReplaceItemDTO("[availabilityZone1]", ""));
         }
@@ -445,7 +443,7 @@ public class CfService {
      * @title : setReplaceItemsFromResourceInfo
      * @return : List<ReplaceItemDTO>
     *****************************************************************/
-    public List<ReplaceItemDTO> setReplaceItemsFromResourceInfo(CfVO vo, String iaas, List<ReplaceItemDTO> items){
+    public List<ReplaceItemDTO> setReplaceItemsFromResourceInfo(CfVO vo, List<ReplaceItemDTO> items){
         items.add(new ReplaceItemDTO("[stemcellName]", vo.getResource().getStemcellName() ));
         items.add(new ReplaceItemDTO("[stemcellVersion]", "\"" + vo.getResource().getStemcellVersion() + "\"" ));
         items.add(new ReplaceItemDTO("[boshPassword]", Sha512Crypt.Sha512_crypt(vo.getResource().getBoshPassword(), RandomStringUtils.randomAlphabetic(10), 0)));
@@ -472,7 +470,6 @@ public class CfService {
             items.add(new ReplaceItemDTO("[largeInstanceType]", vo.getResource().getLargeFlavor()));
             items.add(new ReplaceItemDTO("[runnerInstanceType]", vo.getResource().getRunnerFlavor()));
         }
-        
         return items;
     }
     
@@ -482,27 +479,33 @@ public class CfService {
      * @title : setReplaceItmesFromJobsInfo
      * @return : List<ReplaceItemDTO>
     *****************************************************************/
-    public List<ReplaceItemDTO> setReplaceItmesFromJobsInfo(CfVO vo, String iaas, List<ReplaceItemDTO> items){
-        //1. CF 릴리즈 버전의 job template 목록 조회
-        List<CommonCodeVO> jobs = codeDao.selectCommonCodeList(setMessageSourceValue("common.code.deploy.jobs.parent"));
-        //2. replaceItemDTO에 설정
-        for( CommonCodeVO job : jobs){
-            boolean flag = false;
-            for( HashMap<String, Object> map: vo.getJobs() ){
-                if( map.get("code_name").toString().equals(job.getCodeName()) ){
-                    items.add( new ReplaceItemDTO("["+job.getCodeName()+"Z1]", map.get("instances").toString()) );
-                    flag = true;
-                    break;
-                }
+    public List<ReplaceItemDTO> setReplaceItmesFromJobsInfo(CfVO vo, List<ReplaceItemDTO> items){
+        //1. replaceItemDTO에 설정
+        boolean flag = false;
+        for( int j=0; j< vo.getJobs().size(); j++){
+            HashMap<String, Object> map = vo.getJobs().get(j);
+            //Internal Network는 1개인데 고급설정에 z2가 있을 경우 제외
+            if( !(map.get("zone").toString().equalsIgnoreCase("z2") && vo.getNetworks().size() == 2) ) {
+                items.add( new ReplaceItemDTO("["+map.get("job_name").toString()+map.get("zone").toString().toUpperCase()+"]"
+                        , map.get("instances").toString()) );
+                
             }
-            if( !flag ){
-                items.add( new ReplaceItemDTO("["+job.getCodeName()+"Z1]", "0") );
+            if( map.get("zone").toString().equalsIgnoreCase("z2") ) {
+                flag = true;
+            }
+        }
+        if( vo.getNetworks().size() < 3 ) {
+            for( HashMap<String, Object> map: vo.getJobs()){
+                items.add( new ReplaceItemDTO("["+map.get("job_name").toString()+"Z2]", "0") );
+            }
+        }else if( vo.getNetworks().size() > 2 && !flag ) {
+            for( HashMap<String, Object> map: vo.getJobs()){
+                items.add( new ReplaceItemDTO("["+map.get("job_name").toString()+"Z2]", "1") );
             }
         }
         return items;
     }
 
-    
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
      * @description : CF 단순 레코드 삭제 
@@ -511,11 +514,15 @@ public class CfService {
     *****************************************************************/
     @Transactional
     public void deleteCfInfoRecord(CfParamDTO.Delete dto) {
-        String code_name= setMessageSourceValue("common.deploy.type.cf.name");
+        String deployType= setMessageSourceValue("common.deploy.type.cf.name");
         cfDao.deleteCfInfoRecord(Integer.parseInt(dto.getId()));
         if( dto.getId() != null ){
-            networkDao.deleteNetworkInfoRecord(Integer.parseInt( dto.getId()), code_name );
-            resourceDao.deleteResourceInfo( Integer.parseInt(dto.getId()),  code_name );
+            HashMap<String, String> map = new HashMap<String, String>();
+            networkDao.deleteNetworkInfoRecord(Integer.parseInt( dto.getId()), deployType );
+            resourceDao.deleteResourceInfo( Integer.parseInt(dto.getId()), deployType );
+            map.put("id", dto.getId());
+            map.put("deploy_type", deployType);
+            cfDao.deleteCfJobSettingListById(map);
         }
     }
     

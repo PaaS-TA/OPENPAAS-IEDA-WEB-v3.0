@@ -53,7 +53,7 @@ public class StemcellManagementUploadService {
                 
                 String stemcellFilePath = STEMCELL_DIR+ SEPARATOR + mpf.getOriginalFilename();
                 isKeyFile = new File(stemcellFilePath);
-                if(isKeyFile.exists() && "true".equals(request.getParameter("overlay"))){
+                if(isKeyFile.exists() && "true".equalsIgnoreCase(request.getParameter("overlay"))){
                     //1. 파일이 존재하고 덮어쓰기가 체크 되어있을 때
                     boolean delete = isKeyFile.delete();//삭제
                     if(!delete){
@@ -61,7 +61,7 @@ public class StemcellManagementUploadService {
                                 message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
 
                     }
-                }else if(isKeyFile.exists() && "false".equals(request.getParameter("overlay"))){
+                }else if(isKeyFile.exists() && "false".equalsIgnoreCase(request.getParameter("overlay"))){
                     //2. 파일이 존재하지만 덮어쓰기가 체크 되어있지 않을 때 
                     throw new CommonException(message.getMessage("common.conflict.exception.code", null, Locale.KOREA),
                             message.getMessage("common.conflict.file.messag", null, Locale.KOREA), HttpStatus.CONFLICT);
@@ -79,7 +79,7 @@ public class StemcellManagementUploadService {
                 }
             }catch (IOException e) {
                 if(isKeyFile.exists()){
-                	Boolean check = isKeyFile.delete();
+                    Boolean check = isKeyFile.delete();
                     if( LOGGER.isDebugEnabled() ){
                         LOGGER.debug("check delete stemcellLock File  : "  + check);
                     }
@@ -89,9 +89,9 @@ public class StemcellManagementUploadService {
             }finally {
                 String originalFileName = mpf.getOriginalFilename();
                 String originalFileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-                String FileResultName = originalFileName.replace(originalFileExtension, "");
+                String fileResultName = originalFileName.replace(originalFileExtension, "");
                 //lock 파일 삭제
-                CommonDeployUtils.deleteFile(LOCK_DIR, FileResultName+"-download.lock");
+                CommonDeployUtils.deleteFile(LOCK_DIR, fileResultName +"-download.lock");
                 if (stream != null) {
                     try {
                         stream.close();

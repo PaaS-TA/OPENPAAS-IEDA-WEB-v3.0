@@ -52,7 +52,7 @@ public class ReleaseManagementService {
         if(!releaseList.isEmpty()){
             for( ReleaseManagementVO release : releaseList ){
                 if( release.getDownloadStatus() != null ){
-                    if( release.getDownloadStatus().toUpperCase().equals("DOWNLOADED") ){
+                    if( release.getDownloadStatus().toUpperCase().equalsIgnoreCase("DOWNLOADED") ){
                         File releaseFile = new File( RELEASEDIRECTORY +SEPARATOR + release.getReleaseFileName());
                         if(!releaseFile.exists()){
                             ReleaseManagementDTO.Delete dto = new ReleaseManagementDTO.Delete();
@@ -120,13 +120,13 @@ public class ReleaseManagementService {
         ReleaseManagementVO vo = null;
         if( fileName.indexOf(".tgz") < 0 && fileName.indexOf(".zip") < 0 ){
             status = "error";
-            deleteLockFile(status, fileName);
+            CommonDeployUtils.deleteFile(LOCK_DIR, fileName.split(".tgz")[0]+"-download.lock");
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
                     message.getMessage("common.extension.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
         if(StringUtils.isEmpty(dto.getReleaseFileName()) || Long.parseLong(dto.getReleaseSize()) < 1 ){
             status = "error";
-            deleteLockFile(status, fileName);
+            CommonDeployUtils.deleteFile(LOCK_DIR, fileName.split(".tgz")[0]+"-download.lock");
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
                     message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
@@ -134,9 +134,9 @@ public class ReleaseManagementService {
         File releseFile = new File(RELEASEDIRECTORY + SEPARATOR + dto.getReleaseFileName());
         
         //릴리즈 파일이 존재하고 덮어쓰기 체크가 안되어 있을 경우
-        if(releseFile.exists() && "false".equals(dto.getOverlayCheck())) {
+        if(releseFile.exists() && "false".equalsIgnoreCase(dto.getOverlayCheck())) {
             status = "conflict";
-            deleteLockFile(status, fileName);
+            CommonDeployUtils.deleteFile(LOCK_DIR, fileName.split(".tgz")[0]+"-download.lock");
             throw new CommonException(message.getMessage("common.conflict.exception.code", null, Locale.KOREA),
                     message.getMessage("common.conflict.file.message", null, Locale.KOREA), HttpStatus.CONFLICT);
         }else{
@@ -160,7 +160,7 @@ public class ReleaseManagementService {
         Boolean flag = false;
         int index;
         String lockFileName= "";
-        if( status.equals("error")){
+        if( !status.equalsIgnoreCase("done")){
             //lock file delete
             if( !StringUtils.isEmpty(fileName) ){
                 try{
@@ -205,7 +205,7 @@ public class ReleaseManagementService {
         File releseFile = new File(RELEASEDIRECTORY + SEPARATOR + dto.getReleaseFileName());
         
         //릴리즈 파일이 존재하고 덮어쓰기 체크가 안되어 있을 경우
-        if(releseFile.exists() && "false".equals(dto.getOverlayCheck())) {
+        if(releseFile.exists() && "false".equalsIgnoreCase(dto.getOverlayCheck())) {
             status ="error";
             deleteLockFile(status, dto.getReleaseFileName()); //lock 파일 삭제
             throw new CommonException(message.getMessage("common.conflict.exception.code", null, Locale.KOREA),
@@ -245,7 +245,7 @@ public class ReleaseManagementService {
     ***************************************************/
     public void setReleaseDownloadLink(ReleaseManagementDTO.Regist dto){
         String releaseDownloadLink = "";
-        if(dto.getFileType().toUpperCase().equals("URL")){
+        if(dto.getFileType().equalsIgnoreCase("URL")){
             releaseDownloadLink = dto.getReleasePathUrl();
         }else{
             releaseDownloadLink = setDownloadBaseURLByReleaseVersion(dto);
@@ -269,7 +269,7 @@ public class ReleaseManagementService {
         String[] search = null;
         String info = null;
         Process process = null;
-        StringBuffer accumulatedBuffer = new StringBuffer();
+        StringBuffer accumulatedBuffer = new StringBuffer("");
         boolean flag = false;
         try{
             //wget 실행
@@ -279,7 +279,7 @@ public class ReleaseManagementService {
             inputStream = process.getInputStream();
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             while ((info = bufferedReader.readLine()) != null){ 
-                accumulatedBuffer.append(info + "\n");
+                accumulatedBuffer.append(info).append("\n");
                 if(info.contains("Content-Disposition:") && !flag){
                     search = info.split("filename=");
                     dto.setReleaseFileName(search[search.length-1]);
@@ -299,13 +299,14 @@ public class ReleaseManagementService {
             throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
                     message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally {
-            if(bufferedReader != null)
+            if(bufferedReader != null) {
                 try {
                     bufferedReader.close();
                 } catch (IOException e) {
                     throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
                             message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
                 }
+            }
         }
         return checkSystemReleaseDownloadedFileInfoByWget(dto, principal);
     }
@@ -318,12 +319,12 @@ public class ReleaseManagementService {
     ***************************************************/
     public String setDownloadBaseURLByReleaseVersion(ReleaseManagementDTO.Regist dto) {
         String boshCpiUrl = "";
-        if(dto.getReleaseType().toLowerCase().equals("bosh_cpi")){
+        if(dto.getReleaseType().toLowerCase().equalsIgnoreCase("bosh_cpi")){
             boshCpiUrl = "bosh-"+dto.getIaasType().toLowerCase()+"-cpi-release?v=";
             dto.setDownloadLink(CLOUDFOUNDRYINCUBATORURL + boshCpiUrl + dto.getReleasePathVersion());
-        } else if(dto.getReleaseType().toLowerCase().equals("etcd")){
+        } else if(dto.getReleaseType().equalsIgnoreCase("etcd")){
             dto.setDownloadLink(CLOUDFOUNDRYINCUBATORURL + dto.getReleaseType().toLowerCase() + "-release?v=" + dto.getReleasePathVersion());
-        } else if(dto.getReleaseType().toLowerCase().equals("bosh")){
+        } else if(dto.getReleaseType().equalsIgnoreCase("bosh")){
             dto.setDownloadLink(CLOUDFOUNDRYURL + dto.getReleaseType().toLowerCase() + "?v=" + dto.getReleasePathVersion());
         } else if( dto.getReleaseType().equalsIgnoreCase("os_conf")){
             dto.setDownloadLink(CLOUDFOUNDRYURL + "os-conf-release?v=" + dto.getReleasePathVersion());
@@ -380,13 +381,10 @@ public class ReleaseManagementService {
         CommonDeployUtils.deleteFile(LOCK_DIR, lockFileName);
         
         //delete release File
-        File release_file = new File(RELEASEDIRECTORY + SEPARATOR + dto.getReleaseFileName());
-        if(release_file.exists()){ 
+        File releaseFile = new File(RELEASEDIRECTORY + SEPARATOR + dto.getReleaseFileName());
+        if(releaseFile.exists()){ 
             CommonDeployUtils.deleteFile(RELEASEDIRECTORY, dto.getReleaseFileName());
-        }else{
-            throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
-                    message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
-        } 
+        }
     }
     
 }

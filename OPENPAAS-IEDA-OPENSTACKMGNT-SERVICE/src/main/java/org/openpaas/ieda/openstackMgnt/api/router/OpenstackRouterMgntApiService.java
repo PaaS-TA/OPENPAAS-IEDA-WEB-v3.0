@@ -1,6 +1,7 @@
 package org.openpaas.ieda.openstackMgnt.api.router;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.openpaas.ieda.common.web.common.service.CommonApiService;
@@ -8,16 +9,17 @@ import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.openstackMgnt.web.router.dao.OpenstackRouterMgntVO;
 import org.openstack4j.api.Builders;
 import org.openstack4j.api.OSClient.OSClientV2;
+import org.openstack4j.api.OSClient.OSClientV3;
 import org.openstack4j.model.network.AttachInterfaceType;
 import org.openstack4j.model.network.Network;
 import org.openstack4j.model.network.Port;
 import org.openstack4j.model.network.Router;
 import org.openstack4j.model.network.RouterInterface;
 import org.openstack4j.model.network.Subnet;
+import org.openstack4j.openstack.networking.domain.NeutronRouter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class OpenstackRouterMgntApiService {
@@ -29,11 +31,21 @@ public class OpenstackRouterMgntApiService {
     * @project : OPENSTACK 인프라 관리 대시보드
     * @description : 받아온 Openstack 정보를 통해 OSClientV2 객체 생성
     * @title : getOpenstackClientV2
-    * @return : OSClientV2
+    * @return : os
     ***************************************************/
     public OSClientV2 getOpenstackClientV2(IaasAccountMgntVO vo){
         OSClientV2 os= commonApiService.getOSClientFromOpenstackV2(vo.getCommonAccessEndpoint(), vo.getCommonTenant(), vo.getCommonAccessUser(), vo.getCommonAccessSecret());
         return os;
+    }
+    /***************************************************
+    * @project : OPENSTACK 인프라 관리 대시보드
+    * @description : 받아온 Openstack 정보를 통해 OSClientV3 객체 생성
+    * @title : getOpenstackClientV3
+    * @return : osV3
+    ***************************************************/
+    public OSClientV3 getOpenstackClientV3(IaasAccountMgntVO vo){
+        OSClientV3 osV3 = commonApiService.getOSClientFromOpenstackV3(vo.getCommonAccessEndpoint(), vo.getOpenstackDomain(), vo.getCommonProject(), vo.getCommonAccessUser(), vo.getCommonAccessSecret());
+        return osV3;
     }
     
     /***************************************************
@@ -43,9 +55,15 @@ public class OpenstackRouterMgntApiService {
     * @return : List<? extends Router>
     ***************************************************/
     public List<? extends Router> getOpenstackRouterInfoListApiFromOpenstack(IaasAccountMgntVO vo){
-        OSClientV2 os = getOpenstackClientV2(vo);
-        List<? extends Router> Routerlist = os.networking().router().list();
-        return Routerlist;
+        List<? extends Router> routerlist = new ArrayList<>();
+        if(vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(vo);
+            routerlist = os.networking().router().list();
+        }else{
+            OSClientV3 osV3 = getOpenstackClientV3(vo);
+            routerlist = osV3.networking().router().list();
+        }
+        return routerlist;
     }
     
     /***************************************************
@@ -56,13 +74,24 @@ public class OpenstackRouterMgntApiService {
     ***************************************************/
     public boolean createOpenstackRouterApiFromOpenstack(IaasAccountMgntVO vo, OpenstackRouterMgntVO rvo){
         boolean flag = false;
-        OSClientV2 os = getOpenstackClientV2(vo);
-        Router router = os.networking().router().create(Builders.router()
-                .name(rvo.getRouterName())
-                .adminStateUp(true)
-                .build());
-        if(router.getId() != null){
-            flag = true;
+        if(vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(vo);
+            Router router = os.networking().router().create(Builders.router()
+                    .name(rvo.getRouterName())
+                    .adminStateUp(true)
+                    .build());
+            if(router.getId() != null){
+                flag = true;
+            }
+        }else{
+            OSClientV3 osV3 = getOpenstackClientV3(vo);
+            Router router = osV3.networking().router().create(Builders.router()
+                    .name(rvo.getRouterName())
+                    .adminStateUp(true)
+                    .build());
+            if(router.getId() != null){
+                flag = true;
+            }
         }
         return flag;
     }
@@ -74,12 +103,23 @@ public class OpenstackRouterMgntApiService {
     ***************************************************/
     public boolean deleteOpenstackRouterApiFromOpenstack(IaasAccountMgntVO vo, OpenstackRouterMgntVO rvo){
         boolean flag = false;
-        OSClientV2 os = getOpenstackClientV2(vo);
-        List<? extends Router> RouterList = getOpenstackRouterInfoListApiFromOpenstack(vo);
-        for(int i=0;i<RouterList.size();i++){
-            if(rvo.getRouteId().equals(RouterList.get(i).getId())){
-                os.networking().router().delete(rvo.getRouteId());
-                flag = true;
+        if(vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(vo);
+            List<? extends Router> routerList = getOpenstackRouterInfoListApiFromOpenstack(vo);
+            for(int i=0;i<routerList.size();i++){
+                if(rvo.getRouteId().equalsIgnoreCase(routerList.get(i).getId())){
+                    os.networking().router().delete(rvo.getRouteId());
+                    flag = true;
+                }
+            }
+        }else{
+            OSClientV3 osV3 = getOpenstackClientV3(vo);
+            List<? extends Router> routerList = getOpenstackRouterInfoListApiFromOpenstack(vo);
+            for(int i=0;i<routerList.size();i++){
+                if(rvo.getRouteId().equalsIgnoreCase(routerList.get(i).getId())){
+                    osV3.networking().router().delete(rvo.getRouteId());
+                    flag = true;
+                }
             }
         }
         return flag;
@@ -91,8 +131,14 @@ public class OpenstackRouterMgntApiService {
     * @return : Router
     ***************************************************/
     public Router getRouterApiFromOpenstack(IaasAccountMgntVO vo, String routeId){
-        OSClientV2 os = getOpenstackClientV2(vo);
-        Router router = os.networking().router().get(routeId);
+        Router router = new NeutronRouter();
+        if(vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(vo);
+            router = os.networking().router().get(routeId);
+        }else{
+            OSClientV3 osV3 = getOpenstackClientV3(vo);
+            router = osV3.networking().router().get(routeId);
+        }
         return router;
     }
     /***************************************************
@@ -102,8 +148,13 @@ public class OpenstackRouterMgntApiService {
     * @return : List<? extends Port>
     ***************************************************/
     public List<? extends Port> getOpenstackNetworkPortApiFromOpenstack(IaasAccountMgntVO vo){
-        OSClientV2 os = getOpenstackClientV2(vo);
-        return os.networking().port().list();
+        if(vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(vo);
+            return os.networking().port().list();
+        }else{
+            OSClientV3 osV3 = getOpenstackClientV3(vo);
+            return osV3.networking().port().list();
+        }
     }
     /***************************************************
     * @project : OPENSTACK 인프라 관리 대시보드
@@ -113,11 +164,20 @@ public class OpenstackRouterMgntApiService {
     ***************************************************/
     public boolean attachRouterInterfaceApiFromOpenstack(IaasAccountMgntVO vo, OpenstackRouterMgntVO rvo){
         boolean flag = false;
-        OSClientV2 os = getOpenstackClientV2(vo);
-        RouterInterface iface = os.networking().router()
-                                    .attachInterface(rvo.getRouteId(), AttachInterfaceType.SUBNET, rvo.getSubnetId());
-        if(iface!=null){
-            flag = true;
+        if(vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(vo);
+            RouterInterface iface = os.networking().router()
+                                        .attachInterface(rvo.getRouteId(), AttachInterfaceType.SUBNET, rvo.getSubnetId());
+            if(iface!=null){
+                flag = true;
+            }
+        }else{
+            OSClientV3 osV3 = getOpenstackClientV3(vo);
+            RouterInterface iface = osV3.networking().router()
+                                        .attachInterface(rvo.getRouteId(), AttachInterfaceType.SUBNET, rvo.getSubnetId());
+            if(iface!=null){
+                flag = true;
+            }
         }
         return flag;
     }
@@ -129,11 +189,20 @@ public class OpenstackRouterMgntApiService {
     ***************************************************/
     public boolean detachRouterInterfaceApiFromOpenstack(IaasAccountMgntVO vo, OpenstackRouterMgntVO rvo){
         boolean flag = false;
-        OSClientV2 os = getOpenstackClientV2(vo);
-        RouterInterface iface = os.networking().router()
-                                    .detachInterface(rvo.getRouteId(), rvo.getSubnetId(), null);
-        if(iface!=null){
-            flag = true;
+        if(vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(vo);
+            RouterInterface iface = os.networking().router()
+                                        .detachInterface(rvo.getRouteId(), rvo.getSubnetId(), null);
+            if(iface!=null){
+                flag = true;
+            }
+        }else{
+            OSClientV3 osV3 = getOpenstackClientV3(vo);
+            RouterInterface iface = osV3.networking().router()
+                                          .detachInterface(rvo.getRouteId(), rvo.getSubnetId(), null);
+            if(iface!=null){
+                flag = true;
+            }
         }
         return flag;
     }
@@ -144,8 +213,13 @@ public class OpenstackRouterMgntApiService {
     * @return : List<? extends Subnet>
     ***************************************************/
     public List<? extends Subnet> getNetworkSubnetInfoApiFromOpenstack(IaasAccountMgntVO vo,String networkId){
-        OSClientV2 os = getOpenstackClientV2(vo);
-        return os.networking().network().get(networkId).getNeutronSubnets();
+        if(vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(vo);
+            return os.networking().network().get(networkId).getNeutronSubnets();
+        }else{
+            OSClientV3 osV3 = getOpenstackClientV3(vo);
+            return osV3.networking().network().get(networkId).getNeutronSubnets();
+        }
     }
     
     /***************************************************
@@ -156,12 +230,22 @@ public class OpenstackRouterMgntApiService {
     ***************************************************/
     public String getRouterExternalNetworkInfoApiFromOpenstack(IaasAccountMgntVO vo, int count){
         String exnetInfo = "";
-        OSClientV2 os = getOpenstackClientV2(vo);
-        List<? extends Router> RouterList = getOpenstackRouterInfoListApiFromOpenstack(vo);
-        if(RouterList.get(count).getExternalGatewayInfo() != null){
-            exnetInfo = os.networking().network().get(RouterList.get(count).getExternalGatewayInfo().getNetworkId()).getName();
+        if(vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(vo);
+            List<? extends Router> routerList = getOpenstackRouterInfoListApiFromOpenstack(vo);
+            if(routerList.get(count).getExternalGatewayInfo() != null){
+                exnetInfo = os.networking().network().get(routerList.get(count).getExternalGatewayInfo().getNetworkId()).getName();
+            }else{
+                exnetInfo = "-";
+            }
         }else{
-            exnetInfo = "-";
+            OSClientV3 osV3 = getOpenstackClientV3(vo);
+            List<? extends Router> routerList = getOpenstackRouterInfoListApiFromOpenstack(vo);
+            if(routerList.get(count).getExternalGatewayInfo() != null){
+                exnetInfo = osV3.networking().network().get(routerList.get(count).getExternalGatewayInfo().getNetworkId()).getName();
+            }else{
+                exnetInfo = "-";
+            }
         }
         return exnetInfo;
     }
@@ -171,18 +255,32 @@ public class OpenstackRouterMgntApiService {
     * @title : getNetworkInfoApiFromOpenstack
     * @return : List<String>
     ***************************************************/
-    public List<String> getNetworkInfoApiFromOpenstack(IaasAccountMgntVO vo){
-    	OSClientV2 os = getOpenstackClientV2(vo);
-    	List<? extends Network> nList = os.networking().network().list();
-    	List<String> resultId = new ArrayList<String>();
-    	for(int i=0;i<nList.size();i++){
-    		String exId = "";
-    		if(nList.get(i).isShared()==true){
-    			exId = nList.get(i).getId();
-    			resultId.add(exId);
-    		}
-    	}
-    	return resultId;
+    public List<HashMap<String, String>> getNetworkInfoApiFromOpenstack(IaasAccountMgntVO vo){
+        List<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
+        if(vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(vo);
+            List<? extends Network> nList = os.networking().network().list();
+            for(int i=0;i<nList.size();i++){
+                if(nList.get(i).isShared()){
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("name", nList.get(i).getName());
+                    map.put("id", nList.get(i).getId());
+                    results.add(map);
+                }
+            }
+        }else{
+            OSClientV3 osV3 = getOpenstackClientV3(vo);
+            List<? extends Network> nList = osV3.networking().network().list();
+            for(int i=0;i<nList.size();i++){
+                if(nList.get(i).isShared()){
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("name", nList.get(i).getName());
+                    map.put("id", nList.get(i).getId());
+                    results.add(map);
+                }
+            }
+        }
+        return results;
     }
     /***************************************************
     * @project : OPENSTACK 인프라 관리 대시보드
@@ -190,15 +288,24 @@ public class OpenstackRouterMgntApiService {
     * @title : setRouterGatewayAttachApiFromOpenstack
     * @return : boolean
     ***************************************************/
-    public boolean setRouterGatewayAttachApiFromOpenstack(IaasAccountMgntVO vo, OpenstackRouterMgntVO rvo){
-    	boolean flag = false;
-    	OSClientV2 os = getOpenstackClientV2(vo);
-    	Router router = getRouterApiFromOpenstack(vo, rvo.getRouteId());
-    	router = os.networking().router().update(router.toBuilder().externalGateway(rvo.getNetworkId()).build());
-    	if(rvo.getNetworkId().equals(router.getExternalGatewayInfo().getNetworkId())){
-    		flag = true;
-    	}
-    	return flag;
+    public boolean setRouterGatewayAttachApiFromOpenstack(IaasAccountMgntVO account, OpenstackRouterMgntVO rvo){
+        boolean flag = false;
+        if(account.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(account);
+            Router router = getRouterApiFromOpenstack(account, rvo.getRouteId());
+            router = os.networking().router().update(router.toBuilder().externalGateway(rvo.getNetworkId()).build());
+            if(rvo.getNetworkId().equalsIgnoreCase(router.getExternalGatewayInfo().getNetworkId())){
+                flag = true;
+            }
+        }else{
+            OSClientV3 osV3 = getOpenstackClientV3(account);
+            Router router = getRouterApiFromOpenstack(account, rvo.getRouteId());
+            router = osV3.networking().router().update(router.toBuilder().externalGateway(rvo.getNetworkId()).build());
+            if(rvo.getNetworkId().equalsIgnoreCase(router.getExternalGatewayInfo().getNetworkId())){
+                flag = true;
+            }
+        }
+        return flag;
     }
     /***************************************************
     * @project : OPENSTACK 인프라 관리 대시보드
@@ -207,11 +314,18 @@ public class OpenstackRouterMgntApiService {
     * @return : boolean
     ***************************************************/
     public boolean setRouterGatewayDetachApiFromOpenstack(IaasAccountMgntVO vo, OpenstackRouterMgntVO rvo){
-    	boolean flag = false;
-    	OSClientV2 os = getOpenstackClientV2(vo);
-    	Router router = getRouterApiFromOpenstack(vo, rvo.getRouteId());
-    	router = os.networking().router().update(router.toBuilder().externalGateway(rvo.getNetworkId()).clearExternalGateway().build());
-    	flag = true;
-    	return flag;
+        boolean flag = false;
+        if(vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2")){
+            OSClientV2 os = getOpenstackClientV2(vo);
+            Router router = getRouterApiFromOpenstack(vo, rvo.getRouteId());
+            router = os.networking().router().update(router.toBuilder().externalGateway(rvo.getNetworkId()).clearExternalGateway().build());
+            flag = true;
+        }else{
+            OSClientV3 osV3 = getOpenstackClientV3(vo);
+            Router router = getRouterApiFromOpenstack(vo, rvo.getRouteId());
+            router = osV3.networking().router().update(router.toBuilder().externalGateway(rvo.getNetworkId()).clearExternalGateway().build());
+            flag = true;
+        }
+        return flag;
     }
 }

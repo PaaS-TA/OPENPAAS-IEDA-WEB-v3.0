@@ -90,17 +90,17 @@ public class AwsSubnetMgntService {
                 map.put("assignIpv6AddressOnCreation", subnet.getAssignIpv6AddressOnCreation());
                 map.put("availableIpAddressCount", subnet.getAvailableIpAddressCount());
                 map.put("ipv6CidrBlock", getIpv6CidrBlock(subnet) );
-                String vpcId = subnet.getVpcId().toString();
+                String vpcId = subnet.getVpcId();
             
                 List<RouteTable> routeTables = (List<RouteTable>) detailMap.get("routeTables");
                 List<NetworkAcl> networkAcls = (List<NetworkAcl>) detailMap.get("networkAcls");
                 for( int j=0; j < routeTables.size(); j++ ){
-                    if(routeTables.get(j).getVpcId().toString().equals(vpcId)){
+                    if(routeTables.get(j).getVpcId().equalsIgnoreCase(vpcId)){
                         map.put("routeTable", routeTables.get(i).getRouteTableId());
                    }
                 }
                 for( int j=0; j < networkAcls.size(); j++ ){
-                    if(networkAcls.get(j).getVpcId().toString().equals(vpcId)){
+                    if(networkAcls.get(j).getVpcId().equalsIgnoreCase(vpcId)){
                         map.put("networkAcl", networkAcls.get(i).getNetworkAclId());
                    }
                 }

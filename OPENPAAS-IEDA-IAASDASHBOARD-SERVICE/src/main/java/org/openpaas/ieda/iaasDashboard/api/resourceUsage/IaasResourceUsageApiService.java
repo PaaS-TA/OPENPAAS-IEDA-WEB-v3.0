@@ -10,6 +10,7 @@ import org.openpaas.ieda.common.web.common.service.CommonApiService;
 import org.openstack4j.api.OSClient.OSClientV2;
 import org.openstack4j.api.OSClient.OSClientV3;
 import org.openstack4j.model.compute.Server;
+import org.openstack4j.model.network.Network;
 import org.openstack4j.model.network.Subnet;
 import org.openstack4j.model.storage.block.Volume;
 import org.slf4j.Logger;
@@ -78,19 +79,24 @@ public class IaasResourceUsageApiService {
         }
         
         //cloudwatch billing
-        GetMetricStatisticsRequest request = request(); 
+        GetMetricStatisticsRequest request = cloudwatchRequest(); 
         GetMetricStatisticsResult result = cloudWatch.getMetricStatistics(request);
         if( result.getDatapoints().size() > 0 ) {
             map.put("billing", result.getDatapoints().get(0).getMaximum());
-        }else map.put("billing", 0);
-        
-        
-//        Collections.sort(result.getDatapoints(), (Datapoint dp1, Datapoint dp2) -> dp1.getTimestamp().compareTo(dp2.getTimestamp()));
+        }else {
+            map.put("billing", 0);
+        }
         return map;
         
     }
     
-    private static GetMetricStatisticsRequest request() {
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : Cloudwatch 과금 요청
+     * @title : cloudwatchRequest
+     * @return : GetMetricStatisticsRequest
+    ***************************************************/
+    private static GetMetricStatisticsRequest cloudwatchRequest() {
         Calendar cal = Calendar.getInstance(Locale.KOREA);
         cal.add(Calendar.MONTH, -1);
         final int oneHours = 60 * 60 * 24;
@@ -146,9 +152,9 @@ public class IaasResourceUsageApiService {
             List<? extends Server> servers = os.compute().servers().list();
             map.put("instance", servers.size());
             
-            List<? extends Subnet> subnets = os.networking().subnet().list();
-            map.put("network", subnets.size());
-            
+            List<? extends Network> networks = os.networking().network().list();
+            map.put("network", networks.size());
+
             List<? extends Volume> volumes = os.blockStorage().volumes().list();
             int total = 0;
             for( int i=0; i < volumes.size(); i++ ){
@@ -157,7 +163,9 @@ public class IaasResourceUsageApiService {
             map.put("volume", total);
             map.put("iaasType", "OPENSTACK");
         }catch(Exception e){
-            if( LOGGER.isErrorEnabled() ){ LOGGER.error(e.getMessage()); }
+            if( LOGGER.isErrorEnabled() ){ 
+                LOGGER.error(e.getMessage()); 
+            }
         }
         return map;
     }

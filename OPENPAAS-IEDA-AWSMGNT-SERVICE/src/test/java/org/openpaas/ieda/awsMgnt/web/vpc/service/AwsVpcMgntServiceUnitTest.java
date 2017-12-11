@@ -25,8 +25,6 @@ import org.openpaas.ieda.awsMgnt.web.vpc.dao.AwsVpcMgntVO;
 import org.openpaas.ieda.awsMgnt.web.vpc.dto.AwsVpcMgntDTO;
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -43,7 +41,6 @@ import com.amazonaws.services.ec2.model.VpcIpv6CidrBlockAssociation;
 public class AwsVpcMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     
     private Principal principal = null;
-    final static Logger LOGGER = LoggerFactory.getLogger(AwsVpcMgntServiceUnitTest.class);
     
     @InjectMocks AwsVpcMgntService mockAwsVpcMgntService;
     @Mock AwsVpcMgntApiService mockAwsVpcMgntApiService;
@@ -69,7 +66,6 @@ public class AwsVpcMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     ***************************************************/
     @Test
     public void testDefaultGetAwsVpcInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= 일반 AWS 목록 조회 TEST TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<Vpc> vpcList = getResultVpcListInfo("default");
@@ -92,7 +88,6 @@ public class AwsVpcMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     ***************************************************/
     @Test
     public void testIpv6CidrBlockListSize2GetAwsVpcInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= Ipv6CidrBlock 사이즈가 2개 이상 일 경우 AWS 목록 조회 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<Vpc> vpcList = getResultVpcListInfo("ipv6Cidr");
@@ -116,7 +111,6 @@ public class AwsVpcMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     ***************************************************/
     @Test
     public void testNameTagSize2GetAwsVpcInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= Ipv6CidrBlock 사이즈가 2개 이상 일 경우 AWS 목록 조회 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<Vpc> vpcList = getResultVpcListInfo("nameTag");
@@ -140,7 +134,6 @@ public class AwsVpcMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     ***************************************************/
     @Test
     public void testDefaultGetAwsVpcDetailInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= 기본  AWS 상세 정보 조회 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<Vpc> vpcList = getResultVpcListInfo("default");
@@ -162,7 +155,6 @@ public class AwsVpcMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     ***************************************************/
     @Test
     public void testIpv6CidrBlockListSize2GetAwsVpcDetailInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= Ipv6Cidr의 사이즈가 2이상일 경우 AWS VPC 상세 조회 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<Vpc> vpcList = getResultVpcListInfo("ipv6Cidr");
@@ -185,7 +177,6 @@ public class AwsVpcMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     ***************************************************/
     @Test
     public void testNameTagSize2GetAwsVpcDetailInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= Ipv6Cidr의 사이즈가 2이상일 경우 AWS VPC 상세 조회 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<Vpc> vpcList = getResultVpcListInfo("nameTag");
@@ -208,7 +199,6 @@ public class AwsVpcMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     ***************************************************/
     @Test
     public void testSaveAwsVpcInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= AWS VPC 생성 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         AwsVpcMgntDTO dto = setAwsVpcInfo();
@@ -223,7 +213,6 @@ public class AwsVpcMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     ***************************************************/
     @Test
     public void testDeleteAwsVpcInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= AWS VPC 삭제 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         AwsVpcMgntDTO dto = setAwsVpcInfo();

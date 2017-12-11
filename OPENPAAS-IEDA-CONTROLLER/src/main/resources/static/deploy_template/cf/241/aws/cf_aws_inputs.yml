@@ -52,8 +52,32 @@ meta:
   runner-instance-type: [runnerInstanceType]
 
   dea-next-disk-mb: [deaDiskMB]
-
   dea-next-memory-mb: [deaMemoryMB]
+
+ ##job instances(zone_z1)
+  nats-z1-instances: [natsZ1]
+  blobstore-z1-instances: [blobstoreZ1]
+  router-z1-instances: [routerZ1]
+  doppler-z1-instances: [dopplerZ1]
+  loggregator-trafficcontroller-z1-instances: [loggregator_trafficcontrollerZ1]
+  etcd-z1-instances: [etcdZ1]
+  consul-z1-instances: [consulZ1]
+  clock-global-z1-instances: [clock_globalZ1]
+  hm9000-z1-instances: [hm9000Z1]
+  runner-z1-instances: [runnerZ1]
+ 
+ ##job instances(zone_z2) 
+  nats-z2-instances: [natsZ2]
+  router-z2-instances: [routerZ2]
+  doppler-z2-instances: [dopplerZ2]
+  loggregator-trafficcontroller-z2-instances: [loggregator_trafficcontrollerZ2]
+  etcd-z2-instances: [etcdZ2]
+  consul-z2-instances: [consulZ2]
+  runner-z2-instances: [runnerZ2]
+  hm9000-z2-instances: [hm9000Z2]
+  api-z2-instances: [apiZ2]
+  api-worker-z2-instances: [api_workerZ2]
+  uaa-z2-instances: [uaaZ2]
 
   ## Don't change
   default_env:

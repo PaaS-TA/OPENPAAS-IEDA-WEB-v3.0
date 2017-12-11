@@ -51,18 +51,29 @@ $(function(){
                 }
             }, runnerFlavorRam: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='runnerFlavorRam']").val() );
+                    if( $(".w2ui-msg-body #runnerTypeDiv").css("display") == "none" ){
+                        return false;
+                    }else{
+                        return checkEmpty( $(".w2ui-msg-body input[name='runnerFlavorRam']").val() );
+                    }
                 }
             }, runnerFlavorDisk: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='runnerFlavorDisk']").val() );
+                    if( $(".w2ui-msg-body #runnerTypeDiv").css("display") == "none" ){
+                        return false;
+                    }else{
+                        return checkEmpty( $(".w2ui-msg-body input[name='runnerFlavorDisk']").val() );
+                    }
                 }
             }, runnerFlavorCpu: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='runnerFlavorCpu']").val() );
+                    if( $(".w2ui-msg-body #runnerTypeDiv").css("display") == "none" ){
+                        return false;
+                    }else{
+                        return checkEmpty( $(".w2ui-msg-body input[name='runnerFlavorCpu']").val() );
+                    }
                 }
             }
-            
         }, messages: {
         	stemcells:{
                 required: "스템셀"+select_required_msg

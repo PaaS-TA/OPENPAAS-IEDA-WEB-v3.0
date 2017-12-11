@@ -9,26 +9,14 @@ $(function() {
                     required: function(){ return checkEmpty( $(".w2ui-msg-body input[name='deploymentName']").val() ); }
                 }, diegoReleases: { 
                     required: function(){ return checkEmpty( $(".w2ui-msg-body select[name='diegoReleases']").val() ); }
-                }, cflinuxfs2rootfsrelease: { 
-                    required: function(){ return checkEmpty( $(".w2ui-msg-body select[name='cflinuxfs2rootfsrelease']").val() ); }
                 }, gardenReleaseName: { 
                     required: function(){ return checkEmpty( $(".w2ui-msg-body select[name='gardenReleaseName']").val() ); }
-                }, etcdReleases: { 
-                    required: function(){ return checkEmpty( $(".w2ui-msg-body select[name='etcdReleases']").val() ); }
                 }, cfInfo: { 
                     required: function(){ return checkEmpty( $(".w2ui-msg-body select[name='cfInfo']").val() ); }
                 }, cadvisorDriverIp: { 
                     required: function(){
                         if( $(".w2ui-msg-body input:checkbox[name='paastaMonitoring']").is(":checked") ){
                             return checkEmpty( $(".w2ui-msg-body input[name='cadvisorDriverIp']").val() );
-                        }else{
-                            return false;
-                        }
-                    }
-                }, cadvisorDriverPort: { 
-                    required: function(){
-                        if( $(".w2ui-msg-body input:checkbox[name='paastaMonitoring']").is(":checked") ){
-                            return checkEmpty( $(".w2ui-msg-body input[name='cadvisorDriverPort']").val() );
                         }else{
                             return false;
                         }
@@ -43,7 +31,6 @@ $(function() {
                 ,etcdReleases           : { required:  "ETCD 릴리즈"+select_required_msg }
                 ,cfInfo      : { required:  "CF 배포 명 "+select_required_msg }
                 ,cadvisorDriverIp       : { required:  "PaaS-TA 모니터링"+text_required_msg } 
-                ,cadvisorDriverPort     : { required:  "PaaS-TA 모니터링 DB 서버 IP"+text_required_msg }
             }, unhighlight: function(element) {
                 setSuccessStyle(element);
             },errorPlacement: function(error, element) {

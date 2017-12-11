@@ -151,18 +151,23 @@ public class ReleaseService {
                 String releaseName = release.getName();
                 if( release.getName().indexOf("paasta-") > -1){
                     releaseName = release.getName().split("paasta-")[1];
-                    if("controller".equals(releaseName)){
+                    if("controller".equalsIgnoreCase(releaseName)){
                         releaseName = "cf";
-                    }else if("container".equals(releaseName)){
+                    }else if("container".equalsIgnoreCase(releaseName)){
                         releaseName="diego";
-                    }else if("garden-runc".equals(releaseName)){
+                    }else if("garden-runc".equalsIgnoreCase(releaseName)){
                         releaseName="garden-linux";
+                    }else if( "loggregator".equalsIgnoreCase(releaseName) ){
+                        releaseName="loggregator";
                     }
                 }
-                if("garden-runc".equals(releaseName)){
+                if("garden-runc".equalsIgnoreCase(releaseName)){
                     releaseName="garden-linux";
                 }
-                if( type.equals(releaseName)){
+                if("cflinuxfs2".equalsIgnoreCase(releaseName)){
+                    releaseName= "cflinuxfs2-rootfs";
+                }
+                if( type.equalsIgnoreCase(releaseName)){
                     List<ReleaseVersionDTO> versionList = release.getReleaseVersions();
                     for (ReleaseVersionDTO releaseVersion : versionList) {
                         ReleaseInfoDTO releaseInfo = new ReleaseInfoDTO();

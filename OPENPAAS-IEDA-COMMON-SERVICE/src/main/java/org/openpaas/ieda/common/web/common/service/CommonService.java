@@ -77,7 +77,7 @@ public class CommonService {
         
         try{
              zones = ec2.describeAvailabilityZones().getAvailabilityZones().stream()
-                    .filter(zone -> "available".equals(zone.getState())).map(AvailabilityZone::getZoneName)
+                    .filter(zone -> "available".equalsIgnoreCase(zone.getState())).map(AvailabilityZone::getZoneName)
                     .collect(Collectors.toList());
         }catch(AmazonEC2Exception e){
             throw new CommonException(message.getMessage("common.unauthorized.exception.code", null, Locale.KOREA), 

@@ -17,7 +17,9 @@ public class IaasConfigMgntVO{
     private String commonKeypairName; //Key Pair 이름
     private String commonKeypairPath; // Key Pair 경로
     private String commonAvailabilityZone; //공통 영역
-    private String googlePublicKey;//google ssh public key
+    private String openstackDomain; //도메인
+    private String commonProject; //프로젝트
+    private String openstackKeystoneVersion; //오픈스택 키스톤 버전
     private String vsphereVcentDataCenterName;
     private String vsphereVcenterVmFolder; //vCenter
     private String vsphereVcenterTemplateFolder; //vCenter
@@ -45,24 +47,24 @@ public class IaasConfigMgntVO{
         this.id = id;
     }
     public Integer getAccountId() {
-		return accountId;
-	}
-	public void setAccountId(Integer accountId) {
-		this.accountId = accountId;
-	}
-	public String getAccountName() {
-		return accountName;
-	}
-	public void setAccountName(String accountName) {
-		this.accountName = accountName;
-	}
-	public String getDeployStatus() {
-		return deployStatus;
-	}
-	public void setDeployStatus(String deployStatus) {
-		this.deployStatus = deployStatus;
-	}
-	public String getIaasType() {
+        return accountId;
+    }
+    public void setAccountId(Integer accountId) {
+        this.accountId = accountId;
+    }
+    public String getAccountName() {
+        return accountName;
+    }
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+    public String getDeployStatus() {
+        return deployStatus;
+    }
+    public void setDeployStatus(String deployStatus) {
+        this.deployStatus = deployStatus;
+    }
+    public String getIaasType() {
         return iaasType;
     }
     public void setIaasType(String iaasType) {
@@ -114,13 +116,13 @@ public class IaasConfigMgntVO{
     public String getVsphereVcenterDatastore() {
         return vsphereVcenterDatastore;
     }
-	public String getVsphereVcentDataCenterName() {
-		return vsphereVcentDataCenterName;
-	}
-	public void setVsphereVcentDataCenterName(String vsphereVcentDataCenterName) {
-		this.vsphereVcentDataCenterName = vsphereVcentDataCenterName;
-	}
-	public void setVsphereVcenterDatastore(String vsphereVcenterDatastore) {
+    public String getVsphereVcentDataCenterName() {
+        return vsphereVcentDataCenterName;
+    }
+    public void setVsphereVcentDataCenterName(String vsphereVcentDataCenterName) {
+        this.vsphereVcentDataCenterName = vsphereVcentDataCenterName;
+    }
+    public void setVsphereVcenterDatastore(String vsphereVcenterDatastore) {
         this.vsphereVcenterDatastore = vsphereVcenterDatastore;
     }
     public String getVsphereVcenterPersistentDatastore() {
@@ -187,17 +189,29 @@ public class IaasConfigMgntVO{
     public void setCommonAvailabilityZone(String commonAvailabilityZone) {
         this.commonAvailabilityZone = commonAvailabilityZone;
     }
-    public String getGooglePublicKey() {
-        return googlePublicKey;
-    }
     public SimpleDateFormat getFormat() {
         return format;
     }
-    public void setGooglePublicKey(String googlePublicKey) {
-        this.googlePublicKey = googlePublicKey;
-    }
     public void setFormat(SimpleDateFormat format) {
         this.format = format;
+    }
+    public String getCommonProject() {
+        return commonProject;
+    }
+    public void setCommonProject(String commonProject) {
+        this.commonProject = commonProject;
+    }
+    public String getOpenstackKeystoneVersion() {
+        return openstackKeystoneVersion;
+    }
+    public void setOpenstackKeystoneVersion(String openstackKeystoneVersion) {
+        this.openstackKeystoneVersion = openstackKeystoneVersion;
+    }
+    public String getOpenstackDomain() {
+        return openstackDomain;
+    }
+    public void setOpenstackDomain(String openstackDomain) {
+        this.openstackDomain = openstackDomain;
     }
     
 

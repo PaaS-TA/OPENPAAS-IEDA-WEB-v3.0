@@ -31,7 +31,6 @@ $(function() {
         ],onError: function(event){
             w2alert(search_grid_fail_msg,"전체 인프라 환경 설정 정보 목록");
         },onLoad : function(event){
-
         }
     });
 
@@ -43,15 +42,14 @@ $(function() {
  * 설명 : 전체 인프라 환경 설정 정보 목록 조회
 *****************************************************/
 function doSearch(){
-	console.log(w2ui['iaas_allConfigGrid']);
     w2ui['iaas_allConfigGrid'].load("<c:url value='info/iaasConfig/all/list' />","",function(event){});
     setIaasConfigCountInfo();
 }
 
-    /****************************************************
-     * 기능 : setIaasConfigCountInfo
-     * 설명 : 전체 인프라 별 환경 설정 정보 개수 조회
-    *****************************************************/
+/****************************************************
+ * 기능 : setIaasConfigCountInfo
+ * 설명 : 전체 인프라 별 환경 설정 정보 개수 조회
+*****************************************************/
 function setIaasConfigCountInfo(){
     if($("#infra_config_mgnt_wrap").find("ul").length == 0){
         $("#infra_config_mgnt_nowrap").show();
@@ -110,14 +108,13 @@ $( window ).resize(function() {
 </script>
 
 <div id="main">
+    <div class="page_site">정보조회 > <strong>인프라 환경 설정 관리</strong></div>
     <div class="pdt20">
-        <div class="title fl">전체 인프라 환경 설정 목록</div>
+        <div class="title">전체 인프라 환경 설정 목록</div>
         <div id="iaas_allConfigGrid" style="width: 100%; height: 400px;"></div>
     </div>
-    
     <div class="pdt20">
         <div class="title fl">인프라 환경 설정 관리</div>
-        
         <div id="iaas_config_mgnt_wrap">
              <sec:authorize access="hasAuthority('INFO_IAASCONFIG_AWS_MENU')">
                 <ul class="col-md-3 well" onmouseover="hover(this);" onmouseout="unhover(this);" onclick="javascript:goPage('<c:url value="/info/iaasConfig/aws"/>','AWS 조회');">
@@ -147,16 +144,13 @@ $( window ).resize(function() {
                     <li class="vSphere-config-cnt"><span style="font-size: 14px;color:#000;">설정 정보 : </span></li>
                 </ul>
             </sec:authorize>
-             
         </div>
-
         <div id="iaas_config_mgnt_nowrap" class="panel panel-danger" style="display:none">
             <div class="panel-heading"></div>
             <div class="panel-body">
                 <p>권한을 가지고 있지 않습니다.</p>
                 <p><b>권한을 확인해주세요.</b></p> 
-            </div>      
+            </div> 
         </div>
-
     </div>
 </div>

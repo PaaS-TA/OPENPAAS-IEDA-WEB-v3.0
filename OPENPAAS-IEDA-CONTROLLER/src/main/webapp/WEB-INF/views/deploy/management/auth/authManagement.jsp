@@ -118,40 +118,11 @@ $("#addBtn").click(function(){
     w2popup.open({
         title     : "<b>권한 그룹 등록</b>",
         width     : 600,
-        height    : 220,
+        height    : 260,
         modal    : true,
         body    : $("#regPopupDiv").html(),
         buttons : $("#regPopupBtnDiv").html(),
         onClose : function(event){
-            w2ui['auth_GroupGrid'].clear();
-            doSearch();
-            w2ui['auth_sub_Grid'].clear();
-        }
-    });
-});
-        
-
-/********************************************************
-* 설명 : 권한 그룹 수정 버튼 클릭
-*********************************************************/
-$("#modifyBtn").click(function(){
-    if($("#modifyBtn").attr('disabled') == "disabled") return;    
-    var selected = w2ui['auth_GroupGrid'].getSelection();
-    if( selected.length == 0 ){
-        w2alert("선택된 정보가 없습니다.", "권한 그룹 수정");
-        return;
-    }
-    var record = w2ui['auth_GroupGrid'].get(selected);
-    w2confirm({
-        title        : "권한 그룹 수정",
-        msg          : "권한 그룹(" + record.roleName + ")을 수정하시겠습니까?",
-        yes_text     : "확인",
-        no_text      : "취소",
-        yes_callBack : function(event){
-            // 권한 그룹 수정
-            updatePopup(w2ui['auth_GroupGrid'].get(selected));;
-        },
-        no_callBack    : function(){
             w2ui['auth_GroupGrid'].clear();
             doSearch();
             w2ui['auth_sub_Grid'].clear();
@@ -172,10 +143,10 @@ $("#deleteBtn").click(function(){
     else {
         var record = w2ui['auth_GroupGrid'].get(selected);
         w2confirm({
-            title        : "권한 그룹 삭제",
-            msg            : "권한 그룹(" + record.roleName + ")을 삭제하시겠습니까?",
+            title       : "<b>권한 그룹 삭제</b>",
+            msg         : "권한 그룹(" + record.roleName + ")을 삭제하시겠습니까?",
             yes_text    : "확인",
-            no_text        : "취소",
+            no_text     : "취소",
             yes_callBack: function(event){
                 // 코드 삭제
                 deleteAuth(record.roleId);
@@ -231,7 +202,7 @@ $("#modifyAuthBtn").click(function(){
 });
     
 /********************************************************
- * 설명 : 권한 그룹 조회 Function 
+ * 설명 : 권한 그룹 조회 
  * 기능 : doSearch
  *********************************************************/
 function doSearch() {
@@ -253,7 +224,7 @@ function doButtonStyle() {
 }
     
  /********************************************************
-  * 설명 : 권한 그룹 하부 코드 조회 Function
+  * 설명 : 권한 그룹 하부 코드 조회
   * 기능 : doSearchByIdx
   *********************************************************/
  function doSearchByIdx(codeIdx) {
@@ -265,7 +236,7 @@ function doButtonStyle() {
  }
  
  /********************************************************
-  * 설명 : 등록 버튼 클릭 시 권한 코드 조회 Function
+  * 설명 : 등록 버튼 클릭 시 권한 코드 조회
   * 기능 : authInfoList
   *********************************************************/
  var length = 0;
@@ -292,43 +263,43 @@ function doButtonStyle() {
                      result += '<tr>';
                      if( checkEmpty( data[i].subGroupCode ) && checkEmpty( data[i].usubGroupCode ) ){
                          if( bigRow == 1 && middleRow == 1 && data[i].subGroupCode == null  ){
-                             result += '<td style="width:827px; border-right:1px solid #9e9e9e" rowspan="'+bigRow+'" colspan="3"><label>'+data[i].codeNameKR+'</label></td>';
+                             result += '<td style="width:80%; border-right:1px solid #9e9e9e;vertical-align:middle;" rowspan="'+bigRow+'" colspan="3"><label>'+data[i].codeNameKR+'</label></td>';
                          }else if( bigRow > 1 &&  data[i].subGroupCode == null ){
-                             result += '<td style="width:250px; border-right:1px solid #9e9e9e;" rowspan='+bigRow+'><label>'+data[i].codeNameKR+'</label></td>';
+                             result += '<td style="width:20%; border-right:1px solid #9e9e9e;vertical-align:middle;" rowspan='+bigRow+'><label>'+data[i].codeNameKR+'</label></td>';
                          }
                      }
                      if( bigRow >1 && data[i].subGroupCode == null ){ //메뉴
-                         result += '<td style="width:279px; border-right:1px solid #9e9e9e;"rowspan='+middleRow+' ><label>'+data[i].codeNameKR+'</label></td>';
-                         result += '<td style="width:297px; border-right:1px solid #9e9e9e; text-align:center;"><label>'+"-"+'</label></td>';
+                         result += '<td style="width:31%; border-right:1px solid #9e9e9e;"rowspan='+middleRow+' ><label>'+data[i].codeNameKR+'</label></td>';
+                         result += '<td style="width:30.5%; border-right:1px solid #9e9e9e; text-align:center;"><label>'+"-"+'</label></td>';
                      }else if( bigRow == 1 &&  data[i].subGroupCode != null ) { //조회/수정/삭제...등등
-                         result += '<td style="width:279px; border-right:1px solid #9e9e9e;"rowspan='+middleRow+'><label>'+data[i].codeNameKR+'</label></td>';
+                         result += '<td style="width:30%; border-right:1px solid #9e9e9e;"rowspan='+middleRow+'><label>'+data[i].codeNameKR+'</label></td>';
                          if( middleRow > 1 ){
                              if( data[i].subGroupCode != null && data[i].usubGroupCode == null){
-                                 result += '<td style="width:296px; border-right:1px solid #9e9e9e;"><label>'+data[i].codeNameKR+'</label></td>';
+                                 result += '<td style="width:30%; border-right:1px solid #9e9e9e;"><label>'+data[i].codeNameKR+'</label></td>';
                              }else{
                                  for( var j=0; j<data.length; j++ ){
                                      if( data[i].codeValue == data[j].usubGroupCode  ){
-                                         result += '<td style="width:297px; border-right:1px solid #9e9e9e;"><label>'+data[j].codeNameKR+'</label></td>';   
+                                         result += '<td style="width:30%; border-right:1px solid #9e9e9e;"><label>'+data[j].codeNameKR+'</label></td>';   
                                      }
                                  }
                              }
                          }else{
                              if( data[i].subGroupCode != null && data[i].usubGroupCode == null ){
-                                 result += '<td style="width:297px; text-align:center; border-right:1px solid #9e9e9e;"><label>'+"-"+'</label></td>';    
+                                 result += '<td style="width:30%; text-align:center; border-right:1px solid #9e9e9e;"><label>'+"-"+'</label></td>';    
                              }
                          }
                      }
                      var oncahnge = "changeValue(\'"+data[i].codeValue+"'\, this.value);";
                      if( checkEmpty( data[i].subGroupCode ) && checkEmpty( data[i].usubGroupCode ) ){
-                         result += '<td  class='+data[i].subGroupCode+' style="width:184px; text-align: center; border-right:1px solid #9e9e9e;"><input value="Y" type="radio" class="disabledOn" onchange="'+oncahnge+'" name="'+data[i].codeValue+'" /></td>';
-                         result += '<td style="text-align: center;" class='+data[i].subGroupCode+' ><input class="refuse" checked="checked" value="N" type="radio" onchange="'+oncahnge+'" name="'+data[i].codeValue+'"/></td>';
+                         result += '<td  class='+data[i].subGroupCode+' style="width:10%; text-align: center; border-right:1px solid #9e9e9e;"><input value="Y" type="radio" class="disabledOn" onchange="'+oncahnge+'" name="'+data[i].codeValue+'" /></td>';
+                         result += '<td style="width:10%; text-align: center;" class='+data[i].subGroupCode+' ><input class="refuse" checked="checked" value="N" type="radio" onchange="'+oncahnge+'" name="'+data[i].codeValue+'"/></td>';
                      }else{
                          if( data[i].subGroupCode != null && data[i].usubGroupCode == null){
-                             result += '<td class='+data[i].subGroupCode+' style="width:184px; text-align: center; border-right:1px solid #9e9e9e;"><input value="Y" class="disabledOn" onchange="'+oncahnge+'" disabled="false" type="radio" name="'+data[i].codeValue+'" /></td>';
-                             result += '<td style="text-align: center;" class='+data[i].subGroupCode+'><input class="refuse" checked="checked" value="N" type="radio" onchange="'+oncahnge+'" name="'+data[i].codeValue+'"/></td>';
+                             result += '<td class='+data[i].subGroupCode+' style="width:10%; text-align: center; border-right:1px solid #9e9e9e;"><input value="Y" class="disabledOn" onchange="'+oncahnge+'" disabled="false" type="radio" name="'+data[i].codeValue+'" /></td>';
+                             result += '<td style="width:10%; text-align: center;" class='+data[i].subGroupCode+'><input class="refuse" checked="checked" value="N" type="radio" onchange="'+oncahnge+'" name="'+data[i].codeValue+'"/></td>';
                          }else{
-                             result += '<td class='+data[i].usubGroupCode+' style="width:184px; text-align: center; border-right:1px solid #9e9e9e;"><input value="Y" class="disabledOn" onchange="'+oncahnge+'" disabled="false" type="radio" name="'+data[i].codeValue+'" /></td>';
-                             result += '<td style="text-align: center;" class='+data[i].usubGroupCode+'><input class="refuse" checked="checked" value="N" type="radio" onchange="'+oncahnge+'" name="'+data[i].codeValue+'"/></td>';
+                             result += '<td class='+data[i].usubGroupCode+' style="width:10%; text-align: center; border-right:1px solid #9e9e9e;"><input value="Y" class="disabledOn" onchange="'+oncahnge+'" disabled="false" type="radio" name="'+data[i].codeValue+'" /></td>';
+                             result += '<td style="width:10%; text-align: center;" class='+data[i].usubGroupCode+'><input class="refuse" checked="checked" value="N" type="radio" onchange="'+oncahnge+'" name="'+data[i].codeValue+'"/></td>';
                          }
                      }
                      result += '</tr>';
@@ -379,7 +350,7 @@ function doButtonStyle() {
  
  
  /********************************************************
-  * 설명 : 권한 그룹 하부 코드 조회 시 허용/거부 관련 ChangeEvent Function
+  * 설명 : 권한 그룹 하부 코드 조회 시 허용/거부 관련 ChangeEvent
   * 기능 : changeValue
   *********************************************************/
  function changeValue(codeld,val){
@@ -397,13 +368,11 @@ function doButtonStyle() {
             $('.'+subGroupCode+' input.refuse').prop('checked',true);
             
          });
-         
-//          $('.w2ui-msg-body input:radio[name='+arrAuthCode[i]+']:input[value=Y]').attr("checked",true);
      }    
  }
 
  /********************************************************
-  * 설명 : 권한 그룹 등록 Function
+  * 설명 : 권한 그룹 등록
   * 기능 : registAuthGroup
   *********************************************************/
  function registAuthGroup(){
@@ -413,41 +382,35 @@ function doButtonStyle() {
              roleName : $(".w2ui-msg-body input[name='roleName']").val(),            
              roleDescription : $(".w2ui-msg-body input[name='roleDescription']").val()
      }
-     if(popupValidation()){
-         $.ajax({
-             type : "POST",
-             url : "/admin/role/group/add",
-             contentType : "application/json",
-             async : true,        
-             data : JSON.stringify(authInfo),
-             success : function(status) {
-                 // ajax가 성공할때 처리...
-                 w2popup.unlock();
-                 w2popup.close();
-                 w2ui['auth_GroupGrid'].clear();
-                 doSearch();
-                 w2ui['auth_sub_Grid'].clear();                
-             },
-             error : function(request, status, error) {
-                 // ajax가 실패할때 처리...
-                 w2popup.unlock();
-                 w2ui['auth_GroupGrid'].clear();
-                 doSearch();
-                 w2ui['auth_sub_Grid'].clear();
-                 w2popup.close();
-                 var errorResult = JSON.parse(request.responseText);
-                 w2alert(errorResult.message);
-             }
-         });
-     }
+     $.ajax({
+         type : "POST",
+         url : "/admin/role/group/add",
+         contentType : "application/json",
+         async : true,
+         data : JSON.stringify(authInfo),
+         success : function(status) {
+             // ajax가 성공할때 처리...
+             w2popup.unlock();
+             w2popup.close();
+             w2ui['auth_GroupGrid'].clear();
+             doSearch();
+             w2ui['auth_sub_Grid'].clear();
+         },
+         error : function(request, status, error) {
+             // ajax가 실패할때 처리...
+             w2popup.unlock();
+             w2ui['auth_GroupGrid'].clear();
+             doSearch();
+             w2ui['auth_sub_Grid'].clear();
+             w2popup.close();
+             var errorResult = JSON.parse(request.responseText);
+             w2alert(errorResult.message);
+         }
+     });
  }
  
- /***********************************************************************
-  *                             권한 그룹 삭제
- ********************************************************************* */
- 
  /********************************************************
-  * 설명 : 권한 그룹 삭제 Function
+  * 설명 : 권한 그룹 삭제
   * 기능 : deleteAuth
   *********************************************************/
  function deleteAuth(roleId){
@@ -472,11 +435,8 @@ function doButtonStyle() {
      });
  }
 
- /***********************************************************************
-  *                             권한 그룹 수정
- ********************************************************************* */
  /********************************************************
-  * 설명 : 권한 그룹 수정 Function
+  * 설명 : 권한 그룹 수정
   * 기능 : updateAuthGroup
   *********************************************************/
  function updateAuthGroup() {
@@ -486,49 +446,55 @@ function doButtonStyle() {
              roleDescription : $(".w2ui-msg-body input[name='roleDescription']").val(),
              
      }
-     if(popupValidation()){
-         $.ajax({
-             type : "PUT",
-             url : "/admin/role/group/update/" + $(".w2ui-msg-body input[name='roleIdx']").val(),
-             contentType : "application/json",
-             //dataType: "json",
-             async : true,        
-             data : JSON.stringify(authInfo),
-             success : function(status) {
-                 lock( '수정 중입니다.', true);        
-                 w2popup.unlock();
-                 w2popup.close();
-                 w2ui['auth_GroupGrid'].clear();
-                 doSearch();                
-                 w2ui['auth_sub_Grid'].clear();
-                 arrAuthCode = [];
-             },
-             error : function(request, status, error) {
-                 // ajax가 실패할때 처리...
-                 w2popup.unlock();
-                 w2ui['auth_GroupGrid'].clear();
-                 doSearch();
-                 w2ui['auth_sub_Grid'].clear();
-                 w2popup.close();            
-                 var errorResult = JSON.parse(request.responseText);
-                 w2alert(errorResult.message);
-             }
-         });
-     }
+     $.ajax({
+         type : "PUT",
+         url : "/admin/role/group/update/" + $(".w2ui-msg-body input[name='roleIdx']").val(),
+         contentType : "application/json",
+         //dataType: "json",
+         async : true,
+         data : JSON.stringify(authInfo),
+         success : function(status) {
+             lock( '수정 중입니다.', true);
+             w2popup.unlock();
+             w2popup.close();
+             w2ui['auth_GroupGrid'].clear();
+             doSearch();
+             w2ui['auth_sub_Grid'].clear();
+             arrAuthCode = [];
+         },
+         error : function(request, status, error) {
+             // ajax가 실패할때 처리...
+             w2popup.unlock();
+             w2ui['auth_GroupGrid'].clear();
+             doSearch();
+             w2ui['auth_sub_Grid'].clear();
+             w2popup.close();
+             var errorResult = JSON.parse(request.responseText);
+             w2alert(errorResult.message);
+         }
+     });
  }
 
  /********************************************************
-  * 설명 : 권한 그룹 수정 팝업 Function
+  * 설명 : 권한 그룹 수정 팝업
   * 기능 : updatePopup
   *********************************************************/
  function updatePopup(record) {
+     if($("#modifyBtn").attr('disabled') == "disabled") return;    
+     var selected = w2ui['auth_GroupGrid'].getSelection();
+     if( selected.length == 0 ){
+         w2alert("선택된 정보가 없습니다.", "권한 그룹 수정");
+         return;
+     }
+     var record = w2ui['auth_GroupGrid'].get(selected);
+     
       w2popup.open({
           title     : "<b>권한 그룹 수정</b>",
           width     : 600,
-          height    : 220,
+          height    : 260,
           modal    : true,
           body    : $("#regPopupDiv").html(),
-          buttons : $("#updatePopupBtnDiv").html(),
+          buttons : $("#regPopupBtnDiv").html(),
           onOpen : function(event){
               event.onComplete = function(){
                   $(".w2ui-msg-body input[name='roleIdx']").val(record.recid);
@@ -546,12 +512,8 @@ function doButtonStyle() {
  }
  
  
- /***********************************************************************
-  *                             권한 코드 수정
- ********************************************************************* */
- 
  /********************************************************
-  * 설명 : 권한 그룹 수정 Function
+  * 설명 : 권한 그룹 수정
   * 기능 : updateAuth
   *********************************************************/
  function updateAuth() {
@@ -565,43 +527,40 @@ function doButtonStyle() {
           flag = !flag;
       }
       authInfo = { activeYn : activeYnArray }
-     if(popupValidation()){
-         $.ajax({
-             type : "POST",
-             url : "/admin/role/detail/update/" + $(".w2ui-msg-body input[name='parentAuthRoleId']").val(),
-             contentType : "application/json",
-             //dataType: "json",
-             async : true,        
-             data : JSON.stringify(authInfo),
-             success : function(status) {
-                 w2confirm({
-                     title :"상세 권한 등록",
-                     msg : "상세 권한 정보를 등록하시겠습니까?",
-                     yes_text: "확인",
-                     yes_callBack : function(envent){
-                         lock( '등록 중입니다.', true);        
-                         w2popup.unlock();
-                         w2popup.close();
-                         w2ui['auth_GroupGrid'].clear();
-                         doSearch();        
-                         w2ui['auth_sub_Grid'].clear();
-                         doSearchByIdx($(".w2ui-msg-body input[name='parentAuthRoleId']").val());
-                     },
-                     no_text : "취소",
-                     no_callBack : function(event){
-                         arrAuthCode = [];
-                     }
-                 });
-             },
-             error : function(request, status, error) {
-                 // ajax가 실패할때 처리...
-                 w2popup.unlock();
-                 w2popup.close();            
-                 var errorResult = JSON.parse(request.responseText);
-                 w2alert(errorResult.message);
-             }
-         });
-     }
+      $.ajax({
+          type : "POST",
+          url : "/admin/role/detail/update/" + $(".w2ui-msg-body input[name='parentAuthRoleId']").val(),
+          contentType : "application/json",
+          //dataType: "json",
+          async : true,        
+          data : JSON.stringify(authInfo),
+          success : function(status) {
+              w2confirm({
+                  title :"<b>상세 권한 등록</b>",
+                  msg : "상세 권한 정보를 등록하시겠습니까?",
+                  yes_text: "확인",
+                  yes_callBack : function(envent){
+                      lock( '등록 중입니다.', true);        
+                      w2popup.unlock();
+                      w2popup.close();
+                      w2ui['auth_GroupGrid'].clear();
+                      doSearch();        
+                      w2ui['auth_sub_Grid'].clear();
+                      doSearchByIdx($(".w2ui-msg-body input[name='parentAuthRoleId']").val());
+                  },
+                  no_text : "취소",
+                  no_callBack : function(event){
+                      arrAuthCode = [];
+                  }
+              });
+          },
+          error : function(request, status, error) {
+              w2popup.unlock();
+              w2popup.close();
+              var errorResult = JSON.parse(request.responseText);
+              w2alert(errorResult.message);
+          }
+      });
  }
      
  /********************************************************
@@ -610,13 +569,13 @@ function doButtonStyle() {
   *********************************************************/
  function updateAuthPopup(record) {
       w2popup.open({
-          title     : "<b>상세 권한 등록</b>",
-          width     : 1500,
-          height    : 600,
-          modal    : true,
+          title   : "<b>상세 권한 등록</b>",
+          width   : 850,
+          height  : 700,
+          modal   : true,
           body    : $("#regAuthPopupDiv").html(),
           buttons : $("#updateAuthPopupBtnDiv").html(),
-          onOpen : function(event){
+          onOpen  : function(event){
               event.onComplete = function(){
                   $(".w2ui-msg-body input[name='parentAuthRoleId']").val(record.roleId);
                   $(".w2ui-msg-body input[name='parentAuthName']").val(record.roleName);
@@ -645,7 +604,7 @@ $( window ).resize(function() {
 });
     
 /********************************************************
- * 설명 : 다른 페이지 이동 시 호출 Function
+ * 설명 : 다른 페이지 이동 시 호출
  * 기능 : clearMainPage
  *********************************************************/
 function clearMainPage() {
@@ -661,10 +620,12 @@ function clearMainPage() {
     <!-- 권한 그룹 목록-->
     <div class="pdt20">
         <div class="title fl">권한 그룹 목록</div>
-        <div class="fr"> 
-            <span id="addBtn" class="btn btn-primary" style="width:120px">등록</span>
-            <span id="modifyBtn" class="btn btn-info" style="width:120px">수정</span>
-            <span id="deleteBtn" class="btn btn-danger" style="width:120px">삭제</span>
+        <div class="fr">
+            <sec:authorize access="hasAuthority('ADMIN_ROLE_MENU')">
+	            <span id="addBtn" class="btn btn-primary" style="width:120px">등록</span>
+	            <span id="modifyBtn" onclick="updatePopup();" class="btn btn-info" style="width:120px">수정</span>
+	            <span id="deleteBtn" class="btn btn-danger" style="width:120px">삭제</span>
+            </sec:authorize>
         </div>
     </div>
     <div id="auth_GroupGrid" style="width:100%; height:230px"></div>
@@ -682,21 +643,19 @@ function clearMainPage() {
     <div id="regPopupDiv" hidden="true">
         <form id="settingForm" action="POST">
             <input name="roleIdx" type="hidden"/>
-            <div class="panel panel-info" >    
+            <div class="panel panel-info" style="margin-top:5px;">    
                 <div class="panel-heading"><b>권한 그룹 정보</b></div>
-                <div class="panel-body" style="padding:5px 5px 5px 5px;">
+                <div class="panel-body" style="overflow-y:auto;height:126px;">
                     <div class="w2ui-field">
-                        <label style="width:100%%;text-align: left;padding-left: 20px;">권한 그룹명</label>
-                        <div >
-                            <input name="roleName" type="text" maxlength="100" style="width: 365px" required="required" />
-                            <div class="isMessage"></div>
+                        <label style="width:30%;text-align: left;padding-left: 20px;">권한 그룹명</label>
+                        <div>
+                            <input name="roleName" type="text" maxlength="100" style="width: 365px" />
                         </div>
                     </div>
-
                     <div class="w2ui-field">
-                        <label style="width:100%%;text-align: left;padding-left: 20px;">설명</label>
-                        <div style="width: 100%;">
-                            <input name="roleDescription" type="text" maxlength="100" style="width: 365px" required="required" />
+                        <label style="width:30%;text-align: left;padding-left: 20px;">설명</label>
+                        <div>
+                            <input name="roleDescription" type="text" maxlength="100" style="width: 365px"  />
                         </div>
                     </div>
                 </div>
@@ -707,41 +666,35 @@ function clearMainPage() {
         <button class="btn" id="registBtn" onclick="$('#settingForm').submit();">확인</button>
         <button class="btn" id="popClose"  onclick="w2popup.close();">취소</button>
     </div>
-
-    <div id="updatePopupBtnDiv" hidden="true">
-        <button class="btn" id="updateBtn" onclick="$('#settingForm').submit();">확인</button>
-        <button class="btn" id="popClose"  onclick="w2popup.close();">취소</button>
-    </div>
-    
     
     <!-- 권한 추가/수정 팝업 -->
     <div id="regAuthPopupDiv"  hidden="true">
         <form id="settingForms" action="POST" style="padding:5px 0 5px 0;margin:0;">
             <input name="codeIdx" type="hidden"/>
             <div class="panel panel-info" >    
-                <div class="panel-heading"><b>권한 정보</b></div>
-                <div class="panel-body" style="padding:5px 5% 10px 5%;height:500px;">
+                <div class="panel-heading"><b>상세 권한 정보</b></div>
+                <div class="panel-body" style="height:563px;">
                     <div class="w2ui-field">
-                        <label style="width:30%;text-align: left;padding-left: 20px;">권한 그룹명</label>
-                        <div style="width: 70%;">
+                        <label style="text-align:left;padding-left: 20px;">권한 그룹명</label>
+                        <div>
                             <input name="parentAuthName" type="text" maxlength="100" style="width: 350px" readonly />
                             <input type="hidden" name="parentAuthRoleId">
                         </div>
-                    </div>                                        
+                    </div>
                      <div class="w2ui-field">
                         <label style="width:88%;text-align: left;padding-left: 20px;">권한 설정</label>
-                        <div  style="width:90%; height:34px; float:left; position:relative; margin:0px 10px 5px 20px; top:10px; ">
+                        <div style="width:95%; height:34px; float:left; position:relative; margin:0px 10px 5px 20px; top:10px; ">
                             <table class="table table-striped" style="height: 20px;" >
                                 <tr class="info" style="line-height: 25px;">
-                                    <th style="width:251px; background-color: #d9d9da; background: linear-gradient(to bottom,#f1f1f1 0,#c8c8c8 100%); font-size:13px; border-right:1px solid #9e9e9e; box-shadow: 3px 2px 10px #c1c1c1;" >대 메뉴</th>
-                                    <th style="width:279px; background-color: #d9d9da; background: linear-gradient(to bottom,#f1f1f1 0,#c8c8c8 100%); font-size:13px; border-right:1px solid #9e9e9e; box-shadow: 3px 2px 10px #c1c1c1;" >중 메뉴</th>
-                                    <th style="width:296px; background-color: #d9d9da; background: linear-gradient(to bottom,#f1f1f1 0,#c8c8c8 100%); font-size:13px; border-right:1px solid #9e9e9e; box-shadow: 3px 2px 10px #c1c1c1;" >소 메뉴</th>
-                                    <th style="background-color: #d9d9da; background: linear-gradient(to bottom,#f1f1f1 0,#c8c8c8 100%);font-size:13px;border-right:1px solid #9e9e9e; text-align: center; box-shadow: 3px 2px 10px #c1c1c1;">허용</th>
-                                    <th style="background-color: #d9d9da; background: linear-gradient(to bottom,#f1f1f1 0,#c8c8c8 100%);font-size:13px; box-shadow: 3px 2px 10px #c1c1c1;  text-align: center;">거부</th>
+                                    <th style="width:20%; text-align:center; background-color: #d9d9da; background: linear-gradient(to bottom,#f1f1f1 0,#c8c8c8 100%); font-size:13px; border-right:1px solid #9e9e9e; box-shadow: 3px 2px 10px #c1c1c1;" >대 메뉴</th>
+                                    <th style="width:30%; text-align:center; background-color: #d9d9da; background: linear-gradient(to bottom,#f1f1f1 0,#c8c8c8 100%); font-size:13px; border-right:1px solid #9e9e9e; box-shadow: 3px 2px 10px #c1c1c1;" >중 메뉴</th>
+                                    <th style="width:30%; text-align:center; background-color: #d9d9da; background: linear-gradient(to bottom,#f1f1f1 0,#c8c8c8 100%); font-size:13px; border-right:1px solid #9e9e9e; box-shadow: 3px 2px 10px #c1c1c1;" >소 메뉴</th>
+                                    <th style="width:10%; text-align:center; background-color: #d9d9da; background: linear-gradient(to bottom,#f1f1f1 0,#c8c8c8 100%);font-size:13px;border-right:1px solid #9e9e9e; text-align: center; box-shadow: 3px 2px 10px #c1c1c1;">허용</th>
+                                    <th style="width:10%; text-align:center; background-color: #d9d9da; background: linear-gradient(to bottom,#f1f1f1 0,#c8c8c8 100%);font-size:13px; box-shadow: 3px 2px 10px #c1c1c1;  text-align: center;">거부</th>
                                 </tr>
                             </table>
                         </div>
-                        <div class= "writeWarrper" style="width:90%; float:left; margin:10px 10px 10px 20px; overflow-y:scroll; height:320px;" ></div>
+                        <div class= "writeWarrper" style="width:95%; float:left; margin:10px 10px 10px 20px; overflow-y:scroll; height:415px;" ></div>
                     </div>
                 </div>
             </div>
@@ -752,8 +705,6 @@ function clearMainPage() {
         <button class="btn" id="popClose"  onclick="w2popup.close();">취소</button>
     </div>
 </div>
-
-
 <script>
 $(function() {
       $.validator.addMethod("sqlInjection", function(value, element, params) {
@@ -779,15 +730,14 @@ $(function() {
              }
         }, messages: {
             roleName: { 
-                 required:  "roleName" + text_required_msg
+                 required:  "권한 그룹명" + text_required_msg
             },
             roleDescription: { 
-                required:  "roleDescription" + text_required_msg
+                required:  "설명" + text_required_msg
             }
         }, unhighlight: function(element) {
             setSuccessStyle(element);
         },errorPlacement: function(error, element) {
-            console.log(error);
             //do nothing
         }, invalidHandler: function(event, validator) {
             var errors = validator.numberOfInvalids();
@@ -800,6 +750,5 @@ $(function() {
         }
     });
 });
-
 </script>
 

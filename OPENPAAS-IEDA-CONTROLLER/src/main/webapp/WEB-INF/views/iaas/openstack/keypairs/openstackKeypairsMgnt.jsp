@@ -17,6 +17,8 @@ var accountId ="";
 var bDefaultAccount = "";
 var save_lock_msg = '<spring:message code="common.save.data.lock"/>';//등록 중 입니다.
 var text_required_msg='<spring:message code="common.text.vaildate.required.message"/>';//을(를) 입력하세요.
+var input_duplication_msg='<spring:message code="common.data.duplication.fail.message"/>';//중복된 데이터 입니다.
+
 
 $(function(){
     bDefaultAccount = setDefaultIaasAccountList("openstack");
@@ -48,12 +50,11 @@ $(function(){
      * 설명 : Keypair 생성 클릭 > 생성 화면 팝업
     *********************************************************/
     $("#createBtn").click(function(){
-        
        w2popup.open({
-           title     : "<b>OPENSTACK Keypairs 생성 </b>",
-           width     : 700,
-           height    : 230,
-           modal    : true,
+           title   : "<b>OPENSTACK Keypairs 생성 </b>",
+           width   : 700,
+           height  : 220,
+           modal   : true,
            body    : $("#createPopupDiv").html(),
            buttons : $("#createPopupBtnDiv").html(),
            onOpen : function(event){
@@ -69,11 +70,18 @@ $(function(){
 
 /********************************************************
  * 설명 : Openstack Keypairs 생성 버튼 클릭
- * Function : saveKeypairsInfo
+ * 기능 : saveKeypairsInfo
  *********************************************************/ 
 function saveKeypairsInfo(){
      var accountId = $("select[name='accountId']").val()
      var keypairsName = $(".w2ui-msg-body input[name='keypairsName']").val()
+     var records = w2ui['openstack_keypairsGrid'].records;
+     for( var i=0; i<records.length; i++ ){
+         if( keypairsName == records[i].keypairsName ){
+             w2alert("Key Pair 명 (" + keypairsName +")은 " + input_duplication_msg);
+             return;
+         }
+     }
      var debugLogdownUrl = "/openstackMgnt/keypairs/save/"+ accountId +"/"+keypairsName+"";
      window.open(debugLogdownUrl, '', ''); 
      w2popup.close();
@@ -82,7 +90,7 @@ function saveKeypairsInfo(){
 
 /********************************************************
  * 설명 : Openstack Keypairs 목록 조회 Function 
- * Function : doSearch
+ * 기능 : doSearch
  *********************************************************/
 function doSearch() {
     w2ui['openstack_keypairsGrid'].load('/openstackMgnt/keypairs/list/'+accountId+'');
@@ -119,7 +127,8 @@ $( window ).resize(function() {
 </script>
 
 <div id="main">
-    <div id="openstackMgnt">
+    <div class="page_site pdt20">인프라 관리 > OPENSTACK 관리 > <strong>OPENSTACK Key Pair 관리 </strong></div>
+    <div id="openstackMgnt" class="pdt20">
         <ul>
             <li>
                 <label style="font-size: 14px">OPENSTACK 관리 화면</label> &nbsp;&nbsp;&nbsp; 
@@ -127,8 +136,6 @@ $( window ).resize(function() {
                     <a href="#" class="dropdown-toggle iaas-dropdown" data-toggle="dropdown" aria-expanded="false">
                         &nbsp;&nbsp;Keypairs 관리<b class="caret"></b>
                     </a>
-                    
-                    
                     <ul class="dropdown-menu alert-dropdown">
                         <sec:authorize access="hasAuthority('OPENSTACK_NETWORK_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/openstackMgnt/network"/>', 'Openstack Network');">Network 관리</a></li>
@@ -162,28 +169,26 @@ $( window ).resize(function() {
     </div>
     
     <div class="pdt20">
-        <div class="title fl">OPENSTACK KeyPair 목록</div>
+        <div class="title fl">Openstack KeyPair 목록</div>
         <div class="fr"> 
             <sec:authorize access="hasAuthority('OPENSTACK_KEYPAIRS_CREATE')">
-            <span id="createBtn" class="btn btn-primary" style="width:120px">Key Pair 생성</span>
+            <span id="createBtn" class="btn btn-primary" style="width:120px">생성</span>
             </sec:authorize>
         </div>
     </div>
     <div id="openstack_keypairsGrid" style="width:100%; height:475px"></div>
 
-    
     <!-- Keypairs 생성 팝업 -->
     <div id="createPopupDiv" hidden="true">
-        <form id="openstackKeypairsForm" action="POST" style="padding:5px 0 5px 0;margin:0;">
+        <form id="openstackKeypairsForm" action="POST">
             <div class="panel panel-info" style="height: 120px; margin-top: 7px;"> 
-                <div class="panel-heading"><b>OPENSTACK Keypiar 생성</b></div>
+                <div class="panel-heading"><b>Openstack Keypiar 생성</b></div>
                 <div class="panel-body" style="padding:20px 10px; overflow-y:auto;">
                     <input type="hidden" name="accountId"/>
-                    
                     <div class="w2ui-field">
-                        <label style="width:36%;text-align: left; padding-left: 20px;">Keypair Name</label>
+                        <label style="width:22%;text-align: left; padding-left: 20px;">Key Pair Name</label>
                         <div>
-                            <input style="width: 320px;" name="keypairsName">
+                            <input style="width: 320px;" name="keypairsName" placeholder="예) bosh-key">
                         </div>
                     </div>
                     

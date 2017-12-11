@@ -11,14 +11,15 @@ final public class CommonUtils {
     public static final double SPACE_TB = 1024 * SPACE_GB;
     
     /***************************************************
-     * @project          : Paas 플랫폼 설치 자동화
-     * @description   : 파일 사이즈 반올림하여 MegaByte로 형식화함
-     * @title               : formatSizeUnit
-     * @return            : String
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : 파일 사이즈 반올림하여 MegaByte로 형식화함
+     * @title : formatSizeUnit
+     * @return : String
     ***************************************************/
     public static String formatSizeUnit(long size) {
-        if (size <= 0)
+        if (size <= 0) {
             return "0";
+        }
         final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
         // 밑을 10으로 사용하여 지정된 숫자의 로그를 반환
         int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
@@ -28,13 +29,12 @@ final public class CommonUtils {
     }
 
     /***************************************************
-     * @project          : Paas 플랫폼 설치 자동화
-     * @description   : File Size 변경
-     * @title               : bytes2String
-     * @return            : String
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : File Size 변경
+     * @title : bytes2String
+     * @return : String
     ***************************************************/
     public static String bytes2String(long sizeInBytes) {
-
         NumberFormat nf = new DecimalFormat();
         nf.setMaximumFractionDigits(1);
 
@@ -53,8 +53,5 @@ final public class CommonUtils {
         } catch (NumberFormatException e) {
             return sizeInBytes + " Byte(s)";
         }
-
     }
-    
-
 }

@@ -29,11 +29,11 @@ final public class CommonDeployUtils {
 
     final private static Logger LOGGER = LoggerFactory.getLogger(CommonDeployUtils.class);
     final private static String SEPARATOR = System.getProperty("file.separator");
+    final private static String KEY_FILE = LocalDirectoryConfiguration.getKeyDir() + SEPARATOR;
     final private static String TEMP_FILE =  LocalDirectoryConfiguration.getTempDir() + SEPARATOR;
     final private static String DEPLOYMENT_FILE = LocalDirectoryConfiguration.getDeploymentDir() + SEPARATOR;
 
     private CommonDeployUtils() {
-
     }
 
     /****************************************************************
@@ -44,21 +44,21 @@ final public class CommonDeployUtils {
     *****************************************************************/
     public static String lineAddSpace(String exc, int cnt) {
         String[] lines = exc.split(System.getProperty("line.separator"));
-        StringBuffer emptyBuffer = new StringBuffer();
+        StringBuffer emptyBuffer = new StringBuffer("");
         for (int i = 0; i < cnt; i++) {
             emptyBuffer.append(" ");
         }
         String empty = emptyBuffer.toString();
         
-        StringBuffer resultBuffer = new StringBuffer(); 
+        StringBuffer resultBuffer = new StringBuffer(""); 
         if (lines.length > 0) {
             for (int i = 0; i < lines.length; i++) {
                 String keyValue = lines[i].replace("/\r\n/g", "");
                 if (!StringUtils.isEmpty(keyValue)) {
                     if (i == 0) {
-                        resultBuffer.append(empty + keyValue);
+                        resultBuffer.append(empty).append(keyValue);
                     } else {
-                        resultBuffer.append("\n" + empty + keyValue);
+                        resultBuffer.append("\n").append(empty).append(keyValue);
                     }
                 }
             }
@@ -73,13 +73,11 @@ final public class CommonDeployUtils {
      * @title : setSpiffMerge
      * @return : void
     *****************************************************************/
-    public static void setSpiffMerge(String iaas, Integer id, String keyFile, String settingFileName,
-            ManifestTemplateVO manifestTemplate) {
-
+    public static void setSpiffMerge(String keyFile, String settingFileName, ManifestTemplateVO manifestTemplate, String paastaMonitoringUse) {
         // temp
         String inputFile = TEMP_FILE + settingFileName;
         String deploymentPath = DEPLOYMENT_FILE + settingFileName;
-        String keyPath = LocalDirectoryConfiguration.getKeyDir() + SEPARATOR + keyFile;
+        String keyPath = KEY_FILE + keyFile;
 
         File settingFile = null;
         InputStream inputStream = null;
@@ -91,32 +89,52 @@ final public class CommonDeployUtils {
                 List<String> cmd = new ArrayList<String>();
                 cmd.add("spiff");
                 cmd.add("merge");
+                // generic_manifest_mask.yml
                 if (!StringUtils.isEmpty(manifestTemplate.getCommonBaseTemplate())) {
                     cmd.add(manifestTemplate.getCommonBaseTemplate());
                 }
+                // cf.yml
                 if (!StringUtils.isEmpty(manifestTemplate.getCommonJobTemplate())) {
                     cmd.add(manifestTemplate.getCommonJobTemplate());
                 }
+                // cf_<iaas>_setting_<version>.yml
                 if (!StringUtils.isEmpty(manifestTemplate.getIaasPropertyTemplate())) {
                     cmd.add(manifestTemplate.getIaasPropertyTemplate());
                 }
+                // paasta_option.yml
+                if ( manifestTemplate.getDeployType().equals("BOOTSTRAP")  &&
+                        !StringUtils.isEmpty(manifestTemplate.getCommonOptionTemplate())) {
+                    if (paastaMonitoringUse.equals("true")) {
+                        cmd.add(manifestTemplate.getCommonOptionTemplate());
+                    }
+                }
+                // cf_<iaas>_stub_<version>.yml
                 if (!StringUtils.isEmpty(manifestTemplate.getMetaTemplate())) {
                     cmd.add(manifestTemplate.getMetaTemplate());
                 }
+                // cf_<iaas>_network_options.yml
                 if (!StringUtils.isEmpty(manifestTemplate.getOptionNetworkTemplate())) {
                     cmd.add(manifestTemplate.getOptionNetworkTemplate());
                 }
+                // cf_<iaas>_resouce_options.yml
                 if (!StringUtils.isEmpty(manifestTemplate.getOptionResourceTemplate())) {
                     cmd.add(manifestTemplate.getOptionResourceTemplate());
                 }
+                // cf_diego_option.yml
                 if (!StringUtils.isEmpty(manifestTemplate.getOptionEtc())) {
                     cmd.add(manifestTemplate.getOptionEtc());
                 }
-                if (!StringUtils.isEmpty(manifestTemplate.getCommonOptionTemplate())) {
-                    cmd.add(manifestTemplate.getCommonOptionTemplate());
+                // paasta_option.yml
+                if ( !manifestTemplate.getDeployType().equals("BOOTSTRAP") && 
+                        !StringUtils.isEmpty(manifestTemplate.getCommonOptionTemplate())) {
+                    if (paastaMonitoringUse.equals("true")) {
+                        cmd.add(manifestTemplate.getCommonOptionTemplate());
+                    }
                 }
-                if( !(keyFile.equals("microbosh") || keyFile.equals("bosh")) && !StringUtils.isEmpty(keyPath) ){
-                    cmd.add(keyPath);//생성한 key.yml파일 추가
+                
+                // <iaas>_<deploy_type>_key_<id>.yml
+                if (!(keyFile.equalsIgnoreCase("")) && !StringUtils.isEmpty(keyPath)) {
+                    cmd.add(keyPath);// 생성한 key.yml파일 추가
                 }
                 cmd.add(inputFile);
                 builder.command(cmd);
@@ -126,26 +144,26 @@ final public class CommonDeployUtils {
                 inputStream = process.getInputStream();
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
                 String info = null;
-                StringBuffer deployBuffer = new StringBuffer();
+                StringBuffer deployBuffer = new StringBuffer("");
                 while ((info = bufferedReader.readLine()) != null) {
-                    deployBuffer.append(info + "\n");
+                    deployBuffer.append(info).append("\n");
                 }
                 String deloymentContent = deployBuffer.toString();
-                if( !deloymentContent.equals("") ){
+                if( !deloymentContent.equalsIgnoreCase("") ){
                     IOUtils.write(deloymentContent, new FileOutputStream(deploymentPath), "UTF-8");
                 }
             } else {
                 throw new CommonException("notfound.manifest.exception", "Merge할 File이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
             }
         } catch (FileNotFoundException e){
-            e.printStackTrace();
-                throw new CommonException("fileNotFound.manifest.exception", "Merge할 File이 존재하지 않습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CommonException("ioFileRead.manifest.exception", "Manifest 생성 중 문제가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new CommonException("ioFileRead.manifest.exception", "Manifest 생성 중 문제가 발생하였습니다.  "  +  builder.command() , HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CommonException("ioFileRead.manifest.exception", "Manifest 생성 중 문제가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         } finally {
             try {
-                if( bufferedReader != null) bufferedReader.close();
+                if( bufferedReader != null) {
+                    bufferedReader.close();
+                }
             } catch (IOException e) {
                 if( LOGGER.isErrorEnabled() ){
                     LOGGER.error( e.getMessage() );
@@ -160,9 +178,7 @@ final public class CommonDeployUtils {
      * @title : setShellScript
      * @return : void
     *****************************************************************/
-    public static void setShellScript(String prefix, String inputFile, ManifestTemplateVO manifestTemplate,
-            DiegoVO vo, String separator) {
-        
+    public static void setShellScript(String inputFile, ManifestTemplateVO manifestTemplate, DiegoVO vo) {
         File settingFile = null;
         File shellScriptFile = null;
         InputStream inputStream = null;
@@ -240,12 +256,11 @@ final public class CommonDeployUtils {
                     cmd.add("");
                 }
                 //2.4 Path to Path to PaaSTA-overrides stub file.
-                if( !StringUtils.isEmpty(manifestTemplate.getCommonOptionTemplate()) && "true".equals(vo.getPaastaMonitoringUse().toLowerCase()) ){
+                if( !StringUtils.isEmpty(manifestTemplate.getCommonOptionTemplate()) && "true".equalsIgnoreCase(vo.getPaastaMonitoringUse().toLowerCase()) ){
                     cmd.add(manifestTemplate.getCommonOptionTemplate());
                 }else{
                     cmd.add("");
                 }
-                
                 
                 builder.command(cmd);
                 builder.redirectErrorStream(true);
@@ -255,9 +270,9 @@ final public class CommonDeployUtils {
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
                 
                 String info = null;
-                StringBuffer deployBuffer = new StringBuffer();
+                StringBuffer deployBuffer = new StringBuffer("");
                 while ((info = bufferedReader.readLine()) != null) {
-                    deployBuffer.append(info + "\n");
+                    deployBuffer.append(info).append("\n");
                 }
                 
                 String deloymentContent = deployBuffer.toString();
@@ -274,14 +289,14 @@ final public class CommonDeployUtils {
             throw new CommonException("notfound.diegoManifest.exception", 
                     "DIEGO Manifest 파일을 생성할 수 없습니다. ", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
-            e.printStackTrace();
             throw new CommonException("ioFileRead.diegoManifest.exception", 
                     "DIEGO Manifest 파일 정보를 읽어올 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
              
         } finally {
             try {
-                if (bufferedReader != null)
+                if (bufferedReader != null) {
                     bufferedReader.close();
+                }
             } catch (IOException e) {
                 if( LOGGER.isErrorEnabled() ){
                     LOGGER.error( e.getMessage() );
@@ -323,7 +338,7 @@ final public class CommonDeployUtils {
         StringWriter errors = new StringWriter();
         String[]  split = e.getMessage().split("\n");
         for(  int i=0; i<split.length; i++){
-            errors.append(split[i] + "<br/>");
+            errors.append(split[i]).append("<br/>");
         }
         return errors.toString();
     }
@@ -335,12 +350,14 @@ final public class CommonDeployUtils {
      * @return : void
     *****************************************************************/
     public static void deleteFile(String path, String fileName){
-        Boolean check = true;
+        Boolean check = false;
         File file = new File(path +SEPARATOR +fileName);
         if( file.exists() ){
             check = file.delete();
         }
-        if( LOGGER.isDebugEnabled()) LOGGER.debug("Make sure the "+fileName + " is deleted : " + check);
+        if( LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Make sure the "+fileName + " is deleted : " + check);
+        }
     }
     
 }

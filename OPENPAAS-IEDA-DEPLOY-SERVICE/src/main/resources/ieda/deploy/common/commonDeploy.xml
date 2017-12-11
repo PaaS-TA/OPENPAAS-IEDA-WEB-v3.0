@@ -7,101 +7,102 @@
 /**org.openpaas.ieda.deploy.web.common.dao.CommonDeployDAO.selectManifetTemplate*/
  <![CDATA[
 SELECT 
-	id, 
-	deploy_type as deployType,
-	iaas_type as iaasType,
-	release_type as releaseType,
-	template_version as templateVersion,
-	min_release_version as minReleaseVersion,
-	common_base_template as commonBaseTemplate,
-	common_job_template as commonJobTemplate,
-	common_option_template as commonOptionTemplate,
-	iaas_property_template as iaasPropertyTemplate,
-	option_network_template as optionNetworkTemplate,
-	option_resource_template as optionResourceTemplate,
-	option_etc as optionEtc,
-	meta_template as metaTemplate,
-	input_template as inputTemplate,
-	create_user_id as createUserId,
-	create_date as createDate,
-	update_user_id as updateUserId,
-	update_date as updateDate
+    id, 
+    deploy_type as deployType,
+    iaas_type as iaasType,
+    release_type as releaseType,
+    template_version as templateVersion,
+    min_release_version as minReleaseVersion,
+    common_base_template as commonBaseTemplate,
+    common_job_template as commonJobTemplate,
+    common_option_template as commonOptionTemplate,
+    iaas_property_template as iaasPropertyTemplate,
+    option_network_template as optionNetworkTemplate,
+    option_resource_template as optionResourceTemplate,
+    option_etc as optionEtc,
+    meta_template as metaTemplate,
+    input_template as inputTemplate,
+    create_user_id as createUserId,
+    create_date as createDate,
+    update_user_id as updateUserId,
+    update_date as updateDate
 FROM 
-	ieda_manifest_template
+    ieda_manifest_template
 WHERE
-	UPPER(deploy_type) = #{deployType}
+    UPPER(deploy_type) = #{deployType}
 AND
-	LOWER(iaas_type) = #{iaas}
+    LOWER(iaas_type) = #{iaas}
 AND
-	release_type=#{releaseType}
+    release_type=#{releaseType}
 AND
-	min_release_version = (
-			SELECT
-				MAX(min_release_version) as min_release_version
-			FROM
-				ieda_manifest_template
-			WHERE
-				UPPER(deploy_type) = #{deployType}
-			AND
-				LOWER(iaas_type) = #{iaas}
-			AND
-				release_type=#{releaseType}
-			AND
-				min_release_version <= #{releaseVersion}
-	)
+    min_release_version = (
+            SELECT
+                MAX(min_release_version) as min_release_version
+            FROM
+                ieda_manifest_template
+            WHERE
+                UPPER(deploy_type) = #{deployType}
+            AND
+                LOWER(iaas_type) = #{iaas}
+            AND
+                release_type=#{releaseType}
+            AND
+                min_release_version <= #{releaseVersion}
+    )
 ]]>
-</select>	
+</select>    
 
 <select id="selectDeploymentNameByPlatform" resultType="String">
-	/**org.openpaas.ieda.deploy.web.common.dao.CommonDeployDAO.selectDeploymentNameByPlatform*/
-		Select deployment_name
-	<choose>
-		<when test="platform == 'boostrap'">
-			 From ieda_bootstrap
-		</when>
-		<when test="platform =='bosh'">
-			From ieda_bosh
-		</when>
-		<when test="platform == 'cf'">
-			From ieda_cf
-		</when>
-		<when test="platform == 'diego'">
-			From ieda_diego
-		</when>
-	</choose>
-	    where iaas_type=#{iaas}
+    /**org.openpaas.ieda.deploy.web.common.dao.CommonDeployDAO.selectDeploymentNameByPlatform*/
+        Select deployment_name
+    <choose>
+        <when test="platform == 'boostrap'">
+             From ieda_bootstrap
+        </when>
+        <when test="platform =='bosh'">
+            From ieda_bosh
+        </when>
+        <when test="platform == 'cf'">
+            From ieda_cf
+        </when>
+        <when test="platform == 'diego'">
+            From ieda_diego
+        </when>
+    </choose>
+        where iaas_type=#{iaas}
 </select>
 
 <select id="selectReleaseInfoByPlatform" resultType="org.openpaas.ieda.deploy.web.common.dao.ManifestTemplateVO">
-	/**org.openpaas.ieda.deploy.web.common.dao.CommonDeployDAO.selectReleaseInfoByPlatform*/
-	 <![CDATA[
-	Select
-		id, 
-		deploy_type as deployType,
-		iaas_type as iaasType,
-		release_type as releaseType,
-		template_version as templateVersion,
-		min_release_version as minReleaseVersion,
-		common_base_template as commonBaseTemplate,
-		common_job_template as commonJobTemplate,
-		common_option_template as commonOptionTemplate,
-		iaas_property_template as iaasPropertyTemplate,
-		option_network_template as optionNetworkTemplate,
-		option_resource_template as optionResourceTemplate,
-		option_etc as optionEtc,
-		meta_template as metaTemplate,
-		input_template as inputTemplate,
-		create_user_id as createUserId,
-		create_date as createDate,
-		update_user_id as updateUserId,
-		update_date as updateDate
-	FROM 
-		ieda_manifest_template
-	WHERE
-		UPPER(deploy_type) = #{deployType}
-	AND
-		LOWER(iaas_type) = #{iaas}
-	]]>
+    /**org.openpaas.ieda.deploy.web.common.dao.CommonDeployDAO.selectReleaseInfoByPlatform*/
+     <![CDATA[
+    Select
+        id, 
+        deploy_type as deployType,
+        iaas_type as iaasType,
+        release_type as releaseType,
+        template_version as templateVersion,
+        min_release_version as minReleaseVersion,
+        common_base_template as commonBaseTemplate,
+        common_job_template as commonJobTemplate,
+        common_option_template as commonOptionTemplate,
+        iaas_property_template as iaasPropertyTemplate,
+        option_network_template as optionNetworkTemplate,
+        option_resource_template as optionResourceTemplate,
+        option_etc as optionEtc,
+        meta_template as metaTemplate,
+        input_template as inputTemplate,
+        create_user_id as createUserId,
+        create_date as createDate,
+        update_user_id as updateUserId,
+        update_date as updateDate
+    FROM 
+        ieda_manifest_template
+    WHERE
+        UPPER(deploy_type) = #{deployType}
+    AND
+        LOWER(iaas_type) = #{iaas}
+    ORDER BY templateversion ASC
+    ]]>
 </select>
 
 <select id="selectIaasConfigAndAccountById" resultType="hashMap">
@@ -115,7 +116,6 @@ AND
       ,config.common_keypair_name as commonKeypairName
       ,config.common_keypair_path as commonKeypairPath
       ,config.common_availability_zone as commonAvailabilityZone
-      ,config.google_public_key as googlePublicKey
       ,config.vsphere_vcenter_datacenter_name as vsphereVcentDataCenterName
       ,config.vsphere_vcenter_vm_folder as vsphereVcenterVmFolder
       ,config.vsphere_vcenter_template_folder as vsphereVcenterTemplateFolder
@@ -141,5 +141,5 @@ AND
      And UPPER(config.iaas_type)=UPPER(#{iaasType})
      And config.id=#{id}
 </select>
-	
+    
 </mapper>

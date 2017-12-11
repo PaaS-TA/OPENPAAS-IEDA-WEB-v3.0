@@ -17,12 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.multipart.MultipartHttpServletRequest;;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 @Controller
 public class IaasAccountMgntController{
@@ -63,7 +62,7 @@ public class IaasAccountMgntController{
      * @return : String
      ***************************************************/
     @RequestMapping(value = "/iaasMgnt/account/openstack", method = RequestMethod.GET)
-    public String goOpenstackAccountMgnt(HttpServletRequest request, ModelMap map) {
+    public String goOpenstackAccountMgnt() {
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("=====================> /iaasMgnt/account/openstack ");
         }
@@ -113,13 +112,14 @@ public class IaasAccountMgntController{
         List<IaasAccountMgntVO> allIaasAccountInfoList = service.getAllIaasAccountInfoList(principal);
         HashMap<String, Object> list = new HashMap<String, Object>();
         int size = 0;
-        if (allIaasAccountInfoList != null)
+        if (allIaasAccountInfoList != null) {
             size = allIaasAccountInfoList.size();
+        }
         list.put("total", size);
         list.put("records", allIaasAccountInfoList);
 
         return new ResponseEntity<HashMap<String, Object>>(list, HttpStatus.OK);
-    };
+    }
 
     /***************************************************
      * @project : 인프라 관리 대시보드
@@ -132,7 +132,7 @@ public class IaasAccountMgntController{
         if (LOGGER.isInfoEnabled()) {  LOGGER.info("=====================> /iaasMgnt/account/all/cnt"); }
         HashMap<String, Integer> cnt = service.getIaasAccountCount(principal);
         return new ResponseEntity<HashMap<String, Integer>>(cnt, HttpStatus.OK);
-    };
+    }
 
     /***************************************************
      * @project : 인프라 관리 대시보드
@@ -152,7 +152,9 @@ public class IaasAccountMgntController{
 
         HashMap<String, Object> result = new HashMap<String, Object>();
         int size = 0;
-        if (list != null) size = list.size();
+        if (list != null) {
+            size = list.size();
+        }
        
         result.put("total", size);
         result.put("records", list);

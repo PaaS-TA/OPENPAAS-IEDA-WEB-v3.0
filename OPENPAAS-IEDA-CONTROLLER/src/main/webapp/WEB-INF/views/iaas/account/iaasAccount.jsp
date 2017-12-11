@@ -98,7 +98,6 @@ function clearMainPage() {
     $().w2destroy('iaas_allAccountGrid');
 }
 
-
 /****************************************************
  * 기능 : resize
  * 설명 : 화면 리사이즈시 호출
@@ -108,6 +107,7 @@ $( window ).resize(function() {
 });
 </script>
 <div id="main">
+    <div class="page_site">계정 관리 > <strong>계정 관리 메인 </strong></div>
     <div class="pdt20">
         <div class="title fl">전체 인프라 계정 목록</div>
         <div id="iaas_allAccountGrid" style="width: 100%; height: 400px;"></div>

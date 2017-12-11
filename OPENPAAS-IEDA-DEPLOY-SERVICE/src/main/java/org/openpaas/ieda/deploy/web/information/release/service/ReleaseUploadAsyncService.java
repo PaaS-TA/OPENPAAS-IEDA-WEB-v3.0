@@ -69,8 +69,7 @@ public class ReleaseUploadAsyncService {
         } catch (IOException e) {
             DirectorRestHelper.sendTaskOutput(user, messagingTemplate, MESSAGE_ENDPOINT, "error", Arrays.asList("릴리즈 업로드 중 오류가 발생하였습니다."));
         } finally{
-            String lockFile = release.split(".tgz")[0]+"-upload";
-            CommonDeployUtils.deleteFile(LOCK_DIR, lockFile+".lock");
+            CommonDeployUtils.deleteFile(LOCK_DIR, release.split(".tgz")[0]+"-upload.lock");
         }
     }
     

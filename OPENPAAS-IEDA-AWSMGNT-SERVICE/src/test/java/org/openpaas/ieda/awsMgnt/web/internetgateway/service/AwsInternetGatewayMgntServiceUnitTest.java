@@ -26,8 +26,6 @@ import org.openpaas.ieda.awsMgnt.web.internetGateway.dto.AwsInternetGatewayMgntD
 import org.openpaas.ieda.awsMgnt.web.internetGateway.service.AwsInternetGatewayMgntService;
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -54,7 +52,6 @@ public class AwsInternetGatewayMgntServiceUnitTest extends BaseAwsMgntController
     
     private Principal principal = null;
     
-    final static Logger LOGGER = LoggerFactory.getLogger(AwsInternetGatewayMgntServiceUnitTest.class);
     
     /***************************************************
      * @project : AWS 관리 대시보드
@@ -76,11 +73,10 @@ public class AwsInternetGatewayMgntServiceUnitTest extends BaseAwsMgntController
     ***************************************************/
     @Test
     public void testDefaultGetAwsInternetGatewayInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  AWS 인터넷 게이트웨이 목록 조회 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<InternetGateway> expectList = getInternetGatewayResultInfoList("default");
-        when(mockAwsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(any(), anyInt(),any())).thenReturn(expectList);
+        when(mockAwsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(any(),any())).thenReturn(expectList);
         List<AwsInternetGatewayMgntVO> resultList = mockAwsInternetGatewayMgntService.getAwsInternetGatewayInfoList(principal, 155555, "region");
         assertEquals(resultList.size(), 1 );
         assertEquals(expectList.get(0).getInternetGatewayId(), resultList.get(0).getInternetGatewayId());
@@ -97,11 +93,10 @@ public class AwsInternetGatewayMgntServiceUnitTest extends BaseAwsMgntController
     ***************************************************/
     @Test
     public void testAttachmentSize2GetAwsInternetGatewayInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  AWS VPC 사이즈가 2개 이상일 경우 인터넷 게이트웨이 정보 조회 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<InternetGateway> expectList = getInternetGatewayResultInfoList("vpc");
-        when(mockAwsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(any(), anyInt(), any())).thenReturn(expectList);
+        when(mockAwsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(any(), any())).thenReturn(expectList);
         List<AwsInternetGatewayMgntVO> resultList = mockAwsInternetGatewayMgntService.getAwsInternetGatewayInfoList(principal, 155555, "region");
         assertEquals(resultList.size(), 1 );
         assertEquals(expectList.get(0).getInternetGatewayId(), resultList.get(0).getInternetGatewayId());
@@ -118,11 +113,10 @@ public class AwsInternetGatewayMgntServiceUnitTest extends BaseAwsMgntController
     ***************************************************/
     @Test
     public void testNameTagSize2GetAwsInternetGatewayInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  AWS NameTag 사이즈가 2개 이상일 경우 인터넷 게이트웨이 정보 조회 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<InternetGateway> expectList = getInternetGatewayResultInfoList("nameTag");
-        when(mockAwsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(any(), anyInt(), any())).thenReturn(expectList);
+        when(mockAwsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(any(), any())).thenReturn(expectList);
         List<AwsInternetGatewayMgntVO> resultList = mockAwsInternetGatewayMgntService.getAwsInternetGatewayInfoList(principal, 155555, "region");
         assertEquals(resultList.size(), 1 );
         assertEquals(expectList.get(0).getInternetGatewayId(), resultList.get(0).getInternetGatewayId());
@@ -139,7 +133,6 @@ public class AwsInternetGatewayMgntServiceUnitTest extends BaseAwsMgntController
     ***************************************************/
     @Test
     public void testSaveAwsInternetGatewayInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  AWS 인터넷 게이트웨이 생성 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         AwsInternetGatewayMgntDTO dto = setInternetGateInfo();
@@ -154,7 +147,6 @@ public class AwsInternetGatewayMgntServiceUnitTest extends BaseAwsMgntController
     ***************************************************/
     @Test
     public void testDeleteAwsInternetGatewayInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  AWS 인터넷 게이트웨이 삭제 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         AwsInternetGatewayMgntDTO dto = setInternetGateInfo();
@@ -169,7 +161,6 @@ public class AwsInternetGatewayMgntServiceUnitTest extends BaseAwsMgntController
     ***************************************************/
     @Test
     public void testInternetGatewayAttachVpc(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  AWS VPC 연결 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         AwsInternetGatewayMgntDTO dto = setInternetGateInfo();
@@ -184,7 +175,6 @@ public class AwsInternetGatewayMgntServiceUnitTest extends BaseAwsMgntController
     ***************************************************/
     @Test
     public void testInternetGatewayDetachVpc(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  AWS VPC 연결 해제 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         AwsInternetGatewayMgntDTO dto = setInternetGateInfo();
@@ -199,12 +189,11 @@ public class AwsInternetGatewayMgntServiceUnitTest extends BaseAwsMgntController
     ***************************************************/
     @Test
     public void testGetAwsVpcInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  AWS 인터넷 게이트웨이와 연결 할 VPC 목록 조회 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<InternetGateway> expectInternetGatewayList = getInternetGatewayResultInfoList("default");
         List<Vpc> expectVpcList = getResultVpcListInfo("default");
-        when(mockAwsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(any(), anyInt(), any())).thenReturn(expectInternetGatewayList);
+        when(mockAwsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(any(), any())).thenReturn(expectInternetGatewayList);
         when(mockAwsVpcMgntApiService.getAwsVpcInfoListApiFromAws(any(), anyString())).thenReturn(expectVpcList);
         mockAwsInternetGatewayMgntService.getAwsVpcInfoList(principal, 111115, "region");
     }
@@ -217,12 +206,11 @@ public class AwsInternetGatewayMgntServiceUnitTest extends BaseAwsMgntController
     ***************************************************/
     @Test
     public void testGetRemoveVpcAwsVpcInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  사용중인 VPC 삭제 후 VPC 목록 조회 TEST START  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<InternetGateway> expectInternetGatewayList = getInternetGatewayResultInfoList("default");
         List<Vpc> expectVpcList = getResultVpcListInfo("remove");
-        when(mockAwsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(any(), anyInt(), any())).thenReturn(expectInternetGatewayList);
+        when(mockAwsInternetGatewayMgntApiService.getAwsInternetGatewayInfoListFromAws(any(), any())).thenReturn(expectInternetGatewayList);
         when(mockAwsVpcMgntApiService.getAwsVpcInfoListApiFromAws(any(), anyString())).thenReturn(expectVpcList);
         mockAwsInternetGatewayMgntService.getAwsVpcInfoList(principal, 111115, "region");
     }

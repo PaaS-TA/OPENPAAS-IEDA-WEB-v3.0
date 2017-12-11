@@ -102,12 +102,12 @@ $(function() {
        else {
            var record = w2ui['openstack_securityGroupGrid'].get(selected);
            w2confirm({
-               title : "OPENSTACK Security Group 삭제",
-               msg : "Security Group (" + record.securityGroupId + ") </br> 을 삭제하시겠습니까?",
+               title : "<b>Security Group 삭제</b>",
+               msg : "Security Group </br> (보안 그룹 Id :" + record.securityGroupId + ") </br> 을 삭제하시겠습니까?",
                yes_text : "확인",
                no_text : "취소",
                yes_callBack: function(event){
-                   w2utils.lock($("#layout_layout_panel_main"),delete_lock_msg, true);
+                   w2popup.lock($("#layout_layout_panel_main"),delete_lock_msg, true);
                    deleteOpenstackSecurityGroupInfo(record);
                },
                no_callBack    : function(){
@@ -126,7 +126,7 @@ $(function() {
  * 기능 : saveOpenstackSecurityGroupInfo
  *********************************************************/ 
 function saveOpenstackSecurityGroupInfo(){
-     w2utils.lock($("#layout_layout_panel_main"),save_lock_msg, true);
+     w2popup.lock(save_lock_msg, true);
      var ingressRules = setIngressRulesInfo($(".w2ui-msg-body input:radio[name='ingressRuleType']:checked").val());
      var groupInfo ={
              accountId : $("select[name='accountId']").val()
@@ -143,7 +143,6 @@ function saveOpenstackSecurityGroupInfo(){
          data: JSON.stringify(groupInfo),
          success : function(status){
              w2popup.unlock();
-             w2utils.unlock($("#layout_layout_panel_main"));
              w2popup.close();
              accountId = groupInfo.accountId;
              w2ui['openstack_securityGroupGrid'].clear();
@@ -151,7 +150,6 @@ function saveOpenstackSecurityGroupInfo(){
              doSearch();
          }, error : function(request, status, error){
              w2popup.unlock();
-             w2utils.unlock($("#layout_layout_panel_main"));
              doSearch();
              w2ui['openstack_securityGroupGrid'].clear();
              $("#ingressRulesTable .ingressRulesData").html("");
@@ -162,7 +160,7 @@ function saveOpenstackSecurityGroupInfo(){
  }
 
 /********************************************************
- * 설명 : OPENSTACK Security Group Inbound Rule 유형에 따른 정보 설정 
+ * 설명 : Security Group Inbound Rule 유형에 따른 정보 설정 
  * 기능 : getIngressRulesInfo
  *********************************************************/
  function setIngressRulesInfo(type){
@@ -199,7 +197,7 @@ function saveOpenstackSecurityGroupInfo(){
  }
 
 /********************************************************
- * 설명 : OPENSTACK SecurityGroup 삭제
+ * 설명 : 보안 그룹 삭제
  * 기능 : deleteOpenstackSecurityGroupInfo
 *********************************************************/
 function deleteOpenstackSecurityGroupInfo(record){
@@ -216,7 +214,6 @@ function deleteOpenstackSecurityGroupInfo(record){
          success : function(status) {
              w2popup.unlock();
              w2popup.close();
-             w2utils.unlock($("#layout_layout_panel_main"));
              accountId = groupInfo.accountId;
              w2ui['openstack_securityGroupGrid'].clear();
              $("#ingressRulesTable .ingressRulesData").html("");
@@ -226,7 +223,6 @@ function deleteOpenstackSecurityGroupInfo(record){
              w2ui['openstack_securityGroupGrid'].clear();
              $("#ingressRulesTable .ingressRulesData").html("");
              doSearch();
-             w2utils.unlock($("#layout_layout_panel_main"));
              var errorResult = JSON.parse(request.responseText);
              w2alert(errorResult.message);
          }
@@ -234,8 +230,8 @@ function deleteOpenstackSecurityGroupInfo(record){
  };
 
 /********************************************************
- * 설명 : Openstack 네트워크 목록 조회 Function 
- * Function : doSearch
+ * 설명 : Openstack 네트워크 목록 조회 
+ * 기능 : doSearch
  *********************************************************/
 function doSearch() {
     w2ui['openstack_securityGroupGrid'].load('/openstackMgnt/securityGroup/list/'+accountId+'');
@@ -246,7 +242,7 @@ function doSearch() {
 
 /********************************************************
  * 설명 : 초기 버튼 스타일
- * Function : doButtonStyle
+ * 기능 : doButtonStyle
  *********************************************************/
 function doButtonStyle() {
     $('#deleteBtn').attr('disabled', true);
@@ -254,7 +250,7 @@ function doButtonStyle() {
 
 /********************************************************
  * 설명 : OPENSTACK 보안 그룹 상세 조회
- * Function : doSearchSecurityGroupDetailInfo
+ * 기능 : doSearchSecurityGroupDetailInfo
  *********************************************************/
 function doSearchSecurityGroupDetailInfo(accountId, groupId){
     w2utils.lock($("#layout_layout_panel_main"), search_lock_msg, true);
@@ -323,7 +319,8 @@ $( window ).resize(function() {
 </script>
 
 <div id="main">
-    <div id="openstackMgnt">
+    <div class="page_site pdt20">인프라 관리 > OPENSTACK 관리 > <strong>OPENSTACK Security Group 관리 </strong></div>
+    <div id="openstackMgnt" class="pdt20">
         <ul>
             <li>
                 <label style="font-size: 14px">OPENSTACK 관리 화면</label> &nbsp;&nbsp;&nbsp; 
@@ -380,26 +377,30 @@ $( window ).resize(function() {
         <div class="title fl">OPENSTACK 인바운드 규칙</div>
     </div>
     <!-- OPENSTACK Security Group Inbound Rules 목록 -->
-    <div id="IngressRulesDiv" style="width: 100%;">
-        <table id="ingressRulesTable" class="table table-condensed table-hover">
-            <tr>
-                <th style="width: 20%;" class="trTitle">Direction</th>
-                <th style="width: 20%;" class="trTitle">Ether Type</th>
-                <th style="width: 20%" class="trTitle">IP Protocol</th>
-                <th style="width: 20%" class="trTitle">Port Range</th>
-                <th style="width: 20%" class="trTitle">Remote</th>
-            </tr>
-            <tr class="ingressRulesData" >
-               <td style="text-align:center" colspan="4">보안 그룹을 선택하세요.</td>
-            </tr>
+    <div id="IngressRulesDiv" style="width: 100%;height: 200px;background-color: whitesmoke; overflow-y: auto;">
+        <table id="ingressRulesTable" class="table table-condensed table-hover" style="table-layout: fixed;  border-collapse: collapse;">
+            <thead style="position:relatvie;">
+	            <tr style="">
+	                <th style="width: 20%;"  class="trTitle"><span>Direction</span></th>
+	                <th style="width: 20%;" class="trTitle">Ether Type</th>
+	                <th style="width: 20%" class="trTitle">IP Protocol</th>
+	                <th style="width: 20%" class="trTitle">Port Range</th>
+	                <th style="width: 20%" class="trTitle">Remote</th>
+	            </tr>
+            </thead>
+            <tbody style="overflow: auto; width: 100%;height:200px">
+	            <tr class="ingressRulesData" style="position: relative;">
+	               <td style="text-align:center" colspan="4">보안 그룹을 선택하세요.</td>
+	            </tr>
+            </tbody>
         </table>
     </div>
     
-    <!-- OPENSTACK Security Group 등록 팝업 Div-->
+<!-- OPENSTACK Security Group 등록 팝업 Div-->
 <div id="SecurityGroupRegistPopupDiv" hidden="true">
     <form id="openstackSecurityGroupForm" action="POST" style="padding:5px 0 5px 0;margin:0;">
         <div class="panel panel-info"> 
-            <div class="panel-heading"><b>OPENSTACK Security Group 정보</b></div>
+            <div class="panel-heading"><b>Security Group 정보</b></div>
             <div class="panel-body" style="padding:20px 10px; height:150px; overflow-y:auto;">
                 <div class="w2ui-field">
                     <label style="width:36%;text-align: left; padding-left: 20px;">Security Group Name</label>
@@ -451,16 +452,16 @@ $(function() {
         rules: {
             securityGroupName: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='securityGroupName']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='securityGroupName']").val().trim() );
                 }
             },
             description: {
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='description']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='description']").val().trim() );
                 }
             }
         }, messages: {
-            groupName: { 
+            securityGroupName: { 
                 required:  "Security Group Name"+text_required_msg
             },
             description: { 

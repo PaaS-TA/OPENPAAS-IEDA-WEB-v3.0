@@ -24,8 +24,6 @@ import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.iaasDashboard.web.common.dao.CommonCodeVO;
 import org.openpaas.ieda.iaasDashboard.web.common.dao.CommonIaasDAO;
 import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -53,7 +51,6 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
     @Mock CommonIaasDAO mockCommonIaasDao;
     
     private Principal principal = null;
-    final static Logger LOGGER = LoggerFactory.getLogger(AwsSecurityGroupMgntServiceUnitTest.class);
     
     
     /****************************************************************
@@ -76,8 +73,7 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
     *****************************************************************/
     @Test
     public void testGetAwsSecurityGroupInfoList(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> testGetAwsSecurityGroupInfoList");};
-        List<SecurityGroup> awsSecurityGroupList = getAwsSecurityGroupResultInfo("sg-75aa370f");
+        List<SecurityGroup> awsSecurityGroupList = getAwsSecurityGroupResultInfo();
         
         when( mockCommonIaasService.getIaaSAccountInfo(principal, 1, "AWS")).thenReturn(getAwsAccountInfo());
         when( mockCommonIaasService.getAwsRegionInfo(anyString()) ).thenReturn(Region.getRegion(Regions.US_WEST_2));
@@ -98,8 +94,7 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
      ***************************************************/
     @Test
     public void testGetAwsSecurityGroupRules(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> testGetAwsSecurityGroupRules");};
-        List<SecurityGroup> groupList = getAwsSecurityGroupResultInfo("sg-75aa370f");
+        List<SecurityGroup> groupList = getAwsSecurityGroupResultInfo();
         when(mockAwsSecurityGroupMgntApiService.getAwsSecurityGroupRulesInfoFromAws(any(), anyString(), any())).thenReturn(groupList);
         when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("30000");
         when( mockCommonIaasDao.selectIngressRulesInfoBySubGroupCode(any(), anyString(), any())).thenReturn(setIngressCustomTcpRuleInfo());
@@ -122,8 +117,7 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
     *****************************************************************/
     @Test
     public void testSetInboundRuleInfoList(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> testSetInboundRuleInfoList");};
-        List<SecurityGroup> groupList = getAwsSecurityGroupResultInfo("sg-75aa370f");
+        List<SecurityGroup> groupList = getAwsSecurityGroupResultInfo();
         when(mockAwsSecurityGroupMgntApiService.getAwsSecurityGroupRulesInfoFromAws(any(), anyString(), any())).thenReturn(groupList);
         when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("30000");
         when( mockCommonIaasDao.selectIngressRulesInfoBySubGroupCode(any(), anyString(), any())).thenReturn(setIngressCustomTcpRuleInfo());
@@ -146,7 +140,6 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
      ***************************************************/
     @Test
     public void testSaveAwsSecurityGroupInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================================> testSaveAwsSecurityGroupInfo"); }
         IaasAccountMgntVO account = getAwsAccountInfo();
         when( mockCommonIaasService.getIaaSAccountInfo(principal, 1, "AWS")).thenReturn(account);
         when( mockCommonIaasService.getAwsRegionInfo("us-west-2") ).thenReturn(Region.getRegion(Regions.US_WEST_2));
@@ -165,7 +158,6 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
     *****************************************************************/
     @Test
     public void testSetIpProtocolInfoFromCustomProtocol(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================================> testSetIpProtocolInfoFromCustomProtocol"); }
         when( mockMessageSource.getMessage(anyString(), any(), any()) ).thenReturn("30000");
         when( mockCommonIaasDao.selectIngressRulesInfoBySubGroupCode(
                 any(), anyString(), any())).thenReturn(setIngressCustomTcpRuleNumberInfo());
@@ -188,7 +180,6 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
     *****************************************************************/
     @Test
     public void testSetIpProtocolInfoFromIcmpProtocol(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================================> testSetIpProtocolInfoFromIcmpProtocol"); }
         when( mockMessageSource.getMessage(anyString(), any(), any()) ).thenReturn("30000");
         when( mockCommonIaasDao.selectIngressRulesInfo(
                 any(), anyString(), any())).thenReturn(setIngressCustomIcmpRuleInfo());
@@ -216,7 +207,6 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
     *****************************************************************/
     @Test
     public void testSetIpProtocolInfoFromTcpProtocol(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================================> testSetIpProtocolInfoFromTcpProtocol"); }
         when( mockMessageSource.getMessage(anyString(), any(), any()) ).thenReturn("30000");
         when( mockCommonIaasDao.selectIngressRulesInfo(
                 any(), anyString(), any())).thenReturn(setIngressCustomTcpRuleInfo());
@@ -238,7 +228,6 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
     *****************************************************************/
     @Test(expected=CommonException.class)
     public void testSaveAwsSecurityGroupRuleFromException(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================================> testSaveAwsSecurityGroupRuleFromException"); }
         IaasAccountMgntVO account = getAwsAccountInfo();
         when( mockCommonIaasService.getIaaSAccountInfo(principal, 1, "AWS")).thenReturn(account);
         when( mockCommonIaasService.getAwsRegionInfo("us-west-2") ).thenReturn(Region.getRegion(Regions.US_WEST_2));
@@ -256,7 +245,6 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
     *****************************************************************/
     @Test
     public void testSetIpProtocolSourceInfoFromIpv4Ragnges(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================================> testSetIpProtocolSourceInfoFromIpv4Ragnges"); }
         IpPermission ipPermisson = new IpPermission();
         IpRange ipRange = new IpRange();
         ipRange.setCidrIp("10.10.0.0/24");
@@ -273,7 +261,6 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
     *****************************************************************/
     @Test
     public void testSetIpProtocolSourceInfoFromElse(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================================> testSetIpProtocolSourceInfoFromElse"); }
         IpPermission ipPermisson = new IpPermission();
         mockAwsSecurityGroupMgntService.setIpProtocolSourceInfo(ipPermisson);
     }
@@ -286,7 +273,6 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
      ***************************************************/
     @Test
     public void testDeleteAwsSecurityGroupInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================================> testDeleteAwsSecurityGroupInfo"); }
         when( mockCommonIaasService.getIaaSAccountInfo(principal, 1, "AWS")).thenReturn(getAwsAccountInfo());
         when( mockCommonIaasService.getAwsRegionInfo("us-west-2") ).thenReturn(Region.getRegion(Regions.US_WEST_2));
         when( mockAwsSecurityGroupMgntApiService.deleteSecurityGroupInfoFromAws(any(), any(), any()) ).thenReturn(true);
@@ -302,7 +288,6 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
     *****************************************************************/
     @Test(expected=CommonException.class)
     public void testDeleteAwsSecurityGroupInfoFromExceptionCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================================> testDeleteAwsSecurityGroupInfoFromExceptionCase"); }
         when( mockCommonIaasService.getIaaSAccountInfo(principal, 1, "AWS")).thenReturn(getAwsAccountInfo());
         when( mockCommonIaasService.getAwsRegionInfo("us-west-2") ).thenReturn(Region.getRegion(Regions.US_WEST_2));
         when( mockAwsSecurityGroupMgntApiService.deleteSecurityGroupInfoFromAws(any(), any(), any()) ).thenReturn(false);
@@ -446,7 +431,7 @@ public class AwsSecurityGroupMgntServiceUnitTest extends BaseAwsMgntControllerUn
      * @title : getAwsSecurityGroupResultInfo
      * @return : List<SecurityGroup>
      ***************************************************/
-    private List<SecurityGroup> getAwsSecurityGroupResultInfo(String groupId){
+    private List<SecurityGroup> getAwsSecurityGroupResultInfo(){
         List<SecurityGroup> securityGroupList = new ArrayList<SecurityGroup>();
         SecurityGroup group = new SecurityGroup();
         IpPermission ipPermission = new IpPermission();

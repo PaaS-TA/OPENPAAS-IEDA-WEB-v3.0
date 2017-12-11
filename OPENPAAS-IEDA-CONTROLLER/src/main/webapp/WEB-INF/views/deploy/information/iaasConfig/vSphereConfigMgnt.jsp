@@ -50,7 +50,6 @@ $(function() {
            , {field: 'createDate', caption: '생성 일자', size: '100px', style: 'text-align:center'}
            , {field: 'updateDate', caption: '수정 일자', size: '100px', style: 'text-align:center'}
          ],onError: function(event){
-             //console.log(event);
              //w2alert(search_grid_fail_msg, "vSphere 환경 설정 목록");
          },onLoad : function(event){
          },onSelect : function(event){
@@ -115,12 +114,11 @@ function getVsphereAccountName(accountId){
  * 설명 :  조회 된 계정 결과를 화면에 출력
  *********************************************************/
 function setupIaasAccountName(data, accountId){
-     console.log(accountId);
      var iaasAccountName = "";
          iaasAccountName += "<select style='width: 300px' name='accountId'>";
          
      if( data.length ==0 ){
-         iaasAccountName +="<option>존재하지 않습니다.</option>";
+         iaasAccountName +="<option value=''>계정을 등록하세요.</option>";
      }else{
          for (var i=0; i<data.length; i++){
              if(accountId != "undefined" && data[i].id == accountId){
@@ -218,7 +216,6 @@ function setVsphereUpdateInfoSet(id){
             async : true,
             dataType : "json",
             success : function(data, status) {
-                 console.log(data);
                  w2popup.unlock();
                  if(data!=null){
                      getVsphereAccountName(data.accountId);
@@ -252,13 +249,13 @@ $("#deleteConfigBtn").click(function(){
          return;
      }else{
          var record = w2ui['vSphere_configGrid'].get(selected);
-         var msg = "계정(" + record.iaasConfigAlias + ")"+ popup_delete_msg;
+         var msg = "환경 설정 정보(" + record.iaasConfigAlias + ")"+ popup_delete_msg;
          if( record.deployStatus == '사용중' ){
              msg = "<span style='color:red'>현재 vSphere 플랫폼 설치에서 <br/>해당 환경 설정 정보("+record.iaasConfigAlias+")를 사용하고 있습니다. </span><br/><span style='color:red; font-weight:bolder'>그래도 삭제 하시겠습니까?</span>";
          }
          
          w2confirm({
-             title       : "vSphere 환경 설정 삭제",
+             title       : "<b>vSphere 환경 설정 삭제</b>",
              msg         : msg,
              yes_text    : "확인",
              no_text     : "취소",
@@ -345,6 +342,7 @@ $( window ).resize(function() {
 });
 </script>
 <div id="main">
+    <div class="page_site">정보조회 > 인프라 환경 설정 관리 > <strong>vSphere 환경 설정 관리 </strong></div>
      <div class="pdt20">
         <div class="fl" style="width:100%">
             <div class="dropdown" >
@@ -382,7 +380,7 @@ $( window ).resize(function() {
         </div>
         
         <div id="vSphere_configGrid" style="width: 100%; height: 610px;"></div>
-   </div>      
+   </div>
 </div>
 
 
@@ -404,45 +402,45 @@ $( window ).resize(function() {
                     <div id="accountNameDiv"></div>
                 </div>
                 <div class="w2ui-field">
-                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere Data Center 명</label>
+                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere Data Center</label>
                     <div>
                         <input name="vsphereVenterDataCenterName" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere Data Center 명을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
-                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere VM Folder 명</label>
+                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere VM Folder</label>
                     <div>
-                        <input name="vsphereVcenterVmFolder" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere VM Folder 명을 입력하세요."/>
+                        <input name="vsphereVcenterVmFolder" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere VM Folder를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
-                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere VM Template Folder 명</label>
+                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere VM Template Folder</label>
                     <div>
-                        <input name="vsphereVcenterTemplateFolder" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere VM Template Folder 명을 입력하세요."/>
+                        <input name="vsphereVcenterTemplateFolder" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere VM Template Folder를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
-                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere VM DataStore 명</label>
+                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere VM DataStore</label>
                     <div>
-                        <input name="vsphereVcenterDatastore" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere VM DataStore 명을 입력하세요."/>
+                        <input name="vsphereVcenterDatastore" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere VM DataStore를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
-                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere Persistant Datastore 명</label>
+                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere Persistant Datastore</label>
                     <div>
-                        <input name="vsphereVcenterPersistentDatastore" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere Persistant Datastore 명을 입력하세요."/>
+                        <input name="vsphereVcenterPersistentDatastore" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere Persistant Datastore를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
-                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere Disk Path 명</label>
+                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere Disk Path</label>
                     <div>
-                        <input name="vsphereVcenterDiskPath" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere Disk Path 명을 입력하세요."/>
+                        <input name="vsphereVcenterDiskPath" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere Disk Path를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
-                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere Cluster 명</label>
+                    <label style="width:40%;text-align: left; padding-left: 20px;">vSphere Cluster</label>
                     <div>
-                        <input name="vsphereVcenterCluster" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere Cluster 명을 입력하세요."/>
+                        <input name="vsphereVcenterCluster" type="text"  maxlength="100" style="width: 300px" placeholder="vSphere Cluster를 입력하세요."/>
                     </div>
                 </div>
             </div>

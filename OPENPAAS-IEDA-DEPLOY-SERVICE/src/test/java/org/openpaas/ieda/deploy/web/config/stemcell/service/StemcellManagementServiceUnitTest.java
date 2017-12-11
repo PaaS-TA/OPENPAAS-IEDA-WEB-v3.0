@@ -32,8 +32,6 @@ import org.openpaas.ieda.deploy.web.common.service.CommonDeployUtils;
 import org.openpaas.ieda.deploy.web.config.stemcell.dao.StemcellManagementDAO;
 import org.openpaas.ieda.deploy.web.config.stemcell.dao.StemcellManagementVO;
 import org.openpaas.ieda.deploy.web.config.stemcell.dto.StemcellManagementDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -57,7 +55,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     final private static String SEPARATOR = System.getProperty("file.separator");
     final private static String STEMCELL_PATH = LocalDirectoryConfiguration.getStemcellDir();
     final private static String LOCK_PATH = LocalDirectoryConfiguration.getLockDir();
-    final static Logger LOGGER = LoggerFactory.getLogger(StemcellManagementServiceUnitTest.class);
 
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -79,7 +76,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testGetStemcellListFromValueNullCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> testGetStemcellListFromValueNullCase "); }
         when(mockStemcelldao.selectPublicStemcellList()).thenReturn(null);
         List<StemcellManagementVO> result = mockStemcellService.getPublicStemcellList();
         assertEquals(result, null);
@@ -93,7 +89,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testGetPublicStemcellListFromNullStatusCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> testGetPublicStemcellListFromNullStatusCase "); }
         List<StemcellManagementVO> stemcellList = getStemcellReturnListInfo("null");
         when(mockStemcelldao.selectPublicStemcellList()).thenReturn(stemcellList);
         List<StemcellManagementVO> result = mockStemcellService.getPublicStemcellList();
@@ -114,7 +109,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testGetPublicStemcellListFromDonwloadedStatusCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> testGetPublicStemcellListFromDonwloadedStatusCase ");} 
         List<StemcellManagementVO> stemcellList = getStemcellReturnListInfo("downloaded");
         when(mockStemcelldao.selectPublicStemcellList()).thenReturn(stemcellList);
         List<StemcellManagementVO> result = mockStemcellService.getPublicStemcellList();
@@ -135,7 +129,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveStemcellInfoByFilePathFromLockFileConflictCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> testSaveStemcellInfoByFilePathFromLockFileConflictCase ");}
         StemcellManagementDTO.Regist dto = setStemcellUploadInfo("nomal");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(false);
         mockStemcellService.saveStemcellInfoByFilePath(dto, "Y", principal);
@@ -149,7 +142,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveStemcellInfoByFilePathFromExtensionErrorCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> testSaveStemcellInfoByFilePathFromExtensionErrorCase ");}
         StemcellManagementDTO.Regist dto = setStemcellUploadInfo("extension");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
         mockStemcellService.saveStemcellInfoByFilePath(dto, "Y", principal);
@@ -163,7 +155,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveStemcellInfoByFilePathFromSizeZeroCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> testSaveStemcellInfoByFilePathFromExtensionErrorCase ");}
         StemcellManagementDTO.Regist dto = setStemcellUploadInfo("zero");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
         mockStemcellService.saveStemcellInfoByFilePath(dto, "Y", principal);
@@ -177,7 +168,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveStemcellInfoByFilePathFromOverlayFalseException() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testSaveStemcellInfoByFilePathFromOverlayFalseExceptions");}
         File file = new File(STEMCELL_PATH + SEPARATOR + "light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
         FileWriter writer = null;
         writer = new FileWriter(file);
@@ -197,7 +187,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSaveStemcellInfoByFilePath(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testSaveStemcellInfoByFilePath");}
         StemcellManagementDTO.Regist dto = setStemcellUploadInfo("nomal");
         StemcellManagementVO vo = getStemcellRegistInfo("nomal");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
@@ -219,7 +208,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testCheckDownloadInfoOfStemcellByURL(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testCheckDownloadInfoOfStemcellByURL");}
         StemcellManagementDTO.Regist dto = setStemcellUploadInfo("nomal");
         StemcellManagementVO vo = getStemcellRegistInfo("nomal");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
@@ -242,7 +230,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testCheckDownloadInfoOfStemcellByURLFromStemcellInfoUpdateCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testCheckDownloadInfoOfStemcellByURLFromStemcellInfoUpdateCase");}
         StemcellManagementDTO.Regist dto = setStemcellUploadInfo("update");
         StemcellManagementVO vo = getStemcellRegistInfo("nomal");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
@@ -265,7 +252,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testCheckDownloadInfoOfStemcellByURLFromExceptionCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testCheckDownloadInfoOfStemcellByURLFromExceptionCase");}
         StemcellManagementDTO.Regist dto = null;
         StemcellManagementVO vo = getStemcellRegistInfo("error");
         when(mockMessageSource.getMessage(anyString(), anyObject(), anyObject())).thenReturn("conflic_exception");
@@ -283,7 +269,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     *****************************************************************/
     @Test
     public void doWgetToGetPublicStemcellInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> doWgetToGetPublicStemcellInfo");}
         StemcellManagementDTO.Regist dto = setStemcellUploadInfo("nomal");
         dto.setFileType("URL");
         dto.setStemcellUrl("bosh.io");
@@ -300,7 +285,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     *****************************************************************/
     @Test(expected=CommonException.class)
     public void testDoWgetToGetPublicStemcellInfoFromBadRequestCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testDoWgetToGetPublicStemcellInfoFromBadRequestCase");}
         StemcellManagementDTO.Regist dto = setStemcellUploadInfo("nomal");
         dto.setDownloadLink(null);
         mockStemcellService.doWgetToGetPublicStemcellInfo(dto, "Y", principal);
@@ -314,7 +298,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellUrlForWgetByCentOsType(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellUrlForWgetByCentOsType");}
         StemcellManagementDTO.Regist dto = setStemcellVersionDownloadInfo("centos");
         String result = mockStemcellService.setStemcellUrlForWget(dto);
         assertEquals(result, "https://bosh-jenkins-artifacts.s3.amazonaws.com/bosh-stemcell/aws/light-bosh-stemcell-3232.3-aws-xen-hvm-centos-7-go_agent.tgz");
@@ -328,7 +311,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellUrlForWgetByUbuntuType(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellUrlForWgetByUbuntuType");}
         StemcellManagementDTO.Regist dto = setStemcellVersionDownloadInfo("ubuntu");
         String result = mockStemcellService.setStemcellUrlForWget(dto);
         assertEquals(result, "https://bosh-jenkins-artifacts.s3.amazonaws.com/bosh-stemcell/aws/light-bosh-stemcell-3232.3-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
@@ -342,7 +324,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellUrlForWget(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellUrlForWget");}
         StemcellManagementDTO.Regist dto = setStemcellUrlDownloadInfo("nomal");
         String result = mockStemcellService.setStemcellUrlForWget(dto);
         assertEquals(result, "https://bosh-jenkins-artifacts.s3.amazonaws.com/bosh-stemcell/aws/light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
@@ -357,7 +338,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testCheckDownloadInfoOfStemcellByURLFromFileSizeZeroCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testCheckDownloadInfoOfStemcellByURLFromFileSizeZeroCase");}
         StemcellManagementDTO.Regist dto = setStemcellUploadInfo("empty");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
         mockStemcellService.checkDownloadInfoOfStemcellByURL(dto, "Y", principal);
@@ -371,7 +351,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSaveStemcellInfoByURLFromCentosVersionTypeCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSaveStemcellInfoByURLFromCentosVersionTypeCase");}
         StemcellManagementDTO.Regist dto = setStemcellVersionDownloadInfo("centos");
         StemcellManagementVO vo = getStemcellRegistInfo("nomal");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
@@ -393,7 +372,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     *****************************************************************/
     @Test(expected=CommonException.class)
     public void testSaveStemcellInfoByURLFromBadRequestCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSaveStemcellInfoByURLFromBadRequestCase");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         mockStemcellService.saveStemcellInfoByURL(dto, "Y", principal);
     }
@@ -407,7 +385,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellDownLoadSubUrlByVersionTypeFromAWSLightCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellDownLoadSubUrlByVersionTypeFromAWSLightCase");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setLight("true");
         String resultSubUrl = mockStemcellService.setStemcellDownLoadSubUrlByVersionType(dto);
@@ -422,7 +399,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellDownLoadSubUrlByVersionTypeFromAWSLightExceptCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellDownLoadSubUrlByVersionTypeFromAWSLightExceptCase");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setLight("false");
         String resultSubUrl = mockStemcellService.setStemcellDownLoadSubUrlByVersionType(dto);
@@ -437,7 +413,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetIaasHypervisorFromOpenstack(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetIaasHypervisorFromOpenstack");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setIaasType("OPENSTACK");
         String resultHypervisor = mockStemcellService.setIaasHypervisor(dto);
@@ -452,7 +427,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetIaasHypervisorFromVsphere(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetIaasHypervisorFromVsphere");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setIaasType("VSPHERE");
         String resultHypervisor = mockStemcellService.setIaasHypervisor(dto);
@@ -467,7 +441,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetIaasHypervisorFromGoogle(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetIaasHypervisorFromGoogle");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setIaasType("GOOGLE");
         String resultHypervisor = mockStemcellService.setIaasHypervisor(dto);
@@ -482,7 +455,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetIaasHypervisorFromAWSLight(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetIaasHypervisorFromAWSLight");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setIaasType("AWS");
         dto.setLight("true");
@@ -498,12 +470,12 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetIaasHypervisorFromAWS(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetIaasHypervisorFromAWS");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setIaasType("AWS");
         dto.setLight("false");
+        dto.setStemcellVersion("3363.09");
         String resultHypervisor = mockStemcellService.setIaasHypervisor(dto);
-        assertEquals(resultHypervisor, "aws-xen");
+        assertEquals(resultHypervisor, "aws-xen-hvm");
     }
     
     /***************************************************
@@ -514,7 +486,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellDownLoadBaseUrlByVersionTypeFromLight3264MoreCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellDownLoadBaseUrlByVersionTypeFromLight3264MoreCase");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setStemcellVersion("3266");
         dto.setLight("true");
@@ -531,7 +502,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellDownLoadBaseUrlByVersionTypeFrom3264MoreCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellDownLoadBaseUrlByVersionTypeFrom3264MoreCase");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setStemcellVersion("3266");
         dto.setLight("false");
@@ -548,7 +518,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellDownLoadBaseUrlByVersionTypeFromUnder3264Case(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellDownLoadBaseUrlByVersionTypeFromUnder3264Case");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setStemcellVersion("3261");
         dto.setIaasType("OPENSTACK");
@@ -564,7 +533,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellVersionWithWgetFrom2820LightCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellVersionWithWgetFrom2820LightCase");}
         StemcellManagementDTO.Regist dto = setStemcellUrlDownloadInfo("nomal");
         String resultVersion = mockStemcellService.setStemcellVersionWithWget(dto);
         assertEquals(resultVersion, "2820");
@@ -577,7 +545,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellVersionWithWgetFromWithoutBoshIo2820Case(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellVersionWithWgetFromWithoutBoshIo2820Case");}
         StemcellManagementDTO.Regist dto = setStemcellUrlDownloadInfo("notBoshIo");
         dto.setStemcellFileName("bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
         String resultVersion = mockStemcellService.setStemcellVersionWithWget(dto);
@@ -592,7 +559,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellVersionWithWgetFromBoshIo2820Case(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellVersionWithWgetFromBoshIo2820Case");}
         StemcellManagementDTO.Regist dto = setStemcellUrlDownloadInfo("boshio");
         dto.setStemcellFileName("bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
         String resultVersion = mockStemcellService.setStemcellVersionWithWget(dto);
@@ -607,7 +573,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testSetStemcellVersionWithWgetFromBoshIo2820LightCase(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellVersionWithWgetFromBoshIo2820LightCase");}
         StemcellManagementDTO.Regist dto = setStemcellUrlDownloadInfo("boshiolite");
         String resultVersion = mockStemcellService.setStemcellVersionWithWget(dto);
         assertEquals(resultVersion, "2820");
@@ -621,7 +586,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSetStemcellDownLoadBaseUrlByVersionTypeFromNumberFormatException(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSetStemcellDownLoadBaseUrlByVersionTypeFromNumberFormatException");}
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setStemcellVersion("32dasdas61");
         mockStemcellService.setStemcellDownLoadBaseUrlByVersionType(dto);
@@ -636,7 +600,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testDeleteStemcellLockFile() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testDeleteStemcellLockFile");}
         String lock_file = "light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent-download.lock";
         File file = new File(LOCK_PATH + SEPARATOR + lock_file);
         FileWriter writer = null;
@@ -655,7 +618,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
     public void testDeletePublicStemcell() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testDeletePublicStemcell");}
         StemcellManagementDTO.Delete  dto = setStemcellDeleteData();
         File file = new File(STEMCELL_PATH + SEPARATOR + "light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
         FileWriter writer = null;
@@ -665,22 +627,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
         writer.close();
         mockStemcellService.deletePublicStemcell(dto);
     }
-    
-    
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
-    * @description : 스템셀 삭제 파일이 존재 하지 않을 경우
-    * @title : testDeletePublicStemcellFromNotExistsCase
-    * @return : void
-    ***************************************************/
-    @Test(expected=CommonException.class)
-    public void testDeletePublicStemcellFromNotExistsCase() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testDeletePublicStemcellFromNotExistsCase");}
-        StemcellManagementDTO.Delete  dto = setStemcellDeleteData();
-        mockStemcellService.deletePublicStemcell(dto);
-    }
-    
-    
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
@@ -705,7 +651,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
      ***************************************************/
      @Test
      public void testGetListLocalStemcellsValueNull(){
-         if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  스템셀 정보가 존재 하지 않을 경우 공통 로컬 스템셀 콤보 조회"); }
          when(mockStemcelldao.selectLocalStemcellListByIaas("openstack")).thenReturn(null);
          List<StemcellManagementVO> result = mockStemcellService.getLocalStemcellList("openstack");
          assertEquals(result, null);
@@ -719,7 +664,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
      ***************************************************/
      @Test
      public void testGetListLocalStemcellsDownLoadStatusValueNull(){
-         if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  조회 된 스템셀 목록 정보 중 다운로드 상태 값이 NULL인 경우 공통 로컬 스템셀 콤보 조회"); }
          List<StemcellManagementVO> stemcellList = getStemcellReturnListInfo("null");
          when(mockStemcelldao.selectLocalStemcellListByIaas(anyString())).thenReturn(stemcellList);
          List<StemcellManagementVO> result = mockStemcellService.getLocalStemcellList("openstack");
@@ -740,7 +684,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
      ***************************************************/
      @Test
      public void testGetListLocalStemcellsDownLoadStatusValueDownloaded(){
-         if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  조회 된 스템셀 목록 정보 중 다운로드 상태 값이 Downloaded인 경우 스템셀 목록 조회");} 
          List<StemcellManagementVO> stemcellList = getStemcellReturnListInfo("downloaded");
          when(mockStemcelldao.selectLocalStemcellListByIaas(anyString())).thenReturn(stemcellList);
          List<StemcellManagementVO> result = mockStemcellService.getLocalStemcellList("openstack");
@@ -761,7 +704,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     ***************************************************/
     @Test
      public void testRegistPublicStemcellDownLoadBoshIoUrl(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  bosh.io 스템셀 다운로드 요청");} 
         StemcellManagementDTO.Regist dto = setStemcellUrlDownloadInfo("boshio");
         when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
         mockStemcellService.checkDownloadInfoOfStemcellByURL(dto, "Y", principal);
@@ -775,7 +717,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
    ***************************************************/
    @Test
     public void testRegistPublicStemcellDownLoadBoshIoLiteUrl(){
-       if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  bosh.io Lite 스템셀 다운로드 정보 등록 요청");} 
        StemcellManagementDTO.Regist dto = setStemcellUrlDownloadInfo("boshiolite");
        when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
        mockStemcellService.checkDownloadInfoOfStemcellByURL(dto, "Y", principal);
@@ -789,7 +730,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
   ***************************************************/
    @Test 
    public void testRegistPublicStemcellDownLoadIfNotLite(){
-       if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  버전 유형 Lite가 아닌 스템셀 다운로드 정보 등록 요청");} 
        StemcellManagementDTO.Regist dto = setStemcellVersionDownloadInfo("ifNotLite");
        when(mockCommonService.lockFileSet(anyString())).thenReturn(true);
        mockStemcellService.checkDownloadInfoOfStemcellByURL(dto, "Y", principal);
@@ -803,7 +743,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
   ***************************************************/
    @Test(expected=CommonException.class)
    public void testRegistPublicStemcellDownladFileExistAndOverlayCheckFlase() throws IOException{
-       if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  스템셀 다운로드 요청 중 스템셀 파일이 존재 하고 덮어 쓰기 체크가 안되어 있을 경우");} 
        StemcellManagementDTO.Regist dto = setStemcellUrlDownloadInfo("overlay");
        File file = new File(STEMCELL_PATH + SEPARATOR + "light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
        FileWriter writer = null;
@@ -822,7 +761,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
   ***************************************************/
    @Test(expected=CommonException.class)
    public void testRegistPublicStemcellDownladUrlBadRequest() throws IOException{
-       if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  스템셀 다운로드 Url이 잘못되었을 경우");} 
        StemcellManagementDTO.Regist dto = setStemcellUrlDownloadInfo("badrequest");
        mockStemcellService.checkDownloadInfoOfStemcellByURL(dto, "Y", principal);
    }
@@ -835,7 +773,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
   ***************************************************/
    @Test(expected=CommonException.class)
    public void testRegistPublicStemcellDownladConflict() throws IOException{
-       if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  다른 사용자가 동일한 스템셀을 다운로드 중일 경우");} 
        StemcellManagementDTO.Regist dto = setStemcellUrlDownloadInfo("nomal");
        when(mockCommonService.lockFileSet(anyString())).thenReturn(false);
        mockStemcellService.checkDownloadInfoOfStemcellByURL(dto, "Y", principal);
@@ -851,6 +788,7 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setId(1);
         dto.setStemcellUrl("testurl");
+        dto.setDownloadLink("link");
         dto.setStemcellName("testStemcellName");
         dto.setStemcellFileName("light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
         dto.setStemcellVersion("3232.3");

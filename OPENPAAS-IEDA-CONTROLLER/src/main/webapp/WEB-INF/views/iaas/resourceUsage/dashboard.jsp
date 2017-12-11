@@ -62,7 +62,6 @@ function setMouseOutStyle(event){
 function settingResourceUsageData(data){
     var awsInstance=0; var awsNetwork =0; var awsVolume =0; var awsBilling=0;
     var openstackInstance=0; var openstackNetwork=0; var openstackVolume=0;
-    console.log(data);
     for( var i=0; i < data.length; i++ ){
           if( (data[i].iaasType).toUpperCase() == 'AWS' ){
               awsInstance +=  data[i].instance;

@@ -1,5 +1,6 @@
 package org.openpaas.ieda.deploy.web.information.release;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import javax.ws.rs.core.Application;
@@ -15,8 +16,6 @@ import org.openpaas.ieda.deploy.web.common.base.BaseDeployControllerUnitTest;
 import org.openpaas.ieda.deploy.web.config.setting.dao.DirectorConfigVO;
 import org.openpaas.ieda.deploy.web.config.setting.service.DirectorConfigService;
 import org.openpaas.ieda.deploy.web.information.release.service.ReleaseService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -31,10 +30,9 @@ public class ReleaseServiceUnitTest extends BaseDeployControllerUnitTest{
     private ReleaseService mockReleaseService;
     @Mock 
     private DirectorConfigService mockDirectorConfigService;
-    @Mock 
-    private MessageSource mockMessage;
+    @Mock
+    private MessageSource mockMessageSource;
     
-    final static Logger LOGGER = LoggerFactory.getLogger(ReleaseServiceUnitTest.class);
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -57,7 +55,6 @@ public class ReleaseServiceUnitTest extends BaseDeployControllerUnitTest{
     *****************************************************************/
 //    @Test(expected=CommonException.class)
     public void testGetUploadedReleaseListIOException(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testGetUploadedReleaseListIOException"); }
         DirectorConfigVO defaultDirector = setDefaultDirectorInfo();
         when(mockDirectorConfigService.getDefaultDirector()).thenReturn(defaultDirector);
         mockReleaseService.getUploadedReleaseList();
@@ -72,7 +69,6 @@ public class ReleaseServiceUnitTest extends BaseDeployControllerUnitTest{
     *****************************************************************/
     @Test
     public void testSetUploadedReleaseList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testSetUploadedReleaseList"); }
         mockReleaseService.setUploadedReleaseList(setUploadReleaseList());
       
     }
@@ -85,9 +81,9 @@ public class ReleaseServiceUnitTest extends BaseDeployControllerUnitTest{
     *****************************************************************/
     @Test(expected=CommonException.class)
     public void testSetUploadedReleaseListJsonMappingException(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testSetUploadedReleaseListJsonMappingException"); }
         DirectorConfigVO defaultDirector = setDefaultDirectorInfo();
         when(mockDirectorConfigService.getDefaultDirector()).thenReturn(defaultDirector);
+        when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("");
         mockReleaseService.setUploadedReleaseList(setUploadReleaseListJsonMappingException());
       
     }
@@ -100,7 +96,6 @@ public class ReleaseServiceUnitTest extends BaseDeployControllerUnitTest{
     *****************************************************************/
 //    @Test(expected=CommonException.class)
     public void testGetFilteredReleseListIOException(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testGetPaastaControllerReleasesFilter"); }
         DirectorConfigVO defaultDirector = setDefaultDirectorInfo();
         when(mockDirectorConfigService.getDefaultDirector()).thenReturn(defaultDirector);
         mockReleaseService.getFilteredReleseList("cf");
@@ -114,7 +109,6 @@ public class ReleaseServiceUnitTest extends BaseDeployControllerUnitTest{
     *****************************************************************/
     @Test
     public void testSetFilteredPaastaControllerReleseInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testSetFilteredPaastaControllerReleseInfo"); }
         String responseBody = setUploadPaastaControllerReleaseList();
         mockReleaseService.setFilteredReleseInfo(responseBody, "cf");
     }
@@ -127,7 +121,6 @@ public class ReleaseServiceUnitTest extends BaseDeployControllerUnitTest{
     *****************************************************************/
     @Test
     public void testSetFilteredPaastaContainerReleseInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testSetFilteredPaastaContainerReleseInfo"); }
         String responseBody = setUploadPaastaContainerReleaseList();
         mockReleaseService.setFilteredReleseInfo(responseBody,"diego");
     }
@@ -140,7 +133,6 @@ public class ReleaseServiceUnitTest extends BaseDeployControllerUnitTest{
     *****************************************************************/
     @Test
     public void testSetFilteredGardenRuncReleaseInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testSetFilteredGardenRuncReleaseInfo"); }
         String responseBody = setUploadGardenRuncReleaseList();
         mockReleaseService.setFilteredReleseInfo(responseBody, "garden-linux");
     }
@@ -153,7 +145,6 @@ public class ReleaseServiceUnitTest extends BaseDeployControllerUnitTest{
     *****************************************************************/
     @Test
     public void testSetFilteredPaastaGardenRuncReleaseInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testSetFilteredPaastaGardenRuncReleaseInfo"); }
         String responseBody = setUploadPaastaGardenRuncReleaseList();
         mockReleaseService.setFilteredReleseInfo(responseBody, "garden-linux");
     }

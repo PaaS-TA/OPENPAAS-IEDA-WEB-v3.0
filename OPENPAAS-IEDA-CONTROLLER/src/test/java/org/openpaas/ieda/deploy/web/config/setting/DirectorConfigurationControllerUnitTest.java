@@ -29,8 +29,6 @@ import org.openpaas.ieda.controller.deploy.web.config.setting.DirectorConfigurat
 import org.openpaas.ieda.deploy.web.config.setting.dao.DirectorConfigVO;
 import org.openpaas.ieda.deploy.web.config.setting.dto.DirectorConfigDTO;
 import org.openpaas.ieda.deploy.web.config.setting.service.DirectorConfigService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -57,10 +55,9 @@ public class DirectorConfigurationControllerUnitTest{
     final static String VIEW_URL= "/config/director";
     final static String DIRECTOR_LIST_URL = "/config/director/list";
     final static String DIRECTOR_ADD_URL = "/config/director/add";
-    final static String DIRECTOR_UPDATE_URL = "/config/director/update/{seq}";
+    final static String DIRECTOR_UPDATE_URL = "/config/director/update";
     final static String DIRECTOR_DELETE_URL = "/config/director/delete/{seq}";
     final static String SET_DEFAULT_DIRECTOR_URL = "/config/director/setDefault/{seq}";
-    final static Logger LOGGER = LoggerFactory.getLogger(DirectorConfigurationControllerUnitTest.class);
     
     
     /***************************************************
@@ -83,7 +80,6 @@ public class DirectorConfigurationControllerUnitTest{
     ***************************************************/
     @Test
     public void testGoListDirector() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치관리자 설정 화면 요청 테스트"); }
         mockMvc.perform(get(VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
@@ -98,7 +94,6 @@ public class DirectorConfigurationControllerUnitTest{
     ***************************************************/
     @Test
     public void testListDirector() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 정보 목록 조회(전체) 테스트"); }
         List<DirectorConfigVO> resultList = setListDirector();
         when( mockDirectorConfigService.getDirectorList()).thenReturn(resultList);
         mockMvc.perform(get( DIRECTOR_LIST_URL ).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -127,7 +122,6 @@ public class DirectorConfigurationControllerUnitTest{
     ***************************************************/
     @Test
     public void testListDirectorValueNull() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 정보 목록 조회(전체) 테스트"); }
         when(mockDirectorConfigService.getDirectorList()).thenReturn(null);
         mockMvc.perform(get(DIRECTOR_LIST_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk());
@@ -141,7 +135,6 @@ public class DirectorConfigurationControllerUnitTest{
     ***************************************************/
     @Test
     public void testCreateDirector() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 추가 테스트"); }
         DirectorConfigDTO.Create dto = setDirectorConfigInfoList();
         mockMvc.perform(post(DIRECTOR_ADD_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(dto)))
@@ -157,7 +150,6 @@ public class DirectorConfigurationControllerUnitTest{
     ***************************************************/
     @Test 
     public void testUpdateDirector() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 수정 테스트"); }
         DirectorConfigDTO.Update dto = updateDirectorConfigInfo();
         mockMvc.perform(put(DIRECTOR_UPDATE_URL,1).contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(dto)))
@@ -173,7 +165,6 @@ public class DirectorConfigurationControllerUnitTest{
     ***************************************************/
     @Test
     public void testDeleteDirector() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 삭제 테스트"); }
         mockMvc.perform(delete(DIRECTOR_DELETE_URL,1).contentType(MediaType.APPLICATION_JSON))
         .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isNoContent());
@@ -187,7 +178,6 @@ public class DirectorConfigurationControllerUnitTest{
     ***************************************************/
     @Test
     public void testSetDefaultDirector() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 기본 설치 관리자 설정 테스트"); }
         DirectorConfigDTO.Update dto = updateDirectorConfigInfo();
         when( mockDirectorConfigService.existCheckSetDefaultDirectorInfo(anyInt(),any(), anyString())).thenReturn(setDirector());
         mockMvc.perform(put(SET_DEFAULT_DIRECTOR_URL,1).contentType(MediaType.APPLICATION_JSON)

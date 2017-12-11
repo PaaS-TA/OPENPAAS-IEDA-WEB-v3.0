@@ -219,10 +219,12 @@ function gbConverter(value){
  function checkInjectionBlacklist( value ){
     var blackList = ["--", ";--", ";","/*", "*/", "@@", "char", "nchar", "varchar", "nvarchar", "alter", "begin", "cast"
                      ,"create", "cursor", "declare", "delete", "drop", "end", "exec", "execute", "fetch", "insert", "kill",
-                     "select", "sys", "sysobjects", "syscolumns", "table", "update",'"',"'"];
-    for( var i=0; i < blackList.length; i++ ){
-        if( value.indexOf(blackList[i]) > -1 ){
-            return false;
+                     "select", "sys", "sysobjects", "syscolumns", "table", "update",'"',"'", "#", "$", "%", "!", "^"];
+    if( !checkEmpty(value) ){
+        for( var i=0; i < blackList.length; i++ ){
+            if( value.indexOf(blackList[i]) > -1 ){
+                return false;
+            }
         }
     }
     return true;

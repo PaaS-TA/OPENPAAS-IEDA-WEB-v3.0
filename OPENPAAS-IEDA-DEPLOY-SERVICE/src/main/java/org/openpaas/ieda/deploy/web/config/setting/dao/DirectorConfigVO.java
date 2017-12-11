@@ -1,8 +1,6 @@
 package org.openpaas.ieda.deploy.web.config.setting.dao;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 public class DirectorConfigVO {
     
@@ -23,7 +21,6 @@ public class DirectorConfigVO {
     private String createUserId; //생성 사용자
     private String updateUserId;//수정 사용자 
     private boolean connect;//기본 설치관리자 클라이언트 요청 여부
-    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
     
     public Integer getIedaDirectorConfigSeq() {
         return iedaDirectorConfigSeq;
@@ -120,30 +117,20 @@ public class DirectorConfigVO {
         this.defaultYn = defaultYn;
     }
 
-    public String getCreateDate() {
-        if(createDate == null) {
-            return null;
-        } else {
-            String date1 = format.format(createDate);
-            return date1;
-        }
-    }
-
     public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getUpdateDate() {
-        if(updateDate == null) {
-            return null;
+        if(createDate == null) {
+            this.createDate = null;
         } else {
-            String date1 = format.format(updateDate);
-            return date1;
+            this.createDate = new Date(createDate.getTime());
         }
     }
 
     public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
+        if(updateDate == null) {
+            this.updateDate = null;
+        } else {
+            this.updateDate = new Date(updateDate.getTime());
+        }
     }
 
     public String getCreateUserId() {
@@ -169,6 +156,19 @@ public class DirectorConfigVO {
     public void setConnect(boolean connect) {
         this.connect = connect;
     }
-    
+    public Date getCreateDate() {
+        if(createDate == null) {
+            return null;
+        } else {
+            return new Date(createDate.getTime());
+        }
+    }
+    public Date getUpdateDate() {
+        if(updateDate == null) {
+            return null;
+        } else {
+            return new Date(updateDate.getTime());
+        }
+    }
     
 }

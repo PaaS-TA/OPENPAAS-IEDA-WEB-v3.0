@@ -11,23 +11,23 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 public class SecurityAuthenticationLogout implements LogoutHandler {
-	
-	private final static Logger LOGGER = LoggerFactory.getLogger(SecurityAuthenticationLogout.class);
-	
-	/***************************************************
-	 * @project          : Paas 플랫폼 설치 자동화
-	 * @description   : 로그아웃이 실행되는 핸들러
-	 * @title               : logout
-	***************************************************/
-	@Override
-	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-			try {
-				response.sendRedirect("/login?code=logout");
-			} catch (IOException e) {
-				if( LOGGER.isErrorEnabled() ){
-					LOGGER.error( e.getMessage() );
-				}
-			}
-	}
-	
+    
+    private final static Logger LOGGER = LoggerFactory.getLogger(SecurityAuthenticationLogout.class);
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : 로그아웃이 실행되는 핸들러
+     * @title : logout
+    ***************************************************/
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+            try {
+                response.sendRedirect("/login?code=logout");
+            } catch (IOException e) {
+                if( LOGGER.isErrorEnabled() ){
+                    LOGGER.error( e.getMessage() );
+                }
+            }
+    }
+    
 }

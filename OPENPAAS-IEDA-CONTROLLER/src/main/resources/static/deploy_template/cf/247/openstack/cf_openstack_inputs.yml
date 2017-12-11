@@ -45,63 +45,34 @@ meta:
   ssh-key-fingerprint: [appSshFingerprint]
 
   small-instance-type: [smallInstanceType]
-
   medium-instance-type: [mediumInstanceType]
-
   large-instance-type: [largeInstanceType]
-
   runner-instance-type: [runnerInstanceType]
 
   dea-next-disk-mb: [deaDiskMB]
-
   dea-next-memory-mb: [deaMemoryMB]
-  
-  ingestor-ip: [ingestorIp]  
-  ingestor-port: [ingestorPort]
-  
-  ##job instances
+
+ ##job instances(zone_z1)
   nats-z1-instances: [natsZ1]
-  
   blobstore-z1-instances: [blobstoreZ1]
-  
   router-z1-instances: [routerZ1]
-  
-  loggregator-z1-instances: [loggregatorZ1]
-  
   doppler-z1-instances: [dopplerZ1]
-  
   loggregator-trafficcontroller-z1-instances: [loggregator_trafficcontrollerZ1]
-
   etcd-z1-instances: [etcdZ1]
-
   consul-z1-instances: [consulZ1]
-
+  clock-global-z1-instances: [clock_globalZ1]
   hm9000-z1-instances: [hm9000Z1]
-
   runner-z1-instances: [runnerZ1]
-  
-#  nats-z2-instances: [natsZ2]
-#
-#  blobstore-z2-instances: [blobstoreZ2]
-#
-#  postgres-z2-instances: [postgresZ2]
-#
-#  router-z2-instances: [routerZ2]
-#
-#  loggregator-z2-instances: [loggregatorZ2]
-#
-#  doppler-z2-instances: [dopplerZ2]
-#
-#  loggregator-trafficcontroller-z2-instances: [loggregatorTrafficcontrollerZ2]
-#
-#  etcd-z2-instances: [etcdZ2]
-#
-#  consul-z2-instances: [consulZ2]
-#
-#  hm9000-z2-instances: [hm9000Z2]
-#
-#  runner-z2-instances: [runnerZ2]
-  
+ 
+ ##job instances(zone_z2) 
+  nats-z2-instances: [natsZ2]
+  router-z2-instances: [routerZ2]
+  doppler-z2-instances: [dopplerZ2]
+  loggregator-trafficcontroller-z2-instances: [loggregator_trafficcontrollerZ2]
+  etcd-z2-instances: [etcdZ2]
+  consul-z2-instances: [consulZ2]
+  runner-z2-instances: [runnerZ2]
+  hm9000-z2-instances: [hm9000Z2]
 
   ## Don't change
   default_env:

@@ -3,6 +3,7 @@ package org.openpaas.ieda.deploy.web.deploy.cfDiego.service;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 
 import org.openpaas.ieda.common.exception.CommonException;
 import org.openpaas.ieda.deploy.web.deploy.cf.dao.CfVO;
@@ -20,10 +21,9 @@ import org.openpaas.ieda.deploy.web.deploy.diego.dao.DiegoVO;
 import org.openpaas.ieda.deploy.web.deploy.diego.dto.DiegoParamDTO;
 import org.openpaas.ieda.deploy.web.deploy.diego.service.DiegoDeleteDeployAsyncService;
 import org.openpaas.ieda.deploy.web.deploy.diego.service.DiegoService;
-import org.openpaas.ieda.deploy.web.management.code.dao.CommonCodeDAO;
-import org.openpaas.ieda.deploy.web.management.code.dao.CommonCodeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,19 +33,14 @@ import com.google.gson.Gson;
 @Service
 public class CfDiegoService {
 
-    @Autowired CfDiegoDAO cfDiegoDao;
-    @Autowired CfService cfService;
-    @Autowired DiegoService diegoService;
+    @Autowired private CfDiegoDAO cfDiegoDao;
+    @Autowired private CfService cfService;
+    @Autowired private DiegoService diegoService;
     @Autowired private NetworkDAO networkDao;
     @Autowired private ResourceDAO resourceDao;
-    @Autowired CfDeleteDeployAsyncService cfDeleteDeployAsyncService;
-    @Autowired DiegoDeleteDeployAsyncService diegoDeleteDeployAsyncService;
-    @Autowired private CommonCodeDAO commonCodeDao;
-    
-    final private static String PARENT_CODE="1000"; //배포 코드
-    final private static String SUB_GROUP_CODE="1100"; //배포 유형 코드
-    final private static String CF_CODE_NAME="DEPLOY_TYPE_CF"; //배포 할 플랫폼명
-    final private static String DIEGO_CODE_NAME="DEPLOY_TYPE_DIEGO"; //배포 할 플랫폼명
+    @Autowired private CfDeleteDeployAsyncService cfDeleteDeployAsyncService;
+    @Autowired private DiegoDeleteDeployAsyncService diegoDeleteDeployAsyncService;
+    @Autowired private MessageSource message;
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -55,18 +50,20 @@ public class CfDiegoService {
     *****************************************************************/
     public List<CfDiegoVO>  getCfDiegoList(String iaas){
         List<CfDiegoVO> list = cfDiegoDao.selectCfDiegoList(iaas);
-        CommonCodeVO cfCodeVo =commonCodeDao.selectCommonCodeByCodeName(PARENT_CODE, SUB_GROUP_CODE, CF_CODE_NAME);
-        CommonCodeVO diegoCodeVo =commonCodeDao.selectCommonCodeByCodeName(PARENT_CODE, SUB_GROUP_CODE, DIEGO_CODE_NAME);
+        String cfDeployType = message.getMessage("common.deploy.type.cf.name", null, Locale.KOREA);
+        String diegoDeployType = message.getMessage("common.deploy.type.diego.name", null, Locale.KOREA);
         //NETWORK
         if( !list.isEmpty() ){
             for( CfDiegoVO cfDiegoVo : list ){
-                for( int i =0; i < 2; i++){
+                for( int i=0; i < 2; i++){
                     List<NetworkVO> netoworks = null;
                     if( i == 0 ){
-                        netoworks = networkDao.selectNetworkList(cfDiegoVo.getCfVo().getId(), cfCodeVo.getCodeName());
+                        netoworks = networkDao.selectNetworkList(cfDiegoVo.getCfVo().getId(), cfDeployType);
                     }else {
-                        if( cfDiegoVo.getDiegoVo().getId() == null || cfDiegoVo.getDiegoVo().getId() ==0  ) break;
-                        netoworks = networkDao.selectNetworkList(cfDiegoVo.getDiegoVo().getId(), diegoCodeVo.getCodeName());
+                        if( cfDiegoVo.getDiegoVo().getId() == null || cfDiegoVo.getDiegoVo().getId() == 0  ) {
+                            break;
+                        }
+                        netoworks = networkDao.selectNetworkList(cfDiegoVo.getDiegoVo().getId(), diegoDeployType);
                     }
                     String br = "";
                     int cnt = 0;
@@ -77,11 +74,13 @@ public class CfDiegoService {
                     
                     if(netoworks  != null){
                         for(NetworkVO networkVO: netoworks){
-                            if( "internal".equals(networkVO.getNet().toLowerCase() )){
+                            if( "internal".equalsIgnoreCase(networkVO.getNet())){
                                 cnt ++;
                                 if( cnt > 2  && cnt < netoworks.size() ){
                                     br = ""; 
-                                }else br = "<br>";
+                                }else {
+                                    br = "<br>";
+                                }
 
                                 subnetRange += networkVO.getSubnetRange()  + br;
                                 subnetGateway += networkVO.getSubnetGateway() + br;
@@ -104,7 +103,7 @@ public class CfDiegoService {
                             cfDiegoVo.getCfVo().getNetwork().setSubnetId(subnetId);
                             cfDiegoVo.getCfVo().getNetwork().setCloudSecurityGroups(cloudSecurityGroups);
                             //cf resource
-                            resource = resourceDao.selectResourceInfo( cfDiegoVo.getCfVo().getId(), cfCodeVo.getCodeName());
+                            resource = resourceDao.selectResourceInfo( cfDiegoVo.getCfVo().getId(), cfDeployType);
                             if( resource != null ){
                                 cfDiegoVo.getCfVo().getResource().setStemcellName(resource.getStemcellName());
                                 cfDiegoVo.getCfVo().getResource().setStemcellVersion(resource.getStemcellVersion());
@@ -119,7 +118,7 @@ public class CfDiegoService {
                             cfDiegoVo.getDiegoVo().getNetwork().setSubnetId(subnetId);
                             cfDiegoVo.getDiegoVo().getNetwork().setCloudSecurityGroups(cloudSecurityGroups);
                             //diego Resource
-                            resource = resourceDao.selectResourceInfo( cfDiegoVo.getDiegoVo().getId(), diegoCodeVo.getCodeName());
+                            resource = resourceDao.selectResourceInfo( cfDiegoVo.getDiegoVo().getId(), diegoDeployType);
                             if( resource != null ){
                                 cfDiegoVo.getDiegoVo().getResource().setStemcellName(resource.getStemcellName());
                                 cfDiegoVo.getDiegoVo().getResource().setStemcellVersion(resource.getStemcellVersion());
@@ -141,7 +140,6 @@ public class CfDiegoService {
      * @return : CfDiegoVO
     *****************************************************************/
     public CfDiegoVO getCfDiegoInfo( int id ){
-        
         CfDiegoVO result = cfDiegoDao.selectCfDiegoInfoById(id);
         CfDiegoVO cfDiegoVo = new CfDiegoVO();
 
@@ -156,8 +154,8 @@ public class CfDiegoService {
                 }
             } 
         }else{
-            throw new CommonException("notfound.cfDiego.exception",
-                    "해당하는 CF 및 Diego 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+            throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
+                    message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
         return cfDiegoVo;
     }
@@ -174,7 +172,7 @@ public class CfDiegoService {
             cfService.createSettingFile(vo);
         }else{
             DiegoVO vo = diegoService.getDiegoDetailInfo( Integer.parseInt(dto.getId()) );
-            diegoService.createSettingFile(vo, dto.getIaas());
+            diegoService.createSettingFile(vo);
         }
     }
     
@@ -190,32 +188,28 @@ public class CfDiegoService {
         CfDiegoVO vo = null;
         CfDiegoVO cfDiegoInfo  = null;
         try{
-            if( dto.getPlatform().equals("diego") ){//delete diego
+            if( dto.getPlatform().equalsIgnoreCase("diego") ){//delete diego
                 vo = cfDiegoDao.selectCfDiegoInfoByPlaform(dto.getPlatform(), Integer.parseInt(dto.getId()) );
-                if( vo != null  ){
-                    if( vo.getDiegoVo().getId() != 0){
-                        String json =  new Gson().toJson(dto);
-                        DiegoParamDTO.Delete diegoDto = mapper.readValue(json, DiegoParamDTO.Delete.class);
-                        diegoService.deleteDiegoInfoRecord(diegoDto);
-                    }
+                if( vo != null && vo.getDiegoVo().getId() != 0 ){
+                    String json =  new Gson().toJson(dto);
+                    DiegoParamDTO.Delete diegoDto = mapper.readValue(json, DiegoParamDTO.Delete.class);
+                    diegoService.deleteDiegoInfoRecord(diegoDto);
                 }
             }
-            if( dto.getPlatform().equals("cf") ){//delete cf
+            if( dto.getPlatform().equalsIgnoreCase("cf") ){//delete cf
                 cfDiegoInfo = cfDiegoDao.selectCfDiegoInfoByPlaform(dto.getPlatform(), Integer.parseInt(dto.getId()) );
-                if(  cfDiegoInfo != null ){
-                    if( cfDiegoInfo.getCfVo().getId()  != 0 ){
-                        dto.setId(String.valueOf(cfDiegoInfo.getCfVo().getId()));
-                        String json =  new Gson().toJson(dto);
-                        CfParamDTO.Delete  cfDto = mapper.readValue(json, CfParamDTO.Delete.class);
-                        cfService.deleteCfInfoRecord(cfDto);
-                    }
+                if(  cfDiegoInfo != null && cfDiegoInfo.getCfVo().getId() != 0  ){
+                    dto.setId(String.valueOf(cfDiegoInfo.getCfVo().getId()));
+                    String json =  new Gson().toJson(dto);
+                    CfParamDTO.Delete  cfDto = mapper.readValue(json, CfParamDTO.Delete.class);
+                    cfService.deleteCfInfoRecord(cfDto);
                     //delete cf & diego
                     cfDiegoDao.deleteCfDiegoInfo(cfDiegoInfo.getId());
                 }
             }
         }catch(IOException e){
-            throw new CommonException("notfound.cfDiego.exception",
-                    "CF & DIEGO 삭제 정보를 읽어올 수 없습니다. ", HttpStatus.NOT_FOUND);
+            throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
+                    message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -232,7 +226,7 @@ public class CfDiegoService {
         try{
             //1.1 get cf & diego info/ id: cf_id
             vo = cfDiegoDao.selectCfDiegoInfoByPlaform(dto.getPlatform(), Integer.parseInt(dto.getId()) );
-            if( "cf".equals(dto.getPlatform()) ){
+            if( "cf".equalsIgnoreCase(dto.getPlatform()) ){
                 CfParamDTO.Delete cfDto = mapper.readValue(json, CfParamDTO.Delete.class);
                 cfDeleteDeployAsyncService.deleteDeployAsync(cfDto, "cfDiego", principal);
                 //1.3 delete cf & diego
@@ -242,8 +236,8 @@ public class CfDiegoService {
                 diegoDeleteDeployAsyncService.deleteDeployAsync(diegoDto, "cfDiego", principal);
             }
         }catch (IOException e){
-            throw new CommonException("notfound.cfDiego.exception",
-                    "CF & DIEGO 설치 정보를 읽어올 수 없습니다. ", HttpStatus.NOT_FOUND);
+            throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
+                    message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
     }
 }

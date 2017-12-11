@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -57,9 +56,11 @@ public class CfSaveService {
         vo.setDirectorUuid(dto.getDirectorUuid());
         vo.setReleaseName(dto.getReleaseName());
         vo.setReleaseVersion(dto.getReleaseVersion());
+        vo.setLoggregatorReleaseName(dto.getLoggregatorReleaseName());
+        vo.setLoggregatorReleaseVersion(dto.getLoggregatorReleaseVersion());
         vo.setAppSshFingerprint(dto.getAppSshFingerprint());
-        vo.setDeaMemoryMB(Integer.parseInt(dto.getDeaMemoryMB()));
-        vo.setDeaDiskMB(Integer.parseInt(dto.getDeaDiskMB()));
+        vo.setDeaMemoryMB(dto.getDeaMemoryMB().isEmpty() ? null : Integer.parseInt(dto.getDeaMemoryMB()));
+        vo.setDeaDiskMB(dto.getDeaDiskMB().isEmpty() ? null : Integer.parseInt(dto.getDeaDiskMB()));
         
         // 1.2 기본정보
         vo.setDomain(dto.getDomain());
@@ -70,7 +71,6 @@ public class CfSaveService {
         //1.3 PaaS-TA 모니터링 
         vo.setPaastaMonitoringUse(dto.getPaastaMonitoringUse());
         vo.setIngestorIp(dto.getIngestorIp());
-        vo.setIngestorPort(dto.getIngestorPort());
         vo.setUpdateUserId(principal.getName());
         
         //배포 명 중복 검사
@@ -96,11 +96,12 @@ public class CfSaveService {
     @Transactional
     public void saveNetworkInfo(List<NetworkDTO> dto, Principal principal ){
         List<NetworkVO> networkList = new ArrayList<NetworkVO>();
-        String code_name= setMessageSourceValue("common.deploy.type.cf.name");
-        
+        String codeName= setMessageSourceValue("common.deploy.type.cf.name");
         if(!dto.isEmpty()){
+            int cfId = 0;
             for(NetworkDTO network: dto){
                 NetworkVO vo = new NetworkVO();
+                cfId = Integer.parseInt(network.getCfId());
                 vo.setId(Integer.parseInt(network.getCfId()));
                 vo.setDeployType(network.getDeployType());
                 vo.setNet(network.getNet());
@@ -120,11 +121,22 @@ public class CfSaveService {
                 
                 networkList.add(vo);
             }
-            int cnt = networkDao.selectNetworkList(Integer.parseInt(dto.get(0).getCfId()), code_name).size();
+            int cnt = networkDao.selectNetworkList(Integer.parseInt(dto.get(0).getCfId()), codeName).size();
             if(cnt > 0 ){
-                networkDao.deleteNetworkInfoRecord(Integer.parseInt(dto.get(0).getCfId()), code_name);
+                networkDao.deleteNetworkInfoRecord(Integer.parseInt(dto.get(0).getCfId()), codeName);
             }
             networkDao.insertNetworkList(networkList);
+            
+            //Internal Network는 1개인데 cf 고급 설정 z2가 존재 할 경우
+            if( networkList.size() < 3 ) {
+                List<HashMap<String, Object>> jobs = cfDao.selectCfJobSettingInfoListBycfId(setMessageSourceValue("common.deploy.type.cf.name"),cfId);
+                for( HashMap<String, Object> job : jobs ) {
+                    if( job.get("zone").toString().equalsIgnoreCase("z2") ) {
+                        cfDao.deleteCfJobSettingRecordsByIdAndZone(cfId, job.get("zone").toString());
+                        break;
+                    }
+                }
+            }
         }
     }
     
@@ -138,7 +150,6 @@ public class CfSaveService {
     @Transactional
     public void saveKeyInfo(KeyInfoDTO dto, Principal principal){
         CfVO vo = cfDao.selectCfInfoById(Integer.parseInt(dto.getId()));
-        
         if( vo != null ){
             vo.setCountryCode(dto.getCountryCode());
             vo.setStateName(dto.getStateName());
@@ -163,16 +174,14 @@ public class CfSaveService {
     @Transactional
     public void saveCfJobsInfo(List<HashMap<String, String>> maps, Principal principal){
         if(  maps.size() != 0){
-            String deploy_type  =setMessageSourceValue("common.deploy.type.cf.name");
-            String parent_code = setMessageSourceValue("common.code.deploy.jobs.parent");
-            int count= cfDao.selectCfJobSettingInfoListBycfId(
-                    deploy_type, Integer.parseInt(maps.get(0).get("id")), parent_code).size();
+            String deployType  =setMessageSourceValue("common.deploy.type.cf.name");
+            int cfId = Integer.parseInt(maps.get(0).get("id"));
+            int count= cfDao.selectCfJobSettingInfoListBycfId( deployType, cfId).size();
             
             if( count > 0 ){
-                cfDao.deleteCfJobSettingInfo(maps.get(0));
+                cfDao.deleteCfJobSettingListById(maps.get(0));
             }
             for( HashMap<String, String> map : maps ){
-                if( !map.containsKey("password") ) map.put("password", null); 
                 map.put("create_user_id", principal.getName());
                 map.put("update_user_id", principal.getName());
             }
@@ -188,26 +197,27 @@ public class CfSaveService {
      * @return : Map<String,Object>
     *****************************************************************/
     @Transactional
-    public Map<String, Object> saveResourceInfo(ResourceDTO dto, Principal principal){
-        String code_name= setMessageSourceValue("common.deploy.type.cf.name");
+    public HashMap<String, Object> saveResourceInfo(ResourceDTO dto, Principal principal){
+        String codeName= setMessageSourceValue("common.deploy.type.cf.name");
         String deploymentFile = null;
-        Map<String, Object> map  = new HashMap<>();
+        HashMap<String, Object> map  = new HashMap<String, Object>();
         ResourceVO resourceVo = new ResourceVO();
         
         //1. select resource Info
-        CfVO vo = cfDao.selectCfResourceInfoById(Integer.parseInt(dto.getId()), code_name);
+        CfVO vo = cfDao.selectCfResourceInfoById(Integer.parseInt(dto.getId()), codeName);
         //2. set deploymentFIleName
-        if(vo.getDeploymentFile() == null  || StringUtils.isEmpty(vo.getDeploymentFile()))
+        if(StringUtils.isEmpty(vo.getDeploymentFile())) {
             deploymentFile = makeDeploymentName(vo);
-        else
+        }else {
             deploymentFile = vo.getDeploymentFile();
+        }
         
         //3. set resourceVo(insert/update)
         if( vo.getResource().getId() != null ){
             resourceVo = vo.getResource();
         }else{
             resourceVo.setId(vo.getId());
-            resourceVo.setDeployType(code_name);
+            resourceVo.setDeployType(codeName);
             resourceVo.setCreateUserId(principal.getName());
         }
         resourceVo.setUpdateUserId(principal.getName());
@@ -226,9 +236,9 @@ public class CfSaveService {
             resourceVo.setLargeCpu(Integer.parseInt(dto.getLargeCpu()));
             resourceVo.setLargeDisk(Integer.parseInt(dto.getLargeDisk()));
             resourceVo.setLargeRam(Integer.parseInt(dto.getLargeRam()));
-            resourceVo.setRunnerCpu(Integer.parseInt(dto.getRunnerCpu()));
-            resourceVo.setRunnerDisk(Integer.parseInt(dto.getRunnerDisk()));
-            resourceVo.setRunnerRam(Integer.parseInt(dto.getRunnerRam()));
+            resourceVo.setRunnerCpu(dto.getRunnerCpu().isEmpty() ? null : Integer.parseInt(dto.getRunnerCpu()));
+            resourceVo.setRunnerDisk(dto.getRunnerDisk().isEmpty() ? null : Integer.parseInt(dto.getRunnerDisk()));
+            resourceVo.setRunnerRam(dto.getRunnerRam().isEmpty() ? null : Integer.parseInt(dto.getRunnerRam()));
         }else{
             //openstack/aws Flavor setting
             resourceVo.setSmallFlavor(dto.getSmallFlavor());

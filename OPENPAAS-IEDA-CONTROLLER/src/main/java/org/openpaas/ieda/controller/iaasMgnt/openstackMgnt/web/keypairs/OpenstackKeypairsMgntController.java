@@ -60,12 +60,12 @@ public class OpenstackKeypairsMgntController {
      * @title : saveOpenstackKeypairsInfo
      * @return : ResponseEntity<?>
     ***************************************************/
-    @RequestMapping(value="/openstackMgnt/keypairs/save/{accountId}/{KeyFileName}", method = RequestMethod.GET)
-    public ResponseEntity<?> saveOpenstackKeypairsInfo(@PathVariable String KeyFileName, @PathVariable int accountId, HttpServletResponse response, Principal principal){
+    @RequestMapping(value="/openstackMgnt/keypairs/save/{accountId}/{keyFileName}", method = RequestMethod.GET)
+    public ResponseEntity<?> saveOpenstackKeypairsInfo(@PathVariable String keyFileName, @PathVariable int accountId, HttpServletResponse response, Principal principal){
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("================================================> OPENSTACK Keyparits 할당");
         }
-        openstackKeypairsMgntService.saveOpenstackKeypairsInfo(KeyFileName, accountId, principal, response);
+        openstackKeypairsMgntService.saveOpenstackKeypairsInfo(keyFileName, accountId, principal, response);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     

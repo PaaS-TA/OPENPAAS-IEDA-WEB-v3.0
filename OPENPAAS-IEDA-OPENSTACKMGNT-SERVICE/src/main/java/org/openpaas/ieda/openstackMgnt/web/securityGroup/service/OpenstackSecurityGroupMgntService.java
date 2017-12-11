@@ -1,11 +1,11 @@
 package org.openpaas.ieda.openstackMgnt.web.securityGroup.service;
 
 import java.security.Principal;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
 import org.apache.commons.lang.StringUtils;
 import org.openpaas.ieda.common.exception.CommonException;
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
@@ -72,9 +72,10 @@ public class OpenstackSecurityGroupMgntService {
     public List<HashMap<String, Object>> getOpenstackSecrityGroupIngressInfo(int accountId, String groupId,
             Principal principal) {
         IaasAccountMgntVO vo =  getOpenstackAccountInfo(principal, accountId);
-        List<? extends SecurityGroupRule> rules  = null;
+        List<? extends SecurityGroupRule> rules;
         try{
-           rules = openstackSecurityGroupMgntApiService.getOpenstackSecrityGroupIngressInfoFromOpenstack(vo, groupId);
+          
+             rules = openstackSecurityGroupMgntApiService.getOpenstackSecrityGroupIngressInfoFromOpenstack(vo, groupId);
         }catch (Exception e) {
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
                     message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
@@ -95,7 +96,7 @@ public class OpenstackSecurityGroupMgntService {
             for(int i=0; i<rules.size(); i++){
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 //EtherType 갑 설정
-                if(!rules.get(i).getDirection().equals("egress")){
+                if(!rules.get(i).getDirection().equalsIgnoreCase("egress")){
                     setEtherType(map, rules.get(i));
                     //Remote 값 설정
                     setRemote(map, rules.get(i), vo);
@@ -118,7 +119,7 @@ public class OpenstackSecurityGroupMgntService {
     ***************************************************/
     public void setPortRange(HashMap<String, Object> map, SecurityGroupRule securityGroupRule) {
         if(securityGroupRule.getPortRangeMax() != null && securityGroupRule.getPortRangeMin() != null){
-            if(String.valueOf(securityGroupRule.getPortRangeMin()).equals(String.valueOf(securityGroupRule.getPortRangeMax()))
+            if(String.valueOf(securityGroupRule.getPortRangeMin()).equalsIgnoreCase(String.valueOf(securityGroupRule.getPortRangeMax()))
                     && securityGroupRule.getPortRangeMin() != -1 && securityGroupRule.getPortRangeMin() != 0){
                 map.put("portRange", securityGroupRule.getPortRangeMin() );
             }else if(securityGroupRule.getPortRangeMin() == -1 && securityGroupRule.getPortRangeMax() == -1){
@@ -157,7 +158,7 @@ public class OpenstackSecurityGroupMgntService {
             List<? extends SecGroupExtension> securityGroupList = openstackSecurityGroupMgntApiService.getOpenstackSecrityGroupInfoListFromOpenstack(vo);
             if(securityGroupList != null && securityGroupList.size() != 0){
                 for(int i=0; i<securityGroupList.size(); i++){
-                    if(securityGroupList.get(i).getId().equals(securityGroupRule.getRemoteGroupId())){
+                    if(securityGroupList.get(i).getId().equalsIgnoreCase(securityGroupRule.getRemoteGroupId())){
                         map.put("remote", securityGroupList.get(i).getName());
                     }
                 }
@@ -194,7 +195,7 @@ public class OpenstackSecurityGroupMgntService {
                     message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
         
-        if( !StringUtils.isEmpty(groupId) && !dto.getIngressRuleType().equals("none") ){
+        if( !StringUtils.isEmpty(groupId) && !dto.getIngressRuleType().equalsIgnoreCase("none") ){
             dto.setSecurityGroupId(groupId);
             saveOpenstackSecurityGroupInboundRule(dto, principal);
         }
@@ -225,7 +226,7 @@ public class OpenstackSecurityGroupMgntService {
     public void deleteOpenstackSecurityGroupInfo(OpenstackSecurityGroupMgntDTO dto, Principal principal) {
         IaasAccountMgntVO vo =  getOpenstackAccountInfo(principal, dto.getAccountId());
         int statusCode =  openstackSecurityGroupMgntApiService.deleteOpenstackSecurityGroupInfoFromOpenstack(vo, dto.getSecurityGroupId());
-        if(statusCode != HttpStatus.OK.value()){
+        if( !(statusCode == HttpStatus.OK.value() || statusCode == HttpStatus.ACCEPTED.value()) ){
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
                     message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }

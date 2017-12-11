@@ -100,7 +100,7 @@ function createKeyPair(){
  
 /********************************************************
  * 설명 : keyPair 목록 조회 Function 
- * Function : doSearch
+ * 기능 : doSearch
  *********************************************************/
 function doSearch() {
      region = $("select[name='region']").val();
@@ -119,7 +119,7 @@ function initsetting(){
 
 /********************************************************
  * 설명 : 초기 버튼 스타일
- * Function : doButtonStyle
+ * 기능 : doButtonStyle
  *********************************************************/
 function doButtonStyle() {
 
@@ -144,7 +144,8 @@ $( window ).resize(function() {
 </script>
 
 <div id="main">
-    <div id="awsMgnt">
+    <div class="page_site pdt20">인프라 관리 > AWS 관리 > <strong>AWS KeyPair 관리 </strong></div>
+    <div id="awsMgnt" class="pdt20">
         <ul>
             <li>
                 <label style="font-size: 14px">AWS 관리 화면</label> &nbsp;&nbsp;&nbsp; 

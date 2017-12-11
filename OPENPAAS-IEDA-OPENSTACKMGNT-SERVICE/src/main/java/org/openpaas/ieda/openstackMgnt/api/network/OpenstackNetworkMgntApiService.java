@@ -9,17 +9,20 @@ import org.openstack4j.api.Builders;
 import org.openstack4j.api.OSClient.OSClientV2;
 import org.openstack4j.api.OSClient.OSClientV3;
 import org.openstack4j.api.types.Facing;
+import org.openstack4j.model.common.ActionResponse;
 import org.openstack4j.model.network.IPVersionType;
 import org.openstack4j.model.network.Network;
 import org.openstack4j.model.network.Subnet;
+import org.openstack4j.model.network.builder.SubnetBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OpenstackNetworkMgntApiService {
     
-    @Autowired
-    CommonApiService commonApiService;
+    @Autowired private CommonApiService commonApiService;
+    @Autowired MessageSource message;
     
     /***************************************************
     * @project : OPENSTACK 인프라 관리 대시보드
@@ -50,7 +53,7 @@ public class OpenstackNetworkMgntApiService {
     * @return : List<? extends Network>
     ***************************************************/
     public List<? extends Network> getOpenstackNetworkInfoListApiFromOpenstack(IaasAccountMgntVO vo) {
-        if("v2".equals(vo.getOpenstackKeystoneVersion())){
+        if("v2".equalsIgnoreCase(vo.getOpenstackKeystoneVersion())){
             OSClientV2 os= getOpenstackClientV2(vo);
             return os.networking().network().list();
         }else{
@@ -66,7 +69,7 @@ public class OpenstackNetworkMgntApiService {
     * @return : OpenstackNetworkMgntVO
     ***************************************************/
     public Network getOpenstackNetworkDetailInfoApiFromOpenstack(IaasAccountMgntVO vo, String networkId) {
-        if("v2".equals(vo.getOpenstackKeystoneVersion())){
+        if("v2".equalsIgnoreCase(vo.getOpenstackKeystoneVersion())){
             OSClientV2 os= getOpenstackClientV2(vo);
             return os.networking().network().get(networkId);
         }else{
@@ -76,54 +79,33 @@ public class OpenstackNetworkMgntApiService {
     }
     
     /***************************************************
-    * @param ipVersion 
      * @project : OPENSTACK 인프라 관리 대시보드
-    * @description : OPENSTACK 네트워크 생성 실제 API 호출
-    * @title : saveOpenstackNetworkInfoApiFromOpenstack
-    * @return : void
+     * @description : OPENSTACK 네트워크 생성 실제 API 호출
+     * @title : saveOpenstackNetworkInfoApiFromOpenstack
+     * @return : void
     ***************************************************/
     public void saveOpenstackNetworkInfoApiFromOpenstack(IaasAccountMgntVO vo, OpenstackNetworkMgntDTO dto, IPVersionType ipVersion) {
-        if("v2".equals(vo.getOpenstackKeystoneVersion())){
+        String networkId  = "";
+        if("v2".equalsIgnoreCase(vo.getOpenstackKeystoneVersion())){
             OSClientV2 os= getOpenstackClientV2(vo);
             String projectId = os.perspective(Facing.ADMIN).identity().tenants().getByName(vo.getCommonTenant()).getId();
-            String networkId = os.networking().network()
-            .create(Builders.network().name(dto.getNetworkName()).
-                    tenantId(projectId)
+            networkId = os.networking().network().create(Builders.network().name(dto.getNetworkName())
+                    .tenantId(projectId)
                     .adminStateUp(dto.isAdminState())
                     .build())
                     .getId();
-            Network networkInfo = os.networking().network().get(networkId);
-            os.networking().subnet().create(Builders.subnet()
-                    .name(dto.getSubnetName())
-                    .networkId(networkId)
-                    .tenantId(networkInfo.getTenantId())
-                    .ipVersion(ipVersion)
-                    .cidr(dto.getNetworkAddress())
-                    .addDNSNameServer(dto.getDnsNameServers())
-                    .gateway(dto.getGatewayIp())
-                    .enableDHCP(dto.isEnableDHCP())
-                    .build());
-        }else{
+        } else {
             OSClientV3 osV3= getOpenstackClientV3(vo);
-            String projectId = osV3.perspective(Facing.ADMIN).identity().projects().getByName(vo.getCommonProject(), vo.getCommonTenant()).getId();
-            String networkId = osV3.networking().network()
-            .create(Builders.network().name(dto.getNetworkName()).
-                    tenantId(projectId)
+            String projectId = osV3.perspective(Facing.ADMIN).identity().projects().getByName(vo.getCommonProject(), vo.getOpenstackDomain()).getId();
+            networkId = osV3.networking().network().create(Builders.network().name(dto.getNetworkName())
+                    .tenantId(projectId)
                     .adminStateUp(dto.isAdminState())
                     .build())
                     .getId();
-            Network networkInfo = osV3.networking().network().get(networkId);
-            osV3.networking().subnet().create(Builders.subnet()
-                    .name(dto.getSubnetName())
-                    .networkId(networkId)
-                    .tenantId(networkInfo.getTenantId())
-                    .ipVersion(ipVersion)
-                    .cidr(dto.getNetworkAddress())
-                    .addDNSNameServer(dto.getDnsNameServers())
-                    .gateway(dto.getGatewayIp())
-                    .enableDHCP(dto.isEnableDHCP())
-                    .build());
         }
+        //subnet 생성
+        dto.setNetworkId(networkId);
+        saveOpenstackSubnetkInfoApiFromOpenstack(vo, dto, ipVersion);
     }
     
     /***************************************************
@@ -132,14 +114,16 @@ public class OpenstackNetworkMgntApiService {
     * @title : deleteOpenstackNetworkInfoApiFromOpenstack
     * @return : void
     ***************************************************/
-    public void deleteOpenstackNetworkInfoApiFromOpenstack(IaasAccountMgntVO vo, OpenstackNetworkMgntDTO dto) {
-        if("v2".equals(vo.getOpenstackKeystoneVersion())){
+    public ActionResponse deleteOpenstackNetworkInfoApiFromOpenstack(IaasAccountMgntVO vo, OpenstackNetworkMgntDTO dto) {
+        ActionResponse response = null;
+        if("v2".equalsIgnoreCase(vo.getOpenstackKeystoneVersion())){
             OSClientV2 os= getOpenstackClientV2(vo);
-            os.networking().network().delete(dto.getNetworkId());
+            response = os.networking().network().delete(dto.getNetworkId());
         }else{
             OSClientV3 osV3= getOpenstackClientV3(vo);
-            osV3.networking().network().delete(dto.getNetworkId());
+            response = osV3.networking().network().delete(dto.getNetworkId());
         }
+        return response;
     }
     
     /***************************************************
@@ -149,7 +133,7 @@ public class OpenstackNetworkMgntApiService {
     * @return : List<? extends Subnet>
     ***************************************************/
     public List<? extends Subnet> getOpenstackSubnetInfoListApiFromOpenstack(IaasAccountMgntVO vo, String networkId) {
-        if("v2".equals(vo.getOpenstackKeystoneVersion())){
+        if("v2".equalsIgnoreCase(vo.getOpenstackKeystoneVersion())){
             OSClientV2 os= getOpenstackClientV2(vo);
             return os.networking().network().get(networkId).getNeutronSubnets();
         }else{
@@ -164,34 +148,40 @@ public class OpenstackNetworkMgntApiService {
     * @title : saveOpenstackSubnetkInfoApiFromOpenstack
     * @return : void
     ***************************************************/
-    public void saveOpenstackSubnetkInfoApiFromOpenstack(IaasAccountMgntVO vo, OpenstackNetworkMgntDTO dto,
-            IPVersionType ipVersion) {
-        if("v2".equals(vo.getOpenstackKeystoneVersion())){
-            OSClientV2 os= getOpenstackClientV2(vo);
-            String projectId = os.perspective(Facing.ADMIN).identity().tenants().getByName(vo.getCommonTenant()).getId();
-            os.networking().subnet().create(Builders.subnet()
-                    .name(dto.getSubnetName())
-                    .networkId(dto.getNetworkId())
-                    .tenantId(projectId)
-                    .ipVersion(ipVersion)
-                    .cidr(dto.getNetworkAddress())
-                    .addDNSNameServer(dto.getDnsNameServers())
-                    .gateway(dto.getGatewayIp())
-                    .enableDHCP(dto.isEnableDHCP())
-                    .build());
+    public void saveOpenstackSubnetkInfoApiFromOpenstack(IaasAccountMgntVO vo, OpenstackNetworkMgntDTO dto, IPVersionType ipVersion) {
+        String[] dnsServers = {};
+        OSClientV2 os= null;
+        OSClientV3 osV3= null;
+        String projectId = "";
+        if( dto.getDnsNameServers().indexOf("\n") > -1 ) {
+            dnsServers = dto.getDnsNameServers().split("\n");
+        }else if( dto.getDnsNameServers().length() > 0 ) {
+            dnsServers = dto.getDnsNameServers().split("\n");
+        }
+        if("v2".equalsIgnoreCase(vo.getOpenstackKeystoneVersion())){
+            os= getOpenstackClientV2(vo);
+            projectId = os.perspective(Facing.ADMIN).identity().tenants().getByName(vo.getCommonTenant()).getId();
         }else{
-            OSClientV3 osV3= getOpenstackClientV3(vo);
-            String projectId = osV3.perspective(Facing.ADMIN).identity().projects().getByName(vo.getCommonProject(), vo.getCommonTenant()).getId();
-            osV3.networking().subnet().create(Builders.subnet()
-                    .name(dto.getSubnetName())
-                    .networkId(dto.getNetworkId())
-                    .tenantId(projectId)
-                    .ipVersion(ipVersion)
-                    .cidr(dto.getNetworkAddress())
-                    .addDNSNameServer(dto.getDnsNameServers())
-                    .gateway(dto.getGatewayIp())
-                    .enableDHCP(dto.isEnableDHCP())
-                    .build());
+            osV3= getOpenstackClientV3(vo);
+            projectId = osV3.perspective(Facing.ADMIN).identity().projects().getByName(vo.getCommonProject(), vo.getOpenstackDomain()).getId();
+        }
+        SubnetBuilder builder = Builders.subnet()
+                .name(dto.getSubnetName())
+                .networkId(dto.getNetworkId())
+                .tenantId(projectId)
+                .ipVersion(ipVersion)
+                .cidr(dto.getNetworkAddress())
+                .gateway(dto.getGatewayIp())
+                .enableDHCP(dto.isEnableDHCP());
+        
+        for( int i=0; i<dnsServers.length; i++ ){
+            builder.addDNSNameServer(dnsServers[i]);
+        }
+        
+        if("v2".equalsIgnoreCase(vo.getOpenstackKeystoneVersion())){
+            os.networking().subnet().create(builder.build());
+        }else{
+            osV3.networking().subnet().create(builder.build());
         }
     }
     /***************************************************
@@ -200,14 +190,16 @@ public class OpenstackNetworkMgntApiService {
     * @title : deleteOpenstackSubnetInfoApiFromOpenstack
     * @return : void
     ***************************************************/
-    public void deleteOpenstackSubnetInfoApiFromOpenstack(IaasAccountMgntVO vo, OpenstackNetworkMgntDTO dto) {
-        if("v2".equals(vo.getOpenstackKeystoneVersion())){
+    public ActionResponse deleteOpenstackSubnetInfoApiFromOpenstack(IaasAccountMgntVO vo, OpenstackNetworkMgntDTO dto) {
+        ActionResponse response = null;
+        if("v2".equalsIgnoreCase(vo.getOpenstackKeystoneVersion())){
             OSClientV2 os= getOpenstackClientV2(vo);
-            os.networking().subnet().delete(dto.getSubnetId());
+            response = os.networking().subnet().delete(dto.getSubnetId());
         }else{
             OSClientV3 osV3= getOpenstackClientV3(vo);
-            osV3.networking().subnet().delete(dto.getSubnetId());
+            response = osV3.networking().subnet().delete(dto.getSubnetId());
         }
+        return response;
     }
     
 }

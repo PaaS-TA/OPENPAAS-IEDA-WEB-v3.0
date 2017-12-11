@@ -34,8 +34,6 @@ import org.openpaas.ieda.deploy.web.config.stemcell.dto.StemcellManagementDTO;
 import org.openpaas.ieda.deploy.web.config.stemcell.service.StemcellManagementDownloadAsyncService;
 import org.openpaas.ieda.deploy.web.config.stemcell.service.StemcellManagementService;
 import org.openpaas.ieda.deploy.web.config.stemcell.service.StemcellManagementUploadService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -69,8 +67,6 @@ public class StemcellManagementControllerUnitTest extends BaseControllerUnitTest
     @Mock 
     StemcellManagementDownloadAsyncService mockStemcellDonwonloadService;
     
-    final static Logger LOGGER = LoggerFactory.getLogger(StemcellManagementControllerUnitTest.class);
-    
     /*************************************** URL *******************************************/
     final static String VIEW_URL = "/config/stemcell";
     final static String STEMCELL_LIST_URL = "/config/stemcell/list";
@@ -93,13 +89,12 @@ public class StemcellManagementControllerUnitTest extends BaseControllerUnitTest
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : 스템셀 관리 화면 이동 테스트
+    * @description : 스템셀 관리 화면 이동 
     * @title : testGoStemcellManagement
     * @return : void
     ***************************************************/
     @Test
     public void testGoStemcellManagement() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testGoStemcellManagement"); }
         mockMvc.perform(get(VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/deploy/config/stemcellManagement"));
@@ -107,13 +102,12 @@ public class StemcellManagementControllerUnitTest extends BaseControllerUnitTest
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description :스템셀 목록 조회 테스트 
+    * @description :스템셀 목록 조회 
     * @title : testGetPublicStemcells
     * @return : void
     ***************************************************/
     @Test
     public void testGetPublicStemcells() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testGoStemcellManagement"); }
         List<StemcellManagementVO> stemcellList = getStemcellListInfo();
         when(mockStemcellService.getPublicStemcellList()).thenReturn(stemcellList);
         mockMvc.perform(get(STEMCELL_LIST_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -129,7 +123,6 @@ public class StemcellManagementControllerUnitTest extends BaseControllerUnitTest
     
     @Test
     public void testGetPublicStemcellsNotFoundError() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testGetPublicStemcellsNotFoundError"); }
         List<StemcellManagementVO> stemcellList = getStemcellListInfo();
         when(mockStemcellService.getPublicStemcellList()).thenReturn(stemcellList);
         mockMvc.perform(get(STEMCELL_LIST_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -138,13 +131,12 @@ public class StemcellManagementControllerUnitTest extends BaseControllerUnitTest
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : URL, VERSION 유형의 스템셀 정보 저장 테스트
+    * @description : URL, VERSION 유형의 스템셀 정보 저장
     * @title : testSavePublicStemcellInfoByUrlAndVersionType
     * @return : void
     ***************************************************/
     @Test
     public void testSavePublicStemcellInfoByUrlAndVersionType() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testSavePublicStemcellInfoByUrlAndVersionType"); }
         StemcellManagementDTO.Regist dto = setStemcellRegistInfo("url");
         StemcellManagementVO vo = getStemcellRegistInfo();
         when(mockStemcellService.saveStemcellInfoByURL(any(), anyString(), any())).thenReturn(vo);
@@ -161,15 +153,12 @@ public class StemcellManagementControllerUnitTest extends BaseControllerUnitTest
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : File 유형의 스템셀 정보 저장 테스트
+    * @description : File 유형의 스템셀 정보 저장
     * @title : testUrlAndVersionTypeSystemStemcellRegist
     * @return : void
-     * @throws Exception 
-     * @throws JsonProcessingException 
     ***************************************************/
     @Test
     public void testFileTypeSystemStemcellRegist() throws JsonProcessingException, Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testFileTypeSystemStemcellRegist"); }
         StemcellManagementDTO.Regist dto = setStemcellRegistInfo("file");
         StemcellManagementVO vo = getStemcellRegistInfo();
         when(mockStemcellService.saveStemcellInfoByFilePath(any(), anyString(), any())).thenReturn(vo);
@@ -187,13 +176,12 @@ public class StemcellManagementControllerUnitTest extends BaseControllerUnitTest
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : 스템셀 파일 업로드 요청 테스트
+    * @description : 스템셀 파일 업로드 요청
     * @title : testDoPublicStemcellUpload   
     * @return : void
     ***************************************************/
     @Test
     public void testDoPublicStemcellUpload() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testDoPublicStemcellUpload"); }
         MultipartHttpServletRequest mockMultipartHttpReqeust = mock(MultipartHttpServletRequest.class);
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         doNothing().when(mockStemcellUploadService).uploadStemcellFile(mockMultipartHttpReqeust, principal);
@@ -208,13 +196,12 @@ public class StemcellManagementControllerUnitTest extends BaseControllerUnitTest
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : 스템셀 파일 다운로드 요청 테스트
+    * @description : 스템셀 파일 다운로드 요청
     * @title : testDoPublicStemcellDonwload
     * @return : void
     ***************************************************/
     @Test
     public void testDoPublicStemcellDonwload(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testDoPublicStemcellDonwload"); }
         StemcellManagementDTO.Regist dto = setStemcellRegistInfo("url");
         doNothing().when(mockStemcellDonwonloadService).stemcellDownloadAsync(dto,principal);
         mockStemcellController.doPublicStemcellDonwload(dto, principal);
@@ -224,13 +211,12 @@ public class StemcellManagementControllerUnitTest extends BaseControllerUnitTest
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : 스템셀 삭제 테스트
+    * @description : 스템셀 삭제
     * @title : testPublicStemcellDelete
     * @return : void
     ***************************************************/
     @Test
     public void testPublicStemcellDelete() throws  Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================> testPublicStemcellDelete"); }
         StemcellManagementDTO.Delete dto = null;
         //when(mockStemcellService.deletePublicStemcell(any())).thenReturn(true);
         mockMvc.perform(MockMvcRequestBuilders.delete(STEMCELL_DELETE_URL).contentType(MediaType.APPLICATION_JSON)
@@ -258,6 +244,24 @@ public class StemcellManagementControllerUnitTest extends BaseControllerUnitTest
         vo.setOsVersion("TRUSTY");
         vo.setCreateUserId("tester");
         vo.setUpdateUserId("tester");
+        vo.getCreateDate();
+        vo.getCreateUserId();
+        vo.getUpdateUserId();
+        vo.getUpdateDate();
+        vo.getRecid();
+        vo.getId();
+        vo.getStemcellUrl();
+        vo.getStemcellName();
+        vo.getStemcellFileName();
+        vo.getStemcellVersion();
+        vo.getOsVersion();
+        vo.getOs();
+        vo.getDownloadLink();
+        vo.getDownloadStatus();
+        vo.getIsDose();
+        vo.getIsExisted();
+        vo.getIaas();
+        vo.getSize();
         list.add(vo);
         return list;
     }
@@ -299,7 +303,7 @@ public class StemcellManagementControllerUnitTest extends BaseControllerUnitTest
         dto.setIaasType("AWS");
         dto.setOsVersion("TRUSTY");
         dto.setLight("true");
-        if("url".equals(fileType)){
+        if("url".equalsIgnoreCase(fileType)){
             dto.setFileType("url");
         }else{
             dto.setFileType("file");

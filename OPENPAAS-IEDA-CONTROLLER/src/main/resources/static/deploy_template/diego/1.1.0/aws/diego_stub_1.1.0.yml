@@ -63,6 +63,18 @@ property_overrides:
 instance_count_overrides:
   - name: cell_z1
     instances: (( meta.cell-z1-instances || 1 ))
+  - name: cell_z3
+    instances: 0
+  - name: access_z1
+    instances: (( meta.access-z1-instances || 1 ))
+  - name: cc_bridge_z1
+    instances: (( meta.cc_bridge-z1-instances || 1 ))
+  - name: route_emitter_z1
+    instances: (( meta.route_emitter-z1-instances || 1 ))
+  - name: brain_z1
+    instances: (( meta.brain-z1-instances || 1 ))  
+  - name: database_z1
+    instances: (( meta.database-z1-instances || 1 ))  
   - name: access_z2
     instances: 0
   - name: access_z3
@@ -76,8 +88,6 @@ instance_count_overrides:
   - name: cc_bridge_z3
     instances: 0
   - name: cell_z2
-    instances: 0
-  - name: cell_z3
     instances: 0
   - name: database_z2
     instances: 0

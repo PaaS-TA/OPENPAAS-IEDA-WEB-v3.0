@@ -47,14 +47,15 @@ $(function() {
             , {field : 'iaasConfigAlias', caption : '환경 설정 별칭', size : '10%', style : 'text-align:left' }
             , {field : 'deployStatus', caption : '플랫폼 배포 사용 여부', size : '15%', style : 'text-align:center'}
             , {field : 'accountName', caption : '인프라 계정 별칭', size : '15%', style : 'text-align:left'}
+            , {field : 'openstackKeystoneVersion', caption : 'Keystone Version', size : '10%', style : 'text-align:left' }
             , {field : 'commonSecurityGroup', caption : 'Security Group', size : '15%', style : 'text-align:left'}
-//          , {field : 'commonRegion', caption : 'region', size : '10%', style : 'text-align:left' }
-            , {field : 'commonKeypairName', caption : 'Keypair 이름', size : '10%', style : 'text-align:left' }
+            , {field : 'commonRegion', caption : 'Region', size : '15%', style : 'text-align:left'}
+            , {field : 'commonKeypairName', caption : 'Keypair name', size : '10%', style : 'text-align:left' }
             , {field : 'createUserId', caption : '생성자', hidden : true}
             , {field : 'createDate', caption : '생성 일자', size : '10%', style : 'text-align:center'}
             , {field : 'updateDate', caption : '수정 일자', size : '10%', style : 'text-align:center'} 
         ], onError : function(event) {
-            w2alert(search_grid_fail_msg, "AWS 환경 설정 목록");
+            w2alert(search_grid_fail_msg, "Openstack 환경 설정 목록");
         }, onLoad : function(event) {
 
         }, onSelect : function(event) {
@@ -79,7 +80,7 @@ $("#registConfigBtn").click(function(){
     w2popup.open({
         title : "<b>Openstack 환경 설정 등록</b>",
         width : 650,
-        height : 445,
+        height : 465,
         modal : true,
         body : $("#registPopupDiv").html(),
         buttons : $("#registPopupBtnDiv").html(),
@@ -105,7 +106,7 @@ $("#updateConfigBtn").click(function(){
     w2popup.open({
         title   : "<b>Openstack 계정 수정</b>",
         width   : 600,
-        height  : 445,
+        height  : 465,
         modal   : true,
         body    : $("#registPopupDiv").html(),
         buttons : $("#registPopupBtnDiv").html(),
@@ -114,7 +115,7 @@ $("#updateConfigBtn").click(function(){
                 //grid record
                 var selected = w2ui['openstack_configGrid'].getSelection();
                 if( selected.length == 0 ){
-                    w2alert('<spring:message code="common.grid.selected.fail"/>', "vSphere 계정 수정");
+                    w2alert('<spring:message code="common.grid.selected.fail"/>', "Openstack 계정 수정");
                     return;
                 }
                 var record = w2ui['openstack_configGrid'].get(selected);
@@ -143,15 +144,15 @@ $("#deleteConfigBtn").click(function(){
         return;
     }
     var record = w2ui['openstack_configGrid'].get(selected);
-    var msg = "계정(" + record.iaasConfigAlias + ")"+ popup_delete_msg;
+    var msg = "환경 설정 정보(" + record.iaasConfigAlias + ")"+ popup_delete_msg;
     if( record.deployStatus == '사용중' ){
         msg = "<span style='color:red'>현재 Openstack 플랫폼 설치에서 <br/>해당 환경 설정 정보("+record.iaasConfigAlias+")를 사용하고 있습니다. </span><br/><span style='color:red; font-weight:bolder'>그래도 삭제 하시겠습니까?</span>";
     }
     w2confirm({
-        title : "Openstack 환경 설정 정보 삭제",
-        msg : msg,
-        yes_text : "확인",
-        no_text : "취소",
+        title        : "<b>Openstack 환경 설정 정보 삭제</b>",
+        msg          : msg,
+        yes_text     : "확인",
+        no_text      : "취소",
         yes_callBack : function(event){
             //delete function 호출
             deleteOpenstackConfigInfo(record);
@@ -248,21 +249,73 @@ function getIaasAccountName() {
  * 기능 : setupIaasAccountName
  * 설명 : 해당 유저의 인프라에 대한 계정 별칭 목록 설정
 *****************************************************/
+var openstackVersionArray = [];
 function setupIaasAccountName(data){
-     var iaasAccountName = "<select class='form-control select-control' style='width: 300px' name='accountName'>";
+     openstackVersionArray = data;
+     var iaasAccountName = "<select class='form-control select-control' style='width: 300px' onchange = 'setupOnChangeOpenstackVersion(this.value)' name='accountName' id='accountName'>";
+     var openstackVersion = "";
      if( data.length ==0 ){
-         iaasAccountName +="<option>존재하지 않습니다.</option>";
+         iaasAccountName +="<option value=''>계정을 등록하세요.</option>";
      }else{
          for (var i=0; i<data.length; i++){
              if( configInfo.accountId == data[i].id ){
-                 iaasAccountName +="<option value='"+data[i].id+"' selected>" + data[i].accountName + "</option>";   
+                 iaasAccountName +="<option value='"+data[i].id+"' selected>" + data[i].accountName + "</option>";
              }else{
-                 iaasAccountName +="<option value='"+data[i].id+"'>" + data[i].accountName + "</option>";   
+                 iaasAccountName +="<option value='"+data[i].id+"'>" + data[i].accountName + "</option>";
              }
-         } 
+         }
      }
      iaasAccountName+="</select>";
      $(".w2ui-msg-body .accountNameDiv").append(iaasAccountName);
+     setupOpenstackVersion(data);
+}
+
+/****************************************************
+ * 기능 : setupOnChangeOpenstackVersion
+ * 설명 : 해당 인프라 계정의 OnChange Openstack Version 설정
+*****************************************************/
+function setupOnChangeOpenstackVersion(value){
+    openstackVersion = "";
+    if(openstackVersionArray == 0){
+        openstackVersion +="<input style = 'width:300px;' type= 'text' readonly value = '존재하지 않습니다.'/>";
+    } else {
+        for (var i=0; i<openstackVersionArray.length; i++){
+            if(value == openstackVersionArray[i].id){
+                if(openstackVersionArray[i].openstackKeystoneVersion=="v3"){
+                    openstackVersion +="<input style = 'width:300px;' type= 'text' readonly value = 'Openstack V3 버전 입니다.'/>";
+                    $('.w2ui-msg-body #region').css('display','block');
+                }else {
+                    openstackVersion +="<input style = 'width:300px;' type= 'text' readonly value = 'Openstack V2 버전 입니다.'/>";
+                    $('.w2ui-msg-body #region').css('display','none');
+                }
+            }
+        }
+    }
+    $(".w2ui-msg-body .openstackVersion").html(openstackVersion);
+}
+
+/****************************************************
+ * 기능 : setupIaasAccountName
+ * 설명 : 해당 인프라 계정의 Openstack Version 설정
+*****************************************************/
+function setupOpenstackVersion(data){
+     openstackVersion = "";
+     if(data.length == 0){
+         openstackVersion +="<input style = 'width:300px;' type= 'text' readonly value = '존재하지 않습니다.'/>";
+     } else {
+         for (var i=0; i<data.length; i++){
+             if(  $(".w2ui-msg-body .accountNameDiv #accountName option:selected").text() == data[i].accountName ){
+                 if(data[i].openstackKeystoneVersion=="v3"){
+                     openstackVersion +="<input style = 'width:300px;' type= 'text' name = 'openstackVersion' readonly value = 'V3'/>";
+                     $('.w2ui-msg-body #region').css('display','block');
+                 }else {
+                     openstackVersion +="<input style = 'width:300px;' type= 'text' name = 'openstackVersion' readonly value = 'V2'/>";
+                     $('.w2ui-msg-body #region').css('display','none');
+                 }
+             }
+         }
+     }
+     $(".w2ui-msg-body .openstackVersion").html(openstackVersion);
 }
 
 /********************************************************
@@ -270,7 +323,6 @@ function setupIaasAccountName(data){
  * 설명 : 조회기능
  *********************************************************/
 function doSearch() {
-    // 목록
     $("#deleteConfigBtn").attr('disabled', true);
     $("#updateConfigBtn").attr('disabled', true);
     w2ui['openstack_configGrid'].load( "<c:url value='/info/iaasConfig/openstack/list'/>", "", function(event) {});
@@ -278,7 +330,7 @@ function doSearch() {
 
 /********************************************************
  * 기능 : setOpenstackConfigInfo
- * 설명 : vSphere계정 상세 정보 조회 후 데이터 설정
+ * 설명 : Openstack 계정 상세 정보 조회 후 데이터 설정
  *********************************************************/
 function setOpenstackConfigInfo( id ){
      w2popup.lock( search_lock_msg, true);
@@ -314,12 +366,11 @@ function setOpenstackConfigInfo( id ){
  * 설명 : Openstack Private key 업로드
 *****************************************************/
 function uploadPrivateKey(){
-    var form = $(".w2ui-msg-body #awsConfigForm")[0];
+    var form = $(".w2ui-msg-body #openstackConfigForm")[0];
     var formData = new FormData(form);
     
     var files = document.getElementsByName('keyPathFile')[0].files;
     formData.append("file", files[0]);
-    
     $.ajax({
         type : "POST",
         url : "/common/deploy/key/upload",
@@ -330,7 +381,7 @@ function uploadPrivateKey(){
         contentType:false,
         data : formData,  
         success : function(data, status) {
-            saveAwsConfigInfo();
+            saveOpenstackConfigInfo();
         },
         error : function( e, status ) {
             w2alert( "Private Key 업로드에 실패 하였습니다.", "Openstack 환경 설정 등록");
@@ -352,7 +403,7 @@ function saveOpenstackConfigInfo(){
             iaasConfigAlias : $(".w2ui-msg-body input[name='iaasConfigAlias']").val(),
             accountId : $(".w2ui-msg-body select[name='accountName']").val(),
             commonSecurityGroup : $(".w2ui-msg-body input[name='commonSecurityGroup']").val(),        
-//             commonRegion : $(".w2ui-msg-body input[name='commonRegion']").val(),
+            commonRegion : $(".w2ui-msg-body input[name='commonRegion']").val(),
             commonKeypairName : $(".w2ui-msg-body input[name='commonKeypairName']").val(),
             commonKeypairPath : $(".w2ui-msg-body input[name='commonKeypairPath']").val()
     }
@@ -436,6 +487,7 @@ $(window).resize(function() {
 
 
 <div id="main">
+    <div class="page_site">정보조회 > 인프라 환경 설정 관리 > <strong>Openstack 환경 설정 관리 </strong></div>
     <div class="pdt20">
         <div class="fl" style="width: 100%">
             <div class="dropdown">
@@ -485,7 +537,7 @@ $(window).resize(function() {
           <div class="panel-heading">
               <b>Openstack 환경 설정 정보</b>
           </div>
-          <div class="panel-body" style="padding: 20px 10px; height: 310px; overflow-y: auto;">
+          <div class="panel-body" style="padding: 20px 10px; height: 330px; overflow-y: auto;">
               <input type="hidden" name="configId" />
               <div class="w2ui-field">
                   <label style="width: 36%; text-align: left; padding-left: 20px;">Openstack 환경 설정 별칭</label>
@@ -497,18 +549,26 @@ $(window).resize(function() {
                 <label style="width: 36%; text-align: left; padding-left: 20px;">Openstack 계정 별칭</label>
                 <div class="accountNameDiv"></div>
               </div>
+              
+              <div class="w2ui-field">
+                <label style="width: 36%; text-align: left; padding-left: 20px;">Keystone Version</label>
+                <div class="openstackVersion"></div>
+              </div>
+              
+              <div class="w2ui-field" id= "region" style = "display:none;">
+                <label style="width: 36%; text-align: left; padding-left: 20px;">Region</label>
+                <div>
+                    <input name="commonRegion" type="text"   onkeydown="javascript:textSpaceValid(this);" maxlength="100" style="width: 300px" placeholder="Region을 입력하세요." />
+                </div>
+              </div>
+              
               <div class="w2ui-field">
                 <label style="width: 36%; text-align: left; padding-left: 20px;">Security Group</label>
                 <div>
                     <input name="commonSecurityGroup" type="text"   onkeydown="javascript:textSpaceValid(this);" maxlength="100" style="width: 300px" placeholder="보안 그룹을 입력하세요." />
                 </div>
               </div>
-<!--               <div class="w2ui-field"> -->
-<!--                 <label style="width: 36%; text-align: left; padding-left: 20px;">Region</label> -->
-<!--                 <div> -->
-<!--                     <input name="commonRegion" type="text"   onkeydown="javascript:textSpaceValid(this);" maxlength="100" style="width: 300px" placeholder="Region을 입력하세요." /> -->
-<!--                 </div> -->
-<!--               </div> -->
+
               <div class="w2ui-field">
                 <label style="width: 36%; text-align: left; padding-left: 20px;">Keypair Name</label>
                 <div>
@@ -551,7 +611,7 @@ $(window).resize(function() {
 $(function() {
     $.validator.addMethod("sqlInjection", function(value, element, params) {
         return checkInjectionBlacklist(params);
-        }, text_injection_msg);
+    }, text_injection_msg);
 
     $("#openstackConfigForm").validate({
         ignore : "",
@@ -580,9 +640,15 @@ $(function() {
             },
             commonRegion : {
                 required : function() {
-                    return checkEmpty($(".w2ui-msg-body input[name='commonRegion']").val());
+                    if($(".w2ui-msg-body input[name='openstackVersion']").val() == "V3"){
+                        return checkEmpty($(".w2ui-msg-body input[name='commonRegion']").val());
+                    }else{
+                        return false;
+                    }
                 }, sqlInjection : function() {
-                    return $(".w2ui-msg-body input[name='commonRegion']").val();
+                	if($(".w2ui-msg-body input[name='openstackVersion']").val() == "V3"){
+                        return $(".w2ui-msg-body input[name='commonRegion']").val();
+                    }
                 }
             }, commonKeypairName : {
                 required : function() {

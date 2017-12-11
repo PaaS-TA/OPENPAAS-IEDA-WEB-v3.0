@@ -4,6 +4,10 @@
  * 작성자 : 이정윤
  * 상세설명 : 환경 설정 관리 화면( Google 인프라 환경 설정 조회)
  * =================================================================
+ * 수정일      작성자      내용     
+ * -----------------------------------------------------------------
+ * 2017.12    배병욱    Google Public-Key 입력 삭제
+ * =================================================================
  */ 
 %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -134,31 +138,30 @@ $("#deleteConfigBtn").click(function(){
         return;
     }
     var record = w2ui['google_configGrid'].get(selected);
-    var msg = "계정(" + record.iaasConfigAlias + ")"+ popup_delete_msg;
+    var msg = "환경 설정 정보(" + record.iaasConfigAlias + ")"+ popup_delete_msg;
     if( record.deployStatus == '사용중' ){
         msg = "<span style='color:red'>현재 Google 플랫폼 설치에서 <br/>해당 환경 설정 정보("+record.iaasConfigAlias+")를 사용하고 있습니다. </span><br/><span style='color:red; font-weight:bolder'>그래도 삭제 하시겠습니까?</span>";
     }
   w2confirm({
-        title        : "Google 환경 설정 정보 삭제",
+        title        : "<b>Google 환경 설정 정보 삭제<b/>",
         msg          : msg,
         yes_text     : "확인",
         no_text      : "취소",
         yes_callBack : function(event){
-          w2ui['google_configGrid'].lock(delete_lock_msg, {
-            spinner: true, opacity : 1
-          });
-          //delete function 호출
-          deleteGoogleConfigInfo(record);
-          w2ui['google_configGrid'].reset();
+            w2ui['google_configGrid'].lock(delete_lock_msg, {
+                spinner: true, opacity : 1
+            });
+            //delete function 호출
+            deleteGoogleConfigInfo(record);
+            w2ui['google_configGrid'].reset();
         },no_callBack  : function(event){
-          w2ui['google_configGrid'].unlock();
-          w2ui['google_configGrid'].reset();
-          doSearch();
+            w2ui['google_configGrid'].unlock();
+            w2ui['google_configGrid'].reset();
+            doSearch();
         }
   });
 });
 });
-
 
 /****************************************************
  * 기능 : getKeyPathFileList
@@ -249,7 +252,7 @@ function getGoogleAccountName(){
 function setupGoogleAccountName(data){
      var iaasAccountName = "<select class='form-control select-control' style='width: 300px; margin-left:6px;' name='accountId' onchange='getGoogleZoneList(this.value);'>";
      if( data.length ==0 ){
-         iaasAccountName +="<option>존재하지 않습니다.</option>";
+         iaasAccountName +="<option value=''>계정을 등록하세요.</option>";
      }else{
          for (var i=0; i<data.length; i++){
              if( data[i].id == configInfo.accountId){
@@ -270,20 +273,24 @@ function setupGoogleAccountName(data){
  * 설명 : 구글 클라우드 영역 목록 조회 요청
 *****************************************************/
 function getGoogleZoneList(accountId){
-    w2popup.lock("zone을 "+search_lock_msg,true);
-    $.ajax({
-        type : "GET",
-        url : "/common/google/zone/list/"+accountId,
-        contentType : "application/json",
-        success : function(data, status) {
-            setupGoogleZoneList(data);
-            w2popup.unlock();
-        },
-        error : function(request, status, error) {
-            var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message, "해당 계정 별칭 목록 조회");
-        }
-    });
+    if( checkEmpty(accountId) ){
+        w2alert("인프라 관리 대시보드에서 계정을 등록해주세요.");
+    }else{
+        w2popup.lock("zone을 "+search_lock_msg,true);
+	    $.ajax({
+	        type : "GET",
+	        url : "/common/google/zone/list/"+accountId,
+	        contentType : "application/json",
+	        success : function(data, status) {
+	            setupGoogleZoneList(data);
+	            w2popup.unlock();
+	        },
+	        error : function(request, status, error) {
+	            var errorResult = JSON.parse(request.responseText);
+	            w2alert(errorResult.message, "해당 계정 별칭 목록 조회");
+	        }
+	    });
+    }
 }
 
 /****************************************************
@@ -316,19 +323,15 @@ function setGoogleDetailInfo(id){
         async : true,
         dataType : "json",
         success : function(data, status) {
-            console.log(data);
              if(data!=null){
                  $(".w2ui-msg-body input[name='iaasConfigAlias']").val(data.iaasConfigAlias);
                  $(".w2ui-msg-body input[name='id']").val(data.id);
                  $(".w2ui-msg-body input[name='accountId']").val(data.accountId);
                  $(".w2ui-msg-body input[name='googleTagNames']").val(data.commonSecurityGroup);
-                 $(".w2ui-msg-body textarea[name='googlePublicKey']").val(data.googlePublicKey);
                  configInfo = { 
                          accountId : data.accountId,
                          commonKeypairPath : data.commonKeypairPath,
-                         commonAvailabilityZone : data.commonAvailabilityZone,
-                         googlePublicKey : data.googlePublicKey
-                         
+                         commonAvailabilityZone : data.commonAvailabilityZone
                  }
              }
              getGoogleAccountName();
@@ -386,7 +389,6 @@ function saveGoogleConfigInfo(){
              ,commonKeypairPath : $(".w2ui-msg-body input[name='commonKeypairPath']").val()
              ,commonAvailabilityZone : $(".w2ui-msg-body select[name='commonAvailabilityZone']").val()
              ,commonSecurityGroup : $(".w2ui-msg-body input[name='googleTagNames']").val()
-             ,googlePublicKey : $(".w2ui-msg-body textarea[name='googlePublicKey']").val()
      }
      $.ajax({
          type : "PUT",
@@ -481,6 +483,7 @@ $( window ).resize(function() {
 
 </script>
 <div id="main">
+    <div class="page_site">정보조회 > 인프라 환경 설정 관리 > <strong>Google 환경 설정 관리 </strong></div>
      <div class="pdt20">
         <div class="fl" style="width:100%">
             <div class="dropdown" >
@@ -549,12 +552,6 @@ $( window ).resize(function() {
                     <label style="width:36%;text-align: left; padding-left: 20px;">Network Tag Names</label>
                     <div>
                         <input name="googleTagNames" type="text"  maxlength="100" style="width: 300px" placeholder="ex)bosh-security, cf-security"/>
-                    </div>
-                </div>
-                <div class="w2ui-field">
-                    <label style="width:36%;text-align: left; padding-left: 20px;">SSH Public Key</label>
-                    <div>
-                        <textarea name="googlePublicKey" style="width:300px; height:60px; resize:none;" rows="8" placeholder="SSH 키를 입력하세요" ></textarea>
                     </div>
                 </div>
                 <div class="w2ui-field">

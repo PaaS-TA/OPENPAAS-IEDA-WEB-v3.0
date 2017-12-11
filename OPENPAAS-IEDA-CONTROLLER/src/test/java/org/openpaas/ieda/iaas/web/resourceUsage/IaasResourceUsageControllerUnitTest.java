@@ -22,8 +22,6 @@ import org.mockito.MockitoAnnotations;
 import org.openpaas.ieda.controller.iaasMgnt.dashboard.web.resource.IaasResourceUsageController;
 import org.openpaas.ieda.iaasDashboard.web.resourceUsage.dao.IaasResourceUsageVO;
 import org.openpaas.ieda.iaasDashboard.web.resourceUsage.service.IaasResourceUsageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -51,7 +49,6 @@ public class IaasResourceUsageControllerUnitTest {
     final static String IAAS_RESOURCE_USAGE_LIST_URL = "/iaasMgnt/resourceUsage/all/list"; //전체 인프라 리소스 사용량 조회
     final static String AWS_RESOURCE_USAGE_LIST_URL = "/iaasMgnt/resourceUsage/aws/list/{region}"; // AWS 리소스 사용량 조회
     final static String OPENSTACK_RESOURCE_USAGE_LIST_URL = "/iaasMgnt/resourceUsage/openstack/list"; //Openstack 리소스 사용량 조회
-    final static Logger LOGGER = LoggerFactory.getLogger(IaasResourceUsageControllerUnitTest.class);
     
     /***************************************************
      * @project : 인프라 계정 관리 대시보드
@@ -75,7 +72,6 @@ public class IaasResourceUsageControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoIaasResourceUsage() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testGoIaasResourceUsage Start  ================="); }
         mockMvc.perform(get(VIEW_DASHBOARD_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/iaas/resourceUsage/dashboard"));
@@ -89,7 +85,6 @@ public class IaasResourceUsageControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoAwsResourceUsagee() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testGoAwsResourceUsagee Start  ================="); }
         mockMvc.perform(get(VIEW_AWS_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/iaas/resourceUsage/awsResourceUsage"));
@@ -103,7 +98,6 @@ public class IaasResourceUsageControllerUnitTest {
     ***************************************************/
     @Test
     public void testOpenstackResourceUsage() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testOpenstackResourceUsage Start  ================="); }
         mockMvc.perform(get(VIEW_OPENSTACK_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/iaas/resourceUsage/openstackResourceUsage"));
@@ -117,7 +111,6 @@ public class IaasResourceUsageControllerUnitTest {
     ***************************************************/
     @Test
     public void testGetIaasResourceUsageTotalInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testGetIaasResourceUsageTotalInfo Start  ================="); }
         List<IaasResourceUsageVO> list = setIaasResourceUsageInfoList();
         when(mockIaasResourceUsageService.getIaasResourceUsageTotalInfo(any())).thenReturn(list);
         mockMvc.perform(get(IAAS_RESOURCE_USAGE_LIST_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -148,7 +141,6 @@ public class IaasResourceUsageControllerUnitTest {
     ***************************************************/
     @Test
     public void testGetAwsResourceUsageInfoList() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= TestgetAwsResourceUsageInfoList Start  ================="); }
         List<IaasResourceUsageVO> list = setAwsResourceUsageInfoList();
         when(mockIaasResourceUsageService.getAwsResourceUsageInfoList(any(), any())).thenReturn(list);
         mockMvc.perform(get(AWS_RESOURCE_USAGE_LIST_URL, "us-west-1").contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -171,7 +163,6 @@ public class IaasResourceUsageControllerUnitTest {
     ***************************************************/
     @Test
     public void testGetOpenstackResourceUsageInfoList() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= TestgetOpenstackResourceUsageInfoList Start  ================="); }
         List<IaasResourceUsageVO> list = setOpenstackResourceUsageInfoList();
         when(mockIaasResourceUsageService.getOpenstackResourceUsageInfoList(any())).thenReturn(list);
         mockMvc.perform(get(OPENSTACK_RESOURCE_USAGE_LIST_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())

@@ -29,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openpaas.ieda.common.BaseControllerUnitTest;
 import org.openpaas.ieda.controller.deploy.web.deploy.bootstrap.BootstrapController;
-import org.openpaas.ieda.deploy.web.config.systemRelease.ReleaseManagementControllerUnitTest;
 import org.openpaas.ieda.deploy.web.deploy.bootstrap.dao.BootstrapVO;
 import org.openpaas.ieda.deploy.web.deploy.bootstrap.dto.BootStrapDeployDTO;
 import org.openpaas.ieda.deploy.web.deploy.bootstrap.dto.BootstrapListDTO;
@@ -37,8 +36,6 @@ import org.openpaas.ieda.deploy.web.deploy.bootstrap.service.BootstrapDeleteDepl
 import org.openpaas.ieda.deploy.web.deploy.bootstrap.service.BootstrapDeployAsyncService;
 import org.openpaas.ieda.deploy.web.deploy.bootstrap.service.BootstrapSaveService;
 import org.openpaas.ieda.deploy.web.deploy.bootstrap.service.BootstrapService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -86,7 +83,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     final static String BOOTSTRAP_DELETE_INFO_URL="/deploy/bootstrap/delete/data";
     final static String BOOTSTRAP_LOG_INFO_URL="/deploy/bootstrap/list/{id}";
     
-    final static Logger LOGGER = LoggerFactory.getLogger(ReleaseManagementControllerUnitTest.class);
 
 
     /****************************************************************
@@ -110,7 +106,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testGoBootstrap() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  /deploy/bootstrap 테스트  ================="); }
         mockMvc.perform(get(BOOTSTRAP_VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/deploy/deploy/bootstrap/bootstrap"));
@@ -124,7 +119,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testGoBootstrapPopup() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  /deploy/bootstrap/install/bootstrapPopup 테스트  ================="); }
         mockMvc.perform(get(BOOTSTRAP_POP_VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/deploy/deploy/bootstrap/bootstrapPopup"));
@@ -138,7 +132,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testGetBootstrapList() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= /deploy/bootstrap/list 테스트  ================="); }
         List<BootstrapListDTO> bootstrapList = setBootstrapList();
         when(mockBootstrapService.getBootstrapList()).thenReturn(bootstrapList);
         mockMvc.perform(get(BOOTSTRAP_LIST_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -175,7 +168,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testGetBootstrapInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= /deploy/bootstrap/list 테스트  ================="); }
         BootstrapVO bootstrapInfo = setBootstrapInfo();
         when(mockBootstrapService.getBootstrapInfo(anyInt())).thenReturn(bootstrapInfo);
         mockMvc.perform(get(BOOTSTRAP_INFO_URL, "1").contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -220,7 +212,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testSaveIaasConfigInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= /deploy/bootstrap/install/setIaasConfigInfo 테스트  ================="); }
         String requestJson = mapper.writeValueAsString(setIaasConfigInfo());
         when(mockBootstrapSaveService.saveIaasConfigInfo(any(), any())).thenReturn(setBootstrapInfo());
         mockMvc.perform(put(SAVE_IAASCONFIG_INFO_URL).contentType(MediaType.APPLICATION_JSON).content(requestJson))
@@ -239,7 +230,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testSaveDefaultInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= /deploy/bootstrap/install/setDefaultInfo 테스트  ================="); }
         String requestJson = mapper.writeValueAsString(setDefaultInfo());
         when(mockBootstrapSaveService.saveDefaultInfo(any(), any())).thenReturn(setBootstrapInfo());
         mockMvc.perform(put(SAVE_DEFAULT_INFO_URL).contentType(MediaType.APPLICATION_JSON).content(requestJson))
@@ -263,7 +253,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testSaveNetworkInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= /deploy/bootstrap/install/setNetworkInfo 테스트  ================="); }
         String requestJson = mapper.writeValueAsString(setNetworkInfo());
         when(mockBootstrapSaveService.saveNetworkInfo(any(), any())).thenReturn(setBootstrapInfo());
         mockMvc.perform(put(SAVE_NETWORK_INFO_URL).contentType(MediaType.APPLICATION_JSON).content(requestJson))
@@ -286,7 +275,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testSaveResourcesInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= /deploy/bootstrap/install/setResourceInfo 테스트  ================="); }
         String requestJson = mapper.writeValueAsString(setResourceInfo());
         when(mockBootstrapSaveService.saveResourceInfo(any(), any())).thenReturn(setBootstrapInfo());
         mockMvc.perform(put(SAVE_RESOURCE_INFO_URL).contentType(MediaType.APPLICATION_JSON).content(requestJson))
@@ -306,7 +294,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testMakeDeploymentFile() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= /deploy/bootstrap/install/createSettingFile/1 테스트  ================="); }
         doNothing().when(mockBootstrapService).createSettingFile(1);
         mockMvc.perform(post(CREATE_SETTING_FILE_URL, "1").contentType(MediaType.APPLICATION_JSON))
             .andDo(MockMvcResultHandlers.print())
@@ -321,7 +308,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testInstallBootstrap() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= /deploy/bootstrap/install/bootstrapInstall 테스트  ================="); }
         BootStrapDeployDTO.Install dto = setInstallInfo();
         doNothing().when(mockBootstrapDeployAsyncService).deployAsync(dto, principal);
         mockBootstrapController.installBootstrap(dto, principal);
@@ -337,7 +323,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testDeleteBootstrap() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= /deploy/bootstrap/delete/instance 테스트  ================="); }
         BootStrapDeployDTO.Delete dto = setDeleteInfo();
         doNothing().when(mockBootstrapDeleteDeployAsyncService).deleteDeployAsync(dto, principal);
         mockBootstrapController.deleteBootstrap(dto, principal);
@@ -354,7 +339,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testDeleteBootstrapInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= /deploy/bootstrap/delete/data 테스트  ================="); }
         BootStrapDeployDTO.Delete dto = setDeleteInfo();
         doNothing().when(mockBootstrapService).deleteBootstrapInfo(any());
         mockMvc.perform(MockMvcRequestBuilders.delete(BOOTSTRAP_DELETE_INFO_URL).contentType(MediaType.APPLICATION_JSON)
@@ -372,7 +356,6 @@ public class BootstrapControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testGetDeployLogMsg() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= deploy/bootstrap/list/{id} 테스트  ================="); }
        BootstrapVO info = setBootstrapInfo();
         when(mockBootstrapService.getBootstrapInfo(anyInt())).thenReturn(info);
         mockMvc.perform(get(BOOTSTRAP_LOG_INFO_URL, "1").contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())

@@ -106,20 +106,33 @@ $(function() {
                    popup_height  = Number( $(".w2ui-popup").css("height").substring(-1, 3));
                    body_height = Number( $(".panel-body").css("height").substring(-1, 3)) ;
                    
+                   //var version =  $(".w2ui-msg-body selected[name='openstackKeystoneVersion']").val();
+                   
                    //input readonly 설정
                    $(".w2ui-msg-body input[name='accountName']").attr("readonly", true);
                    $(".w2ui-msg-body input[name='commonAccessEndpoint']").attr("readonly", true);
                    $(".w2ui-msg-body input[name='commonAccessUser']").attr("readonly", true);
-                   $(".w2ui-msg-body select[name='openstackKeystoneVersion']").attr("readonly", true);
+                   $(".w2ui-msg-body select[name='openstackKeystoneVersion']").attr("disabled", true);
                    
                    //grid record
                    var selected = w2ui['openstack_accountGrid'].getSelection();
                    if( selected.length == 0 ){
-                       w2alert(select_fail_msg, "vSphere 계정 수정");
+                       w2alert(select_fail_msg, "openstack 계정 수정");
                        return;
                    }
                    var record = w2ui['openstack_accountGrid'].get(selected);
                    setOpenstackAccountInfo(record.id);
+                   var version = record.openstackKeystoneVersion;
+                   if(version == "v2"){
+                       $(".w2ui-msg-body .commonTenantDiv").show();
+                       $(".w2ui-msg-body .commonProjectDiv").hide();
+                       $(".w2ui-msg-body .openstackDomainDiv").hide();
+                   }else if((version == "v3")){
+                       $(".w2ui-msg-body .commonTenantDiv").hide();
+                       $(".w2ui-msg-body .commonProjectDiv").show();
+                       $(".w2ui-msg-body .openstackDomainDiv").show();
+                   }
+                   
                }                   
            },onClose:function(event){
                w2ui['openstack_accountGrid'].reset();
@@ -146,15 +159,14 @@ $(function() {
        }
        
        w2confirm({
-           title           : "Openstack 계정 정보 삭제",
-           msg             : msg,
-           yes_text        : "확인",
-           no_text         : "취소",
-           yes_callBack    : function(event){
+           title        : "<b>Openstack 계정 정보 삭제</b>",
+           msg          : msg,
+           yes_text     : "확인",
+           no_text      : "취소",
+           yes_callBack : function(event){
                w2ui['openstack_accountGrid'].lock(delete_lock_msg, {
                    spinner: true, opacity : 1
                });
-               
                //delete function 호출
                deleteOpenstackAccountInfo(record);
                w2ui['openstack_accountGrid'].reset();
@@ -198,7 +210,7 @@ function setAccountInputByKeystoneVersion(event){
 
 /********************************************************
  * 기능 : setOpenstackAccountInfo
- * 설명 : vSphere계정 상세 정보 조회 후 데이터 설정
+ * 설명 : Openstack계정 상세 정보 조회 후 데이터 설정
  *********************************************************/
 function setOpenstackAccountInfo( id ){
      w2popup.lock( search_lock_msg, true);
@@ -208,12 +220,17 @@ function setOpenstackAccountInfo( id ){
         contentType : "application/json",
         dataType : "json",
         success : function(data, status) {
-            $(".w2ui-msg-body input[name='accountId']").val(data.id);
-            $(".w2ui-msg-body input[name='accountName']").val(data.accountName);
+        	
+        	var ver = data.openstackKeystoneVersion;
+        	$(".w2ui-msg-body input[name='accountId']").val(data.id);
+        	$(".w2ui-msg-body input[name='accountName']").val(data.accountName);
+            $(".w2ui-msg-body select[name='openstackKeystoneVersion']").val(ver);
             $(".w2ui-msg-body input[name='commonAccessEndpoint']").val(data.commonAccessEndpoint);
             $(".w2ui-msg-body input[name='commonAccessUser']").val(data.commonAccessUser);
             $(".w2ui-msg-body input[name='commonAccessSecret']").val(data.commonAccessSecret);
             $(".w2ui-msg-body input[name='commonTenant']").val(data.commonTenant);
+            $(".w2ui-msg-body input[name='openstackDomain']").val(data.openstackDomain);
+            $(".w2ui-msg-body input[name='commonProject']").val(data.commonProject);
             w2popup.unlock();
         },
         error : function(request, status, error) {
@@ -285,6 +302,7 @@ $( window ).resize(function() {
 
 </script>
 <div id="main">
+    <div class="page_site">계정 관리 > <strong>Openstack 계정 관리 </strong></div>
     <div class="pdt20">
         <div class="fl" style="width:100%">
             <div class="dropdown" >
@@ -340,11 +358,11 @@ $( window ).resize(function() {
                     </div>
                 </div>
                 <div class="w2ui-field">
-                    <label style="width:35%;text-align: left; padding-left: 20px;">키스톤 버전</label>
+                    <label style="width:35%;text-align: left; padding-left: 20px;">Keystone Version</label>
                     <div>
                         <select name="openstackKeystoneVersion" onchange="setAccountInputByKeystoneVersion(this);" style="width: 300px">
                             <option value="v2" selected>v2</option>
-<!--                             <option value="v3">v3</option> -->
+                            <option value="v3">v3</option> 
                         </select>
                     </div>
                 </div>
@@ -405,57 +423,57 @@ $(function() {
         rules: {
             accountName : { 
                 required : function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='accountName']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='accountName']").val().trim() );
                 }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='accountName']").val();
+                    return $(".w2ui-msg-body input[name='accountName']").val().trim();
                 }
             }, commonAccessEndpoint: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessEndpoint']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessEndpoint']").val().trim() );
                 }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='commonAccessEndpoint']").val();
+                    return $(".w2ui-msg-body input[name='commonAccessEndpoint']").val().trim();
                 }
             }, commonAccessUser: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessUser']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessUser']").val().trim() );
                 }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='commonAccessUser']").val();
+                    return $(".w2ui-msg-body input[name='commonAccessUser']").val().trim();
                 }
             }, commonAccessSecret: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessSecret']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessSecret']").val().trim() );
                 }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='commonAccessSecret']").val();
+                    return $(".w2ui-msg-body input[name='commonAccessSecret']").val().trim();
                 }
             }, commonTenant: { 
                 required: function(){
                     if( $(".w2ui-msg-body .commonTenantDiv").css("display") == "none"){
                         return false;
                     }else{
-                        return checkEmpty($(".w2ui-msg-body input[name='commonTenant']").val());
+                        return checkEmpty($(".w2ui-msg-body input[name='commonTenant']").val().trim());
                     }
                 } , sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='commonTenant']").val();
+                    return $(".w2ui-msg-body input[name='commonTenant']").val().trim();
                 }
             }, commonProject: {
                 required: function(){
                     if( $(".w2ui-msg-body .commonProjectDiv").css("display") == "none"){
                         return false;
                     }else{
-                        return checkEmpty($(".w2ui-msg-body input[name='commonProject']").val());
+                        return checkEmpty($(".w2ui-msg-body input[name='commonProject']").val().trim());
                     }
                 }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='commonProject']").val();
+                    return $(".w2ui-msg-body input[name='commonProject']").val().trim();
                 }
             }, openstackDomain: {
                 required: function(){
                     if( $(".w2ui-msg-body .openstackDomainDiv").css("display") == "none"){
                         return false;
                     }else{
-                        return checkEmpty($(".w2ui-msg-body input[name='openstackDomain']").val());
+                        return checkEmpty($(".w2ui-msg-body input[name='openstackDomain']").val().trim());
                     }
                 }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='openstackDomain']").val();
+                    return $(".w2ui-msg-body input[name='openstackDomain']").val().trim();
                 }
             }
         },messages: {

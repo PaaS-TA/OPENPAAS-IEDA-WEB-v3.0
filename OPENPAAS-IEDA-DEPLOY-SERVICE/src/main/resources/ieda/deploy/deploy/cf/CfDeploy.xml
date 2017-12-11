@@ -15,6 +15,8 @@
         <result property="directorUuid" column="DIRECTOR_UUID" />
         <result property="releaseName" column="RELEASE_NAME" />
         <result property="releaseVersion" column="RELEASE_VERSION" />
+        <result property="loggregatorReleaseName" column="LOGGREGATOR_RELEASE_NAME" />
+        <result property="loggregatorReleaseVersion" column="LOGGREGATOR_RELEASE_VERSION" />
         <result property="appSshFingerprint" column="APP_SSH_FINGERPRINT" />
         <result property="domain" column="DOMAIN" />
         <result property="description" column="DESCRIPTION" />
@@ -24,7 +26,6 @@
         <result property="loginSecret" column="LOGIN_SECRET" />
         <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE" />
         <result property="ingestorIp" column="INGESTOR_IP" />
-        <result property="ingestorPort" column="INGESTOR_PORT" />
         <result property="countryCode" column="COUNTRY_CODE" />
         <result property="stateName" column="STATE_NAME" />
         <result property="localityName" column="LOCALITY_NAME" />
@@ -81,7 +82,7 @@
             ,login_secret
             ,paasta_monitoring_use
             ,ingestor_ip
-            ,ingestor_port
+            ,key_file
             ,release_name
             ,release_version
             ,task_id
@@ -115,9 +116,10 @@
             ,login_secret
             ,release_name
             ,release_version
+            ,loggregator_release_name
+            ,loggregator_release_version
             ,paasta_monitoring_use
             ,ingestor_ip
-            ,ingestor_port
             ,country_code
             ,state_name
             ,locality_name
@@ -162,9 +164,10 @@
             ,login_secret
             ,paasta_monitoring_use
             ,ingestor_ip
-            ,ingestor_port
             ,release_name
             ,release_version
+            ,loggregator_release_name
+            ,loggregator_release_version
             ,country_code
             ,state_name
             ,locality_name
@@ -210,6 +213,8 @@
             ,director_uuid
             ,release_name
             ,release_version
+            ,loggregator_release_name
+            ,loggregator_release_version
             ,app_ssh_fingerprint
             ,domain
             ,description
@@ -219,7 +224,6 @@
             ,dea_disk_mb
             ,paasta_monitoring_use
             ,ingestor_ip
-            ,ingestor_port
             ,country_code
             ,state_name
             ,locality_name
@@ -241,6 +245,8 @@
             ,#{cf.directorUuid}
             ,#{cf.releaseName}
             ,#{cf.releaseVersion}
+            ,#{cf.loggregatorReleaseName}
+            ,#{cf.loggregatorReleaseVersion}
             ,#{cf.appSshFingerprint}
             ,#{cf.domain}
             ,#{cf.description}
@@ -250,7 +256,6 @@
             ,#{cf.deaDiskMB}
             ,#{cf.paastaMonitoringUse}
             ,#{cf.ingestorIp}
-            ,#{cf.ingestorPort}
             ,#{cf.countryCode}
             ,#{cf.stateName}
             ,#{cf.localityName}
@@ -277,6 +282,8 @@
             ,director_uuid=#{cf.directorUuid}
             ,release_name=#{cf.releaseName}
             ,release_version=#{cf.releaseVersion}
+            ,loggregator_release_name=#{cf.loggregatorReleaseName}
+            ,loggregator_release_version=#{cf.loggregatorReleaseVersion}
             ,app_ssh_fingerprint=#{cf.appSshFingerprint}
             ,dea_memory_mb=#{cf.deaMemoryMB}
             ,dea_disk_mb=#{cf.deaDiskMB}
@@ -286,7 +293,6 @@
             ,login_secret=#{cf.loginSecret}
             ,paasta_monitoring_use=#{cf.paastaMonitoringUse}
             ,ingestor_ip=#{cf.ingestorIp}
-            ,ingestor_port=#{cf.ingestorPort}
             ,country_code = #{cf.countryCode}
             ,state_name=#{cf.stateName}
             ,locality_name=#{cf.localityName}
@@ -316,33 +322,23 @@
     
     <select id="selectCfJobTemplatesByReleaseVersion" resultType="hashMap">
     /** ieda.deploy.deploy.cf.cfDeploy.selectCfJobTemplatesByReleaseVersion  **/
-        SELECT 
-               code_name 
-              ,code_value
-              ,release_version
-              ,iaas_type
-              ,deploy_type
-              ,parent_code
-              ,( SELECT code_name_kr 
-                   FROM ieda_common_code cm2 
-                  WHERE parent_code = #{map.parentCode} 
-                    AND sub_group_code = common.code_value
-              ) as password
-              ,( SELECT code_description 
-                   FROM ieda_common_code cm2 
-                  WHERE parent_code = #{map.parentCode} 
-                    AND sub_group_code = common.code_value
-              ) as code_desc
+    <![CDATA[
+         Select
+               id
               ,seq
-          FROM ieda_job_template template INNER JOIN ieda_common_code common
-            ON common.code_value = template.job_code
-      GROUP BY code_name, code_value, iaas_type, release_version, deploy_type, parent_code, seq, sub_group_code
-        HAVING template.release_version=#{map.releaseVersion}
-           AND UPPER(iaas_type)=UPPER(#{map.iaasType})
-           AND deploy_type = #{map.deployType}
-           AND parent_code=#{map.parentCode}
-           AND sub_group_code is null
-      ORDER BY seq
+              ,deploy_type
+              ,job_name
+              ,zone_z1
+              ,zone_z2
+              ,zone_z3
+         From ieda_job_template
+        Where deploy_type = #{map.deployType}
+          And 
+            min_release_version <= #{map.releaseVersion}
+          And 
+            max_release_version >= #{map.releaseVersion} 
+        ORDER BY seq;
+    ]]>
     </select>
     
     <insert id="insertCfJobSettingInfo">
@@ -351,9 +347,9 @@
              id
             ,seq
             ,deploy_type
-            ,job_code
+            ,job_id
             ,instances
-            ,password
+            ,zone
             ,create_user_id
             ,create_date
             ,update_user_id
@@ -364,9 +360,9 @@
              #{item.id}
             ,#{item.seq}
             ,#{item.deploy_type}
-            ,#{item.job_code}
+            ,#{item.job_id}
             ,#{item.instances}
-            ,#{item.password}
+            ,#{item.zone}
             ,#{item.create_user_id}
             ,now()
             ,#{item.update_user_id}
@@ -378,29 +374,36 @@
     <select id="selectCfJobSettingInfoListBycfId" resultType="hashMap">
     /** ieda.deploy.deploy.cf.cfDeploy.selectCfJobSettingInfoListBycfId  **/
         Select
-                id
-               ,seq
-               ,deploy_type
-               ,job_code
-               ,instances
-               ,password
+                job.id as id
+               ,job.seq as seq
+               ,job.deploy_type as deploy_type
+               ,job_id as job_id
+               ,job.instances as instances
+               ,job.zone as zone
                ,job.create_user_id as create_user_id
                ,job.create_date as create_date
                ,job.update_user_id as update_user_id
                ,job.update_date as update_date
-               ,common.code_name as code_name
-          From ieda_job_setting job, ieda_common_code common
-         Where job.job_code = common.code_value
-           And parent_code = #{parentCode}
-           And id =#{cfId}
-           And deploy_type = #{deployType}
+               ,template.job_name as job_name
+          From ieda_job_setting job, ieda_job_template template
+         Where job.job_id = template.id
+           And job.id =#{cfId}
+           And job.deploy_type = #{deployType}
     </select>
     
-    <delete id="deleteCfJobSettingInfo">
+    <delete id="deleteCfJobSettingListById">
     /** ieda.deploy.deploy.cf.cfDeploy.deleteCfJobSettingInfo  **/
         Delete 
           From ieda_job_setting
          Where id = #{map.id}
            And deploy_type = #{map.deploy_type}
+    </delete>
+    
+    <delete id="deleteCfJobSettingRecordsByIdAndZone">
+    /** ieda.deploy.deploy.cf.cfDeploy.deleteCfJobSettingRecords  **/
+        Delete
+           From ieda_job_setting
+          Where id = #{id}
+            And zone = #{zone}
     </delete>
 </mapper>

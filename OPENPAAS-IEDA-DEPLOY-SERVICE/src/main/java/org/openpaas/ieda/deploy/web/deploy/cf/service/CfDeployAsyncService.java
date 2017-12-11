@@ -46,24 +46,28 @@ public class CfDeployAsyncService {
      * @title : deploy
      * @return : void
     *****************************************************************/
-    public void deploy(CfParamDTO.Install dto, Principal principal, String menu) {
+    public void deploy(CfParamDTO.Install dto, Principal principal, String platform) {
         String deploymentFileName = "";
         String messageEndpoint =  "";
-        if( menu.toLowerCase().equals("cf") ) messageEndpoint = "/deploy/cf/install/logs"; 
-        else messageEndpoint = "/deploy/cfDiego/install/cfLogs"; 
+        if( platform.toLowerCase().equalsIgnoreCase("cf") ) {
+            messageEndpoint = "/deploy/cf/install/logs"; 
+        }else {
+            messageEndpoint = "/deploy/cfDiego/install/cfLogs"; 
+        }
         
         CfVO vo = cfDao.selectCfInfoById(Integer.parseInt(dto.getId()));
-        if ( vo != null ) deploymentFileName = vo.getDeploymentFile();
+        deploymentFileName = vo != null ? vo.getDeploymentFile() : "";
+        
         if ( StringUtils.isEmpty(deploymentFileName) ) {
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), 
                     message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
         String deployFile = DEPLOYMENT_DIR + SEPARATOR + deploymentFileName; 
-        String error_message = message.getMessage("common.internalServerError.message", null, Locale.KOREA);
+        String errorMessage = message.getMessage("common.internalServerError.message", null, Locale.KOREA);
         
         if ( vo != null ) {
-            String deploy_status = message.getMessage("common.deploy.status.processing", null, Locale.KOREA);
-            vo.setDeployStatus(deploy_status);
+            String deployStatus = message.getMessage("common.deploy.status.processing", null, Locale.KOREA);
+            vo.setDeployStatus(deployStatus);
             vo.setUpdateUserId(principal.getName());
             saveDeployStatus(vo);
         }
@@ -83,18 +87,16 @@ public class CfDeployAsyncService {
             postMethod = (PostMethod)DirectorRestHelper.setAuthorization(defaultDirector.getUserId(), defaultDirector.getUserPassword(), (HttpMethodBase)postMethod);
             postMethod.setRequestHeader("Content-Type", "text/yaml");
             
-            
             fis = new FileInputStream(deployFile);
             isr = new InputStreamReader(fis, "UTF-8");
             br = new BufferedReader(isr);
             
             while ( (temp=br.readLine()) != null) {
-                content.append(temp + "\n");
+                content.append(temp).append("\n");
             }
             postMethod.setRequestEntity(new StringRequestEntity(content.toString(), "text/yaml", "UTF-8"));
             int statusCode = httpClient.executeMethod(postMethod);
-            if ( statusCode == HttpStatus.MOVED_PERMANENTLY.value()
-              || statusCode == HttpStatus.MOVED_TEMPORARILY.value()    ) {
+            if ( statusCode == HttpStatus.MOVED_PERMANENTLY.value() || statusCode == HttpStatus.MOVED_TEMPORARILY.value() ) {
                 
                 Header location = postMethod.getResponseHeader("Location");
                 taskId = DirectorRestHelper.getTaskId(location.getValue());
@@ -102,30 +104,38 @@ public class CfDeployAsyncService {
                 status = DirectorRestHelper.trackToTask(defaultDirector, messagingTemplate, messageEndpoint, httpClient, taskId, "event", principal.getName());
                 
             } else {
-                DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(error_message));
+                DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(errorMessage));
             }
         }catch(IOException e){
             status = "error";
-            DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(error_message));
+            DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(errorMessage));
         }catch (RuntimeException e) {
             status = "error";
-            DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(error_message));
+            DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(errorMessage));
         }catch ( Exception e) {
             status = "error";
-            DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(error_message));
+            DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(errorMessage));
         } finally {
             try {
-                if ( br != null ) br.close();
-                if ( fis != null ) fis.close();
-                if ( isr != null ) isr.close();
+                if ( br != null ) {
+                    br.close();
+                }
+                if ( fis != null ) {
+                    fis.close();
+                }
+                if ( isr != null ) {
+                    isr.close();
+                }
             } catch ( Exception e ) {
-                DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(error_message));
+                DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "error", Arrays.asList(errorMessage));
             }
         }
         String deployStatus = message.getMessage("common.deploy.status."+status.toLowerCase(), null, Locale.KOREA);
         if ( vo != null ) {
             vo.setDeployStatus(deployStatus);
-            if( !StringUtils.isEmpty(taskId) ) vo.setTaskId(Integer.parseInt(taskId));
+            if( !StringUtils.isEmpty(taskId) ) {
+                vo.setTaskId(Integer.parseInt(taskId));
+            }
             vo.setUpdateUserId(principal.getName());
             saveDeployStatus(vo);
         }
@@ -149,7 +159,7 @@ public class CfDeployAsyncService {
      * @return : void
     *****************************************************************/
     @Async
-    public void deployAsync(CfParamDTO.Install dto, Principal principal, String install) {
-        deploy(dto, principal, install);
+    public void deployAsync(CfParamDTO.Install dto, Principal principal, String platform) {
+        deploy(dto, principal, platform);
     }
 }

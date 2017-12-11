@@ -27,30 +27,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableAutoConfiguration
 public class OpenpaasIedaControllerApplication implements CommandLineRunner {
 
-	public static void main(String[] args) {
-		//LocalDirectoryConfiguration.initialize();
+public static void main(String[] args) {
+    //LocalDirectoryConfiguration.initialize();
+    //spring boot 어플리케이션 구동
+    SpringApplication app = new SpringApplication(OpenpaasIedaControllerApplication.class);
+    app.addListeners(new ApplicationPidFileWriter("app.pid"));
+    app.run(args);
+}
 
-        //spring boot 어플리케이션 구동
-        SpringApplication app = new SpringApplication(OpenpaasIedaControllerApplication.class);
-        app.addListeners(new ApplicationPidFileWriter("app.pid"));
-        app.run(args);
-	}
-	
-	@Override
-	public void run(String... args) throws Exception {
-		LocalDirectoryConfiguration.initialize();
-	}
-	
+    @Override
+    public void run(String... args) throws Exception {
+        LocalDirectoryConfiguration.initialize();
+    }
+
     @Bean
     public ModelMapper modelMapper() {
-    	//ModelMapper 빈 등록
-    	return new ModelMapper();
+    //ModelMapper 빈 등록
+    return new ModelMapper();
     }
 
     @Bean
     public ObjectMapper objectMapper() {
-    	//ObjectMapper 빈 등록
-    	return new ObjectMapper();
+    //ObjectMapper 빈 등록
+    return new ObjectMapper();
     }
     
     @Bean

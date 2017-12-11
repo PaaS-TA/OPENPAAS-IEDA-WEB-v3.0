@@ -23,10 +23,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class CommonIaasController {
     
-    @Autowired
-    CommonIaasService commonIaasService;
+    @Autowired private CommonIaasService commonIaasService;
    
-    
     private final static Logger LOGGER = LoggerFactory.getLogger(CommonCodeController.class);
     
     /***************************************************
@@ -36,7 +34,7 @@ public class CommonIaasController {
     * @return : ResponseEntity<?> 
     ***************************************************/
     @RequestMapping(value="/common/iaasMgnt/setDefaultIaasAccount" ,method=RequestMethod.POST)
-    public ResponseEntity<?>  setDefaultIaasAccount(@RequestBody @Valid IaasAccountMgntDTO dto, Principal principal){
+    public ResponseEntity<?> setDefaultIaasAccount(@RequestBody @Valid IaasAccountMgntDTO dto, Principal principal){
         commonIaasService.setDefaultIaasAccountInfo(dto, principal);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -49,10 +47,8 @@ public class CommonIaasController {
     *****************************************************************/
     @RequestMapping(value="/common/iaas/codes/parent/{parentCode}", method=RequestMethod.GET)
     public ResponseEntity<List<CommonCodeVO>> getSubCode(@PathVariable String parentCode) {
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.info("================================================> 서브 그룹 조회 요청");  }
         List<CommonCodeVO> content = commonIaasService.getSubGroupCodeList(parentCode);
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================================> 서브 그룹 조회 성공");  }
         return new ResponseEntity<List<CommonCodeVO>>(content, HttpStatus.OK);
     }
     

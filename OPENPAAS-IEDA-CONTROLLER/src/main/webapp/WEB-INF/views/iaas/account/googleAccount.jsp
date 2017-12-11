@@ -138,16 +138,15 @@ $("#deleteAccountBtn").click(function(){
         msg = "<span style='color:red'>현재 Google 환경 설정 정보 화면에서 <br/>해당 계정("+record.accountName+")을 사용하고 있습니다. </span><br/><span style='color:red; font-weight:bolder'>그래도 삭제 하시겠습니까?</span>";
     }
     w2confirm({
-        title : "Google 계정 정보 삭제",
-        msg   : msg,
-        yes_text : "확인",
-        no_text  : "취소",
+        title        : "<b>Google 계정 정보 삭제</b>",
+        msg          : msg,
+        yes_text     : "확인",
+        no_text      : "취소",
         yes_callBack : function(event){
             //delete function 호출
             deleteGoogleAccountInfo(record);
             w2ui['google_accountGrid'].reset();
-        },
-        no_callBack     : function(event){
+        }, no_callBack     : function(event){
             w2ui['google_accountGrid'].reset();
             doSearch();
         }
@@ -227,17 +226,16 @@ function changeKeyPathStyle( showDiv, hideDiv ){
 }
 
 /******************************************************************
- * Function : setPrivateKeyPath
+ * 기능 : setPrivateKeyPath
  * 설명 : 공통 Private key File List
  ***************************************************************** */
 function setJsonKeyPath(event){
-	 console.log(event.value)
     $(".w2ui-msg-body input[name='googleJsonKeyPath']").val(event.value);
     
 }
 
 /******************************************************************
- * Function : openBrowse
+ * 기능 : openBrowse
  * 설명 : 공통 File upload Browse Button
  ***************************************************************** */
 function openBrowse(){
@@ -245,7 +243,7 @@ function openBrowse(){
 }
 
 /******************************************************************
- * Function : setPrivateKeyPathFileName
+ * 기능 : setPrivateKeyPathFileName
  * 설명: 공통 File upload Input
  ***************************************************************** */
 function setPrivateKeyPathFileName(fileInput){
@@ -414,6 +412,7 @@ $( window ).resize(function() {
 
 </script>
 <div id="main">
+    <div class="page_site">계정 관리 > <strong>Google 계정 관리 </strong></div>
      <div class="pdt20">
         <div class="fl" style="width:100%">
             <div class="dropdown" >
@@ -518,20 +517,20 @@ $(function() {
         rules: {
             accountName : { 
                 required : function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='accountName']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='accountName']").val().trim() );
                 }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='accountName']").val();
+                    return $(".w2ui-msg-body input[name='accountName']").val().trim();
                 }
             }, commonProject: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='commonProject']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='commonProject']").val().trim() );
                 }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='commonProject']").val();
+                    return $(".w2ui-msg-body input[name='commonProject']").val().trim();
                 }
             }, keyPathList: { 
                 required: function(){
                 	if( $(".w2ui-msg-body input:radio[name='keyPathType']:checked").val() == 'list' ){
-                        return checkEmpty(  $(".w2ui-msg-body select[name='keyPathList']").val() );
+                        return checkEmpty(  $(".w2ui-msg-body select[name='keyPathList']").val().trim() );
                     }else{
                     	 return false;
                     }
@@ -539,7 +538,7 @@ $(function() {
             }, keyPathFileName: { 
                 required: function(){
                     if( $(".w2ui-msg-body input:radio[name='keyPathType']:checked").val() == 'file' ){
-                        return checkEmpty(  $(".w2ui-msg-body input[name='keyPathFileName']").val() );
+                        return checkEmpty(  $(".w2ui-msg-body input[name='keyPathFileName']").val().trim() );
                     }else{
                          return false;
                     }

@@ -21,8 +21,6 @@ import org.openpaas.ieda.deploy.web.deploy.cf.dao.CfVO;
 import org.openpaas.ieda.deploy.web.deploy.cf.dto.CfParamDTO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.network.NetworkDAO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceDAO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -42,7 +40,6 @@ public class CfDeleteDeployAsyncServiceUnitTest extends BaseDeployControllerUnit
     @Mock ResourceDAO mockResourceDAO;
     @Mock MessageSource mockMessageSource;
     
-    final private static Logger LOGGER = LoggerFactory.getLogger(CfDeleteDeployAsyncServiceUnitTest.class);
     private Principal principal = null;
     
     /****************************************************************
@@ -65,7 +62,6 @@ public class CfDeleteDeployAsyncServiceUnitTest extends BaseDeployControllerUnit
     ***************************************************/
     @Test
     public void testDeleteDeploy(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> CF 정보 삭제 TEST ");}
         CfVO vo = setCfInfo("default");
         mockCfDeleteDeployAsyncService.deleteCfInfo(vo);
     }
@@ -78,7 +74,6 @@ public class CfDeleteDeployAsyncServiceUnitTest extends BaseDeployControllerUnit
     ***************************************************/
     @Test
     public void testSaveDeployStatus(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> CF 배포 상태 변경 TEST ");}
         CfVO vo = setCfInfo("default");
         mockCfDeleteDeployAsyncService.saveDeployStatus(vo);
     }
@@ -91,7 +86,6 @@ public class CfDeleteDeployAsyncServiceUnitTest extends BaseDeployControllerUnit
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testDeleteDeployAsync(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("===================================> 비동기식으로 deleteDeploy 호출 메소드 TEST");}
         CfParamDTO.Delete dto = setCfDeleteInfo();
         when(mockCfDAO.selectCfInfoById(anyInt())).thenReturn(null);
         mockCfDeleteDeployAsyncService.deleteDeployAsync(dto, "cf", principal);
@@ -151,7 +145,6 @@ public class CfDeleteDeployAsyncServiceUnitTest extends BaseDeployControllerUnit
         vo.setPaastaMonitoringUse("yes");
         vo.setOrganizationName("pass-ta");
         vo.setIngestorIp("172.16.100.100");
-        vo.setIngestorPort("25555");
         vo.setKeyFile("cf-key.yml");
         vo.setLocalityName("mapo");
         vo.setLoginSecret("test");

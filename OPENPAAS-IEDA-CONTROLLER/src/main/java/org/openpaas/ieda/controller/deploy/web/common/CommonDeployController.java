@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -33,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,11 +62,8 @@ public class CommonDeployController {
     *****************************************************************/
     @RequestMapping(value="/common/use/director", method=RequestMethod.GET)
     public ResponseEntity<DirectorConfigVO> getDefaultDirector() {
-            
         if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 기본 설치 관리자 정보 조회 요청"); }
         DirectorConfigVO content = directorService.getDefaultDirector();
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 기본 설치 관리자 정보 조회 성공!!"); }
-        
         return new ResponseEntity<DirectorConfigVO>(content, HttpStatus.OK);
     }
     
@@ -81,15 +76,15 @@ public class CommonDeployController {
     @RequestMapping(value="/common/use/deployments", method=RequestMethod.GET)
     public ResponseEntity<HashMap<String, Object>> getDeploymentList(){
         if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> 배포명 조회 요청");  }
-        
         List<DeploymentInfoDTO> contents = deploymentService.listDeployment();
         HashMap<String, Object> result = new HashMap<String, Object>();
         int size =0;
-        if (contents != null)  size = contents.size();
+        if (contents != null) {
+            size = contents.size();
+        }
         result.put("total", size);
         result.put("contents", contents);
         
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> 배포명 조회 요청 성공");  }
         return new ResponseEntity<HashMap<String, Object>>( result, HttpStatus.OK);
     }
     
@@ -102,9 +97,7 @@ public class CommonDeployController {
     @RequestMapping(value="/common/deploy/deployments/{platform}/{iaas}", method=RequestMethod.GET)
     public ResponseEntity<List<String>> getDeploymentListByPlatform(@PathVariable String platform, @PathVariable String iaas){
         if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> 플랫폼 별 배포명 조회 요청");  }
-        
         List<String> contents = commonService.listDeployment(platform, iaas);
-        
         return new ResponseEntity<List<String>>( contents, HttpStatus.OK);
     }
     
@@ -129,14 +122,12 @@ public class CommonDeployController {
     *****************************************************************/
     @RequestMapping(value="/common/deploy/key/list/{iaasType}" , method=RequestMethod.GET)
     public ResponseEntity<List<String>> getKeyPathFileList(@PathVariable String iaasType){
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.debug("====================================> Private Key 파일  정보 목록 조회 요청"); }
         List<String> keyPathFileList = commonService.getKeyFileList(iaasType);
         
         return new ResponseEntity<List<String>>(keyPathFileList, HttpStatus.OK);
     }
     
-
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
      * @description : 배포파일 정보 조회
@@ -145,18 +136,10 @@ public class CommonDeployController {
     *****************************************************************/
     @RequestMapping(value="/common/use/deployment/{deploymentFile:.+}", method=RequestMethod.GET)
     public ResponseEntity<String> getBoshAwsDeployInfo(@PathVariable @Valid String deploymentFile){
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.debug("====================================> 배포파일 정보 조회 요청"); }
-        if(LOGGER.isDebugEnabled()){ LOGGER.debug("deploymentFile :"  + deploymentFile); }
-        
-        HttpStatus status = HttpStatus.OK;
         String content = commonService.getDeploymentInfo(deploymentFile);
-        if(StringUtils.isEmpty(content) ) {
-            status = HttpStatus.NO_CONTENT;
-        }        
-        return new ResponseEntity<String>(content, status);
+        return new ResponseEntity<String>(content, HttpStatus.OK);
     }
-
 
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -165,25 +148,23 @@ public class CommonDeployController {
      * @return : void
     *****************************************************************/
     @RequestMapping(value = "/common/deploy/download/manifest/{fileName}", method = RequestMethod.GET)
-    public void downloadDeploymentFile( @PathVariable("fileName") String fileName,
-            HttpServletRequest request, HttpServletResponse response){
+    public void downloadDeploymentFile( @PathVariable("fileName") String fileName, HttpServletResponse response){
         if(LOGGER.isInfoEnabled()){ LOGGER.debug("====================================> 배포파일 브라우저 다운로드 요청"); }
-        commonService.downloadDeploymentFile(fileName, request, response);
+        commonService.downloadDeploymentFile(fileName, response);
     }
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : 공통 시스템 릴리즈 콤보
+     * @description : 로컬 릴리즈 목록 조회
      * @title : localReleaseList
      * @return : ResponseEntity<List<String>>
     *****************************************************************/
     @RequestMapping(value = "/common/deploy/systemRelease/list/{type}/{iaas}", method = RequestMethod.GET)
-    public ResponseEntity<List<String>> localReleaseList(@PathVariable String type, @PathVariable String iaas){
-        String iaastype = iaas;
+    public ResponseEntity<List<String>> getlocalReleaseList(@PathVariable String type, @PathVariable String iaas){
         if(LOGGER.isInfoEnabled()){ LOGGER.debug("====================================> 공통 시스템 릴리즈 콤보 요청"); }
-        if("''".equals(iaastype)) iaastype = "";
-        List<String> contents = systemReleaseService.getLocalReleaseList(type, iaastype);
-        
+        String iaasType = iaas;
+        iaasType = iaas.equalsIgnoreCase("''") ? "" : iaas;
+        List<String> contents = systemReleaseService.getLocalReleaseList(type, iaasType);
         return new ResponseEntity<List<String>>( contents, HttpStatus.OK);
     }
     
@@ -194,8 +175,7 @@ public class CommonDeployController {
      * @return : ResponseEntity<Map<String,Object>>
     *****************************************************************/
     @RequestMapping( value="/common/deploy/release/list/{type}", method =RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> listLocalFilterReleaseList(@PathVariable  String type){
-        
+    public ResponseEntity<Map<String, Object>> getLocalFilterReleaseList(@PathVariable  String type){
         if(LOGGER.isInfoEnabled()){ LOGGER.debug("====================================> 공통 릴리즈 콤보 요청"); }
         List<ReleaseInfoDTO> contents = releaseService.getFilteredReleseList(type);
         Map<String, Object> result = new HashMap<>();
@@ -211,13 +191,13 @@ public class CommonDeployController {
      * @return : ResponseEntity<HashMap<String,Object>>
     *****************************************************************/
     @RequestMapping( value="/common/deploy/stemcell/list/{type}/{iaas}", method= RequestMethod.GET)
-    public ResponseEntity<HashMap<String, Object>> listStemcell(@PathVariable String type, @PathVariable String iaas) {
+    public ResponseEntity<HashMap<String, Object>> getListStemcell(@PathVariable String type, @PathVariable String iaas) {
         
         if(LOGGER.isInfoEnabled()){ LOGGER.info("=======================> 업로드 된 공통 스템셀 콤보 조회 요청!"); }
         HashMap<String, Object> result = new HashMap<String, Object>();
         List<StemcellManagementVO> contents = null;
         
-        if("bootstrap".equals(type)){ 
+        if("bootstrap".equalsIgnoreCase(type)){ 
             contents = stemcellManageService.getLocalStemcellList(iaas.toLowerCase()); 
         }else{ 
             contents = stemcellService.getStemcellList(); 
@@ -235,9 +215,8 @@ public class CommonDeployController {
     *****************************************************************/
     @RequestMapping(value="/common/deploy/codes/parent/{parentCode}", method=RequestMethod.GET)
     public ResponseEntity<List<CommonCodeVO>> getSubCode(@PathVariable String parentCode) {
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.info("================================================> 서브 그룹 조회 요청");  }
-        List<CommonCodeVO> content = codeService.getSubGroupCodeList(parentCode, "", "2");
+        List<CommonCodeVO> content = codeService.getSubCodeListBySubGroupCodeNull(parentCode);
         return new ResponseEntity<List<CommonCodeVO>>(content, HttpStatus.OK);
     }
     
@@ -249,14 +228,8 @@ public class CommonDeployController {
     *****************************************************************/
     @RequestMapping(value="/common/deploy/codes/parent/{parentCode}/subcode/{subGroupCode}", method=RequestMethod.GET)
     public ResponseEntity<List<CommonCodeVO>> getComplexCode(@PathVariable String parentCode, @PathVariable String subGroupCode) {
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.info("================================================> 공통 코드 조회 요청");  }
-        List<CommonCodeVO> content = codeService.getSubGroupCodeList(parentCode, subGroupCode, "3");
-        if(LOGGER.isDebugEnabled()){
-            LOGGER.debug("parentCode ============>" + parentCode);
-            LOGGER.debug("subGroupCode ============>" + subGroupCode);
-            LOGGER.debug("content ==================>"  + content);
-        }
+        List<CommonCodeVO> content = codeService.getCodeListByParentAndSubGroup(parentCode, subGroupCode);
         return new ResponseEntity<List<CommonCodeVO>>(content, HttpStatus.OK);
     }
     
@@ -266,10 +239,10 @@ public class CommonDeployController {
      * @title : setLockFile
      * @return : ResponseEntity<Boolean>
     *****************************************************************/
-    @RequestMapping(value="/common/deploy/lockFile/{FileName:.*}", method=RequestMethod.GET)
-    public ResponseEntity<Boolean> setLockFile(@PathVariable @Valid String FileName){
+    @RequestMapping(value="/common/deploy/lockFile/{fileName:.*}", method=RequestMethod.GET)
+    public ResponseEntity<Boolean> setLockFile(@PathVariable @Valid String fileName){
         if(LOGGER.isInfoEnabled()){ LOGGER.debug("====================================> 락 파일 요청"); }
-        Boolean lock = commonService.lockFileSet(FileName);
+        Boolean lock = commonService.lockFileSet(fileName);
         return new ResponseEntity<Boolean>(lock, HttpStatus.OK);
     }
     
@@ -281,7 +254,6 @@ public class CommonDeployController {
     *****************************************************************/
     @RequestMapping(value="/common/deploy/codes/countryCode/{parentCode}", method=RequestMethod.GET)
     public ResponseEntity<List<CommonCodeVO>> getCountryCodeList(@PathVariable String parentCode) {
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.info("================================================> 서브 그룹 조회 요청");  }
         List<CommonCodeVO> content = codeService.getCountryCodeList(parentCode);
         return new ResponseEntity<List<CommonCodeVO>>(content, HttpStatus.OK);
@@ -295,16 +267,14 @@ public class CommonDeployController {
     *****************************************************************/
     @RequestMapping( value="/common/deploy/key/createKey", method=RequestMethod.POST)
     public ResponseEntity<HashMap<String, Object>> createKeyInfo( @RequestBody KeyInfoDTO dto, Principal principal ){
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> Key 생성 요청"); }
-        HashMap<String, Object> map = new HashMap<String, Object>();
         String keyFile = commonService.createKeyInfo(dto, principal);
-        map.put("keyFile", keyFile);
-        if( dto.getPlatform().toLowerCase().equals("diego") ){
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        if( dto.getPlatform().toLowerCase().equalsIgnoreCase("diego") ){
             String fingerprint = commonService.getFingerprint(keyFile);
             map.put("fingerprint", fingerprint);
         }
-        
+        map.put("keyFile", keyFile);
         return new ResponseEntity<HashMap<String, Object>>(map,HttpStatus.OK);
     }
     

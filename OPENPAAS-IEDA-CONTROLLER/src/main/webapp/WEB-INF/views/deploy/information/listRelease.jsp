@@ -15,115 +15,104 @@ var uploadClient = null;
 var deleteClient = null;
 var bDefaultDirector = "";
 $(function() {
-    
-     /********************************************************
-      * 설명 : 기본 설치 관리자 정보 조회
-      *********************************************************/
-     bDefaultDirector = getDefaultDirector("<c:url value='/common/use/director'/>");
+   /********************************************************
+    * 설명 : 기본 설치 관리자 정보 조회
+    *********************************************************/
+   bDefaultDirector = getDefaultDirector("<c:url value='/common/use/director'/>");
+   
+   /********************************************************
+   * 설명 : 업로드된 릴리즈 목록
+   *********************************************************/
+   $('#ru_uploadedReleasesGrid').w2grid({
+      name : 'ru_uploadedReleasesGrid',
+      show : { selectColumn: true, footer: true },
+      msgAJAXerror : '업로드 된 릴리즈 조회 실패',
+      multiSelect: false,
+      method  : 'GET',
+      style   : 'text-align:center',
+      columns :[
+           {field: 'recid', caption: 'recid', hidden: true}
+          , {field: 'name', caption: '릴리즈명', size: '20%'}
+          , {field: 'version', caption: '릴리즈버전', size: '10%'}
+          , {field: 'jobNames', caption: 'Job템플릿', size: '70%', style: 'text-align:left'}
+      ],
+      onSelect: function(event) {
+          event.onComplete = function() {
+          	$("#doDeleteRelease").attr("disabled", false);
+          }
+      },
+      onUnselect: function(event) {
+          event.onComplete = function() {
+          	$("#doDeleteRelease").attr("disabled", true);
+          }
+      },
+      onLoad:function(event){
+          if(event.xhr.status == 403){
+              location.href = "/abuse";
+              event.preventDefault();
+          }
+      }, onError:function(evnet){
+      }
+   });
      
-     /********************************************************
-     * 설명 :  업로드된 릴리즈 목록
-     *********************************************************/
-     $('#ru_uploadedReleasesGrid').w2grid({
-        name    : 'ru_uploadedReleasesGrid',
-        show    : {    
-                    selectColumn: true    ,
-                    footer: true
-                    },
-        msgAJAXerror : '업로드 된 릴리즈 조회 실패',
-        multiSelect: false,
-        method     : 'GET',
-        style      : 'text-align:center',
-        columns    :[
-                 {field: 'recid', caption: 'recid', hidden: true}
-               , {field: 'name', caption: '릴리즈명', size: '20%'}
-               , {field: 'version', caption: '릴리즈버전', size: '10%'}
-               , {field: 'jobNames', caption: 'Job템플릿', size: '70%', style: 'text-align:left'}
-               ],
-        onSelect: function(event) {
-            event.onComplete = function() {
-            	$("#doDeleteRelease").attr("disabled", false);
-            }
-        },
-        onUnselect: function(event) {
-            event.onComplete = function() {
-            	$("#doDeleteRelease").attr("disabled", true);
-            }
-        },
-           onLoad:function(event){
-            if(event.xhr.status == 403){
-                location.href = "/abuse";
-                event.preventDefault();
-            }
-        }, onError:function(evnet){
-        }
-    });
-     
-     /********************************************************
-     * 설명 :  다운로드된 릴리즈 목록
-     *********************************************************/
-     $('#ru_localReleasesGrid').w2grid({
-        name    : 'ru_localReleasesGrid',
-        show    : {    
-                    selectColumn: true,
-                    footer: true
-                    },
-        multiSelect: false,
-        method     : "GET",
-        style    : 'text-align:center',
-        columns    :[
-                 {field: 'recid', caption: 'recid', hidden: true}
-               , {field: 'releaseFileName', caption: '릴리즈 파일명', size: '50%', style: 'text-align:left'}
-               , {field: 'releaseSize', caption: '릴리즈 파일크기', size: '50%', style: 'text-align:right'}               
-               ],
-       onSelect: function(event) {
-            event.onComplete = function() {
-                $("#doUploadRelease").attr("disabled", false);
-            }
-        },
-        onUnselect: function(event) {
-            event.onComplete = function() {
-            	$("#doUploadRelease").attr("disabled", true);
-                
-            }
-        },
-           onLoad:function(event){
-            if(event.xhr.status == 403){
-                location.href = "/abuse";
-                event.preventDefault();
-            }
-        }, onError:function(evnet){
-        }
-    });
+   /********************************************************
+   * 설명 : 다운로드된 릴리즈 목록
+   *********************************************************/
+   $('#ru_localReleasesGrid').w2grid({
+      name : 'ru_localReleasesGrid',
+      show : { selectColumn: true, footer: true },
+      multiSelect: false,
+      method  : "GET",
+      style   : 'text-align:center',
+      columns :[
+           {field: 'recid', caption: 'recid', hidden: true}
+          , {field: 'releaseFileName', caption: '릴리즈 파일명', size: '50%', style: 'text-align:left'}
+          , {field: 'releaseSize', caption: '릴리즈 파일크기', size: '50%', style: 'text-align:right'}               
+      ],
+      onSelect: function(event) {
+          event.onComplete = function() {
+              $("#doUploadRelease").attr("disabled", false);
+          }
+      },
+      onUnselect: function(event) {
+          event.onComplete = function() {
+          	$("#doUploadRelease").attr("disabled", true);
+              
+          }
+      },
+      onLoad:function(event){
+          if(event.xhr.status == 403){
+              location.href = "/abuse";
+              event.preventDefault();
+          }
+      }, onError:function(evnet){
+      }
+   });
 
-
-     /********************************************************
-     * 설명 :  업로드 된 릴리즈 삭제
-     *********************************************************/
-     $("#doDeleteRelease").click(function(){
-         if($("#doDeleteRelease").attr('disabled') == "disabled") return;
-         doDeleteRelease();
-    });
-     
-     /********************************************************
-     * 설명 :  릴리즈 업로드
-     *********************************************************/
-     $("#doUploadRelease").click(function(){
-         if($("#doUploadRelease").attr('disabled') == "disabled") return;
-         LocalReleaseUpload("upload");
-    });
-     
-     initView();
-     
+   /********************************************************
+   * 설명 : 업로드 된 릴리즈 삭제
+   *********************************************************/
+   $("#doDeleteRelease").click(function(){
+       if($("#doDeleteRelease").attr('disabled') == "disabled") return;
+       doDeleteRelease();
+   });
+   
+   /********************************************************
+   * 설명 : 릴리즈 업로드
+   *********************************************************/
+   $("#doUploadRelease").click(function(){
+       if($("#doUploadRelease").attr('disabled') == "disabled") return;
+       LocalReleaseUpload("upload");
+   });
+   
+   initView();
 });
-
 
 /********************************************************
  * 설명 : 릴리즈 화면 로드 초기 버튼 스타일 설정
  * 기능 : initView
  *********************************************************/
 function initView() {
-	 console.log(bDefaultDirector);
     if ( bDefaultDirector ) { 
     	w2ui['ru_uploadedReleasesGrid'].clear(); 
         doSearchUploadedReleases(); 
@@ -140,7 +129,7 @@ function initView() {
 }
 
 /********************************************************
- * 설명 :  업로드된 릴리즈 조회
+ * 설명 : 업로드된 릴리즈 조회
  * 기능 : doSearchUploadedReleases
  *********************************************************/
 function doSearchUploadedReleases() {
@@ -148,7 +137,7 @@ function doSearchUploadedReleases() {
 }
 
 /********************************************************
- * 설명 :  로컬에 다운로드된 릴리즈 조회
+ * 설명 : 로컬에 다운로드된 릴리즈 조회
  * 기능 : doSearchLocalReleases
  *********************************************************/
 function doSearchLocalReleases() {
@@ -156,7 +145,7 @@ function doSearchLocalReleases() {
 }
 
 /********************************************************
- * 설명 :  릴리즈 업로드 확인
+ * 설명 : 릴리즈 업로드 확인
  * 기능 : LocalReleaseUpload
  *********************************************************/
 function LocalReleaseUpload(op) {
@@ -171,29 +160,28 @@ function LocalReleaseUpload(op) {
             fileName : record.releaseFileName
     };
     
-    if ( op == "upload" )
+    if ( op == "upload" ){
         message = record.releaseFileName + '릴리즈 파일을<BR>설치관리자에 업로드 하시겠습니까?'
-    else return;
+    } else return;
     
-    w2confirm( { msg : message
-        , title : '릴리즈'
-        , yes_text:'확인'
-        , no_text:'취소'
-        })
-        .yes(function() {
-            if(!lockFileSet(record.releaseFileName)){
-                return;
-            }
-            if ( op == "upload" )
-                uploadLogPopup(requestParameter);
-        })
-        .no(function() {
-            initView();
-        });    
+    w2confirm({
+         msg : message
+        ,title : '<b>릴리즈 업로드</b>'
+        ,yes_text:'확인'
+        ,no_text:'취소' 
+    }).yes(function() {
+        if(!lockFileSet(record.releaseFileName)){
+            return;
+        }
+        if ( op == "upload" )
+            uploadLogPopup(requestParameter);
+    }).no(function() {
+        initView();
+    });
 }
 
 /********************************************************
- * 설명 :  lock 검사
+ * 설명 : lock 검사
  * 기능 : lockFileSet
  *********************************************************/
 var lockFile = false;
@@ -211,7 +199,7 @@ function lockFileSet(releaseFile){
 }
 
 /********************************************************
- * 설명 :  릴리즈 업로드 로그 팝업
+ * 설명 : 릴리즈 업로드 로그 팝업
  * 기능 : uploadLogPopup
  *********************************************************/
 function uploadLogPopup(requestParameter){
@@ -222,12 +210,12 @@ function uploadLogPopup(requestParameter){
     progressLayer += 'aria-valuemin="0" aria-valuemax="100" style=";padding-top:0.5%;font-size:13px;"></div></div>';
     
     w2popup.open({
-        title    : '<b>릴리즈 업로드</b>',
+        title   : '<b>릴리즈 업로드</b>',
         body    : progressLayer + uploadLogPopupBody,
         buttons : uploadLogPopupButton,
-        width     : 800,
-        height    : 550,
-        modal    : true,
+        width   : 800,
+        height  : 550,
+        modal   : true,
         showMax : true,
         onOpen  : function(){
             doUploadConnect(requestParameter);
@@ -245,7 +233,7 @@ function uploadLogPopup(requestParameter){
 }
 
 /********************************************************
- * 설명 :  릴리즈 업로드 웹소켓 연결
+ * 설명 : 릴리즈 업로드 웹소켓 연결
  * 기능 : doUploadConnect
  *********************************************************/
 function doUploadConnect(requestParameter){
@@ -264,16 +252,17 @@ function doUploadConnect(requestParameter){
                                $("textarea[name='logAppendArea']").append(response.messages[i] + "\n").scrollTop($("textarea[name='logAppendArea']")[0].scrollHeight);
                            }
                            if ( response.state.toLowerCase() != "started" ) {
+                        	   
                             if ( response.state.toLowerCase() == "done" )    message = message + " 업로드 되었습니다."; 
                             if ( response.state.toLowerCase() == "error" ) message = message + " 업로드 중 오류가 발생하였습니다.";
                             if ( response.state.toLowerCase() == "cancelled" ) message = message + " 업로드 중 취소되었습니다.";
-                                
+                            
                             uploadClient.disconnect();
                             w2alert(message, "릴리즈 업로드");
                            }
                     }
                 } else{
-                    //progressbar
+                       //progressbar
                        if( response.messages < 100){
                            $(".w2ui-box1 .progress-bar").css("width", response.messages+"%").text("Uploading "+response.messages+"% ");
                        }
@@ -289,7 +278,7 @@ function doUploadConnect(requestParameter){
 
 
 /********************************************************
- * 설명 :  업로드된 릴리즈 삭제
+ * 설명 : 업로드된 릴리즈 삭제
  * 기능 : doDeleteRelease
  *********************************************************/
 function doDeleteRelease() {
@@ -305,7 +294,7 @@ function doDeleteRelease() {
         };
     
     w2confirm( { msg : record.version + '버전의 ' + record.name + ' 릴리즈를 삭제하시겠습니까?'
-        , title : '릴리즈 삭제'
+        , title : '<b>릴리즈 삭제</b>'
         , yes_text:'확인'
         , no_text:'취소'
     })
@@ -319,7 +308,7 @@ function doDeleteRelease() {
 }
 
 /********************************************************
- * 설명 :  릴리즈 삭제 로그 팝업
+ * 설명 : 릴리즈 삭제 로그 팝업
  * 기능 : doDeleteRelease
  *********************************************************/
 function deleteLogPopup(requestParameter){
@@ -351,11 +340,10 @@ function deleteLogPopup(requestParameter){
 }
 
 /********************************************************
- * 설명 :  릴리즈 삭제 웹소켓 연결
+ * 설명 : 릴리즈 삭제 웹소켓 연결
  * 기능 : doDeleteConnect
  *********************************************************/
 function doDeleteConnect(requestParameter){
-    
     var message = requestParameter.version + " 버전의 릴리즈(" + requestParameter.fileName + ") ";
     
     var socket = new SockJS('/info/release/delete/releaseDelete');

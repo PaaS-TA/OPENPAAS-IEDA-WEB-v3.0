@@ -58,7 +58,7 @@
          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> ${userId} <b class="care t"></b></a>
          <ul class="dropdown-menu">
              <li>
-                 <a href="/logout"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                 <a href="/logout"><i class="fa fa-fw fa-power-off"></i> 로그아웃</a>
              </li>
          </ul>
      </li>

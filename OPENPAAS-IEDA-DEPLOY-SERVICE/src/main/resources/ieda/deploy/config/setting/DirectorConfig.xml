@@ -21,6 +21,7 @@
     </resultMap>
 
     <select id="selectDirectorConfig" resultMap="directorConfigVo">
+      /**ieda.deploy.config.setting.selectDirectorConfig**/
         Select 
             ieda_director_config_seq, 
             create_date, 
@@ -40,19 +41,21 @@
     </select>
     
     <select id="selectDirectorConfigByDefaultYn" resultMap="directorConfigVo">
-        Select ieda_director_config_seq,
-            create_date,
-            current_deployment, 
-            default_yn, 
-            director_cpi, 
-            director_name, 
-            director_port, 
-            director_url, 
-            director_uuid, 
-            director_version, 
-            update_date,
-            user_id, 
-            user_password 
+      /**ieda.deploy.config.setting.selectDirectorConfigByDefaultYn**/
+        Select 
+            ieda_director_config_seq
+            ,create_date
+            ,current_deployment 
+            ,default_yn
+            ,director_cpi 
+            ,director_name 
+            ,director_port 
+            ,director_url 
+            ,director_uuid 
+            ,director_version 
+            ,update_date
+            ,user_id
+            ,user_password 
          From 
                ieda_director_config
         Where 
@@ -60,6 +63,7 @@
     </select>
     
     <select id="selectDirectorConfigBySeq" resultMap="directorConfigVo">
+      /**ieda.deploy.config.setting.selectDirectorConfigBySeq**/
         select 
             ieda_director_config_seq, 
             create_date, 
@@ -77,10 +81,11 @@
         From 
             ieda_director_config 
         Where 
-            ieda_director_config_seq=#{seq}                    
+            ieda_director_config_seq=#{seq}
     </select>
     
     <select id="selectDirectorConfigByDirectorUrl" resultMap="directorConfigVo">
+      /**ieda.deploy.config.setting.selectDirectorConfigByDirectorUrl**/
         select 
             ieda_director_config_seq, 
             create_date, 
@@ -102,6 +107,7 @@
     </select>
     
     <insert id="insertDirector">
+      /**ieda.deploy.config.setting.insertDirector**/
         insert into ieda_director_config (
             ieda_director_config_seq,
             create_date, 
@@ -137,6 +143,7 @@
     </insert>
     
     <update id="updateDirector">
+       /**ieda.deploy.config.setting.updateDirector**/
         Update 
             ieda_director_config 
         Set  
@@ -160,6 +167,27 @@
         Delete from 
             ieda_director_config 
         Where 
-            ieda_director_config_seq=#{seq}        
+            ieda_director_config_seq=#{seq}
     </delete>
+    
+    <select id="selectDirectorConfigInfoByDirectorNameAndCPI" resultMap="directorConfigVo">
+      /**ieda.deploy.config.setting.selectDirectorConfigInfoByDirectorNameAndCPI**/
+        Select
+           ieda_director_config_seq
+           ,create_date
+           ,current_deployment 
+           ,default_yn
+           ,director_cpi 
+           ,director_name 
+           ,director_port 
+           ,director_url 
+           ,director_uuid 
+           ,director_version 
+           ,update_date
+           ,user_id
+           ,user_password 
+          From ieda_director_config
+         Where director_cpi  = #{director_cpi}
+           And director_name = #{director_name}
+    </select>
 </mapper>

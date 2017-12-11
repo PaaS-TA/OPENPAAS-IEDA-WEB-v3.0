@@ -39,7 +39,7 @@ public class CommonController extends BaseController{
      * @return : ResponseEntity<List<Region>>
     ***************************************************/
     @RequestMapping(value="/common/aws/region/list", method=RequestMethod.GET)
-    public ResponseEntity<List<Region>> getAwsRegionInfoLIst(Principal principal){
+    public ResponseEntity<List<Region>> getAwsRegionInfoList(){
         List<Region> awsRegionList= commonservice.getAWSRegionList();
         return new ResponseEntity<List<Region>>(awsRegionList, HttpStatus.OK);
     }
@@ -51,7 +51,7 @@ public class CommonController extends BaseController{
      * @return : ResponseEntity<List<Region>>
     ***************************************************/
     @RequestMapping(value="/common/aws/avaliabilityzone/list/{accountId}/{region}", method=RequestMethod.GET)
-    public ResponseEntity<List<String>> getAwsAvaliabilityZoneInfoList(Principal principal, @PathVariable int accountId, @PathVariable String region ){
+    public ResponseEntity<List<String>> getAwsAvailabilityZoneInfoList(Principal principal, @PathVariable int accountId, @PathVariable String region ){
         List<String> avaliabilityzones= commonservice.getAWSAvailabilityZoneByRegion(principal, accountId, region);
         return new ResponseEntity<List<String>>(avaliabilityzones, HttpStatus.OK);
     }

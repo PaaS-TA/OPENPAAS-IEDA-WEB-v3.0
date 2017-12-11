@@ -61,11 +61,11 @@ public class ReleaseManagementDownloadService {
                     message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
         //1. 저장된 릴리즈 정보 조회
-        if(releseFile.exists() && "true".equals(dto.getOverlayCheck())){
+        if(releseFile.exists() && "true".equalsIgnoreCase(dto.getOverlayCheck())){
             CommonDeployUtils.deleteFile(RELEASEDIRECTORY, result.getReleaseFileName());
         }
         //덮어쓰기 불가능
-        if(releseFile.exists() && "false".equals(dto.getOverlayCheck()) ){
+        if(releseFile.exists() && "false".equalsIgnoreCase(dto.getOverlayCheck()) ){
             deleteLockFile( result.getReleaseFileName() );
             throw new CommonException(message.getMessage("common.conflict.exception.code", null, Locale.KOREA),
                     message.getMessage("common.conflict.file.message", null, Locale.KOREA), HttpStatus.CONFLICT);
@@ -143,7 +143,9 @@ public class ReleaseManagementDownloadService {
                     bufferedReader.close();
                 }
             } catch (IOException e) {
-                if(LOGGER.isErrorEnabled()) LOGGER.error( e.getMessage() );
+                if(LOGGER.isErrorEnabled()) {
+                    LOGGER.error( e.getMessage() );
+                }
             }
         }
         checkSystemReleaseDownloadFile(dto, result,principal, downloadFlag);

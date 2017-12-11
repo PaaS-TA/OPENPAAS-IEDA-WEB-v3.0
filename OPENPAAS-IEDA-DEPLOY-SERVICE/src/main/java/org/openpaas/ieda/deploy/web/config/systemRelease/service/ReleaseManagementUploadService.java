@@ -54,10 +54,10 @@ public class ReleaseManagementUploadService {
                 
                 String releaseFilePath = RELEASE_DIR + SEPARATOR + mpf.getOriginalFilename();
                 isKeyFile = new File(releaseFilePath);
-                if(isKeyFile.exists() && "true".equals(request.getParameter("overlay"))){
+                if(isKeyFile.exists() && "true".equalsIgnoreCase(request.getParameter("overlay"))){
                     //1. 파일이 존재하고 덮어쓰기가 체크 되어있을 때
                     CommonDeployUtils.deleteFile(RELEASE_DIR, mpf.getOriginalFilename());
-                }else if(isKeyFile.exists() && "false".equals(request.getParameter("overlay"))){
+                }else if(isKeyFile.exists() && "false".equalsIgnoreCase(request.getParameter("overlay"))){
                     //2. 파일이 존재하지만 덮어쓰기가 체크 되어있지 않을 때 
                     throw new CommonException(message.getMessage("common.conflict.exception.code", null, Locale.KOREA),
                             message.getMessage("common.conflict.file.message", null, Locale.KOREA), HttpStatus.CONFLICT);
@@ -83,9 +83,9 @@ public class ReleaseManagementUploadService {
                         message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
             }finally {
                 String originalFileExtension = mpf.getOriginalFilename().substring(mpf.getOriginalFilename().lastIndexOf("."));
-                String FileResultName = mpf.getOriginalFilename().replace(originalFileExtension, "") + "-download.lock";
+                String fileResultName = mpf.getOriginalFilename().replace(originalFileExtension, "") + "-download.lock";
                 //lock 파일 삭제
-                CommonDeployUtils.deleteFile(LOCK_DIR, FileResultName);
+                CommonDeployUtils.deleteFile(LOCK_DIR, fileResultName);
                 
                 if (stream != null) {
                     try {

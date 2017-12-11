@@ -44,14 +44,14 @@ public class StemcellManagementService {
      * @project : Paas 플랫폼 설치 자동화
      * @description : 로컬 스템셀과 비교 후 스템셀 목록 조회
      * @title : getPublicStemcellList
-     * @return : List<StemcellManagementVO>nn
+     * @return : List<StemcellManagementVO>
     ***************************************************/
     public List<StemcellManagementVO> getPublicStemcellList() {
         List<StemcellManagementVO> list = dao.selectPublicStemcellList();
         if( list != null ){
             for( StemcellManagementVO stemcell : list ){
                 if( stemcell.getDownloadStatus() != null ){
-                    if( stemcell.getDownloadStatus().toUpperCase().equals("DOWNLOADED") ){
+                    if( stemcell.getDownloadStatus().toUpperCase().equalsIgnoreCase("DOWNLOADED") ){
                         File stemcellFile = new File(STEMCELLDIR+SEPARATOR +stemcell.getStemcellFileName());
                         if(!stemcellFile.exists() || stemcellFile.length() == 0){
                             StemcellManagementDTO.Delete dto = new StemcellManagementDTO.Delete();
@@ -101,7 +101,7 @@ public class StemcellManagementService {
         File stemcell = new File(STEMCELLDIR + SEPARATOR + dto.getStemcellFileName());
         
         //스템셀 파일이 존재하고 덮어쓰기 체크가 안되어 있을 경우
-        if(stemcell.exists() && "false".equals(dto.getOverlayCheck())) {
+        if(stemcell.exists() && "false".equalsIgnoreCase(dto.getOverlayCheck())) {
             status = "conflict";
             throw new CommonException(message.getMessage("common.conflict.exception.code", null, Locale.KOREA),
                     message.getMessage("common.conflict.file.message", null, Locale.KOREA), HttpStatus.CONFLICT);
@@ -124,26 +124,26 @@ public class StemcellManagementService {
     ***************************************************/
     public StemcellManagementVO saveDownloadingStemcellInfoByFile(StemcellManagementDTO.Regist dto, String testFlag, Principal principal) {
         StemcellManagementVO vo = null;
-        StemcellManagementVO duplication_check = null;
-        String file_version = "";
+        StemcellManagementVO duplicationCheck = null;
+        String fileVersion = "";
         try{
             //중복
-            duplication_check = dao.selectPublicStemcellInfoByFileName(dto.getStemcellFileName());
-            if(dto.getLight().toLowerCase().equals("true") || dto.getStemcellFileName().indexOf("light")!=-1){
-                file_version = dto.getStemcellFileName().split("-")[3];
+            duplicationCheck = dao.selectPublicStemcellInfoByFileName(dto.getStemcellFileName());
+            if(dto.getLight().toLowerCase().equalsIgnoreCase("true") || dto.getStemcellFileName().indexOf("light")!=-1){
+                fileVersion = dto.getStemcellFileName().split("-")[3];
             }else{
-                file_version = dto.getStemcellFileName().split("-")[2];
+                fileVersion = dto.getStemcellFileName().split("-")[2];
             }
             
-            if( duplication_check == null || "Y".equals(testFlag)){
-                dto.setStemcellVersion(file_version);
+            if( duplicationCheck == null || "Y".equalsIgnoreCase(testFlag)){
+                dto.setStemcellVersion(fileVersion);
                 dto.setCreateUserId(principal.getName());
                 dto.setUpdateUserId(principal.getName());
                 dao.insertPublicStemcell(dto);
             } else{
-                dto.setStemcellVersion(file_version);
+                dto.setStemcellVersion(fileVersion);
                 dto.setUpdateUserId(principal.getName());
-                dto.setId((duplication_check.getId()));
+                dto.setId(duplicationCheck.getId());
                 dao.updatePublicStemcell(dto);
             }
             vo = dao.selectPublicStemcellById(dto.getId());
@@ -171,11 +171,11 @@ public class StemcellManagementService {
         }
         File stemcllFile = new File(STEMCELLDIR + SEPARATOR + dto.getStemcellFileName());
         //스템셀 파일이 존재하고 덮어쓰기 체크가 안되어 있을 경우
-        if(stemcllFile.exists() && "false".equals(dto.getOverlayCheck())) {
+        if(stemcllFile.exists() && "false".equalsIgnoreCase(dto.getOverlayCheck())) {
             throw new CommonException(message.getMessage("common.conflict.exception.code", null, Locale.KOREA),
                     message.getMessage("common.conflict.file.message", null, Locale.KOREA), HttpStatus.CONFLICT);
         }else{
-            if("".equals(dto.getStemcellSize()) ||  dto.getStemcellSize().isEmpty()){
+            if("".equalsIgnoreCase(dto.getStemcellSize()) ||  dto.getStemcellSize().isEmpty()){
                 throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
                         message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
             }
@@ -210,9 +210,9 @@ public class StemcellManagementService {
                 throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
                         message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
             }
-            String downloadUrlInfo = setStemcellUrlForWget(dto);
-            dto.setDownloadLink(downloadUrlInfo);
-            
+        }
+        if( dto == null ) {
+            dto = new StemcellManagementDTO.Regist();
         }
         return doWgetToGetPublicStemcellInfo(dto, testFlag, principal);
     }
@@ -232,7 +232,7 @@ public class StemcellManagementService {
          BufferedReader bufferedReader = null;
          Process process = null;
          String[] search = null;
-         StringBuffer accumulatedBuffer = new StringBuffer();
+         StringBuffer accumulatedBuffer = new StringBuffer("");
          String info = null;
          boolean flag = false;
          try{
@@ -244,8 +244,8 @@ public class StemcellManagementService {
              bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
              String contains = "";
              while ((info = bufferedReader.readLine()) != null){ 
-                 accumulatedBuffer.append(info + "\n");
-                 if(dto.getFileType().toLowerCase().equals("url") && dto.getStemcellUrl().contains("bosh.io")){
+                 accumulatedBuffer.append(info).append("\n");
+                 if(dto.getFileType().toLowerCase().equalsIgnoreCase("url") && dto.getStemcellUrl().contains("bosh.io")){
                      contains = "Location:";
                  }else{
                      contains ="https:";
@@ -285,16 +285,16 @@ public class StemcellManagementService {
     public String setStemcellUrlForWget(StemcellManagementDTO.Regist dto){
         String iaas = setIaasHypervisor(dto);
         String downloadUrl = "";
-        if(dto.getFileType().toLowerCase().equals("version")){
+        if(dto.getFileType().toLowerCase().equalsIgnoreCase("version")){
             String baseUrl = setStemcellDownLoadBaseUrlByVersionType(dto);
             String subUrl = setStemcellDownLoadSubUrlByVersionType(dto);
-            if(("centos").equals(dto.getOsName().toLowerCase())){
+            if(("centos").equalsIgnoreCase(dto.getOsName().toLowerCase())){
                 downloadUrl = baseUrl+SEPARATOR+subUrl+"-"+dto.getStemcellVersion().toLowerCase()+"-"+iaas+"-"+dto.getOsName().toLowerCase()+"-"+dto.getOsVersion().toLowerCase().replace("7.x", "7")+"-go_agent.tgz";
             }else{
                 downloadUrl = baseUrl+SEPARATOR+subUrl+"-"+dto.getStemcellVersion().toLowerCase()+"-"+iaas+"-"+dto.getOsName().toLowerCase()+"-"+dto.getOsVersion().toLowerCase()+"-go_agent.tgz";
             }
             
-        }else if(dto.getFileType().toLowerCase().equals("url")){
+        }else if(dto.getFileType().toLowerCase().equalsIgnoreCase("url")){
             downloadUrl = dto.getStemcellUrl();
         }
         return downloadUrl;
@@ -308,16 +308,16 @@ public class StemcellManagementService {
     ***************************************************/
     public String setStemcellVersionWithWget(StemcellManagementDTO.Regist dto){
         String stemcellVersion ="";
-        if(dto.getFileType().toLowerCase().equals("url") && dto.getStemcellUrl().contains("bosh.io")){
+        if(dto.getFileType().toLowerCase().equalsIgnoreCase("url") && dto.getStemcellUrl().contains("bosh.io")){
             if(dto.getStemcellFileName().contains("light")){
                 stemcellVersion = dto.getStemcellFileName().split("-")[3];
             }else{
                 stemcellVersion = dto.getStemcellFileName().split("-")[2];
             }
         }else{
-            if(dto.getLight().toLowerCase().equals("true") || dto.getStemcellFileName().contains("light")){
+            if(dto.getLight().toLowerCase().equalsIgnoreCase("true") || dto.getStemcellFileName().contains("light")){
                 stemcellVersion = dto.getStemcellFileName().split("-")[3];
-            }else if(dto.getLight().toLowerCase().equals("false")){
+            }else if(dto.getLight().toLowerCase().equalsIgnoreCase("false")){
                 stemcellVersion = dto.getStemcellFileName().split("-")[2];
             }
         }
@@ -333,7 +333,7 @@ public class StemcellManagementService {
     ***************************************************/
     public String setStemcellDownLoadSubUrlByVersionType(StemcellManagementDTO.Regist dto) {
         String subUrl = "";
-            if(dto.getLight().toLowerCase().equals("true")){
+            if(dto.getLight().toLowerCase().equalsIgnoreCase("true")){
                 subUrl = "light-bosh-stemcell";
             }else{
                 subUrl = "bosh-stemcell";
@@ -350,13 +350,20 @@ public class StemcellManagementService {
     public String setIaasHypervisor(StemcellManagementDTO.Regist dto) {
         String iaasHypervisor = "";
         String iaas=dto.getIaasType().toLowerCase();
-        if( iaas.equals("openstack") || iaas.equals("google") ){
+        if( iaas.equalsIgnoreCase("openstack") || iaas.equalsIgnoreCase("google") ){
             iaasHypervisor = iaas +"-kvm";
-        } else if( iaas.equals("vsphere") ){
+        } else if( iaas.equalsIgnoreCase("vsphere") ){
             iaasHypervisor = iaas+"-esxi";
-        } else if(iaas.equals("aws")){
-            if(dto.getLight().toLowerCase().equals("true")) iaasHypervisor = iaas+"-xen-hvm";
-            else iaasHypervisor = iaas+"-xen";
+        } else if(iaas.equalsIgnoreCase("aws")){
+            if(dto.getLight().toLowerCase().equalsIgnoreCase("true")) {
+                iaasHypervisor = iaas+"-xen-hvm";
+            }else {
+                if( Float.parseFloat(dto.getStemcellVersion()) >= 3363 ) {
+                    iaasHypervisor = iaas+"-xen-hvm";
+                }else {
+                    iaasHypervisor = iaas+"-xen";
+                }
+            }
         }
         return iaasHypervisor;
     }
@@ -371,10 +378,10 @@ public class StemcellManagementService {
         String baseUrl = "";
         try{
             if(Float.parseFloat(dto.getStemcellVersion())>3264){
-                if(dto.getLight().toLowerCase().equals("true")){//light stemcell
-                    if( dto.getIaasType().toLowerCase().equals("aws") ){
+                if(dto.getLight().toLowerCase().equalsIgnoreCase("true")){//light stemcell
+                    if( dto.getIaasType().toLowerCase().equalsIgnoreCase("aws") ){
                         baseUrl = PUBLIC_STEMCELLS_NEWEST_URL+SEPARATOR+"bosh-aws-light-stemcells";
-                    }else if( dto.getIaasType().toLowerCase().equals("google") ){
+                    }else if( dto.getIaasType().toLowerCase().equalsIgnoreCase("google") ){
                         baseUrl = PUBLIC_STEMCELLS_NEWEST_URL+SEPARATOR+"bosh-gce-light-stemcells";
                     }
                 }else{
@@ -397,7 +404,7 @@ public class StemcellManagementService {
      * @return : Boolean
     ***************************************************/
     public void deleteStemcellLockFile(String status,String  fileName){
-        if( status.equals("error")){
+        if( status.equalsIgnoreCase("error")){
             //lock file delete
             if( !StringUtils.isEmpty(fileName) ){
                 int index = fileName.lastIndexOf(".");
@@ -414,20 +421,18 @@ public class StemcellManagementService {
      * @return : Boolean
     ***************************************************/
     public void deletePublicStemcell(StemcellManagementDTO.Delete dto) {
+        //1. 스템셀 데이터 삭제
         dao.deletePublicStemcell(dto);
         //2. lock 파일 삭제
         int index = dto.getStemcellFileName().indexOf(".tgz");
         String lockFileName = dto.getStemcellFileName().substring(0, index) + "-download.lock";
         CommonDeployUtils.deleteFile(LOCK_DIR, lockFileName); //lock 파일 삭제
         
-        //stemcell 파일 삭제
+        //스템셀 파일 삭제
         File file = new File(STEMCELLDIR + SEPARATOR + dto.getStemcellFileName());
         if(file.exists()){ 
             CommonDeployUtils.deleteFile(STEMCELLDIR, dto.getStemcellFileName());
             dao.deletePublicStemcell(dto);
-        }else{
-            throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
-                    message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -441,7 +446,7 @@ public class StemcellManagementService {
         List<StemcellManagementVO> list = dao.selectLocalStemcellListByIaas(iaas);
         if( list != null ){
             for( StemcellManagementVO stemcell : list ){
-                if( stemcell.getDownloadStatus() != null && stemcell.getDownloadStatus().equals("DOWNLOADED")  ){
+                if( stemcell.getDownloadStatus() != null && stemcell.getDownloadStatus().equalsIgnoreCase("DOWNLOADED")  ){
                     File stemcellFile = new File(STEMCELLDIR + SEPARATOR + stemcell.getStemcellFileName());
                     if(!stemcellFile.exists() || stemcellFile.length() == 0){
                         StemcellManagementDTO.Delete dto = new StemcellManagementDTO.Delete();

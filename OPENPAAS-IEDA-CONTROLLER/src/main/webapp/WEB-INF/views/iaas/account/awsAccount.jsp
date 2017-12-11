@@ -32,9 +32,9 @@ $(function() {
         method  : 'GET',
         multiSelect: false,
         show: {
-        	selectColumn: true,
-        	footer: true
-        	},
+            selectColumn: true,
+            footer: true
+            },
         columns : [
            {field: 'id',  caption: 'id', hidden:true}
            , {field: 'status', caption: '환경 설정 정보 사용 여부', size: '7%', style: 'text-align:center'}
@@ -44,17 +44,17 @@ $(function() {
            , {field: 'createDate', caption: '계정 생성 일자', size: '5%', style: 'text-align:center'}
            , {field: 'updateDate', caption: '계정 수정 일자', size: '5%', style: 'text-align:center'}
          ],onError: function(event){
-        	 w2alert(search_grid_fail_msg, "AWS 계정 목록");
+             w2alert(search_grid_fail_msg, "AWS 계정 목록");
          },onLoad : function(event){
-        	 $("#rsaPublicKeyModulus").val(  JSON.parse(event.xhr.responseText).publicKeyModulus );
+             $("#rsaPublicKeyModulus").val(  JSON.parse(event.xhr.responseText).publicKeyModulus );
              $("#rsaPublicKeyExponent").val(  JSON.parse(event.xhr.responseText).publicKeyExponent );
          },onSelect : function(event){
-        	 event.onComplete = function(){
+             event.onComplete = function(){
                 $("#deleteAccountBtn").attr('disabled', false);
             }
          },onUnselect : function(event){
-        	 event.onComplete = function(){
-        		 $("#deleteAccountBtn").attr('disabled', true);
+             event.onComplete = function(){
+                 $("#deleteAccountBtn").attr('disabled', true);
             }
          }
     });
@@ -73,11 +73,11 @@ $("#registAccountBtn").click(function(){
         buttons : $("#registPopupBtnDiv").html(),
         onOpen : function(event){
             event.onComplete = function(){
-            	 popup_height  = Number( $(".w2ui-popup").css("height").substring(-1, 3));
-            	 body_height = Number( $(".panel-body").css("height").substring(-1, 3)) ;
+                 popup_height  = Number( $(".w2ui-popup").css("height").substring(-1, 3));
+                 body_height = Number( $(".panel-body").css("height").substring(-1, 3)) ;
             }                   
         },onClose:function(event){
-        	w2ui['aws_accountGrid'].reset();
+            w2ui['aws_accountGrid'].reset();
             initsetting();
             doSearch();
         }
@@ -88,9 +88,9 @@ $("#registAccountBtn").click(function(){
  * 설명 :  AWS 삭제 팝업 화면
  *********************************************************/
 $("#deleteAccountBtn").click(function(){
-	
-	if( $("#deleteAccountBtn").attr("disabled") == "disabled" ) return;
-	//grid record
+    
+    if( $("#deleteAccountBtn").attr("disabled") == "disabled" ) return;
+    //grid record
     var selected = w2ui['aws_accountGrid'].getSelection();
     if( selected.length == 0 ){
         w2alert(select_fail_msg);
@@ -103,27 +103,27 @@ $("#deleteAccountBtn").click(function(){
     
     var msg = "계정(" + record.accountName + ")"+ popup_delete_msg;
     if( record.status == '사용중' ){
-    	msg = "<span style='color:red'>현재 AWS 환경 설정 정보 화면에서 해당 계정("+record.accountName+")을 사용하고 있습니다. </span><br/><span style='color:red; font-weight:bolder'>그래도 삭제 하시겠습니까?</span>";
+        msg = "<span style='color:red'>현재 AWS 환경 설정 정보 화면에서 해당 계정("+record.accountName+")을 사용하고 있습니다. </span><br/><span style='color:red; font-weight:bolder'>그래도 삭제 하시겠습니까?</span>";
     }
     
-	w2confirm({
-        title        : "AWS 계정 정보 삭제",
+    w2confirm({
+        title        : "<b>AWS 계정 정보 삭제</b>",
         msg          : msg,
         yes_text     : "확인",
         no_text      : "취소",
         yes_callBack : function(event){
-        	w2ui['aws_accountGrid'].lock(delete_lock_msg, {
-        		spinner: true, opacity : 1
-        	});
-        	//delete function 호출
-        	deleteAwsAccountInfo(record);
-        	w2ui['aws_accountGrid'].reset();
+            w2ui['aws_accountGrid'].lock(delete_lock_msg, {
+                spinner: true, opacity : 1
+            });
+            //delete function 호출
+            deleteAwsAccountInfo(record);
+            w2ui['aws_accountGrid'].reset();
         },no_callBack  : function(event){
-        	w2ui['aws_accountGrid'].unlock();
-        	w2ui['aws_accountGrid'].reset();
-        	doSearch();
+            w2ui['aws_accountGrid'].unlock();
+            w2ui['aws_accountGrid'].reset();
+            doSearch();
         }
-	});
+    });
 });
 });
     
@@ -142,14 +142,14 @@ function doSearch() {
  * 설명 : AWS 계정 정보 삭제
  *********************************************************/
 function deleteAwsAccountInfo(record){ 
-	 if( $("#deleteAccountBtn").attr("disabled") == "disabled" ) return;
-	 accountInfo ={
-			id :  record.id,
+     if( $("#deleteAccountBtn").attr("disabled") == "disabled" ) return;
+     accountInfo ={
+            id :  record.id,
             iaasType :  record.iaasType,
             accountName : record.accountName
-	 }
+     }
      
-	 w2popup.lock(delete_lock_msg, true);
+     w2popup.lock(delete_lock_msg, true);
      $.ajax({
              type : "DELETE",
              url : "/iaasMgnt/account/aws/delete",
@@ -176,9 +176,7 @@ function deleteAwsAccountInfo(record){
  * 설명 : 기본 설정값 초기화
  *********************************************************/
 function initsetting(){
-	 $(".w2ui-popup").css( "height" ,"275");
-	 $(".panel-body").css( "height" ,"140");
-	accountInfo="";
+    accountInfo="";
 }
 
 /********************************************************
@@ -199,6 +197,7 @@ $( window ).resize(function() {
 
 </script>
 <div id="main">
+    <div class="page_site">계정 관리 > <strong>AWS 계정 관리 </strong></div>
      <div class="pdt20">
         <div class="fl" style="width:100%">
             <div class="dropdown" >
@@ -219,8 +218,6 @@ $( window ).resize(function() {
             </div>
         </div> 
     </div>
- 
-    
     <div class="pdt20">
         <div class="title fl">AWS 계정 목록</div>
         <div class="fr"> 
@@ -276,29 +273,29 @@ $( window ).resize(function() {
 
 <script>
 $(function() {
-	$.validator.addMethod("sqlInjection", function(value, element, params) {
+    $.validator.addMethod("sqlInjection", function(value, element, params) {
         return checkInjectionBlacklist(params);
       },text_injection_msg);
-	
+    
     $("#awsAccountForm").validate({
         ignore : "",
         onfocusout: true,
         rules: {
-        	accountName : {
-        		required : function(){
-        			return checkEmpty( $(".w2ui-msg-body input[name='accountName']").val() );
+            accountName : {
+                required : function(){
+                    return checkEmpty( $(".w2ui-msg-body input[name='accountName']").val().trim() );
                 }, sqlInjection : function(){
-                	return $(".w2ui-msg-body input[name='accountName']").val();
+                    return $(".w2ui-msg-body input[name='accountName']").val().trim();
                 }
             }, commonAccessUser: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessUser']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessUser']").val().trim() );
                 }, sqlInjection :   function(){
-                    return $(".w2ui-msg-body input[name='commonAccessUser']").val();
+                    return $(".w2ui-msg-body input[name='commonAccessUser']").val().trim();
                 }
             }, commonAccessSecret: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessSecret']").val() );
+                    return checkEmpty( $(".w2ui-msg-body input[name='commonAccessSecret']").val().trim() );
                 }
             }
         }, messages: {
@@ -318,18 +315,18 @@ $(function() {
         }, invalidHandler: function(event, validator) {
             var errors = validator.numberOfInvalids();
             if (errors) {
-            	setInvalidHandlerStyle(errors, validator);
+                setInvalidHandlerStyle(errors, validator);
             }
         }, submitHandler: function (form) {
-        	w2popup.lock(save_lock_msg, true);
-        	try {
+            w2popup.lock(save_lock_msg, true);
+            try {
                 var rsa = new RSAKey();
                 rsa.setPublic($("#rsaPublicKeyModulus").val(), $("#rsaPublicKeyExponent").val() );
             } catch(err) {
                 w2alert(err);
             }
             // AWS 계정 정보 등록
-        	 accountInfo = {
+             accountInfo = {
                      iaasType  : "AWS"
                     ,id : $(".w2ui-msg-body input[name='accountId']").val()
                     ,accountName : $(".w2ui-msg-body input[name='accountName']").val()
@@ -360,6 +357,3 @@ $(function() {
     });
 });
 </script>
-
-
-

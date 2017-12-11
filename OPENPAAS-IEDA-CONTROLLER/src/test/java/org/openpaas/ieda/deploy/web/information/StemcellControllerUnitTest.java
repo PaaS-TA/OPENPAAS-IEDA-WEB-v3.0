@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.Application;
@@ -29,8 +30,6 @@ import org.openpaas.ieda.deploy.web.information.stemcell.dto.StemcellDTO;
 import org.openpaas.ieda.deploy.web.information.stemcell.service.StemcellDeleteAsyncService;
 import org.openpaas.ieda.deploy.web.information.stemcell.service.StemcellService;
 import org.openpaas.ieda.deploy.web.information.stemcell.service.StemcellUploadAsyncService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -65,7 +64,6 @@ public class StemcellControllerUnitTest extends BaseControllerUnitTest {
     final static String STEMCELL_UPLOAD_URL="/info/stemcell/upload/stemcellUploading";
     final static String UPLOADED_STEMCELL_DELETE_URL="/info/stemcell/delete/stemcellDelete";
     
-    final static Logger LOGGER = LoggerFactory.getLogger(StemcellControllerUnitTest.class);
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -88,7 +86,6 @@ public class StemcellControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testGoListStemcell() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testGoListStemcell  ================="); } 
         mockMvc.perform(get(VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/deploy/information/listStemcell"));
@@ -102,7 +99,6 @@ public class StemcellControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testGetUploadStemcellList() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testGetUploadStemcellLIst  ================="); }
         List<StemcellManagementVO> stemcellList = setUploadStemcellList();
         when(mockStemcellService.getStemcellList()).thenReturn(stemcellList);
         mockMvc.perform(get(UPLOADED_STEMCELL_LIST_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -121,7 +117,6 @@ public class StemcellControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testGetLocalStemcellList() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testGetLocalStemcellList  ================="); }
         List<StemcellManagementVO> stemcellList = setUploadStemcellList();
         when(mockStemcellManagementService.getLocalStemcellList(anyString())).thenReturn(stemcellList);
         mockMvc.perform(get(DOWNLOADED_STEMCELL_LIST_URL, "aws").contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -138,7 +133,6 @@ public class StemcellControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testUploadStemcell() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testDoUploadStemcell  ================="); }
         StemcellDTO.Upload dto = setUploadStemcellInfo();
         doNothing().when(mockStemcellUploadAsyncService).uploadStemcellAsync(anyString(), anyString(), anyString());
         mockStemcellController.uploadStemcell(dto, principal);
@@ -152,7 +146,6 @@ public class StemcellControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
     public void testDeleteStemcell() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testDeleteStemcell  ================="); }
         StemcellDTO.Delete dto = setDeleteUploadedStemcellInfo();
         doNothing().when(mockStemcellDeleteAsyncService).deleteStemcellAsync(anyString(), anyString(), any());
         mockStemcellController.deleteStemcell(dto, principal);
@@ -173,6 +166,34 @@ public class StemcellControllerUnitTest extends BaseControllerUnitTest {
         vo.setStemcellFileName("bosh-aws-xen-ubuntu-trusty-go_agent");
         vo.setOs("ubuntu-trusty");
         vo.setStemcellVersion("3262");
+        vo.getRecid();
+        vo.getId();
+        vo.getStemcellFileName();
+        vo.getOs();
+        vo.getStemcellVersion();
+        vo.setCreateDate(new Date());
+        vo.setUpdateDate(new Date());
+        vo.setCreateUserId("");
+        vo.getCreateUserId();
+        vo.setUpdateUserId("");
+        vo.getUpdateUserId();
+        vo.setIaas("");
+        vo.getIaas();
+        vo.setIsDose("");
+        vo.getIsDose();
+        vo.setIsExisted("");
+        vo.getIsExisted();
+        vo.setStemcellUrl("");
+        vo.getStemcellUrl();
+        vo.setStemcellName("");
+        vo.getStemcellFileName();
+        vo.setSize("");
+        vo.getSize();
+        vo.setOsVersion("");
+        vo.getOsVersion();
+        vo.setDownloadStatus("");
+        vo.getDownloadStatus();
+        
         list.add(vo);
         
         return list;
@@ -187,7 +208,7 @@ public class StemcellControllerUnitTest extends BaseControllerUnitTest {
     public StemcellDTO.Upload setUploadStemcellInfo(){
         StemcellDTO.Upload upload = new StemcellDTO.Upload();
         upload.setFileName("bosh-stemcell-3263-aws-xen-ubuntu-trusty-go_agent.tgz");
-        
+        upload.getFileName();
         return upload;
     }
     
@@ -201,6 +222,8 @@ public class StemcellControllerUnitTest extends BaseControllerUnitTest {
         StemcellDTO.Delete stemcell = new StemcellDTO.Delete();
         stemcell.setStemcellName("bosh-aws-xen-ubuntu-trusty-go_agent");
         stemcell.setVersion("3263");
+        stemcell.getStemcellName();
+        stemcell.getVersion();
         
         return stemcell;
     }

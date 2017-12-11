@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,10 +24,7 @@ import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
 import org.openpaas.ieda.openstackMgnt.api.keypairs.OpenstackKeypairsMgntApiService;
 import org.openpaas.ieda.openstackMgnt.web.keypairs.dto.OpenstackKeypairsMgntDTO;
-import org.openpaas.ieda.openstackMgnt.web.network.service.OpenstackNetworkMgntServiceUnitTest;
 import org.openstack4j.model.compute.Keypair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,7 +34,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class OpenstackKeypairsMgntServiceUnitTest {
     private Principal principal = null;
-    final static Logger LOGGER = LoggerFactory.getLogger(OpenstackNetworkMgntServiceUnitTest.class);
     
     @InjectMocks OpenstackKeypairsMgntService mockOpenstackKeypairsMgntService;
     @Mock CommonIaasService mockCommonIaasService;
@@ -53,7 +50,6 @@ public class OpenstackKeypairsMgntServiceUnitTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         principal = getLoggined();
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("loging" + principal); }
     }
     
     /***************************************************
@@ -78,7 +74,6 @@ public class OpenstackKeypairsMgntServiceUnitTest {
      ***************************************************/
      @Test
      public void testGetOpenstackKeypairsInfoList(){
-         if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testGetOpenstackKeypairsInfoList ================="); }
          getOpenstackAccountInfo();
          List<? extends Keypair> expectList = setResultOpenstackKeypairsList();
          doReturn(expectList).when(mockOpenstackKeypairsMgntApiService).getOpenstackKeypairsInfoListApiFromOpenstack(any());
@@ -96,7 +91,6 @@ public class OpenstackKeypairsMgntServiceUnitTest {
       ***************************************************/
       @Test
       public void testSaveOpenstackKeypairsInfo(){
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testSaveOpenstackKeypairsInfo ================="); }
           getOpenstackAccountInfo();
           HttpServletResponse req = new MockHttpServletResponse();
           when(mockOpenstackKeypairsMgntApiService.saveOpenstackKeypairsInfoApiFromOpenstack(any(), anyString())).thenReturn("paas-ta");
@@ -116,26 +110,51 @@ public class OpenstackKeypairsMgntServiceUnitTest {
 
             @Override
             public String getPublicKey() {
-                // TODO Auto-generated method stub
                 return null;
             }
             
             @Override
             public String getPrivateKey() {
-                // TODO Auto-generated method stub
                 return null;
             }
             
             @Override
             public String getName() {
-                // TODO Auto-generated method stub
                 return "keypairNameTest";
             }
             
             @Override
             public String getFingerprint() {
-                // TODO Auto-generated method stub
                 return "fingerprintTest";
+            }
+
+            @Override
+            public Date getCreatedAt() {
+                return null;
+            }
+
+            @Override
+            public Boolean getDeleted() {
+                return null;
+            }
+            @Override
+            public Date getDeletedAt() {
+                return null;
+            }
+
+            @Override
+            public Integer getId() {
+                return null;
+            }
+
+            @Override
+            public Date getUpdatedAt() {
+                return null;
+            }
+
+            @Override
+            public String getUserId() {
+                return null;
             }
         };
         keypairs.add(keypair);

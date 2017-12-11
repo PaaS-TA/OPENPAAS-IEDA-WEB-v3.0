@@ -44,7 +44,9 @@
         ,a.common_keypair_name as commonKeypairName
         ,a.common_keypair_path as commonKeypairPath
         ,a.common_availability_zone as commonAvailabilityZone
-        ,a.google_public_key as googlePublicKey
+        ,b.common_project as commonProject
+        ,b.openstack_domain as openstackDomain
+        ,b.openstack_keystone_version as openstackKeystoneVersion
         ,a.vsphere_vcenter_datacenter_name as vsphereVcentDataCenterName
         ,a.vsphere_vcenter_vm_folder as vsphereVcenterVmFolder
         ,a.vsphere_vcenter_template_folder as vsphereVcenterTemplateFolder
@@ -80,7 +82,7 @@
         ,a.common_keypair_name as commonKeypairName
         ,a.common_keypair_path as commonKeypairPath
         ,a.common_availability_zone as commonAvailabilityZone
-        ,a.google_public_key as googlePublicKey
+        ,a.common_region as commonRegion
         ,a.vsphere_vcenter_datacenter_name as vsphereVcentDataCenterName
         ,a.vsphere_vcenter_vm_folder as vsphereVcenterVmFolder
         ,a.vsphere_vcenter_template_folder as vsphereVcenterTemplateFolder
@@ -92,6 +94,9 @@
         ,a.create_date as createDate
         ,a.update_date as updateDate
         ,b.account_name as accountName
+        ,b.common_project as commonProject
+        ,b.openstack_domain as openstackDomain
+        ,b.openstack_keystone_version as openstackKeystoneVersion
     From ieda_iaas_config a LEFT JOIN ieda_iaas_account b
       On a.account_id = b.id
    Where a.create_user_id= #{userId}
@@ -119,7 +124,6 @@
         </when>
         <when test="config.iaasType == 'Google'">
             And common_keypair_path = #{config.commonKeypairPath}
-            And google_public_key = #{config.googlePublicKey}
         </when>
         <when test="config.iaasType == 'vSphere'">
             And vsphere_vcenter_vm_folder = #{config.vsphereVcenterVmFolder}
@@ -153,7 +157,6 @@
         ,common_keypair_name
         ,common_keypair_path
         ,common_availability_zone
-        ,google_public_key
         ,vsphere_vcenter_datacenter_name
         ,vsphere_vcenter_vm_folder
         ,vsphere_vcenter_template_folder
@@ -175,7 +178,6 @@
         ,#{config.commonKeypairName}
         ,#{config.commonKeypairPath}
         ,#{config.commonAvailabilityZone}
-        ,#{config.googlePublicKey}
         ,#{config.vsphereVcentDataCenterName}
         ,#{config.vsphereVcenterVmFolder}
         ,#{config.vsphereVcenterTemplateFolder}
@@ -201,7 +203,6 @@
         ,common_keypair_name = #{config.commonKeypairName}
         ,common_keypair_path = #{config.commonKeypairPath}
         ,common_availability_zone = #{config.commonAvailabilityZone}
-        ,google_public_key = #{config.googlePublicKey}
         ,vsphere_vcenter_datacenter_name = #{config.vsphereVcentDataCenterName}
         ,vsphere_vcenter_vm_folder = #{config.vsphereVcenterVmFolder}
         ,vsphere_vcenter_template_folder = #{config.vsphereVcenterTemplateFolder}

@@ -8,7 +8,6 @@ import org.openpaas.ieda.openstackMgnt.web.network.dao.OpenstackNetworkMgntVO;
 import org.openpaas.ieda.openstackMgnt.web.router.dao.OpenstackRouterMgntVO;
 import org.openpaas.ieda.openstackMgnt.web.router.dto.OpenstackRouterMgntDTO;
 import org.openpaas.ieda.openstackMgnt.web.router.service.OpenstackRouterMgntService;
-import org.openstack4j.model.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +49,10 @@ public class OpenstackRouterMgntController {
         if (LOG.isInfoEnabled()){
             LOG.info("=========================================> OPENSTACK Router 목록 조회");
         }
-        List<OpenstackRouterMgntVO> RouterList = openstackRouterMgntService.getOpenstackRouterInfoList(principal, accountId);
+        List<OpenstackRouterMgntVO> routerList = openstackRouterMgntService.getOpenstackRouterInfoList(principal, accountId);
         HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put("records", RouterList);
-        map.put("size", RouterList != null ? RouterList.size() : 0);
+        map.put("records", routerList);
+        map.put("size", routerList != null ? routerList.size() : 0);
         return new ResponseEntity<HashMap<String, Object>>(map, HttpStatus.OK);
     }
     /***************************************************
@@ -189,12 +188,12 @@ public class OpenstackRouterMgntController {
     * @return : ResponseEntity<List<OpenstackNetworkMgntVO>>
     ***************************************************/
     @RequestMapping(value="/openstackMgnt/router/gateway/exnetlist/{accountId}", method=RequestMethod.GET)
-    public ResponseEntity<List<OpenstackNetworkMgntVO>> getOpenstackRouterExternalNetworkInfoList(Principal principal,
+    public ResponseEntity<List<HashMap<String, String>>> getOpenstackRouterExternalNetworkInfoList(Principal principal,
                                                                          @PathVariable int accountId){
         if (LOG.isInfoEnabled()){
             LOG.info("========================================> OPENSTACK Router External Network 조회");
         }
-        List<OpenstackNetworkMgntVO> exnetlist = openstackRouterMgntService.getOpenstackNetworkInfoList(principal, accountId);
-        return new ResponseEntity<List<OpenstackNetworkMgntVO>>(exnetlist, HttpStatus.OK);
+        List<HashMap<String, String>> exnetlist = openstackRouterMgntService.getOpenstackNetworkInfoList(principal, accountId);
+        return new ResponseEntity<List<HashMap<String, String>>>(exnetlist, HttpStatus.OK);
     }
 }

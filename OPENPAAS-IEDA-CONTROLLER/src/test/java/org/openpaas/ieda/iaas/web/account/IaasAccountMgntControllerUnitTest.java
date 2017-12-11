@@ -1,10 +1,10 @@
 package org.openpaas.ieda.iaas.web.account;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -32,8 +32,6 @@ import org.openpaas.ieda.controller.iaasMgnt.dashboard.web.account.IaasAccountMg
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.iaasDashboard.web.account.dto.IaasAccountMgntDTO;
 import org.openpaas.ieda.iaasDashboard.web.account.service.IaasAccountMgntService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -77,7 +75,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
     final static String JSON_KEY_PATH_FILE_LIST_URL = "/iaasMgnt/account/key/list";//GOOGLE Json 키 파일 목록 조회
     final static String UPLOAD_JSON_KEY_URL = "/iaasMgnt/account/key/upload";//GOOGLE Json 키 파일 업로드
     
-    final static Logger LOGGER = LoggerFactory.getLogger(IaasAccountMgntControllerUnitTest.class);
     
     /***************************************************
      * @project : 인프라 계정 관리 대시보드
@@ -100,7 +97,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoIaasAccountMgnt() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGoIaasAccountMgnt"); }
         mockMvc.perform(get(VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/iaas/account/iaasAccount"));
@@ -114,7 +110,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoAwsAccountMgnt() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGoAwsAccountMgnt"); }
         mockMvc.perform(get(VIEW_AWS_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/iaas/account/awsAccount"));
@@ -128,7 +123,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoOpenstackAccountMgnt() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGoOpenstackAccountMgnt"); }
         mockMvc.perform(get(VIEW_OPENSTACK_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/iaas/account/openstackAccount"));
@@ -142,7 +136,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoAzureAccountMgnt() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGoAzureAccountMgnt"); }
         mockMvc.perform(get(VIEW_GOOGLE_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/iaas/account/googleAccount"));
@@ -156,7 +149,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoVshpereAccountMgnt() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGoVshpereAccountMgnt"); }
         mockMvc.perform(get(VIEW_VSPHERE_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/iaas/account/vSphereAccount"));
@@ -170,7 +162,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGetAllIaasAccountInfoList() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGetAllIaasAccountInfoList"); }
         List<IaasAccountMgntVO> list = setIaasAccountInfoList();
         
         when(mockIaasAccountMgntService.getAllIaasAccountInfoList(any())).thenReturn(list);
@@ -191,7 +182,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
      ***************************************************/
      @Test
      public void testGetAllIaasAccountCountInfo() throws Exception{
-         if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGetAllIaasAccountCountInfo"); }
          HashMap<String, Integer> map = setIaasAccountCount();
          
          when(mockIaasAccountMgntService.getIaasAccountCount(any())).thenReturn(map);
@@ -213,7 +203,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
       ***************************************************/
       @Test
       public void testGetIaasAccountMgntInfoList() throws Exception{
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGetIaasAccountMgntInfoList"); }
           List<IaasAccountMgntVO> list = setIaasAccountMgntInfoList();
           when(mockIaasAccountMgntService.getIaasAccountInfoList(any(), any())).thenReturn(list);
           
@@ -236,7 +225,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
       ***************************************************/
       @Test
       public void testGetIaasAccountInfo() throws Exception{
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGetIaasAccountInfo"); }
           IaasAccountMgntVO vo = setIaasAccountMgntInfo();
           when(mockIaasAccountMgntService.getIaasAccountInfo(any(),anyInt(), any())).thenReturn(vo);
           
@@ -261,7 +249,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
       ***************************************************/
       @Test
       public void testSaveIaasAccountInfoRegistCase() throws Exception{
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSaveIaasAccountInfoRegistCase"); }
           IaasAccountMgntDTO dto = setSaveIaasAccountInfo();
           doNothing().when(mockIaasAccountMgntService).saveIaasAccountInfo(anyString(), any(), any(), any());
           
@@ -280,7 +267,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
     *****************************************************************/
     @Test
       public void testGetJsonKeyPathFileList() throws Exception{
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testGetJsonKeyPathFileList"); }
           List<String> keyPathFileList = setKeyPathFileList();
           when(mockIaasAccountMgntService.getJsonKeyFileList()).thenReturn(keyPathFileList);
           
@@ -298,7 +284,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
       ***************************************************/
       @Test
       public void testSaveIaasAccountInfoUpdateCase() throws Exception{
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testSaveIaasAccountInfoUpdateCase"); }
           IaasAccountMgntDTO dto = setSaveIaasAccountInfo();
           dto.setId("1");
           doNothing().when(mockIaasAccountMgntService).saveIaasAccountInfo(anyString(), any(), any(), any());
@@ -317,7 +302,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
       *****************************************************************/
       @Test
       public void testUploadJsonKeyPathFile() throws Exception{
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testUploadJsonKeyPathFile"); }
           MultipartHttpServletRequest mockMultipartHttpReqeust = mock(MultipartHttpServletRequest.class);
           MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "orig", null, "bar".getBytes());
           doNothing().when(mockIaasAccountMgntService).uploadJsonKeyFile(mockMultipartHttpReqeust);
@@ -337,7 +321,6 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
       ***************************************************/
       @Test
       public void testDeleteIaasAccountInfo() throws Exception{
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("=================================> testDeleteIaasAccountInfo"); }
           IaasAccountMgntDTO dto = setIaasAccountDelete();
           doNothing().when(mockIaasAccountMgntService).deleteIaasAccountInfo(any(), any());
           mockMvc.perform(MockMvcRequestBuilders.delete(IAAS_ACCOUNT_DELETE_URL, "aws").contentType(MediaType.APPLICATION_JSON)
@@ -475,7 +458,9 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
            dto.setAccountName("aws-test");
            dto.setCommonAccessUser("test");
            dto.setCommonAccessSecret("testPw");
-           
+           dto.getIaasType();
+           dto.getCommonAccessEndpoint();
+           dto.getCommonAccessSecret();
            return dto;
       }
       

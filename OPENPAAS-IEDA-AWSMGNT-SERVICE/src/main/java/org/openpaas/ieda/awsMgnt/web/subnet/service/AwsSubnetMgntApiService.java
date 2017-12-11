@@ -83,20 +83,20 @@ public class AwsSubnetMgntApiService {
         AWSStaticCredentialsProvider provider = commonApiService.getAwsStaticCredentialsProvider(vo.getCommonAccessUser(), vo.getCommonAccessSecret());
         AmazonEC2Client ec2 =  (AmazonEC2Client)AmazonEC2ClientBuilder.standard().withRegion(region.getName()).withCredentials(provider).build();
        
-        CreateSubnetRequest subnet_request = new CreateSubnetRequest();
-        subnet_request.withVpcId(dto.getVpcId())
+        CreateSubnetRequest subnetRequest = new CreateSubnetRequest();
+        subnetRequest.withVpcId(dto.getVpcId())
                       .withCidrBlock(dto.getCidrBlock())
                       .withAvailabilityZone(dto.getAvailabilityZone());
         
-        subnet_request.setVpcId(dto.getVpcId());
-        subnet_request.setAvailabilityZone(dto.getAvailabilityZone());
+        subnetRequest.setVpcId(dto.getVpcId());
+        subnetRequest.setAvailabilityZone(dto.getAvailabilityZone());
         
         //필수는 아니지만 입력값이 있으면 받아와서 입력해준다.
         if( !StringUtils.isEmpty(dto.getCidrBlock()) ){
-            subnet_request.setCidrBlock(dto.getCidrBlock());
+            subnetRequest.setCidrBlock(dto.getCidrBlock());
         }
         //subnet_request.setIpv6CidrBlock(dto.getIpv6CidrBlock());
-        CreateSubnetResult response  = ec2.createSubnet(subnet_request);
+        CreateSubnetResult response  = ec2.createSubnet(subnetRequest);
         
         //tag 적용 확인 요망
         if( !StringUtils.isEmpty(dto.getNameTag()) ){

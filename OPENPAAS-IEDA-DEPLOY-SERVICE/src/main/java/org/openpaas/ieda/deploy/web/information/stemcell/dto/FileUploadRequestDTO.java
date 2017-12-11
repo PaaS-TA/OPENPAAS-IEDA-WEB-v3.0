@@ -45,15 +45,15 @@ public class FileUploadRequestDTO implements RequestEntity {
     
 
     public String getUserId() {
-		return userId;
-	}
+        return userId;
+    }
 
-	public boolean isRepeatable() {
+    public boolean isRepeatable() {
         return true;
     }
 
     public void writeRequest(final OutputStream out) throws IOException {
-    	
+        
         byte[] tmp = new byte[8192];
         int i = 0;
         int accumulatePercent = -1;
@@ -61,15 +61,15 @@ public class FileUploadRequestDTO implements RequestEntity {
         double totalSize = this.file.length();
         InputStream instream = new FileInputStream(this.file);
         try {
-        		//파일의 크기만큼 읽고 쓰면서 파일을 복사한다.
+                //파일의 크기만큼 읽고 쓰면서 파일을 복사한다.
             while ((i = instream.read(tmp)) >= 0) {
-            	accumulate += i;
-            	out.write(tmp, 0, i);
-            	//upload percentage
-            	if ( accumulatePercent != (int)(accumulate/totalSize *100 )){
-            		accumulatePercent = (int)(accumulate/totalSize * 100); 
-            		DirectorRestHelper.sendTaskOutputWithTag(userId, messagingTemplate, messageEndpoint, "Progress", this.file.getName(), Arrays.asList( String.valueOf(accumulatePercent) ));
-            	}
+                accumulate += i;
+                out.write(tmp, 0, i);
+                //upload percentage
+                if ( accumulatePercent != (int)(accumulate/totalSize *100 )){
+                    accumulatePercent = (int)(accumulate/totalSize * 100); 
+                    DirectorRestHelper.sendTaskOutputWithTag(userId, messagingTemplate, messageEndpoint, "Progress", this.file.getName(), Arrays.asList( String.valueOf(accumulatePercent) ));
+                }
             }        
         } finally {
             instream.close();

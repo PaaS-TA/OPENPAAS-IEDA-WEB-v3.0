@@ -30,8 +30,6 @@ import org.openpaas.ieda.deploy.web.common.base.BaseDeployControllerUnitTest;
 import org.openpaas.ieda.deploy.web.config.setting.dao.DirectorConfigDAO;
 import org.openpaas.ieda.deploy.web.config.setting.dao.DirectorConfigVO;
 import org.openpaas.ieda.deploy.web.config.setting.dto.DirectorConfigDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -47,7 +45,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     final private static String FILESEPARATOR = System.getProperty("file.separator");//File separator ("/" on UNIX)
     final private static String BOSHCONFIGTESTFILEPATH = HOMEDIR+FILESEPARATOR+".bosh_config_test";
     final private static String BOSHCONFIGTESTFILE = ".bosh_config_test";
-    final static Logger LOGGER = LoggerFactory.getLogger(DirectorConfigServiceUnitTest.class);
     @InjectMocks DirectorConfigService mockDirectorConfigService;
     @Mock DirectorConfigDAO mockDirectorConfigDAO;
 
@@ -72,7 +69,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testGetDefaultDirectorResultNull(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 기본 설치 관리자 정보가 존재 하지 않을 경우 테스트"); }
         when(mockDirectorConfigDAO.selectDirectorConfigByDefaultYn(anyString())).thenReturn(null);
         DirectorConfigVO resultVo = mockDirectorConfigService.getDefaultDirector();
         assertEquals(resultVo, null);
@@ -86,7 +82,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testGetDefaultDirector(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 기본 설치 관리자 정보 조회 테스트"); }
         DirectorConfigVO expectVo = setDirectorInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigByDefaultYn(anyString())).thenReturn(expectVo);
         DirectorConfigVO resultVo = mockDirectorConfigService.getDefaultDirector();
@@ -106,7 +101,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testListDirector(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 정보 목록 조회 테스트"); }
         List<DirectorConfigVO> expectList = setListDirector();
         when(mockDirectorConfigDAO.selectDirectorConfig()).thenReturn(expectList);
         List<DirectorConfigVO> result = mockDirectorConfigService.getDirectorList();
@@ -128,7 +122,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testExistCreateDirectorInfo(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 설정 추가 중 이미 해당 설치 관리자가 존재 할 경우 테스트"); }
         List<DirectorConfigVO> expectList = setListDirector();
         DirectorConfigDTO.Create dto = setDirectorConfigInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigByDirectorUrl(anyString())).thenReturn(expectList);
@@ -143,7 +136,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testCreateDirectorLoginFail(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 정보 추가 중 디렉터 로그인 실패 테스트"); }
         List<DirectorConfigVO> expectList = new ArrayList<DirectorConfigVO>();
         DirectorConfigDTO.Create dto = setDirectorConfigInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigByDirectorUrl(anyString())).thenReturn(expectList);
@@ -158,7 +150,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     *****************************************************************/
     @Test
     public void testInsertDirectorInfo(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 설정 추가 테스트"); }
         DirectorConfigDTO.Create dto = setDirectorConfigInfo();
         DirectorInfoDTO apiDto = setDirectorInfoDTO();
         when(mockDirectorConfigDAO.selectDirectorConfigByDefaultYn(anyString())).thenReturn(null);
@@ -173,7 +164,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testGetDirectorConfig(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치관리자 설정 조회 테스트"); }
         DirectorConfigVO expectVo = setDirectorInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(expectVo);
         mockDirectorConfigService.getDirectorConfig(1);
@@ -187,7 +177,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testGetDirectorConfigResultNull(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 설정 조회 중 설치 관리자 정보가 존재 하지 않을 경우 테스트"); }
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(null);
         mockDirectorConfigService.getDirectorConfig(1);
     }
@@ -200,7 +189,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void UpdateDirectorinfoResultNull(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 수정 시 해당 설치 관리자 정보가 존재 하지 않을 경우 테스트"); }
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(null);
         DirectorConfigDTO.Update dto = updateDirectorConfigInfo();
         mockDirectorConfigService.existCheckUpdateDirectorinfo(dto, principal, BOSHCONFIGTESTFILE);
@@ -214,7 +202,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void existCheckUpdateDirectorinfoLoginFail(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 수정 정보 디렉터 로그인 실패 테스트"); }
         DirectorConfigVO expectVo = setDirectorInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(expectVo);
         DirectorConfigDTO.Update dto = updateDirectorConfigInfo();
@@ -229,7 +216,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testUpdateDirectorinfo(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 정보 수정 테스트"); }
         DirectorConfigDTO.Update dto = updateDirectorConfigInfo();
         DirectorConfigVO vo = setDirectorInfo();
         mockDirectorConfigService.updateDirectorinfo(dto,vo, principal, BOSHCONFIGTESTFILE);
@@ -243,7 +229,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testDeleteDirectorConfigResultNull(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 삭제 정보가 존재 하지 않을 경우"); }
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(null);
         mockDirectorConfigService.deleteDirectorConfig(1, BOSHCONFIGTESTFILE);
     }
@@ -256,7 +241,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void deleteDirectorConfigFileNotFound(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> Config 파일을 찾을 수 없을 경우 테스트"); }
         DirectorConfigVO expectVo = setDirectorInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(expectVo);
         mockDirectorConfigService.deleteDirectorConfig(1, BOSHCONFIGTESTFILE);
@@ -270,7 +254,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void deleteDirectorConfigNullPoint() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> bosh_config 형식이 잘못 되었을 경우 테스트"); }
         OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(BOSHCONFIGTESTFILEPATH),"UTF-8");
         fileWriter.write("1");
         fileWriter.close();
@@ -287,7 +270,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testDeleteDirectorConfig() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 정보 삭제 테스트"); }
         testInsertDirectorInfo();
         DirectorConfigVO expectVo = setDirectorInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(expectVo);
@@ -302,7 +284,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testExistCheckSetDefaultDirectorInfoValueNull(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 기본 설치 관리자 설정 중 해당 설치 관리자 정보가 존재 하지 않을 경우 테스트"); }
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(null);
         mockDirectorConfigService.existCheckSetDefaultDirectorInfo(1, principal, BOSHCONFIGTESTFILE);
     }
@@ -315,7 +296,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testExistCheckSetDefaultDirectorInfoLoginFail(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 기본 설치 관리자 설정 중 디렉터 로그인에 실패 했을 경우 테스트"); }
         DirectorConfigVO expectVo = setDirectorInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(expectVo);
         mockDirectorConfigService.existCheckSetDefaultDirectorInfo(1, principal, BOSHCONFIGTESTFILE);
@@ -329,7 +309,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testSetDefaultDirectorInfo(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 기본 설치 관리자 설정 테스트"); }
         DirectorConfigVO expectVo = setDirectorInfo();
         DirectorInfoDTO apiDto =  setDirectorInfoDTO();
         when(mockDirectorConfigDAO.selectDirectorConfigByDefaultYn(anyString())).thenReturn(expectVo);
@@ -344,7 +323,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testFileExistSetBoshConfigFile(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 설정 파일이 존재 할 경우 테스트"); }
         testInsertDirectorInfo();
         DirectorConfigVO vo = setDirectorInfo();
         mockDirectorConfigService.setBoshConfigFile(vo, BOSHCONFIGTESTFILE);
@@ -358,7 +336,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSetBoshConfigFileNullPoint() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 설정 파일 정보가 잘못 되었을 경우 테스트"); }
         OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(BOSHCONFIGTESTFILEPATH),"UTF-8");
         fileWriter.write("1");
         fileWriter.close();
@@ -373,7 +350,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test 
     public void testFileNotExistSetBoshConfigFile(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 설정 파일이 존재 하지 않을 경우 테스트"); }
         DirectorConfigVO vo = setDirectorInfo();
         mockDirectorConfigService.setBoshConfigFile(vo, BOSHCONFIGTESTFILE);
     }
@@ -386,7 +362,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=NullPointerException.class)
     public void testFileNotExistSetBoshConfigFileDefault(){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 설정 파일과 기본 설치 관리자가 존재 하지 않을 경우 테스트"); }
         DirectorConfigVO vo = setDirectorInfo2();
         mockDirectorConfigService.setBoshConfigFile(vo, BOSHCONFIGTESTFILE);
     }

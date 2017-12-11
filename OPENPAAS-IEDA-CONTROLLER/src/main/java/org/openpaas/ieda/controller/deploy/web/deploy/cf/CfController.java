@@ -164,8 +164,7 @@ public class CfController extends BaseController{
     @RequestMapping(value="/deploy/cf/install/saveResourceInfo", method=RequestMethod.PUT)
     public ResponseEntity<Map<String, Object>> saveResourceCfInfo(@RequestBody @Valid ResourceDTO dto,Principal principal){
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> /deploy/cf/install/saveResourceInfo "); }
-        Map<String, Object> map = cfSaveService.saveResourceInfo(dto,principal);
-        
+        HashMap<String, Object> map = cfSaveService.saveResourceInfo(dto,principal);
         return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
     }
     
@@ -205,7 +204,7 @@ public class CfController extends BaseController{
      * @return : ResponseEntity<Object>
     *****************************************************************/
     @RequestMapping( value="/deploy/cf/delete/data", method=RequestMethod.DELETE)
-    public ResponseEntity<Object> deleteJustOnlyCfRecord(@RequestBody @Valid  CfParamDTO.Delete dto) { 
+    public ResponseEntity<?> deleteJustOnlyCfRecord(@RequestBody @Valid  CfParamDTO.Delete dto) { 
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> /deploy/cf/delete/data"); }
         cfService.deleteCfInfoRecord(dto);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -222,7 +221,6 @@ public class CfController extends BaseController{
     public ResponseEntity<?> deleteCf(@RequestBody @Valid CfParamDTO.Delete dto, Principal principal){
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> /deploy/cf/delete/instance"); }
         cfDeleteDeployAsyncService.deleteDeployAsync(dto, "cf", principal);
-        
         return new ResponseEntity<>(HttpStatus.OK);
     }
     
@@ -232,10 +230,10 @@ public class CfController extends BaseController{
      * @title : getCfJobList
      * @return : ResponseEntity<List<HashMap<String, String>>>
     *****************************************************************/
-    @RequestMapping(value="/deploy/cf/install/save/job/list/{version}/{iaasType}", method=RequestMethod.GET)
-    public ResponseEntity<List<HashMap<String, String>>> getCfJobList(@PathVariable String version, @PathVariable String iaasType){
+    @RequestMapping(value="/deploy/cf/install/save/job/list/{version}/{deployType}", method=RequestMethod.GET)
+    public ResponseEntity<List<HashMap<String, String>>> getCfJobList(@PathVariable String version, @PathVariable String deployType){
         if(LOGGER.isInfoEnabled()){ LOGGER.info("====================================> /deploy/cf/install/save/job/list/"+version); }
-        List<HashMap<String, String>> list = cfService.getJobTemplateList(iaasType, version);
+        List<HashMap<String, String>> list = cfService.getJobTemplateList(deployType, version);
         return new ResponseEntity<List<HashMap<String, String>>>(list, HttpStatus.OK);
     }
     

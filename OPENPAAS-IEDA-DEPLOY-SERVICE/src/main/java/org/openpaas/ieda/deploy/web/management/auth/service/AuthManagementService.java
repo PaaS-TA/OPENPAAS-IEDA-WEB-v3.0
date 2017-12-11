@@ -2,18 +2,14 @@ package org.openpaas.ieda.deploy.web.management.auth.service;
 
 
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
-
 
 import org.openpaas.ieda.common.exception.CommonException;
 import org.openpaas.ieda.common.web.security.SessionInfoDTO;
 import org.openpaas.ieda.deploy.web.management.auth.dao.AuthManagementDAO;
 import org.openpaas.ieda.deploy.web.management.auth.dao.AuthManagementVO;
 import org.openpaas.ieda.deploy.web.management.auth.dto.AuthManagementDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -21,9 +17,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthManagementService {
     
-    private final static Logger LOG = LoggerFactory.getLogger(AuthManagementService.class);
     @Autowired private AuthManagementDAO dao;
     @Autowired MessageSource message;
+    
+    final private static String AUTH_CODE_NUMBER = "100000";
     
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -31,8 +28,7 @@ public class AuthManagementService {
      * @title : getRoleGroupList
      * @return : List<AuthManagementVO>
     ***************************************************/
-    public List<AuthManagementVO> getRoleGroupList() {                
-        dao.selectRoleGroupList();        
+    public List<AuthManagementVO> getRoleGroupList() {
         return dao.selectRoleGroupList(); 
     }
     
@@ -43,8 +39,7 @@ public class AuthManagementService {
      * @return : List<HashMap<String,Object>>
     ***************************************************/
     public List<HashMap<String,Object>> getRoleDetailList(int roleId) {
-            dao.selectRoleDetailListByRoleId(roleId,"100000");
-        return dao.selectRoleDetailListByRoleId(roleId,"100000");        
+        return dao.selectRoleDetailListByRoleId(roleId, AUTH_CODE_NUMBER);
     }
     
     /***************************************************
@@ -69,12 +64,13 @@ public class AuthManagementService {
             authVO.setCreateUserId(sessionInfo.getUserId());
             authVO.setUpdateUserId(sessionInfo.getUserId());
             try{
-                if(dao.insertRoleGroupInfo(authVO)==1) return true;
+                if(dao.insertRoleGroupInfo(authVO)==1) {
+                    return true;
+                }
             }catch (Exception e) {
                 throw new CommonException("sqlExcepion.auth.exception",
-                        "권한 그룹 추가 중 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+                        "권한 그룹 추가 중 에러가 발생했습니다.", HttpStatus.BAD_REQUEST);
             }
-        if(LOG.isInfoEnabled()){ LOG.info("====================================> 권한 추가 삽입 완료 이동"); }
         return true;
     }
     
@@ -85,23 +81,22 @@ public class AuthManagementService {
      * @return : boolean
     ***************************************************/
     public boolean deleteRole(Integer roleId) {
-        
         if(roleId == null || roleId.toString().isEmpty()){
             throw new CommonException("sqlException.auth.exception",
-                    "권한 그룹 삭제 중 에러가 발생 했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+                    "권한 그룹 삭제 중 에러가 발생 했습니다.", HttpStatus.BAD_REQUEST);
         }
         
         AuthManagementVO authVO = dao.selectRoleInfoByRoleId(roleId);
         if ( authVO == null ){
             throw new CommonException("notfound_rold_id.auth_delete.exception",
-                    "해당 권한 코드가 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+                    "해당 권한 코드가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
         try{
             dao.deleteRoleDetailInfoByRoleId(roleId);
             dao.deleteRoleGroupInfoByRoleId(roleId);                    
         }catch(Exception e){
             throw new CommonException("sqlException.auth.exception",
-                    "권한 그룹 삭제 중 에러가 발생 했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+                    "권한 그룹 삭제 중 에러가 발생 했습니다.", HttpStatus.BAD_REQUEST);
         }
         return true;
     }
@@ -114,9 +109,10 @@ public class AuthManagementService {
     ***************************************************/
     public boolean updateRole(int roleId, AuthManagementDTO.Regist updateAuthDto) {
         AuthManagementVO authVO = dao.selectRoleInfoByRoleId(roleId);
-        if ( authVO == null )
+        if ( authVO == null ) {
             throw new CommonException("notfound_rold_id.auth_update.exception",
                     "해당 권한 코드가 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
         AuthManagementVO auth = new AuthManagementVO();
         SessionInfoDTO sessionInfo = new SessionInfoDTO();
         auth.setRoleId(roleId);
@@ -130,8 +126,7 @@ public class AuthManagementService {
                 return true;
             }
         }catch(Exception e){
-            throw new CommonException("sqlException.auth.exception",
-                    " 권한 그룹 수정 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CommonException("sqlException.auth.exception", " 권한 그룹 수정 실패", HttpStatus.BAD_REQUEST);
         }
         return true;
     }
@@ -142,7 +137,7 @@ public class AuthManagementService {
      * @title : saveRoleDetail
      * @return : void
     ***************************************************/
-    public void saveRoleDetail(int roleId, AuthManagementDTO.Regist dto) throws SQLException {
+    public void saveRoleDetail(int roleId, AuthManagementDTO.Regist dto){
         AuthManagementVO authVO = dao.selectRoleInfoByRoleId(roleId);
         AuthManagementVO auth = new AuthManagementVO();
         SessionInfoDTO sessionInfo = new SessionInfoDTO();
@@ -160,8 +155,9 @@ public class AuthManagementService {
             }
         }else{
             dao.deleteRoleDetailInfoByRoleId(auth.getRoleId());
-            if(auth.getActiveYn().size()!=0)
-            dao.insertRoleDetailInfoByRoleId(auth, auth.getActiveYn());
+            if(auth.getActiveYn().size()!=0) {
+                dao.insertRoleDetailInfoByRoleId(auth, auth.getActiveYn());
+            }
         }
     }
     

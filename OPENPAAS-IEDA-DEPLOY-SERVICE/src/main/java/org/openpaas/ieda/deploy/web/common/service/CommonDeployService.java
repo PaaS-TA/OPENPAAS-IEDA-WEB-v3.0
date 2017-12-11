@@ -26,11 +26,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.openpaas.ieda.common.api.LocalDirectoryConfiguration;
 import org.openpaas.ieda.common.exception.CommonException;
 import org.openpaas.ieda.deploy.web.common.dao.CommonDeployDAO;
@@ -66,7 +66,7 @@ public class CommonDeployService{
     final private static String SSH_DIR = LocalDirectoryConfiguration.getSshDir();
     final private static String KEY_DIR = LocalDirectoryConfiguration.getKeyDir();
     final private static String DEPLOYMENT_DIR = LocalDirectoryConfiguration.getDeploymentDir();
-    final private static String LOCK_DIR = LocalDirectoryConfiguration.getLockDir();
+    final private static String LOCK_DIR = LocalDirectoryConfiguration.getLockDir() + SEPARATOR;
     final private static Logger LOGGER = LoggerFactory.getLogger(CommonDeployService.class);
     
     /****************************************************************
@@ -105,9 +105,11 @@ public class CommonDeployService{
             } catch (IOException e) {
                 throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
                         message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
-            } finally{
+            } finally {
                 try {
-                    if( stream != null ) stream.close();
+                    if( stream != null ) {
+                        stream.close();
+                    }
                 } catch (IOException e) {
                     throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
                             message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -124,19 +126,21 @@ public class CommonDeployService{
     *****************************************************************/
     public List<String> getKeyFileList(String iaasType){
         File keyPathFile = new File(SSH_DIR);
-        if ( !keyPathFile.isDirectory() ) return null;
+        if ( !keyPathFile.isDirectory() ) {
+            return null;
+        }
         List<String> localFiles = null;
         File[] listFiles = keyPathFile.listFiles();
         if(listFiles != null){
             for (File file : listFiles) {
                 if( iaasType != null && iaasType.equals("google") ){
-                    if(file.getName().toLowerCase().endsWith(".pub") || 
-                            file.getName().toLowerCase().endsWith(".pem")){
+                    if(file.getName().toLowerCase().endsWith(".pub") ||  file.getName().toLowerCase().endsWith(".pem")){
                         continue;
                     }
                 }else{
-                    if(!file.getName().toLowerCase().endsWith(".pem"))
+                    if(!file.getName().toLowerCase().endsWith(".pem")) {
                         continue;
+                    }
                 }
                 if ( localFiles == null ){
                     localFiles = new ArrayList<String>();
@@ -146,7 +150,6 @@ public class CommonDeployService{
         }
         return localFiles;
     }
-    
 
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -179,21 +182,24 @@ public class CommonDeployService{
      * @return : Boolean
     *****************************************************************/
     public Boolean lockFileSet(String lockFileName){
-        File lockFile = new File(LOCK_DIR + SEPARATOR + lockFileName+".lock");
+        File lockFile = new File(LOCK_DIR + lockFileName+".lock");
         Writer createLockFile =null;
         Boolean flag = null;
         try{
             if(!lockFile.exists()){
                 flag= true;
                 createLockFile = new OutputStreamWriter(new FileOutputStream(lockFile), "UTF-8");
-            }else flag= false;
+            }else {
+                flag= false;
+            }
         }catch(IOException e){
             throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
                     message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally {
             try {
-                if(createLockFile != null)
+                if(createLockFile != null) {
                     createLockFile.close();
+                }
             } catch (IOException e) {
                 throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
                         message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -209,32 +215,50 @@ public class CommonDeployService{
      * @title : createKeyInfo
      * @return : String
     *****************************************************************/
-    public String  createKeyInfo( KeyInfoDTO dto, Principal principal){
+    public String createKeyInfo( KeyInfoDTO dto, Principal principal){
         File generateCertsFile = null;
         InputStream inputStream = null;
         BufferedReader bufferedReader = null;
         String keyFileName = "";
         
-        String generateCerts = GENERATE_CERTS_DIR + SEPARATOR + "generate-certs";
-        generateCertsFile = new File( generateCerts );
+        DefaultArtifactVersion maxVersion = new DefaultArtifactVersion("1.25.1");
+        DefaultArtifactVersion version = new DefaultArtifactVersion(dto.getVersion());
+        String generateCerts = "";
+        String platform = dto.getPlatform().toLowerCase();
+        Integer releaseVersion = 0;
+        if(!platform.equals("diego") && (!dto.getVersion().equals("2.0") && !dto.getVersion().equals("3.0"))){
+            releaseVersion = Integer.parseInt(dto.getVersion());
+        }
+        if( (platform.equals("cf") && releaseVersion < 272 && !dto.getVersion().equals("3.0"))  
+                || ( platform.equals("diego") && maxVersion.compareTo(version) > 0 ) ) {
+            generateCerts = GENERATE_CERTS_DIR + SEPARATOR + "generate-certs_v1" + SEPARATOR + "generate-certs";
+        } else {
+            generateCerts = GENERATE_CERTS_DIR + SEPARATOR + "generate-certs_v2" + SEPARATOR + "generate-certs";
+        }
         try {
+            generateCertsFile = new File( generateCerts );
             if( generateCertsFile.exists() ){
-                String code = "";
-                if( dto.getPlatform().equalsIgnoreCase("cf") ) code ="1";
-                else if (dto.getPlatform().equalsIgnoreCase("diego")) code ="2";
-                else if( dto.getPlatform().equalsIgnoreCase("cfdiego") ){
+                //key를 생성할 코드를 설정(cf: 1, diego: 2, cf-diego: 3)
+                  //272 버전 이상일 경우 platform이 cf 일지라도 cf-diego 키 생성
+                String code = setCreateKeyCodeNumber( dto.getPlatform(),dto.getVersion() );
+                if(code.equals("3")) {
                     dto.setPlatform("cf-diego");
-                    code = "3";
                 }
-                keyFileName = dto.getIaas().toLowerCase() + "-" + dto.getPlatform()+"-key-" + dto.getId()+".yml";//key 파일명
+                
+                //key 파일명
+                keyFileName = dto.getIaas().toLowerCase() + "-" + dto.getPlatform()+"-key-" + dto.getId()+".yml";
                 
                 ProcessBuilder builder = new ProcessBuilder();
                 List<String> cmd = new ArrayList<String>();
                 cmd.add(generateCerts);
-                cmd.add(GENERATE_CERTS_DIR );
-                cmd.add(code); //1:cf, 2: diego, 3: cf&diego
+                if( (platform.equals("cf") && releaseVersion < 272 && !dto.getVersion().equals("3.0")) || ( platform.equals("diego") && maxVersion.compareTo(version) > 0 ) ) {
+                    cmd.add(GENERATE_CERTS_DIR + SEPARATOR + "generate-certs_v1");
+                }else {
+                    cmd.add(GENERATE_CERTS_DIR + SEPARATOR + "generate-certs_v2");
+                }
+                cmd.add(code); //1:cf, 2: diego, 3: cf-diego
                 cmd.add( keyFileName.split(".yml")[0] ); // make key name(<iaas>-cf-key-<id>);
-                if( dto.getPlatform().equalsIgnoreCase("cf") || dto.getPlatform().equalsIgnoreCase("cf-diego") ){
+                if( !platform.equals("diego")){
                     cmd.add(dto.getDomain());//domain
                     cmd.add(dto.getCountryCode());//국가 코드
                     cmd.add(dto.getStateName());//시//도
@@ -243,7 +267,6 @@ public class CommonDeployService{
                     cmd.add(dto.getUnitName());//부서명
                     cmd.add(dto.getEmail());//email
                 }
-                
                 builder.command(cmd);
                 builder.redirectErrorStream(true);
                 Process process = builder.start();//start script
@@ -251,43 +274,63 @@ public class CommonDeployService{
                 inputStream = process.getInputStream();//get script log
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
                 String info = null;
-                StringBuffer scriptBuffer = new StringBuffer();
                 while ((info = bufferedReader.readLine()) != null) {
-                    scriptBuffer.append(info + "\n");
                     if( info.indexOf("ERROR") > -1 ){
-                        throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
-                                "해당 " + keyFileName + message.getMessage("common.file.create.internalServerError.message", null, Locale.KOREA) , HttpStatus.INTERNAL_SERVER_ERROR);
+                        throw new CommonException(getMessageValue("common.internalServerError.exception.code"),
+                                keyFileName + getMessageValue("common.file.create.internalServerError.message"), HttpStatus.INTERNAL_SERVER_ERROR);
                     }
                 }
                 File keyFile = new File( KEY_DIR + SEPARATOR + keyFileName );
                 if( !keyFile.exists() ){
-                    throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
-                            keyFileName +" 파일을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);
+                    throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
+                            keyFileName +" 파일을 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
                 saveKeyFileName(dto, keyFileName, principal);
             }else{
-                throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
-                        "파일을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);
+                throw new CommonException(getMessageValue("common.notFound.exception.code"),
+                        getMessageValue("common.notFound.template.message"), HttpStatus.NOT_FOUND);
             }
         } catch (IOException e) {
-            throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
-                    message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CommonException(getMessageValue("common.internalServerError.exception.code"),
+                    getMessageValue("common.internalServerError.message"), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally{
             try {
                 if( bufferedReader != null ){
                     bufferedReader.close();
                 }
-//                if( inputStream != null ){
-//                    inputStream.close();
-////                }
             } catch (IOException e) {
-                throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
-                        message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new CommonException(getMessageValue("common.internalServerError.exception.code"),
+                        getMessageValue("common.internalServerError.message"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
         return keyFileName;
     }
     
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : key 생성 코드 설정(cf: 1; diego: 2; cf-diego: 3)
+     * @title : setCreateKeyCodeNumber
+     * @return : String
+    ***************************************************/
+    public String setCreateKeyCodeNumber( String platform, String releaseVersion ) {
+        String code ="";
+        int cfReleaseVersion = 0;
+        if(!platform.equalsIgnoreCase("diego") && (!releaseVersion.equals("2.0") && !releaseVersion.equals("3.0"))){
+            cfReleaseVersion = Integer.parseInt(releaseVersion);
+            if( (platform.equalsIgnoreCase("cf") && cfReleaseVersion >= 272) || platform.equalsIgnoreCase("cfdiego")) {
+                code = "3";
+            }else {
+                code="1";
+            }
+        } else if(platform.equalsIgnoreCase("diego")){
+            code = "2";
+        } else if( platform.equalsIgnoreCase("cfdiego") ){
+            code = "3";
+        } else {
+            code = "1";
+        }
+        return code;
+    }
     
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -326,33 +369,34 @@ public class CommonDeployService{
             fis = new FileInputStream(new File(keyFile));
             rd = new BufferedReader(new InputStreamReader(fis,"UTF-8"));
             String line = null;
-            StringBuffer contents = new StringBuffer();
+            String contents = "";
             while((line = rd.readLine()) != null) {
-                contents.append(line + "\n");
+                contents += line + "\n";
             }
-            Map<String, Object> object = (Map<String, Object>) yaml.load(contents.toString());
+            Map<String, Object> object = (Map<String, Object>) yaml.load(contents);
             Map<String, String> certMap = (Map<String,String>)object.get("diego-certs");
             fingerprint = certMap.get("ssh-key-fingerprint");
             if( StringUtils.isEmpty(fingerprint)  || fingerprint == null){
-                throw new CommonException("notfound.createKey.exception", "해당 " +  keyFileName  +" 파일에 SSH 핑거프린트가 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+                throw new CommonException(getMessageValue("common.badRequest.exception.code"), 
+                        keyFileName  +" 파일에 SSH 핑거프린트가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
             }
         }catch(IOException e){
-            throw new CommonException("ioFileRead.createKey.exception", "해당 " +  keyFileName  +" 파일을 읽어올 수 없습니다. ", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CommonException(getMessageValue("common.internalServerError.exception.code"), 
+                    getMessageValue("common.file.internalServerError.message"), HttpStatus.INTERNAL_SERVER_ERROR);
         }catch(Exception e){
-            throw new CommonException("notfound.createKey.exception", e.getMessage(), HttpStatus.NOT_FOUND);
+            throw new CommonException(getMessageValue("common.notFound.exception.code"), 
+                    getMessageValue("common.notFound.template.message"), HttpStatus.NOT_FOUND);
         } finally {
             try {
                  if (rd != null) {
                      rd.close();
-                     rd = null;
                  }
                  if (fis != null) {
                      fis.close();
-                     fis = null;
                  }
             }catch (IOException e) {
-                throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
-                        message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new CommonException(getMessageValue("common.internalServerError.exception.code"),
+                        getMessageValue("common.internalServerError.message"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
         return fingerprint;
@@ -389,19 +433,25 @@ public class CommonDeployService{
     }
     
     /****************************************************************
+     * @param string 
      * @project : Paas 플랫폼 설치 자동화
      * @description : 배포 유형에 따른 Manifest Input 템플릿 파일 내용
      * @title : getManifestInputTemplateStream
      * @return : String
     *****************************************************************/
-    public String getManifestInputTemplateStream(String deployType, String templateVersion, String iaasType, String inputTemplate){
+    public String getManifestInputTemplateStream(String deployType, String templateVersion, String iaasType, String inputTemplate, String openstackVersion){
         String content ="";
+        if(!openstackVersion.isEmpty()) {
+            if(openstackVersion.equalsIgnoreCase("v3")){
+                iaasType = "v3";
+            }
+        }
         try {
             InputStream inputs =  this.getClass().getClassLoader().getResourceAsStream("static/deploy_template/"+deployType+"/" + templateVersion + "/"+ iaasType.toLowerCase() + "/" +inputTemplate);
             content = IOUtils.toString(inputs, "UTF-8");
         } catch (IOException e) {
-            throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
-                    message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CommonException(getMessageValue("common.internalServerError.exception.code"),
+                    getMessageValue("common.internalServerError.message"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return content;
     }
@@ -412,7 +462,7 @@ public class CommonDeployService{
      * @title : downloadDeploymentFile
      * @return : void
     *****************************************************************/
-    public void downloadDeploymentFile(String fileName, HttpServletRequest request, HttpServletResponse response){
+    public void downloadDeploymentFile(String fileName, HttpServletResponse response){
         File file = new File(DEPLOYMENT_DIR + SEPARATOR +fileName +".yml");
         try {
             if( file.exists() ){ //파일이 있으면
@@ -431,12 +481,23 @@ public class CommonDeployService{
                 FileCopyUtils.copy(inputStream, response.getOutputStream());
             }
         } catch (IOException e) {
-            throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
-                    message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CommonException(getMessageValue("common.internalServerError.exception.code"),
+                    getMessageValue("common.internalServerError.message"), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e){
-            throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
-                    message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CommonException(getMessageValue("common.internalServerError.exception.code"),
+                    getMessageValue("common.internalServerError.message"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : Message 값 가져오기
+     * @title : getMessageValue
+     * @return : void
+    ***************************************************/
+    public String getMessageValue(String messageCode) {
+        String messageValue = message.getMessage(messageCode, null, Locale.KOREA);
+        return messageValue;
     }
     
 }

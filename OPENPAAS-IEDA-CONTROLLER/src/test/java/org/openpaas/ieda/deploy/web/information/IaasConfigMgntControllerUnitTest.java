@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,8 +31,6 @@ import org.openpaas.ieda.controller.deploy.web.information.iaasConfig.IaasConfig
 import org.openpaas.ieda.deploy.web.information.iassConfig.dao.IaasConfigMgntVO;
 import org.openpaas.ieda.deploy.web.information.iassConfig.dto.IaasConfigMgntDTO;
 import org.openpaas.ieda.deploy.web.information.iassConfig.service.IaasConfigMgntService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,7 +45,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
-    final static Logger LOGGER = LoggerFactory.getLogger(IaasConfigMgntControllerUnitTest.class);
     @InjectMocks IaasConfigMgntController mockIaasConfigInfoController;
     @Mock IaasConfigMgntService mockIaasConfigInfoService;
      
@@ -90,7 +88,6 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoIaasConfigInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 환경 설정관리 화면 이동 테스트 STRAT"); }
         mockMvc.perform(get(VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/deploy/information/iaasConfig/iaasConfigMgnt"));
@@ -104,7 +101,6 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoAwsConfigInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> AWS 환경 설정 관리 화면 이동 테스트 STRAT"); }
         mockMvc.perform(get(AWS_IAAS_CONFIG_VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/deploy/information/iaasConfig/awsConfigMgnt"));
@@ -118,7 +114,6 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoOpenstackConfigInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> OPENSTACK 환경 설정 관리 화면 이동 테스트 STRAT"); }
         mockMvc.perform(get(OPENSTACK_IAAS_CONFIG_VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/deploy/information/iaasConfig/openstackConfigMgnt"));
@@ -132,7 +127,6 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoGoogleConfigInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> GOOGLE 환경 설정 관리 화면 이동 테스트 STRAT"); }
         mockMvc.perform(get(GOOGLE_IAAS_CONFIG_VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/deploy/information/iaasConfig/googleConfigMgnt"));
@@ -146,7 +140,6 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGoVsphereConfigInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> VSPHERE 환경 설정 관리 화면 이동 테스트 STRAT"); }
         mockMvc.perform(get(VSPHERE_IAAS_CONFIG_VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/deploy/information/iaasConfig/vSphereConfigMgnt"));
@@ -160,7 +153,6 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGetAllIaasConfigInfoList() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 전체 환경 설정 목록 정보 요청 테스트 STRAT"); }
         List<IaasConfigMgntVO> expectList =  setAllIaasConfigInfoList();
         when(mockIaasConfigInfoService.getAllIaasConfigInfoList(any())).thenReturn(expectList);
         mockMvc.perform(get(ALL_IAAS_CONFIG_LIST_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -183,7 +175,6 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGetAllIaasConfigCountInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 인프라 별 환경 설정 개수 조회 테스트 STRAT"); }
         HashMap<String, Integer> expectMap = setIaasConfigCount(); 
         when(mockIaasConfigInfoService.getIaasConfigCount(any())).thenReturn(expectMap);
         mockMvc.perform(get(ALL_IAAS_CONFIG_CNT_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -203,7 +194,6 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGetAwsConfigInfoList() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 인프라 환경 설정 목록 조회 테스트 STRAT"); }
         List<IaasConfigMgntVO> expectList =  setAllIaasConfigInfoList();
         when(mockIaasConfigInfoService.getIaasConfigInfoList(anyString(),any())).thenReturn(expectList);
         mockMvc.perform(get(AWS_IAAS_CONFIG_LIST_URL,"AWS").
@@ -226,7 +216,6 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testGetIaasConfigInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 환경 설정 정보 상세 조회 테스트 STRAT"); }
         IaasConfigMgntVO expect = setUpdateIaasConfigInfo();
         when(mockIaasConfigInfoService.getIaasConfigInfo(anyString(),anyInt(),any())).thenReturn(expect);
         mockMvc.perform(get(IAAS_CONIFG_DETAIL_INFO_URL,"AWS","1").
@@ -251,7 +240,6 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testDeleteIaasConfigInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 환경 설정 정보 삭제 테스트 STRAT"); }
         IaasConfigMgntDTO dto = setSaveIaasConfig();
         mockMvc.perform(delete(IAAS_CONFIG_DELETE_URL,"aws")
                 .content(mapper.writeValueAsBytes(dto))
@@ -267,7 +255,6 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
     ***************************************************/
     @Test
     public void testSaveIaasConfigInfo() throws Exception{
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 환경 설정 정보 저장/수정 테스트 STRAT"); }
         IaasConfigMgntDTO dto = setSaveIaasConfig();
         mockMvc.perform(put(IAAS_CONIFG_SAVE_URL,"aws")
                 .content(mapper.writeValueAsBytes(dto))
@@ -299,6 +286,12 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
         config.getCreateDate();
         config.setCommonRegion("asia");
         config.setTestFlag("Y");
+        config.setFormat(new SimpleDateFormat());
+        config.setCommonProject("");
+        config.getCommonProject();
+        config.setOpenstackKeystoneVersion("");
+        config.getOpenstackKeystoneVersion();
+        config.setOpenstackDomain("");
         
     }
      
@@ -318,6 +311,28 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
         dto.setCommonSecurityGroup("test");
         dto.setIaasConfigAlias("test");
         dto.setIaasType("AWS");
+        dto.setVsphereVcenterCluster("");
+        dto.setVsphereVcenterDataCenterName("");
+        dto.setVsphereVcenterDatastore("");
+        dto.setVsphereVcenterDiskPath("");
+        dto.setVsphereVcenterPersistentDatastore("");
+        dto.setVsphereVcenterTemplateFolder("");
+        dto.setVsphereVcenterVmFolder("");
+        dto.getId();
+        dto.getAccountId();
+        dto.getCommonAvailabilityZone();
+        dto.getCommonKeypairName();
+        dto.getCommonKeypairPath();
+        dto.getCommonSecurityGroup();
+        dto.getIaasConfigAlias();
+        dto.getIaasType();
+        dto.getVsphereVcenterCluster();
+        dto.getVsphereVcenterDataCenterName();
+        dto.getVsphereVcenterDatastore();
+        dto.getVsphereVcenterDiskPath();
+        dto.getVsphereVcenterPersistentDatastore();
+        dto.getVsphereVcenterTemplateFolder();
+        dto.getVsphereVcenterVmFolder();
         return dto;
     }
      
@@ -389,6 +404,28 @@ public class IaasConfigMgntControllerUnitTest extends BaseControllerUnitTest {
         vo.setRecid(1);
         vo.setId(1);
         vo.setIaasType("VSPHERE");
+        vo.getAccountId();
+        vo.getAccountName();
+        vo.getCommonAvailabilityZone();
+        vo.getCommonKeypairName();
+        vo.getCommonKeypairPath();
+        vo.getCommonSecurityGroup();
+        vo.getCreateUserId();
+        vo.getUpdateUserId();
+        vo.getDeployStatus();
+        vo.getCreateDate();
+        vo.getUpdateDate();
+        vo.getIaasConfigAlias();
+        vo.getVsphereVcenterVmFolder();
+        vo.getVsphereVcenterTemplateFolder();
+        vo.getVsphereVcenterPersistentDatastore();
+        vo.getVsphereVcenterDiskPath();
+        vo.getVsphereVcenterDatastore();
+        vo.getVsphereVcenterCluster();
+        vo.getVsphereVcentDataCenterName();
+        vo.getRecid();
+        vo.getId();
+        vo.getIaasType();
         list.add(vo);
         return list;
     }

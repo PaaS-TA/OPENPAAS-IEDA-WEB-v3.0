@@ -24,8 +24,6 @@ import org.openpaas.ieda.deploy.web.common.base.BaseDeployControllerUnitTest;
 import org.openpaas.ieda.deploy.web.config.stemcell.dao.StemcellManagementDAO;
 import org.openpaas.ieda.deploy.web.config.stemcell.dao.StemcellManagementVO;
 import org.openpaas.ieda.deploy.web.config.stemcell.dto.StemcellManagementDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -50,7 +48,6 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     final private static String LOCK_PATH = LocalDirectoryConfiguration.getLockDir()+System.getProperty("file.separator")+"light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent-download.lock";
     final private static String STEMCELL_TEMP_PATH = LocalDirectoryConfiguration.getTmpDir() + "/light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz";
     
-    final static Logger LOGGER = LoggerFactory.getLogger(StemcellManagementDownloadAsyncServiceUnitTest.class);
     private Principal principal = null;
     
     /****************************************************************
@@ -79,9 +76,8 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     ***************************************************/
     @Test
     public void testRegistPublicStemcellDownLoad() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testRegistPublicStemcellDownLoad"); }
         StemcellManagementDTO.Regist dto = setReleaseDownloadInfo("nomal");
-        StemcellManagementVO vo = getStemcellRegistInfo("nomal");
+        StemcellManagementVO vo = getStemcellRegistInfo();
         when(mockStemcellDao.selectPublicStemcellById(anyInt())).thenReturn(vo);
         mockStemcellDownloadService.saveStemcellDownLoadStatus(dto, vo, principal, true);
     }
@@ -94,9 +90,8 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSavePublicStemcellDownLoadStatusFromDownloadException() {
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testSavePublicStemcellDownLoadStatusFromDownloadException"); }
         StemcellManagementDTO.Regist dto = setReleaseDownloadInfo("nomal");
-        StemcellManagementVO vo = getStemcellRegistInfo("nomal");
+        StemcellManagementVO vo = getStemcellRegistInfo();
         mockStemcellDownloadService.saveStemcellDownLoadStatus(dto, vo, principal, false);
     }
     
@@ -108,9 +103,8 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     ***************************************************/
     @Test
     public void testsaveStemcellDownLoadStatusFromOverlayCheckCase() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testsaveStemcellDownLoadStatusFromOverlayCheckCase"); }
         StemcellManagementDTO.Regist dto = setReleaseDownloadInfo("nomal");
-        StemcellManagementVO vo = getStemcellRegistInfo("nomal");
+        StemcellManagementVO vo = getStemcellRegistInfo();
         when(mockStemcellDao.selectPublicStemcellById(anyInt())).thenReturn(vo);
         File file = new File(STEMCELL_PATH);
         FileWriter writer = null;
@@ -129,9 +123,8 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveStemcellDownLoadStatusFromOverlayCheckFalse() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testSaveStemcellDownLoadStatusFromOverlayCheckFalse"); }
         StemcellManagementDTO.Regist dto = setReleaseDownloadInfo("overlay");
-        StemcellManagementVO vo = getStemcellRegistInfo("nomal");
+        StemcellManagementVO vo = getStemcellRegistInfo();
         File file = new File(STEMCELL_PATH);
         FileWriter writer = null;
         writer = new FileWriter(file);
@@ -148,7 +141,6 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveStemcellDownLoadStatusFromFileCopyError() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testSaveStemcellDownLoadStatusFromFileCopyError"); }
         File temp = new File(STEMCELL_TEMP_PATH);
         if(temp.exists()){
             temp.delete();
@@ -160,7 +152,7 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
         writer.flush();
         writer.close();
         StemcellManagementDTO.Regist dto = setReleaseDownloadInfo("nomal");
-        StemcellManagementVO vo = getStemcellRegistInfo("nomal");
+        StemcellManagementVO vo = getStemcellRegistInfo();
         mockStemcellDownloadService.saveStemcellDownLoadStatus(dto, vo, principal, true);
     }
     
@@ -172,9 +164,8 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     ***************************************************/
     @Test
     public void testGetStemcellInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testSavePublicStemcellDownLoadStatusFromDownloadException"); }
         StemcellManagementDTO.Regist dto = setReleaseDownloadInfo("nomal");
-        StemcellManagementVO vo = getStemcellRegistInfo("nomal");
+        StemcellManagementVO vo = getStemcellRegistInfo();
         when(mockStemcellDao.selectPublicStemcellById(anyInt())).thenReturn(vo);
         StemcellManagementVO result = mockStemcellDownloadService.getStemcellInfo(dto);
         assertEquals(result.getDownloadLink(), vo.getDownloadLink());
@@ -191,7 +182,6 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testGetStemcellInfoNullPointException(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testSavePublicStemcellDownLoadStatusFromDownloadException"); }
         StemcellManagementDTO.Regist dto = setReleaseDownloadInfo("nomal");
         when(mockStemcellDao.selectPublicStemcellById(anyInt())).thenReturn(null);
         mockStemcellDownloadService.getStemcellInfo(dto);
@@ -205,24 +195,9 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     ***************************************************/
     @Test
     public void testSavePublicStemcell(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testSavePublicStemcellDownLoadStatusFromDownloadException"); }
         StemcellManagementDTO.Regist dto = setReleaseDownloadInfo("nomal");
-        StemcellManagementVO vo = getStemcellRegistInfo("nomal");
+        StemcellManagementVO vo = getStemcellRegistInfo();
         when(mockStemcellDao.selectPublicStemcellById(anyInt())).thenReturn(vo);
-        mockStemcellDownloadService.saveDownloadStemcellInfo(dto, principal);
-    }
-    
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
-    * @description : 스템셀 다운로드 정보 저장 중 에러가 발생 했을 경우
-    * @title : testSavePublicStemcellNullpoint
-    * @return : void
-    ***************************************************/
-    @Test(expected=CommonException.class)
-    public void testSavePublicStemcellNullpoint(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testSavePublicStemcellDownLoadStatusFromDownloadException"); }
-        StemcellManagementDTO.Regist dto = setReleaseDownloadInfo("nomal");
-        when(mockStemcellDao.selectPublicStemcellById(anyInt())).thenReturn(null);
         mockStemcellDownloadService.saveDownloadStemcellInfo(dto, principal);
     }
     
@@ -234,7 +209,6 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testStemcellDownloadAsync(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testSavePublicStemcellDownLoadStatusFromDownloadException"); }
         StemcellManagementDTO.Regist dto = setReleaseDownloadInfo("nomal");
         when(mockStemcellDao.selectPublicStemcellById(anyInt())).thenReturn(null);
         mockStemcellDownloadService.stemcellDownloadAsync(dto, principal);
@@ -248,7 +222,6 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     ***************************************************/
     @Test
     public void testDeleteLockFile() throws IOException{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("==================================> testSavePublicStemcellDownLoadStatusFromDownloadException"); }
         File file = new File(LOCK_PATH);
         FileWriter writer = null;
         writer = new FileWriter(file);
@@ -293,7 +266,7 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     * @title : getStemcellRegistInfo
     * @return : StemcellManagementVO
     ***************************************************/
-    private StemcellManagementVO getStemcellRegistInfo(String type){
+    private StemcellManagementVO getStemcellRegistInfo(){
         StemcellManagementVO vo = new StemcellManagementVO();
         vo.setId(1);
         vo.setStemcellUrl("https://bosh-jenkins-artifacts.s3.amazonaws.com/bosh-stemcell/aws/light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
@@ -308,10 +281,10 @@ public class StemcellManagementDownloadAsyncServiceUnitTest extends BaseDeployCo
     }
     
     /***************************************************
-     * @project          : Paas 플랫폼 설치 자동화
-     * @description   : 하나의 메소드가 동작한 직후 실행
-     * @title               : tearDown
-     * @return            : void
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : 하나의 메소드가 동작한 직후 실행
+     * @title : tearDown
+     * @return : void
     ***************************************************/
     @After
     public void tearDown(){

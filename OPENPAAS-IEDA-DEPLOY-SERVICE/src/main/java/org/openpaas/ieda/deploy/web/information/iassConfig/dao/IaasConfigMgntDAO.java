@@ -70,14 +70,14 @@ public interface IaasConfigMgntDAO {
      * @title : updateIaasConfigInfo
      * @return : void
     ***************************************************/
-	int updateIaasConfigInfo(@Param("config") IaasConfigMgntVO vo);
-	
-	/***************************************************
-	 * @project : 인프라 관리 대시보드
-	 * @description : 환경 설정 정보 삭제
-	 * @title : deleteIaasConfigInfo
-	 * @return : int
-	***************************************************/
-	int deleteIaasConfigInfo( @Param("createUserId") String createUserId, @Param("id") int id );
+    int updateIaasConfigInfo(@Param("config") IaasConfigMgntVO vo);
+    
+    /***************************************************
+     * @project : 인프라 관리 대시보드
+     * @description : 환경 설정 정보 삭제
+     * @title : deleteIaasConfigInfo
+     * @return : int
+    ***************************************************/
+    int deleteIaasConfigInfo( @Param("createUserId") String createUserId, @Param("id") int id );
     
 }

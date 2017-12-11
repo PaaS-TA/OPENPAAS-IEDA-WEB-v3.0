@@ -8,5 +8,5 @@ paasta_overrides:
 
   syslog_daemon_config_properties:
     address: (( meta.ingestor-ip ))
-    port: (( meta.ingestor-port || "2514" ))
+    port: "2514"
     transport: "relp"

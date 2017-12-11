@@ -5,8 +5,6 @@ releases:
   url: (( meta.bosh-release-url ))
 - name: (( meta.cpi-release ))
   url: (( meta.bosh-cpi-release-url ))
-- name: os-conf
-  url: (( meta.os-conf-release-url ))
 
 resource_pools:
 - name: vms
@@ -41,7 +39,6 @@ jobs:
     templates:  
     - {name: (( meta.cpi-name )), release: (( meta.cpi-release ))}
     - {name: registry, release: bosh}
-    - {name: user_add, release: os-conf}
     
     networks:
     - name: private
@@ -51,9 +48,6 @@ jobs:
       static_ips: (( meta.public-static-ips ))
 
     properties:
-      users:
-      - name: vcap
-        public_key: (( meta.public-key ))
       google: &google_properties
         project: (( meta.project ))
         json_key: 
@@ -90,3 +84,8 @@ cloud_provider:
   properties:
     google: *google_properties
     ntp: *ntp
+    ssh_tunnel:
+      host: (( meta.public-static-ips.[0] ))
+      port: 22
+      user: vcap
+      private_key: (( meta.private-key ))

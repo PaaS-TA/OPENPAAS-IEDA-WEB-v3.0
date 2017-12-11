@@ -9,7 +9,6 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openpaas.ieda.common.exception.CommonException;
-import org.openpaas.ieda.common.web.security.SessionInfoDTO;
 import org.openpaas.ieda.deploy.web.deploy.cf.dao.CfDAO;
 import org.openpaas.ieda.deploy.web.deploy.cf.dao.CfVO;
 import org.openpaas.ieda.deploy.web.deploy.cf.dto.CfParamDTO;
@@ -55,7 +54,7 @@ public class CfDiegoSaveService {
         ObjectMapper mapper = new ObjectMapper();
         try {
             String cfJson = new Gson().toJson(dto); 
-            if( "cf".equals(dto.getPlatform()) ){ //cf update/insert
+            if( "cf".equalsIgnoreCase(dto.getPlatform()) ){ //cf update/insert
                 cfDto = mapper.readValue(cfJson, CfParamDTO.Default.class);
                 cfVo = cfSaveService.saveDefaultInfo(cfDto, principal);
                 vo = cfDiegoDao.selectCfDiegoInfoByPlaform( dto.getPlatform(), cfVo.getId());
@@ -69,7 +68,7 @@ public class CfDiegoSaveService {
             }
             
             //cfDiego
-            if( (dto.getId() == null || StringUtils.isEmpty(dto.getId())) || ( "cf".equals(dto.getPlatform())) ){ 
+            if( (dto.getId() == null || StringUtils.isEmpty(dto.getId())) && ( "cf".equalsIgnoreCase(dto.getPlatform())) ){ 
                 if( cfVo != null || diegoVo != null ){
                     //insert cfDiego
                     vo = new CfDiegoVO();
@@ -82,17 +81,15 @@ public class CfDiegoSaveService {
                 }
             } else{
                 //id != null => cfDiego update
-                if( "diego".equals(dto.getPlatform()) ){
-                    if ( vo.getDiegoVo().getId() == null ) {
-                        vo.getDiegoVo().setId( Integer.parseInt(dto.getId()) );
-                    }
+                if( "diego".equalsIgnoreCase(dto.getPlatform()) &&  vo.getDiegoVo().getId() == null ){
+                    vo.getDiegoVo().setId( Integer.parseInt(dto.getId()) );
                 }
                 vo.setUpdateUserId(principal.getName());
                 cfDiegoDao.updateCfDiegoInfo(vo);
             }
         } catch (IOException e) {
             throw new CommonException("notfound.cfDiego.exception",
-                    dto.getPlatform().toUpperCase() + " 정보를 읽어을 수 없습니다.", HttpStatus.NOT_FOUND);
+                    dto.getPlatform().toUpperCase() + " 정보를 읽어을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (NullPointerException e){
             throw new CommonException("notfound.cfDiego.exception",
                     "CF & Diego 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
@@ -109,16 +106,16 @@ public class CfDiegoSaveService {
     public void saveNetworkInfo(List<NetworkDTO> dto, Principal principal ){
         CfDiegoVO vo  = null;
         try{
-            if( !dto.isEmpty() ) {
+            if( dto != null ) {
                 if( dto.get(0).getCfId() != null ){ //save cf network info 
                     cfSaveService.saveNetworkInfo(dto, principal);
                     vo = cfDiegoDao.selectCfDiegoInfoByPlaform("cf", Integer.parseInt(dto.get(0).getCfId()));
                 }else if( dto.get(0).getDiegoId() != null ){ //save diego network info
-                    diegoSaveService.saveNetworkInfo(dto);
+                    diegoSaveService.saveNetworkInfo(dto, principal);
                     vo = cfDiegoDao.selectCfDiegoInfoByPlaform("diego", Integer.parseInt(dto.get(0).getDiegoId()));
                 }else{
                     throw new CommonException("notfound.cfDiego.exception",
-                            "CF 또는 Diego 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+                            "CF 또는 Diego 정보를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);
                 }
             }
             if( vo != null  ){
@@ -127,7 +124,7 @@ public class CfDiegoSaveService {
             cfDiegoDao.updateCfDiegoInfo(vo);
         } catch(NullPointerException e){
             throw new CommonException("nullPoint.cfDiego.exception",
-                    "네트워크 정보를 저장할 수 없습니다. ", HttpStatus.INTERNAL_SERVER_ERROR);
+                    "네트워크 정보를 저장할 수 없습니다. ", HttpStatus.NOT_FOUND);
         } 
     }
 
@@ -139,9 +136,8 @@ public class CfDiegoSaveService {
     *****************************************************************/
     public Map<String, Object> saveResourceInfo(ResourceDTO dto, Principal principal){
         Map<String, Object> map  = null;
-        SessionInfoDTO sessionInfo = new SessionInfoDTO();
         //1.1 cf resource
-        if( "cf".equals(dto.getPlatform()) ){
+        if( "cf".equalsIgnoreCase(dto.getPlatform()) ){
             map = cfSaveService.saveResourceInfo(dto, principal);
         } else {
             CfDiegoVO cfDiegoVo = cfDiegoDao.selectCfDiegoInfoByPlaform( "cf", Integer.parseInt(dto.getCfId()) );
@@ -150,7 +146,7 @@ public class CfDiegoSaveService {
             map = diegoSaveService.saveResourceInfo(dto, principal);
         }
         CfDiegoVO result = cfDiegoDao.selectCfDiegoInfoByPlaform( dto.getPlatform(), Integer.parseInt(map.get("id").toString()) );
-        result.setUpdateUserId(sessionInfo.getUserId());
+        result.setUpdateUserId(principal.getName());
         cfDiegoDao.updateCfDiegoInfo(result);
         
         return map;

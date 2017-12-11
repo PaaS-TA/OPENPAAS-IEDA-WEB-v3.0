@@ -6,13 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openpaas.ieda.deploy.web.common.base.BaseDeployControllerUnitTest;
-import org.openpaas.ieda.deploy.web.config.setting.service.DirectorConfigService;
 import org.openpaas.ieda.deploy.web.information.stemcell.service.StemcellService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -24,10 +20,7 @@ public class StemcellServiceUnitTest extends BaseDeployControllerUnitTest{
     
     @InjectMocks 
     private StemcellService mockStemcellService;
-    @Mock 
-    private DirectorConfigService mockDirectorConfigService;
     
-    final static Logger LOGGER = LoggerFactory.getLogger(StemcellServiceUnitTest.class);
 
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -50,7 +43,6 @@ public class StemcellServiceUnitTest extends BaseDeployControllerUnitTest{
     *****************************************************************/
     @Test
     public void testSetUploadedReleaseList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testSetUploadedReleaseList"); }
         mockStemcellService.setUploadedStemcellList(setUploadedStecmcellInfo());
       
     }

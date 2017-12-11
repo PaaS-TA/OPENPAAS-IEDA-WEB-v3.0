@@ -11,6 +11,7 @@ import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
 import org.openpaas.ieda.openstackMgnt.api.network.OpenstackNetworkMgntApiService;
 import org.openpaas.ieda.openstackMgnt.web.network.dao.OpenstackNetworkMgntVO;
 import org.openpaas.ieda.openstackMgnt.web.network.dto.OpenstackNetworkMgntDTO;
+import org.openstack4j.model.common.ActionResponse;
 import org.openstack4j.model.network.IPVersionType;
 import org.openstack4j.model.network.Network;
 import org.openstack4j.model.network.Subnet;
@@ -43,7 +44,9 @@ public class OpenstackNetworkMgntService {
             String ipv6CidrBlock = "";
             networkVo.setNetworkId(networkList.get(i).getId());
             networkVo.setNetworkName(networkList.get(i).getName());
-            if(networkList.get(i).getStatus() != null) networkVo.setStatus(networkList.get(i).getStatus().name());
+            if(networkList.get(i).getStatus() != null) {
+                networkVo.setStatus(networkList.get(i).getStatus().name());
+            }
             networkVo.setTenantId(networkList.get(i).getTenantId());
             networkVo.setRouterExternal(networkList.get(i).isRouterExternal());
             networkVo.setShared(networkList.get(i).isShared());
@@ -91,8 +94,12 @@ public class OpenstackNetworkMgntService {
         networkVo.setNetworkId(networkApiVo.getId());
         networkVo.setAccountId(accountId);
         networkVo.setNetworkName(networkApiVo.getName());
-        if(networkApiVo.getStatus() != null) networkVo.setStatus(networkApiVo.getStatus().name());
-        if(networkApiVo.getNetworkType() != null) networkVo.setNetworkType(networkApiVo.getNetworkType().name());
+        if(networkApiVo.getStatus() != null) {
+            networkVo.setStatus(networkApiVo.getStatus().name());
+        }
+        if(networkApiVo.getNetworkType() != null) {
+            networkVo.setNetworkType(networkApiVo.getNetworkType().name());
+        }
         networkVo.setTenantId(networkApiVo.getTenantId());
         String subnetName = "";
         String ipv6CidrBlock = "";
@@ -129,7 +136,7 @@ public class OpenstackNetworkMgntService {
     public void saveOpenstackNetworkInfo(OpenstackNetworkMgntDTO dto, Principal principal) {
         IaasAccountMgntVO vo =  getOpenstackAccountInfo(principal, dto.getAccountId());
         IPVersionType ipVersion = null;
-        if("IPv4".equals(dto.getIpVersion())){
+        if("IPv4".equalsIgnoreCase(dto.getIpVersion())){
             ipVersion = IPVersionType.V4;
         } else {
             ipVersion = IPVersionType.V6;
@@ -138,7 +145,7 @@ public class OpenstackNetworkMgntService {
             openstackNetworkMgntApiService.saveOpenstackNetworkInfoApiFromOpenstack(vo, dto, ipVersion);
         }catch (Exception e) {
             throw new CommonException(
-                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -150,11 +157,10 @@ public class OpenstackNetworkMgntService {
     ***************************************************/
     public void deleteOpenstackNetworkInfo(OpenstackNetworkMgntDTO dto, Principal principal) {
         IaasAccountMgntVO vo =  getOpenstackAccountInfo(principal, dto.getAccountId());
-        try{
-            openstackNetworkMgntApiService.deleteOpenstackNetworkInfoApiFromOpenstack(vo, dto);
-        }catch (Exception e) {
-            throw new CommonException(
-                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+        ActionResponse response = openstackNetworkMgntApiService.deleteOpenstackNetworkInfoApiFromOpenstack(vo, dto);
+        if (!response.isSuccess()) {
+            throw new CommonException( message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), 
+                    response.getFault(), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -240,16 +246,17 @@ public class OpenstackNetworkMgntService {
     public void saveOpenstackSubnetkInfo(OpenstackNetworkMgntDTO dto, Principal principal) {
         IaasAccountMgntVO vo =  getOpenstackAccountInfo(principal, dto.getAccountId());
         IPVersionType ipVersion = null;
-        if("IPv4".equals(dto.getIpVersion())){
+        if("IPv4".equalsIgnoreCase(dto.getIpVersion())){
             ipVersion = IPVersionType.V4;
-        }else if("IPv6".equals(dto.getIpVersion())){
+        }else if("IPv6".equalsIgnoreCase(dto.getIpVersion())){
             ipVersion = IPVersionType.V6;
         }
         try{
             openstackNetworkMgntApiService.saveOpenstackSubnetkInfoApiFromOpenstack(vo, dto, ipVersion);
         }catch (Exception e) {
+            e.printStackTrace();
             throw new CommonException(
-                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
     /***************************************************
@@ -260,11 +267,11 @@ public class OpenstackNetworkMgntService {
     ***************************************************/
     public void deleteOpenstackSubnetInfo(OpenstackNetworkMgntDTO dto, Principal principal) {
         IaasAccountMgntVO vo =  getOpenstackAccountInfo(principal, dto.getAccountId());
-        try{
-            openstackNetworkMgntApiService.deleteOpenstackSubnetInfoApiFromOpenstack(vo, dto);
-        }catch (Exception e) {
+        ActionResponse response = openstackNetworkMgntApiService.deleteOpenstackSubnetInfoApiFromOpenstack(vo, dto);
+        if( !response.isSuccess() ) {
             throw new CommonException(
-                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), response.getFault(), HttpStatus.BAD_REQUEST);
+            
         }
     }
     

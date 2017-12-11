@@ -207,8 +207,8 @@ public class BootstrapController extends BaseController {
     @RequestMapping(value = "/deploy/bootstrap/list/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> getDeployLogMsg(@PathVariable int id) {
         if (LOGGER.isDebugEnabled()) { 
-        	LOGGER.debug("====================================> /deploy/bootstrap/list/"); 
-    	}
+        LOGGER.debug("====================================> /deploy/bootstrap/list/"); 
+    }
         BootstrapVO vo = bootstrapService.getBootstrapInfo(id);
         return new ResponseEntity<String>(vo.getDeployLog(), HttpStatus.OK);
     }

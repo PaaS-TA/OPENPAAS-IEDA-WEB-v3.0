@@ -27,8 +27,6 @@ import org.openpaas.ieda.iaasDashboard.api.resourceUsage.IaasResourceUsageApiSer
 import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
 import org.openpaas.ieda.iaasDashboard.web.resourceUsage.dao.IaasResourceUsageVO;
 import org.openpaas.ieda.iaasDashboard.web.resourceUsage.service.IaasResourceUsageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -59,7 +57,6 @@ private Principal principal = null;
     @Mock
     private CommonIaasService mockCommonIaasService;
     
-    final static Logger LOGGER = LoggerFactory.getLogger(IaasResourceUsageServiceUnitTest.class);
     
     /***************************************************
      * @project : 인프라 관리 대시보드
@@ -95,13 +92,13 @@ private Principal principal = null;
     ***************************************************/
     @Test
     public void testGetIaasResourceUsageTotal(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testGetIaasResourceUsageTotalCaseFromAWS Start"); }
         List<IaasResourceUsageVO> expectedVo = setAllIaasResourceUsageListInfo();
         HashMap<String, Object> awsInfo  = setAwsResourceInfo();
         HashMap<String, Object> openstackInfo = setOpenstackResourceInfo();
         
         when( mockCommonDao.selectAccountInfoList( anyString(), anyString() )).thenReturn(setAllAccountInfoList());
         when( mockCommonIaasService.getAwsRegionInfo(anyString()) ).thenReturn(Region.getRegion(Regions.US_WEST_2));
+        when( mockMessageSource.getMessage(anyString(), any(), any()) ).thenReturn("US_WEST_2");
         when( mockIaasResourceUsageApiService.getResourceInfoFromAWS(anyString(), anyString(), any()) ).thenReturn(awsInfo);
         when( mockIaasResourceUsageApiService.getResourceInfoFromOpenstackV2(anyString(), anyString(), anyString(), anyString()) ).thenReturn(openstackInfo);
         List<IaasResourceUsageVO> resultList = mockIaasResourceUsageService.getIaasResourceUsageTotalInfo(principal);
@@ -123,7 +120,6 @@ private Principal principal = null;
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testGetIaasResourceUsageTotalAwsException(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testGetIaasResourceUsageTotalCaseFromOpenstack Start"); }
         HashMap<String, Object> openstackInfo = setOpenstackResourceInfo();
         
         when( mockCommonDao.selectAccountInfoList( anyString(), anyString() )).thenReturn(setAllAccountInfoList());
@@ -143,7 +139,6 @@ private Principal principal = null;
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testGetIaasResourceUsageTotalOpenstackException(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testGetIaasResourceUsageTotalOpenstackException Start"); }
         HashMap<String, Object> awsInfo  = setAwsResourceInfo();
         
         when( mockCommonDao.selectAccountInfoList( anyString(), anyString() )).thenReturn(setAllAccountInfoList());
@@ -165,7 +160,6 @@ private Principal principal = null;
     ***************************************************/
     @Test
     public void testGetAwsResourceUsageInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testGetAwsResourceUsageInfoList Start"); }
         List<IaasResourceUsageVO> expectedVo = setAwsResourceUsageList();
         HashMap<String, Object> awsInfo  = setAwsResourceInfo();
         
@@ -194,13 +188,12 @@ private Principal principal = null;
     ***************************************************/
     @Test
     public void testGetOpenstackResourceUsageInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================> testGetOpenstackResourceUsageInfoList Start"); }
         List<IaasResourceUsageVO> expectedVo = setOpenstackResourceUsageList();
         HashMap<String, Object> openstackInfo  = setOpenstackResourceInfo();
         
         when( mockCommonDao.selectAccountInfoList( anyString(), anyString() )).thenReturn(setAwsAccountInfoList());
         when( mockIaasResourceUsageApiService.getResourceInfoFromOpenstackV2(any(), any(), any(), any()) ).thenReturn(openstackInfo);
-        
+        when( mockMessageSource.getMessage(anyString(), any(), any()) ).thenReturn("Openstack");
         List<IaasResourceUsageVO> resultList = mockIaasResourceUsageService.getOpenstackResourceUsageInfoList(principal);
         for( int i=0; i<resultList.size(); i++ ){
             assertEquals( expectedVo.get(i).getIaasType(), resultList.get(i).getIaasType() );
@@ -312,7 +305,7 @@ private Principal principal = null;
         awsAccount.put("commonAccessEndpoint", "http://endPoint");
         awsAccount.put("commonAccessUser", "AKIAIGL5JRHJATEST");
         awsAccount.put("commonAccessSecret","oDSAm1znlUFU62DHxV7Aa232EWEEWE" );
-        awsAccount.put("openstackKeystoneVersion", null);
+        awsAccount.put("openstackKeystoneVersion", "v2");
         awsAccount.put("commonTenant", "tenant");
         awsAccount.put("openstackDomain",null);
         awsAccount.put("createUserId", "admin");
@@ -360,6 +353,7 @@ private Principal principal = null;
         resource.put("instance", 10);
         resource.put("network", 4);
         resource.put("volume", 300);
+        resource.put("billing", 300);
         
         return resource;
     }

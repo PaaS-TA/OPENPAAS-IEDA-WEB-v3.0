@@ -93,7 +93,7 @@ $(function () {
 
 /********************************************************
  * 설명 :  Diego 릴리즈 설치 지원 버전 목록 조회
- * Function : getReleaseVersionList
+ * 기능 : getReleaseVersionList
  *********************************************************/
 function getReleaseVersionList(){
     var contents = "";
@@ -120,7 +120,7 @@ function getReleaseVersionList(){
 
 /********************************************************
  * 설명 :  Diego 수정 - 데이터 조회
- * Function : getDiegoData
+ * 기능 : getDiegoData
  *********************************************************/
 function getDiegoData(record) {
     var url = "/deploy/"+menu+"/install/detail/" + record.id;
@@ -144,12 +144,12 @@ function getDiegoData(record) {
 
 /********************************************************
  * 설명 :  Diego Data Setting
- * Function : setCfData
+ * 기능 : setDiegoData
  *********************************************************/
 function setDiegoData(contents) {
-     if( menu == "cfDiego" ) {
-         contents = contents.diegoVo;
-     }
+    if( menu == "cfDiego" ) {
+        contents = contents.diegoVo;
+    }
     diegoId = contents.id;
     iaas = contents.iaasType;
     if( contents.networks.length > 1){
@@ -172,7 +172,6 @@ function setDiegoData(contents) {
             cflinuxfs2rootfsreleaseVersion  : contents.cflinuxfs2rootfsreleaseVersion,
             paastaMonitoringUse             : contents.paastaMonitoringUse,
             cadvisorDriverIp                : contents.cadvisorDriverIp,
-            cadvisorDriverPort              : contents.cadvisorDriverPort
         }
         //네트워크 정보 설정
         for(var i=0; i<contents.networks.length; i++){
@@ -181,7 +180,7 @@ function setDiegoData(contents) {
                 deployType                  : contents.networks[i].deployType,
                 seq                         : i,
                 net                         : contents.networks[i].net,
-                networkName              : contents.networks[i].networkName,
+                networkName                 : contents.networks[i].networkName,
                 publicStaticIp              : contents.networks[i].publicStaticIp,
                 subnetRange                 : contents.networks[i].subnetRange,
                 subnetGateway               : contents.networks[i].subnetGateway,
@@ -192,20 +191,20 @@ function setDiegoData(contents) {
                 subnetStaticTo              : contents.networks[i].subnetStaticTo,
                 subnetId                    : contents.networks[i].subnetId,
                 cloudSecurityGroups         : contents.networks[i].cloudSecurityGroups,
-                availabilityZone        : contents.networks[i].availabilityZone
+                availabilityZone            : contents.networks[i].availabilityZone
             }
              networkInfo.push(arr);
         }
         internalCnt = networkInfo.length;
-        
         for(var i=0; i<contents.jobs.length; i++){
             var job = {
                     id           : contents.jobs[i].id,
                     seq          : contents.jobs[i].seq,
                     deploy_type  : contents.jobs[i].deploy_type,
-                    job_name     : contents.jobs[i].code_name,
-                    job_code     : contents.jobs[i].job_code,
-                    instances    : contents.jobs[i].instances
+                    job_name     : contents.jobs[i].job_name,
+                    job_id       : contents.jobs[i].job_id,
+                    instances    : contents.jobs[i].instances,
+                    zone         : contents.jobs[i].zone
             }
             jobsInfo.push(job);
         }
@@ -239,16 +238,18 @@ function setDiegoData(contents) {
         }
 }
 
-
 /********************************************************
  * 설명 :  기본정보 팝업
  * 기능 : defaultPopup
  *********************************************************/
 function defaultPopup() {
     $("#defaultInfoDiv").w2popup({
+        title : "<b>DIEGO 설치</b>",
         width : 750,
-        height :625,
+        height :560,
         modal :true,
+        body    : $("#defaultInfoDiv").html(),
+        buttons : $("#defaultInfoButtonDiv").html(),
         showMax :false,
         onOpen :function(event) {
             event.onComplete = function() {
@@ -266,6 +267,7 @@ function defaultPopup() {
                 if( menu == "cfDiego") {
                     $('.w2ui-msg-buttons #defaultPopupBtn').show();
                 }
+                
                 if (defaultInfo != "") {
                     $(".w2ui-msg-body input[name='deploymentName']").val(defaultInfo.deploymentName);
                     $(".w2ui-msg-body input[name='directorUuid']").val(defaultInfo.directorUuid);
@@ -274,7 +276,12 @@ function defaultPopup() {
                         $(".w2ui-msg-body input:checkbox[name='paastaMonitoring']").attr("checked", true);
                         checkPaasTAMonitoringUseYn();
                         $(".w2ui-msg-body input[name='cadvisorDriverIp']").val(defaultInfo.cadvisorDriverIp);
-                        $(".w2ui-msg-body input[name='cadvisorDriverPort']").val(defaultInfo.cadvisorDriverPort);
+                    }
+                    if(compare( defaultInfo.diegoReleaseVersion, "1.2.0" ) > 0){
+                        $('.w2ui-msg-body #etcd').css('display','none');
+                        $(".w2ui-msg-body input[name='etcdReleases']").val("");
+                    } else {
+                        $('.w2ui-msg-body #etcd').css('display','block');
                     }
                 }else{
                     if( !checkEmpty($("#directorUuid").text()) ){
@@ -320,13 +327,12 @@ function getDiegoRelease() {
         success :function(data, status) {
             diegoReleases = new Array();
             if( data.records != null){
-                w2popup.unlock();
                 var option = "<option value=''>Diego 릴리즈를 선택하세요.</option>";
                 data.records.map(function(obj) {
                     if( defaultInfo.diegoReleaseName == obj.name && defaultInfo.diegoReleaseVersion == obj.version){
                         option += "<option value='"+obj.name+"/"+obj.version+"' selected>"+obj.name+"/"+obj.version+"</option>";
                     }else{
-                        option += "<option value='"+obj.name+"/"+obj.version+"'>"+obj.name+"/"+obj.version+"</option>";    
+                        option += "<option value='"+obj.name+"/"+obj.version+"'>"+obj.name+"/"+obj.version+"</option>";
                     }
                 });
             }
@@ -353,11 +359,11 @@ function getcflinuxfs2RootfsRelease(){
         success :function(data, status) {
             cflinuxfs2rootfsrelease = new Array();
             if( data.records != null){
-                w2popup.unlock();
                 var option = "<option value=''>Cf-linuxfs2 릴리즈를 선택하세요.</option>";
                 data.records.map(function(obj) {
                     if( defaultInfo.cflinuxfs2rootfsreleaseName == obj.name && defaultInfo.cflinuxfs2rootfsreleaseVersion == obj.version){
                         option += "<option value='"+obj.name+"/"+obj.version+"' selected>"+obj.name+"/"+obj.version+"</option>";
+                        $('.w2ui-msg-body #cflinux').css('display','block');
                     }else{
                         option += "<option value='"+obj.name+"/"+obj.version+"'>"+obj.name+"/"+obj.version+"</option>";    
                     }
@@ -376,7 +382,7 @@ function getcflinuxfs2RootfsRelease(){
 
 /********************************************************
  * 설명 : CF 정보 조회
- * 기능 : arrayCFInfoJSON
+ * 기능 : getCfRelease
  *********************************************************/
 var arrayCFInfoJSON = [];
 function getCfRelease() {
@@ -399,10 +405,15 @@ function getCfRelease() {
                     var getCfInfo =  $(".w2ui-msg-body #getCfInfo");
                     if( menu == "cfDiego"  ){
                         if(  cfId == obj.id) {
+                            option += '<option selected value="'+obj.deploymentName+'">'+obj.deploymentName+'</option>';
                             $(".w2ui-msg-body select[name='cfInfo']").html(option);
-                            $(".w2ui-msg-body select[name='cfInfo']").val(obj.deploymentName);
                             $(".w2ui-msg-body input[name='cfId']").val(obj.id);
+                            $(".w2ui-msg-body input[name='cfDeploymentFile']").val(obj.deploymentFile);
                             $(".w2ui-msg-body input[name='deploymentName']").val(obj.deploymentName+"-diego");
+                            $(".w2ui-msg-body input[name='cfReleaseVersion']").val(obj.releaseVersion);
+                            if(obj.releaseVersion > 271){
+                                $(".w2ui-msg-body input[name='cfKeyFile']").val(obj.keyFile);
+                            }
                         }
                     } else{
                         if(obj.diegoYn=="true") {
@@ -412,11 +423,14 @@ function getCfRelease() {
                             }else{
                                 option += '<option value="'+obj.deploymentName+'">'+obj.deploymentName+'</option>';
                             }
+                            $(".w2ui-msg-body input[name='cfReleaseVersion']").val(obj.releaseVersion);
                             $(".w2ui-msg-body select[name='cfInfo']").html(option);
+                            if(obj.releaseVersion > 271){
+                                $(".w2ui-msg-body input[name='cfKeyFile']").val(obj.keyFile);
+                            }
                             arrayCFInfoJSON=data;
                         }
                     }
-                    $(".w2ui-msg-body input[name='cfPaastaMonitoring']").val(obj.paastaMonitoringUse);
                 });
             }
             getDiegoRelease();
@@ -435,16 +449,25 @@ function getCfRelease() {
 function setCfDeployFile(value){
     var cf_id;
     var cfDeploymentFile;
-     for(var i=0;i<arrayCFInfoJSON.records.length;i++){
+    var cfReleaseVersion;
+    var cfKey;
+    
+    for(var i=0;i<arrayCFInfoJSON.records.length;i++){
         if(value==arrayCFInfoJSON.records[i].deploymentName){
             cf_id = arrayCFInfoJSON.records[i].id;
             cfDeploymentFile = arrayCFInfoJSON.records[i].deploymentFile;
+            cfReleaseVersion = arrayCFInfoJSON.records[i].releaseVersion;
+            if(cfReleaseVersion > 271){
+                cfKey = arrayCFInfoJSON.records[i].keyFile;
+            }
             break;
         }
     }
-     $(".w2ui-msg-body input[name='deploymentName']").val(value+"-diego");
-     $(".w2ui-msg-body input[name='cfId']").val(cf_id);
-     $(".w2ui-msg-body input[name='cfDeploymentFile']").val(cfDeploymentFile);
+    $(".w2ui-msg-body input[name='cfReleaseVersion']").val(cfReleaseVersion);
+    $(".w2ui-msg-body input[name='deploymentName']").val(value+"-diego");
+    $(".w2ui-msg-body input[name='cfId']").val(cf_id);
+    $(".w2ui-msg-body input[name='cfDeploymentFile']").val(cfDeploymentFile);
+    $(".w2ui-msg-body input[name='cfKeyFile']").val(cfKey);
 }
 
 /********************************************************
@@ -491,7 +514,6 @@ function getEtcdRelease() {
         success :function(data, status) {
             etcdReleases = new Array();
             if( data.records != null){
-                w2popup.unlock();
                 var option = "<option value=''>Etcd 릴리즈를 선택하세요.</option>";
                 data.records.map(function(obj) {
                     if( defaultInfo.etcdReleaseName == obj.name && defaultInfo.etcdReleaseVersion == obj.version){
@@ -527,14 +549,27 @@ function setReleaseList(){
 function setcflinuxDisplay(val){
     var diegoReleaseName = val.split("/")[0];
     var diegoReleaseVersion = val.split("/")[1];
-    if( compare( diegoReleaseVersion, "0.1463.0" ) > 0 ){
-        $('.w2ui-msg-body #cflinux').css('display','block');
-    } else{
-        $('.w2ui-msg-body #cflinux').css('display','none');
-        $(".w2ui-msg-body input[name='cflinuxfs2rootfsrelease']").val("");
+    if(diegoReleaseVersion != undefined){
+        if( compare( diegoReleaseVersion, "0.1463.0" ) > 0 ){
+            $('.w2ui-msg-body #cflinux').css('display','block');
+        } else{
+            $('.w2ui-msg-body #cflinux').css('display','none');
+            $(".w2ui-msg-body input[name='cflinuxfs2rootfsrelease']").val("");
+        }
+        if(compare( diegoReleaseVersion, "1.2.0" ) > 0){
+            $('.w2ui-msg-body #etcd').css('display','none');
+            $(".w2ui-msg-body input[name='etcdReleases']").val("");
+        } else {
+            $('.w2ui-msg-body #etcd').css('display','block');
+        }
+        setDisabledMonitoring(val);
+    } else {
+        $('.w2ui-msg-body #paastaMonitoring').attr('disabled',true);
+        $(".w2ui-msg-body input:checkbox[name='paastaMonitoring']").prop('checked',false);
+        $(".w2ui-msg-body input[name='cadvisorDriverIp']").val("");
+        //Read-only
+        $(".w2ui-msg-body input[name='cadvisorDriverIp']").attr("disabled", true);
     }
-    
-    setDisabledMonitoring(val);
 }
 
 /********************************************************
@@ -545,17 +580,14 @@ function setDisabledMonitoring(val){
     if( !checkEmpty(val)){
         var diegoReleaseName = val.split("/")[0];
         var diegoReleaseVersion = val.split("/")[1];
-        
         //paasta-container v2.0 이상 PaaS-TA 모니터링 지원 checkbox
-        if( diegoReleaseName.indexOf("paasta-container") > -1 && compare(diegoReleaseVersion, "2.0") > -1 && 
-                $(".w2ui-msg-body input[name='cfPaastaMonitoring']").val()=="true"){
+        if( diegoReleaseName.indexOf("paasta-container") > -1 && compare(diegoReleaseVersion, "2.0") > -1){
             $('.w2ui-msg-body #paastaMonitoring').attr('disabled',false);
         }else{
             if( $(".w2ui-msg-body input:checkbox[name='paastaMonitoring']").is(":checked")){
                 $(".w2ui-msg-body input:checkbox[name='paastaMonitoring']").prop('checked',false);
-                checkPaasTAMonitoringUseYn();
+                checkPaasTAMonitoringUseYn(diegoReleaseName+"/"+diegoReleaseVersion);
             }
-            $('.w2ui-msg-body #paastaMonitoring').attr('disabled',true);
         }
     }
     
@@ -567,20 +599,14 @@ function setDisabledMonitoring(val){
  *********************************************************/
 function checkPaasTAMonitoringUseYn(value){
     var cnt = $("input[name=paastaMonitoring]:checkbox:checked").length;
-    
     if(cnt > 0 ){
         $(".w2ui-msg-body input[name='cadvisorDriverIp']").attr("disabled", false);
-        $(".w2ui-msg-body input[name='cadvisorDriverPort']").attr("disabled", false);
-        
     }else{
         $(".w2ui-msg-body input[name='cadvisorDriverIp']").css({"border-color" : "rgb(187, 187, 187)"}).parent().find(".isMessage").text("");
-        $(".w2ui-msg-body input[name='cadvisorDriverPort']").css({"border-color" : "rgb(187, 187, 187)"}).parent().find(".isMessage").text("");
         //값 초기화
         $(".w2ui-msg-body input[name='cadvisorDriverIp']").val("");
-        $(".w2ui-msg-body input[name='cadvisorDriverPort']").val("");
         //Read-only
         $(".w2ui-msg-body input[name='cadvisorDriverIp']").attr("disabled", true);
-        $(".w2ui-msg-body input[name='cadvisorDriverPort']").attr("disabled", true);
     }
      
 }
@@ -591,7 +617,6 @@ function checkPaasTAMonitoringUseYn(value){
  * 기능 : createKeyConfirm
  *********************************************************/
 function createKeyConfirm(){
-     
      var message = "";
      if( !checkEmpty(diegoKeyFile) ){//이미 key가 생성됐으면,
          message = "Key를 재 생성하시겠습니다.?";
@@ -625,6 +650,7 @@ function createKey(){
             id : diegoId,
             iaas : iaas.toLowerCase(),
             platform : "diego", //cf -> 1, diego -> 2, cf&diego -> 3
+            version : defaultInfo.diegoReleaseVersion
     }
     $.ajax({
         type : "POST",
@@ -667,8 +693,12 @@ function saveDefaultInfo(type) {
         w2alert("Diego와 연동 할 CF를 설치해 주세요.", "DIEGO 설치");
         return;
     }
-    
     var diegoRelease = $(".w2ui-msg-body select[name='diegoReleases']").val();
+    
+    if(compare( diegoRelease.split("/")[1], "1.2.0" ) > 0){
+        $(".w2ui-msg-body select[name='etcdReleases']").val("");
+    }
+    
     var gardenRelease = $(".w2ui-msg-body select[name='gardenReleaseName']").val();
     var etcdRelease = $(".w2ui-msg-body select[name='etcdReleases']").val();
     var cflinuxfs2rootfsrelease = $(".w2ui-msg-body select[name='cflinuxfs2rootfsrelease']").val();
@@ -679,7 +709,6 @@ function saveDefaultInfo(type) {
     }else{
         monitoringUse = "false";
     }
-    
     defaultInfo = {
                 id                              : (diegoId) ? diegoId :"",
                 iaas                            : iaas.toUpperCase(),
@@ -691,6 +720,8 @@ function saveDefaultInfo(type) {
                 cfDeploymentName                : cfName,
                 cfId                            : $(".w2ui-msg-body input[name='cfId']").val(),
                 cfDeploymentFile                : $(".w2ui-msg-body input[name='cfDeploymentFile']").val(),
+                cfReleaseVersion                : $(".w2ui-msg-body input[name='cfReleaseVersion']").val(),
+                cfKeyFile                       : $(".w2ui-msg-body input[name='cfKeyFile']").val(),
                 gardenReleaseName               : gardenRelease.split("/")[0],
                 gardenReleaseVersion            : gardenRelease.split("/")[1],
                 etcdReleaseName                 : etcdRelease.split("/")[0],
@@ -699,7 +730,6 @@ function saveDefaultInfo(type) {
                 cflinuxfs2rootfsreleaseVersion  : cflinuxfs2rootfsrelease.split("/")[1],
                 paastaMonitoringUse             : monitoringUse,
                 cadvisorDriverIp                : $(".w2ui-msg-body input[name='cadvisorDriverIp']").val(),
-                cadvisorDriverPort              : $(".w2ui-msg-body input[name='cadvisorDriverPort']").val()
     }
     if( type == 'after'){
             $.ajax({
@@ -785,7 +815,6 @@ function networkPopup(div, height){
  * 기능 : settingNetwork
  *********************************************************/
  function settingNetwork( index ){
-     console.log(index);
      if( iaas.toLowerCase() == 'aws' || iaas.toLowerCase() == "openstack" ){
          addInternalNetworkInputs('#defaultNetworkInfoDiv_'+index+'', "#defaultNetworkInfoForm" );
      }else if( iaas.toLowerCase() == 'google' ){
@@ -819,7 +848,7 @@ function addInternalNetworkInputs( preDiv, form ){
                 html+= '<span class="btn btn-info btn-sm addInternal" style="display:none;" onclick="addInternalNetworkInputs(\''+div+'\', \''+form+'\');">추가</span>';
             }
         }
-        html+=        '<span class="btn btn-info btn-sm" onclick="delInternalNetwork(\''+preDiv+'\', '+index+');">삭제</span>';
+        html+=        '&nbsp;&nbsp;<span class="btn btn-info btn-sm" onclick="delInternalNetwork(\''+preDiv+'\', '+index+');">삭제</span>';
         html+=    "</div>";
         html+= "</div>";
         html+= body_div;
@@ -1026,7 +1055,6 @@ function saveNetworkInfo(type, form) {
     var form = "#defaultNetworkInfoForm";
     if(iaas.toUpperCase()=="VSPHERE") form = "#vSphereNetworkInfoForm";
     else if(iaas.toUpperCase()=="GOOGLE") form = "#googleNetworkInfoForm";
-    console.log(form);
     $(".w2ui-msg-body "+form+" .panel-body").each(function(){
         var div = $($(this).parent().parent()).attr("id");
         var count = div.split("_")[1];
@@ -1037,7 +1065,6 @@ function saveNetworkInfo(type, form) {
                     id                    : networkId,
                     iaas                  : iaas.toUpperCase(),
                     deployType            : 1400,
-                    
                     net                   : "Internal",
                     seq                   : count-1,
                     networkName         : $(".w2ui-msg-body input[name='networkName_"+inputIndex+"']").val(),
@@ -1054,29 +1081,22 @@ function saveNetworkInfo(type, form) {
          }
          networkInfo.push(InternalArr);
     });
-    console.log(networkInfo);    
     if (type == 'after') {
-        if (popupValidation()) {
-            //Server send Diego Info
-            $.ajax({
-                type :"PUT",
-                url :"/deploy/"+menu+"/install/saveNetworkInfo",
-                contentType :"application/json",
-                async :true,
-                data : JSON.stringify(networkInfo),
-                success :function(data, status) {
-                    w2popup.clear();
-                    if( iaas.toLowerCase() == 'vsphere'){
-                        vSphereResourceInfoPopup();    
-                    }else{
-                        resourcePopup();
-                    }
-                },
-                error :function(e, status) {
-                    w2alert("Diego (OPENSTACK) Network 등록에 실패 하였습니다.", "Diego 설치");
-                }
-            });
-        }
+        //Server send Diego Info
+        $.ajax({
+            type :"PUT",
+            url :"/deploy/"+menu+"/install/saveNetworkInfo",
+            contentType :"application/json",
+            async :true,
+            data : JSON.stringify(networkInfo),
+            success :function(data, status) {
+                w2popup.clear();
+                jobPopupComplete();
+            },
+            error :function(e, status) {
+                w2alert("Diego (OPENSTACK) Network 등록에 실패 하였습니다.", "Diego 설치");
+            }
+        });
     } else if (type == 'before') {
         w2popup.clear();
         defaultPopup();
@@ -1088,19 +1108,22 @@ function saveNetworkInfo(type, form) {
  * 기능 : Resource
  *********************************************************/
 function resourcePopup(div, height) {
-    $("#resourceInfoDiv").w2popup({
-        width  : 750,
+     w2popup.open({
         title   : "<b>Diego 설치</b>",
-        height    :800,
+        width   : 750,
+        height  : 800,
         body    : $(div+"Div").html(),
         buttons : $(div+"Buttons").html(),
-        modal     :true,
+        modal   :true,
         showMax :false,
-        onOpen :function(event) {
+        onOpen  :function(event) {
             event.onComplete = function() {
-                
-                if( menu == "cfDiego" ){
+                if( menu == "cfDiego" || defaultInfo.cfReleaseVersion > 271 || defaultInfo.cfReleaseVersion == "3.0" ){
                     $('.w2ui-msg-body #keyBtn').css("display","none");
+                    diegoKeyFile = defaultInfo.cfKeyFile;
+                    
+                } else {
+                    $('.w2ui-msg-body #keyBtn').css("display","block");
                 }
                 
                 if (resourceInfo != "") {
@@ -1109,6 +1132,20 @@ function resourcePopup(div, height) {
                     $(".w2ui-msg-body input[name='mediumFlavor']").val(resourceInfo.mediumFlavor);
                     $(".w2ui-msg-body input[name='largeFlavor']").val(resourceInfo.largeFlavor);
                     $(".w2ui-msg-body input[name='runnerFlavor']").val(resourceInfo.runnerFlavor);
+                    if( iaas.toLowerCase() == "vsphere" ){
+                        $(".w2ui-msg-body input[name='smallFlavorRam']").val(resourceInfo.smallRam);
+                        $(".w2ui-msg-body input[name='smallFlavorDisk']").val(resourceInfo.smallDisk);
+                        $(".w2ui-msg-body input[name='smallFlavorCpu']").val(resourceInfo.smallCpu);
+                        $(".w2ui-msg-body input[name='mediumFlavorRam']").val(resourceInfo.mediumRam);
+                        $(".w2ui-msg-body input[name='mediumFlavorDisk']").val(resourceInfo.mediumDisk);
+                        $(".w2ui-msg-body input[name='mediumFlavorCpu']").val(resourceInfo.mediumCpu);
+                        $(".w2ui-msg-body input[name='largeFlavorRam']").val(resourceInfo.largeRam);
+                        $(".w2ui-msg-body input[name='largeFlavorDisk']").val(resourceInfo.largeDisk);
+                        $(".w2ui-msg-body input[name='largeFlavorCpu']").val(resourceInfo.largeCpu);
+                        $(".w2ui-msg-body input[name='runnerFlavorRam']").val(resourceInfo.runnerRam);
+                        $(".w2ui-msg-body input[name='runnerFlavorDisk']").val(resourceInfo.runnerDisk);
+                        $(".w2ui-msg-body input[name='runnerFlavorCpu']").val(resourceInfo.runnerCpu);
+                    }
                 }
                 w2popup.lock("스템셀을 조회 중입니다.", true);
                 getStamcellList();
@@ -1127,16 +1164,21 @@ function resourcePopup(div, height) {
  * 기능 : vSphereResourceInfoPopup
  *********************************************************/
 function vSphereResourceInfoPopup() {
-    $("#vSphereResourceInfoDiv").w2popup({
-        width : 750,
-        height : 820,
+     w2popup.open({
+        title   : "<b>Diego 설치</b>",
+        width   : 750,
+        height  : 820,
+        body    : $("vSphereResourceInfoDiv").html(),
+        buttons : $("vSphereResourceInfoButtons").html(),
         modal : true,
         showMax : false,
         onOpen : function(event) {
             event.onComplete = function() {
-                
-                if( menu == "cfDiego" ){
+                if( menu == "cfDiego" || defaultInfo.cfReleaseVersion > 271 ){
                     $('.w2ui-msg-body #keyBtn').css("display","none");
+                    diegoKeyFile = defaultInfo.cfKeyFile;
+                } else {
+                    $('.w2ui-msg-body #keyBtn').css("display","block");
                 }
                 
                 if (resourceInfo != "") {
@@ -1228,45 +1270,50 @@ function vSphereResourceInfoPopup() {
   * 기능 : saveCfJobsInfo
   *********************************************************/
  function saveDiegoJobsInfo(){
-      w2popup.lock(save_info_msg, true);
-      var i=0;
-      var flag=true;
-      $(".w2ui-msg-body #diegoJobListDiv li > ul").each(function(){
-          var input = $($(this).children()[0]).find("input");
-          if ($(input).val != "" && $(input).val() >=0 && $(input).val() <=3) {
-          }else flag = false;
-      });
-      jobsInfo = [];
-      $(".w2ui-msg-body #diegoJobListDiv li > ul").each(function(){
-          var input = $($(this).children()[0]).find("input");
-          var pwd_input = $($(this).children()[1]).find("input");
-          i ++;
-          var job = {
-                  id           : diegoId,
-                  seq          : i,
-                  deploy_type  : deploy_type,
-                  job_name     : $(input).attr("id"),
-                  job_code     : $(input).attr("name"),
-                  instances    : $(input).val()
-                  
-          }
-          jobsInfo.push(job);
-      });
-      if( flag ){
-          $.ajax({
-                 type : "PUT",
-                 url : "/deploy/"+menu+"/install/save/jobsInfo",
-                 contentType : "application/json",
-                 data : JSON.stringify(jobsInfo),
-                 success : function(status) {
-                     w2popup.unlock();
-                     jobPopupComplete();
-                 },
-                 error :function(request, status, error) {
-                     w2popup.unlock();
-                 }
-             });
-      }
+     w2popup.lock(save_info_msg, true);
+     var i=0;
+     var flag=true;
+     $(".w2ui-msg-body #diegoJobListDiv li > ul").each(function(){
+         var input = $($(this).children()[0]).find("input");
+         if ($(input).val != "" && $(input).val() >=0 && $(input).val() <= 3) {
+         } else flag = false;
+     });
+     jobsInfo = [];
+     $(".w2ui-msg-body #diegoJobListDiv li > ul").each(function(){
+         var input = $($(this).children()[0]).find("input");
+         var pwd_input = $($(this).children()[1]).find("input");
+         i ++;
+         var index = $(input).attr("name").split("_z").length-1;
+         var z_index = $(input).attr("name").split("_").length-1;
+         var job = {
+                 id           : diegoId,
+                 seq          : i,
+                 deploy_type  : deploy_type,
+                 job_name     : $(input).attr("name").split("_z")[index-1],
+                 job_id       : $(input).attr("id"),
+                 instances    : $(input).val(),
+                 zone         : $(input).attr("name").split("_")[z_index]
+         }
+         jobsInfo.push(job);
+     });
+     if( flag ){
+         $.ajax({
+             type : "PUT",
+             url : "/deploy/"+menu+"/install/save/jobsInfo",
+             contentType : "application/json",
+             data : JSON.stringify(jobsInfo),
+             success : function(status) {
+                 w2popup.unlock();
+                 jobPopupComplete();
+             },
+             error :function(request, status, error) {
+                 w2popup.unlock();
+             }
+         });
+     }else{
+         w2popup.unlock();
+         w2alert("인스턴스 수는 0부터 3까지만 가능합니다.");
+     }
  }
 
  /********************************************************
@@ -1287,9 +1334,10 @@ function vSphereResourceInfoPopup() {
   *********************************************************/
  function settingDiegoJobs(){
      var release_version = defaultInfo.diegoReleaseVersion;
+     release_version = settingReleaseVersion(release_version);
      $.ajax({
          type : "GET",
-         url : "/deploy/diego/install/save/job/list/"+release_version+"/"+iaas,
+         url : "/deploy/diego/install/save/job/list/"+release_version+"/"+'DEPLOY_TYPE_DIEGO',
          contentType : "application/json",
          success : function(data, status) {
              if( !checkEmpty(data) ){
@@ -1301,27 +1349,26 @@ function vSphereResourceInfoPopup() {
                  html += '<div id="diegoJobListDiv">';
                  html += '<p style="color:red;">- 고급 설정 값을 변경하지 않을 경우 아래에 입력 된 기본 값으로 자동 설정됩니다.</p>';
                  html += '<p style="color:red;">- 해당 Job의 인스턴스 수는 0-3까지 입력하실 수 있습니다.</p>';
-                 for( var i=0; i<data.length; i++ ){
-                     html += '<ul class="w2ui-field" style="border: 1px solid #c5e3f3;padding: 10px;">';
-                     html +=     '<li style="display:inline-block; width:35%;">';
-                     html +=         '<label style="text-align: left;font-size:11px;">'+data[i].code_name+'_z1</label>';
-                     html +=     '</li>';
-                     html +=     '<li style="display:inline-block; width:60%;vertical-align:middle; line-height:3; text-align:right;">';
-                     html +=         '<ul>';
-                     html +=             '<li>';
-                     html +=                 '<label style="display:inline-block;">인스턴스 수 : </label>&nbsp;&nbsp;&nbsp;';
-                     html +=                 '<input class="form-control" style="width:60%; display:inline-block;" onblur="instanceControl(this);" onfocusin="instanceControl(this);" onfocusout="instanceControl(this);" maxlength="1" type="number" min="0" max="3" value="1" id="'+data[i].code_name+'" name="'+data[i].code_value+'"/>';
-                     html +=              '</li>';
-                     html +=         '</ul>';
-                     html +=     '</li>';
-                     html += '</ul>';
+                 for(var j=1; j<networkInfo.length+1; j++){
+                     for( var i=0; i<data.length; i++ ){
+                         html += "<p style='color: #565656;font-size: 13px;font-weight:bolder;margin-top: 20px;'>[Internal 네트워크_"+ j+ "]</p>"
+                         for( var i=0; i<data.length; i++ ){
+                             if( j == 1 && data[i].zone_z1 == "true" ){
+                                 html += setJobSettingHtml(data[i], j );
+                             }else if( j == 2 && data[i].zone_z2 == "true"  ){
+                                 html += setJobSettingHtml(data[i], j);
+                             } else if( j == 3 && data[i].zone_z3 == "true" ){
+                                 html += setJobSettingHtml(data[i], j);
+                             }
+                         }
+                     }
                  }
                  html +='</div></div></div>';
                  $("#diegoDetailForm").html(html);
                  $(".w2ui-msg-body #diegoDetailForm").html(html);
                  if( jobsInfo.length > 0 ){
                      for( var i=0; i<jobsInfo.length; i++ ){
-                         $(".w2ui-msg-body input[name='"+jobsInfo[i].job_code+"']").val(jobsInfo[i].instances);
+                         $(".w2ui-msg-body input[name='"+jobsInfo[i].job_name+"_"+jobsInfo[i].zone+"']").val(jobsInfo[i].instances);
                      }
                  }
              }else{
@@ -1336,6 +1383,42 @@ function vSphereResourceInfoPopup() {
  }
  
  /********************************************************
+  * 설명 : CF 고급 설정 paasta release version 설정
+  * 기능 : settingReleaseVersion
+  *********************************************************/
+ function settingReleaseVersion( version ){
+     var releaseVersion = version;
+      if( version == "3.0" ){
+         releaseVersion = "1.25.3";
+     }else if( version == "2.0" ){
+         releaseVersion = "1.1.0"
+     }
+     return releaseVersion;
+ }
+ 
+ /********************************************************
+  * 설명 : CF 고급 설정 HTML 설정
+  * 기능 : setJobSettingHtml
+  *********************************************************/
+ function setJobSettingHtml(data, j){
+     var html = "";
+         html += '<ul class="w2ui-field" style="border: 1px solid #c5e3f3;padding: 10px;">';
+         html +=     '<li style="display:inline-block; width:35%;">';
+         html +=         '<label style="text-align: left;font-size:11px;">'+data.job_name+'_z'+j+'</label>';
+         html +=     '</li>';
+         html +=     '<li style="display:inline-block; width:60%;vertical-align:middle; line-height:3; text-align:right;">';
+         html +=         '<ul>';
+         html +=             '<li>';
+         html +=                 '<label style="display:inline-block;">인스턴스 수 : </label>&nbsp;&nbsp;&nbsp;';
+         html +=                 '<input class="form-control" style="width:60%; display:inline-block;" onblur="instanceControl(this);" onfocusin="instanceControl(this);" onfocusout="instanceControl(this);" maxlength="1" type="number" min="0" max="3" value="1" id="'+data.id+'" name="'+data.job_name+'_z'+j+'"/>';
+         html +=              '</li>';
+         html +=         '</ul>';
+         html +=     '</li>';
+         html += '</ul>';
+     return html;
+ }
+ 
+ /********************************************************
   * 설명 : DIEGO Jobs 유효성 추가
   * 기능 : addCfDetailValidate
   *********************************************************/
@@ -1345,18 +1428,18 @@ function vSphereResourceInfoPopup() {
               $(e).parent().find("p").remove();
           }
       }else{
-          if( $(e).parent().find("p").length == 0 ){
-              $(e).parent().append("<p>0부터 3까지 숫자만 입력 가능 합니다.</p>");
-          }
           var name = $(e).attr("name");
           if( jobsInfo.length >0 ){
               for( var i=0; i<jobsInfo.length; i++ ){
-                  if( $(e).attr("name") == jobsInfo[i].job_code ){
-                      e.value= jobsInfo[i].instances;
+                  if( $(e).attr("name") == jobsInfo[i].job_name+"_"+jobsInfo[i].zone ){
+//                       e.value= jobsInfo[i].instances;
                   }
-              }     
+              }
           }else{
-              $(e).val("1");
+//               $(e).val("1");
+          }
+          if( $(e).parent().find("p").length == 0 ){
+              $(e).parent().append("<p>0부터 3까지 숫자만 입력 가능 합니다.</p>");
           }
       }
  }
@@ -1395,32 +1478,30 @@ function saveResourceInfo(type) {
     }
 
     if (type == 'after') {
-        
         //key 생성하지 하지 않았을 경우
-        if( checkEmpty(diegoKeyFile) && menu =='diego' ){
+        if($(".w2ui-msg-body #keyBtn").css('display') != "none" ){
+            if( checkEmpty(diegoKeyFile) && menu =='diego' ){
               w2alert("Diego Key를 먼저 생성해주세요.", "DIEGO 설치");
-            return;
-        } 
-        
-        if(popupValidation()){    
-            var url = "/deploy/"+ menu +"/install/saveResourceInfo";
-            //Server send Diego Info
-            $.ajax({
-                type        :"PUT",
-                url         :url,
-                contentType :"application/json",
-                async       :true,
-                data        :JSON.stringify(resourceInfo),
-                success     :function(data, status) {
-                    w2popup.clear();
-                    deploymentFile = data.deploymentFile;
-                    createSettingFile(data.id, deploymentFile);
-                },
-                error :function(e, status) {
-                    w2alert("Diego ("+iaas.toUpperCase()+") Resource 등록에 실패 하였습니다.", "Diego 설치");
-                }
-            });
+              return;
+          }
         }
+        var url = "/deploy/"+ menu +"/install/saveResourceInfo";
+        //Server send Diego Info
+        $.ajax({
+            type        :"PUT",
+            url         :url,
+            contentType :"application/json",
+            async       :true,
+            data        :JSON.stringify(resourceInfo),
+            success     :function(data, status) {
+                w2popup.clear();
+                deploymentFile = data.deploymentFile;
+                createSettingFile(data.id, deploymentFile);
+            },
+            error :function(e, status) {
+                w2alert("Diego ("+iaas.toUpperCase()+") Resource 등록에 실패 하였습니다.", "Diego 설치");
+            }
+        });
     } else if (type == 'before') {
         settingIaasPopup("network");
     }
@@ -1433,11 +1514,11 @@ function saveResourceInfo(type) {
 function settingIaasPopup(type){
      if( type == "network" ){
         if( iaas.toUpperCase() == "VSPHERE" ){
-            networkPopup("#VsphereNetworkInfo", 695);
+            networkPopup("#VsphereNetworkInfo", 505);
         }else if(iaas.toUpperCase() == "GOOGLE" ){
-            networkPopup("#googleNetworkInfo", 665);
+            networkPopup("#googleNetworkInfo", 545);
         }else{
-            networkPopup("#defaultNetworkInfo", 665);
+            networkPopup("#defaultNetworkInfo", 515);
         }
      }
 }
@@ -1448,8 +1529,8 @@ function settingIaasPopup(type){
  *********************************************************/
 function createSettingFile(id, deploymentFile){
     var settingFile = {
-            id                : id,
-            platform        : "diego"    
+            id        : id,
+            platform  : "diego"
     }
     $.ajax({
         type : "POST",
@@ -1463,11 +1544,7 @@ function createSettingFile(id, deploymentFile){
         error :function(request, status, error) {
             var errorResult = JSON.parse(request.responseText);
             w2alert(errorResult.message, "diego  배포 파일 생성");
-            if(iaas=="VSPHERE"){
-                vSphereResourceInfoPopup();
-            }else{
-                resourcePopup();
-            }
+            jobPopupComplete();
         }
     });
 }
@@ -1477,17 +1554,20 @@ function createSettingFile(id, deploymentFile){
  * 기능 : deployPopup
  *********************************************************/
 function deployPopup() {
-    $("#deployDiv").w2popup({
-        width : 750,
-        height :520,
-        modal :true,
-        showMax :true,
-        onClose :initSetting,
-        onOpen :function(event) {
-            event.onComplete = function() {
-                getDeployInfo();
-            }
-        }
+     w2popup.open({
+         title   : "<b>DIEGO 설치</b>",
+         width   : 750,
+         height  : 520,
+         modal   :true,
+         showMax :true,
+         body    : $("#deployDiv").html(),
+         buttons : $("#deployDivButtons").html(),
+         onClose :initSetting,
+         onOpen  :function(event) {
+             event.onComplete = function() {
+                 getDeployInfo();
+             }
+         }
     });
 }
 
@@ -1507,20 +1587,12 @@ function getDeployInfo() {
                 $(".w2ui-msg-body #deployInfo").text(data);
             } else if (status == "204") {
                 w2alert("배포파일이 존재하지 않습니다.", "DIEGO 설치");
-                if(iaas == "VSPHERE"){
-                    vSphereResourceInfoPopup();    
-                }else{
-                    resourcePopup();
-                }
+                jobPopupComplete();
             }
         },
         error :function(e, status) {
             w2alert("Temp 파일을 가져오는 중 오류가 발생하였습니다. ", "DIEGO 설치");
-            if(iaas.toLowerCase() == "VSPHERE"){
-                vSphereResourceInfoPopup();    
-            }else{
-                resourcePopup();
-            }
+            jobPopupComplete();
         }
     });
 }
@@ -1530,11 +1602,7 @@ function getDeployInfo() {
  * 기능 : resourcePopupSel
  *********************************************************/
 function resourcePopupSel(){
-    if(iaas == "VSPHERE"){
-        vSphereResourceInfoPopup();    
-    }else{
-        resourcePopup();
-    }
+    jobPopupComplete();
 }
 
 /********************************************************
@@ -1549,7 +1617,7 @@ function diegoDeploy(type) {
         no_text :"아니오",
         yes_callBack :function(event) {
             if( menu != "cfDiego" ){
-                installPopup();    
+                installPopup();
             }else{
                 var selected = w2ui['config_cfDiegoGrid'].getSelection();
                 var record = w2ui['config_cfDiegoGrid'].get(selected);
@@ -1577,15 +1645,18 @@ function installPopup(){
     var message = "DIEGO(배포명:" + deploymentName +  ") ";
     
     var requestParameter = {
-            id                 : diegoId,
-            iaas            : iaas,
+            id          : diegoId,
+            iaas        : iaas,
             platform    : "diego"
     };
     
-    $("#installDiv").w2popup({
-        width     : 750,
-        height     : 520,
-        modal    :true,
+    w2popup.open({
+        title   : "<b>DIEGO 설치</b>",
+        width   : 750,
+        height  : 600,
+        body    : $("#installDiv").html(),
+        buttons : $("#installButtons").html(),
+        modal   :true,
         showMax :true,
         onOpen :function(event){
             event.onComplete = function(){
@@ -1637,7 +1708,7 @@ function installPopup(){
 
 /********************************************************
  * 설명 :  Diego 삭제
- * Function : deletePopup
+ * 기능 : deletePopup
  *********************************************************/
 function diegoDeletePopup(record){
     var requestParameter = {
@@ -1815,9 +1886,8 @@ function gridReload() {
 
 <!-- 기본 정보 설정 DIV -->
 <div id="defaultInfoDiv" style="width:100%; height:100%;" hidden="true">
-    <div rel="title"><b>DIEGO 설치</b></div>
-    <div rel="body" style="width:100%; height:100%; padding:15px 5px 0 5px; margin:0 auto;">
-        <div style="margin-left:2%;display:inline-block;width:97%;">
+    <form id="defaultInfoForm" >
+        <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
             <ul class="progressStep_5">
                 <li class="active">기본 정보</li>
                 <li class="before">네트워크 정보</li>
@@ -1826,7 +1896,6 @@ function gridReload() {
                 <li class="before">설치</li>
             </ul>
         </div>
-        <form id="defaultInfoForm" >
         <div class="w2ui-page page-0" style="margin-top:15px;padding:0 3%;">
             <div class="panel panel-info">    
                 <div class="panel-heading"><b>기본 정보</b></div>
@@ -1843,7 +1912,7 @@ function gridReload() {
                             <input name="deploymentName" type="text" style="display:inline-block; width:60%;" required placeholder="" readonly="readonly"/>
                         </div>
                     </div>
-                    <div class="w2ui-field" >
+                    <div class="w2ui-field">
                         <label style="text-align:left; width:40%; font-size:11px;">DIEGO 릴리즈
                         <span class="glyphicon glyphicon glyphicon-question-sign diego-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="click" data-html="true" title="설치 지원 버전 목록"></span>
                         </label>
@@ -1873,11 +1942,11 @@ function gridReload() {
                             </select>
                         </div>
                     </div>
-                    <div class="w2ui-field" >
+                    <div class="w2ui-field" id="etcd" style="display:none">
                         <label style="text-align:left; width:40%; font-size:11px;">ETCD 릴리즈
                         <span class="glyphicon glyphicon glyphicon-question-sign etcd-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="click" data-html="true" title="etcd 릴리즈 호환성 참조 사이트"></span></label>
                         <div>
-                            <select name="etcdReleases"  style="display:inline-block; width: 60%;">
+                            <select name="etcdReleases" style="display:inline-block; width: 60%;">
                                 <option value="">Etcd 릴리즈를 선택하세요.</option>
                             </select>
                         </div>
@@ -1890,6 +1959,8 @@ function gridReload() {
                             </select></div>
                         <input name="cfId" type="hidden"/>
                         <input name="cfDeploymentFile" type="hidden"/>
+                        <input name="cfReleaseVersion" type="hidden"/>
+                        <input name="cfKeyFile" type="hidden"/>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align:left; width:40%; font-size:11px;">PaaS-TA 모니터링
@@ -1911,27 +1982,20 @@ function gridReload() {
                             <input name="cadvisorDriverIp" type="text" style="display:inline-blcok; width: 60%;" disabled placeholder="예)10.0.0.0" />
                         </div>
                     </div>
-                    <div class="w2ui-field">
-                        <label style="text-align: left; width: 40%; font-size: 11px;">PaaS-TA 모니터링 DB 서버 PORT</label>
-                        <div>
-                            <input name="cadvisorDriverPort" type="text" style="display:inline-blcok; width: 60%;" disabled required placeholder="예)8063" />
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
-        </form>
-        <div class="w2ui-buttons" rel="buttons" hidden="true">
-            <button class="btn" id="defaultPopupBtn" style="float:left; display:none" onclick="saveDefaultInfo('before');">이전</button>
-            <button class="btn" style="float:right; padding-right:15%" onclick="$('#defaultInfoForm').submit();">다음>></button>
-        </div>
+    </form>
+    <div class="w2ui-buttons" id="defaultInfoButtonDiv" hidden="true">
+        <button class="btn" id="defaultPopupBtn" style="float:left; display:none" onclick="saveDefaultInfo('before');">이전</button>
+        <button class="btn" style="float:right; padding-right:15%" onclick="$('#defaultInfoForm').submit();">다음>></button>
     </div>
 </div>
 
 <!-- Aws/Openstack Network 정보 -->
 <div id="networkInfoDiv" style="width:100%; height:100%;" hidden="true">
     <form id="defaultNetworkInfoForm">
-        <div style="margin-left:2%;display:inline-block;width:97%;">
+        <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
             <ul class="progressStep_5">
                 <li class="pass">기본 정보</li>
                 <li class="active">네트워크 정보</li>
@@ -1944,7 +2008,7 @@ function gridReload() {
             <div class="panel panel-info" style="position:relative;">
                 <div class="panel-heading">
                     <b>Internal 네트워크 정보</b>
-                    <div style="position: absolute;right: 0;top: 5px;">
+                    <div  style="position: absolute;right:5px ;top: 2px;">
                         <a class="btn btn-info btn-sm addInternal" onclick="addInternalNetworkInputs('#defaultNetworkInfoDiv_1', '#defaultNetworkInfoForm');">추가</a>
                     </div>
                 </div>
@@ -2018,7 +2082,7 @@ function gridReload() {
 <!-- vSphere Network -->
 <div id="VsphereNetworkInfoDiv" style="width:100%;height:100%;" hidden="true">
     <form id="vSphereNetworkInfoForm">
-        <div style="margin-left:2%;display:inline-block;width:97%;">
+        <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
             <ul class="progressStep_5">
                 <li class="pass">기본 정보</li>
                 <li class="active">네트워크 정보</li>
@@ -2030,9 +2094,9 @@ function gridReload() {
         <div>
         <div style="margin: 15px 0px; padding: 0px 3%; display: block;" id="vSphereNetworkInfoDiv_1">
             <div class="panel panel-info" style="position:relative;">
-                <div  class="panel-heading"">
+                <div  class="panel-heading">
                     <b>Internal 네트워크</b>
-                    <div style="position: absolute;right: 0;top: 5px;">
+                    <div style="position: absolute;right: 5px;top: 2px;">
                         <a class="btn btn-info btn-sm addInternal" onclick="addInternalNetworkInputs('#vSphereNetworkInfoDiv_1', '#vSphereNetworkInfoForm');">추가</a>
                     </div>
                 </div>
@@ -2096,17 +2160,16 @@ function gridReload() {
 <div id="googleNetworkInfoDiv" style="width: 100%; height: 100%;" hidden="true">
     <form id="googleNetworkInfoForm">
         <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-            <ul class="progressStep_6">
+            <ul class="progressStep_5">
                 <li class="pass">기본 정보</li>
                 <li class="active">네트워크 정보</li>
-                <li class="before">Key 생성</li>
                 <li class="before">리소스 정보</li>
                 <li class="before">배포파일 정보</li>
                 <li class="before install">설치</li>
             </ul>
         </div>
         <div class="w2ui-page page-0" id="googleNetworkInfoDiv_1" style="margin-top:15px;padding:0 3%;">
-            <div class="panel panel-info"">
+            <div class="panel panel-info">
                 <div  class="panel-heading" style="position:relative;">
                     <b>Internal 네트워크</b>
                     <div style="position: absolute;right: 10px ;top: 2px; ">
@@ -2189,8 +2252,7 @@ function gridReload() {
 <!-- Resource  설정 DIV -->
 <div id="resourceInfoDiv" style="width:100%; height:100%;" hidden="true">
     <form id="resourceInfoForm">
-    <div rel="body" style="width:100%; height:100%; padding:15px 5px 0 5px; margin:0 auto;">
-        <div style="margin-left:2%;display:inline-block;width:97%;">
+        <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
             <ul class="progressStep_5">
                 <li class="pass">기본 정보</li>
                 <li class="pass">네트워크 정보</li>
@@ -2223,7 +2285,7 @@ function gridReload() {
                     </div>
                 </div>
             </div>
-            <div class="panel panel-info">    
+            <div class="panel panel-info"  style="margin-top:20px;">    
                 <div class="panel-heading"><b>Small Instance Type</b></div>
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
@@ -2234,7 +2296,7 @@ function gridReload() {
                     </div>
                 </div>
             </div>
-            <div class="panel panel-info">    
+            <div class="panel panel-info"  style="margin-top:20px;">    
                 <div class="panel-heading"><b>Medium Instance Type</b></div>
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;" >
                     <div class="w2ui-field">
@@ -2245,7 +2307,7 @@ function gridReload() {
                     </div>
                 </div>
             </div>
-            <div class="panel panel-info">    
+            <div class="panel panel-info"  style="margin-top:20px;">    
                 <div class="panel-heading"><b>Large Instance Type</b></div>
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
@@ -2256,7 +2318,7 @@ function gridReload() {
                     </div>
                 </div>
             </div>
-            <div class="panel panel-info">    
+            <div class="panel panel-info"  style="margin-top:20px;">    
                 <div class="panel-heading"><b>Cell Instance Type</b></div>
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
@@ -2268,22 +2330,19 @@ function gridReload() {
                 </div>
             </div>
             <div class="w2ui-buttons">
-                <button class="btn" style="float: right; margin-top:10px;" id="keyBtn" onclick="createKeyConfirm();" >Key 생성</button>
+                <button class="btn" style="display:none; float: right; margin-top:10px;" id="keyBtn" onclick="createKeyConfirm();" >Key 생성</button>
             </div>
         </div>
-    </div>
-    <div class="w2ui-buttons" rel="buttons" hidden="true">
-        <button class="btn" style="float:left;" onclick="saveResourceInfo('before');">이전</button>
-        <button class="btn" style="float: right; padding-right: 15%" onclick="$('#resourceInfoForm').submit();">다음>></button>
-    </div>
+        <div class="w2ui-buttons" id="resourceInfoButtons" hidden="true">
+            <button class="btn" style="float:left;" onclick="saveResourceInfo('before');">이전</button>
+            <button class="btn" style="float: right; padding-right: 15%" onclick="$('#resourceInfoForm').submit();">다음>></button>
+        </div>
     </form>
 </div>
 
 <!--  vSphere Resource -->
 <div id="vSphereResourceInfoDiv" style="width: 100%; height: 100%;" hidden="true">
     <form id="vSphereResourceInfoForm">
-    <div rel="title"><b>DIEGO 설치</b></div>
-    <div rel="body" style="width: 100%; height: 100%; padding: 15px 5px 0 5px; margin: 0 auto;">
         <div style="margin-left: 2%;display:inline-block;width: 98%;">
             <ul class="progressStep_5">
                 <li class="pass">기본 정보</li>
@@ -2410,14 +2469,13 @@ function gridReload() {
                 </div>
             </div>
             <div class="w2ui-buttons">
-                <button class="btn" style="float: right; margin-bottom:10px;" id="keyBtn" onclick="createKeyConfirm();" >Key 생성</button>
+                <button class="btn" style="display:none; float: right; margin-bottom:10px;" id="keyBtn" onclick="createKeyConfirm();" >Key 생성</button>
             </div>
         </div>
-    </div>
-    <div class="w2ui-buttons" rel="buttons" hidden="true">
-        <button class="btn" style="display:inline-block;" onclick="saveResourceInfo('before');">이전</button>
-        <button class="btn" style="float: right; padding-right: 15%" onclick="$('#vSphereResourceInfoForm').submit();">다음>></button>
-    </div>
+        <div class="w2ui-buttons" id="vSphereResourceInfoButtons" hidden="true">
+            <button class="btn" style="float:left;" onclick="saveResourceInfo('before');">이전</button>
+            <button class="btn" style="float: right; padding-right: 15%" onclick="$('#vSphereResourceInfoForm').submit();">다음>></button>
+        </div>
     </form>
 </div>
 
@@ -2433,22 +2491,19 @@ function gridReload() {
 
 <!-- 배포파일 정보 -->
 <div id="deployDiv" style="width: 100%; height: 100%;" hidden="true">
-    <div rel="title"><b>DIEGO 설치</b></div>
-    <div rel="body" style="width:100%; height:100%; padding:15px 5px 0 5px; margin:0 auto;">
-        <div style="margin-left:2%;display:inline-block;width:97%;">
-            <ul class="progressStep_5">
-                <li class="pass">기본 정보</li>
-                <li class="pass">네트워크 정보</li>
-                <li class="pass">리소스 정보</li>
-                <li class="active">배포파일 정보</li>
-                <li class="before">설치</li>
-            </ul>
-        </div>
-        <div style="width:95%;height:82%;float:left;display: inline-block;margin-top:1%;">
-            <textarea id="deployInfo" style="width:100%;height:99%;overflow-y:visible;resize:none;background-color: #FFF;margin-left:3%;" readonly="readonly"></textarea>
-        </div>
+    <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
+        <ul class="progressStep_5">
+            <li class="pass">기본 정보</li>
+            <li class="pass">네트워크 정보</li>
+            <li class="pass">리소스 정보</li>
+            <li class="active">배포파일 정보</li>
+            <li class="before">설치</li>
+        </ul>
     </div>
-    <div class="w2ui-buttons" rel="buttons" hidden="true">
+    <div style="width:95%;height:82%;float:left;display: inline-block;margin-top:1%;">
+        <textarea id="deployInfo" style="width:100%;height:99%;overflow-y:visible;resize:none;background-color: #FFF;margin-left:3%;" readonly="readonly"></textarea>
+    </div>
+    <div class="w2ui-buttons" id="deployDivButtons" hidden="true">
         <button class="btn" style="float: left;"onclick="resourcePopupSel();">이전</button>
         <button class="btn" style="float: right; padding-right: 15%" onclick="diegoDeploy('after');">다음>></button>
     </div>
@@ -2456,22 +2511,19 @@ function gridReload() {
 
 <!-- diego 설치화면 -->
 <div id="installDiv" style="width:100%; height:100%;" hidden="true">
-    <div rel="title">DIEGO 설치</div>
-    <div rel="body" style="width:100%;height:100%;padding:15px 5px 0 5px;margin:0 auto;">
-        <div style="margin-left:2%;display:inline-block;width:97%;">
-            <ul class="progressStep_5">
-                <li class="pass">기본 정보</li>
-                <li class="pass">네트워크 정보</li>
-                <li class="pass">리소스 정보</li>
-                <li class="pass">배포파일 정보</li>
-                <li class="active">설치</li>
-            </ul>
-        </div>
-        <div style="width:95%;height:84%;float:left;display:inline-block;margin-top: 10px;">
-            <textarea id="installLogs" style="width:100%;height:99%;overflow-y:visible;resize:none;background-color:#FFF;margin-left:1%" readonly="readonly"></textarea>
-        </div>
+    <div style="margin-left:2%;display:inline-block;width:97%;">
+        <ul class="progressStep_5">
+            <li class="pass">기본 정보</li>
+            <li class="pass">네트워크 정보</li>
+            <li class="pass">리소스 정보</li>
+            <li class="pass">배포파일 정보</li>
+            <li class="active">설치</li>
+        </ul>
     </div>
-    <div class="w2ui-buttons" rel="buttons" hidden="true">
+    <div style="width:95%;height:84%;float:left;display:inline-block;margin-top: 10px;">
+        <textarea id="installLogs" style="width:100%;height:99%;overflow-y:visible;resize:none;background-color:#FFF;margin-left:1%" readonly="readonly"></textarea>
+    </div>
+    <div class="w2ui-buttons" id="installButtons" hidden="true">
         <button class="btn" id="deployPopupBtn" style="float:left;" onclick="deployPopup()" disabled>이전</button>
         <button class="btn" style="float:right; padding-right:15%" onclick="popupComplete();">닫기</button>
     </div>

@@ -32,7 +32,7 @@ $(function() {
                            var val = validateIpv4(list[i].trim());
                            if( !val ) flag = false;
                        }
-                       if( !flag ) return "";
+                       if( !flag ) return "false";
                        else return list[0].trim();
                    }else{
                        return $(".w2ui-msg-body input[name='subnetDns_1']").val();

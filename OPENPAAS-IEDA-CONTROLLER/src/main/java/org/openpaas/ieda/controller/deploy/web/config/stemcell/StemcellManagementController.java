@@ -34,7 +34,7 @@ public class StemcellManagementController extends BaseController {
     @Autowired private StemcellManagementUploadService uploadService;
     @Autowired private StemcellManagementDownloadAsyncService donwonloadService;
     
-    private final static Logger LOG = LoggerFactory.getLogger(StemcellManagementController.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StemcellManagementController.class);
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -44,7 +44,7 @@ public class StemcellManagementController extends BaseController {
     *****************************************************************/
     @RequestMapping(value="/config/stemcell", method=RequestMethod.GET)
     public String goStemcellManagement() {
-        if(LOG.isInfoEnabled()){ LOG.info("================================> /config/stemcell"); }
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> /config/stemcell"); }
         return "/deploy/config/stemcellManagement";
     }
     
@@ -56,7 +56,7 @@ public class StemcellManagementController extends BaseController {
     *****************************************************************/
     @RequestMapping(value="/config/stemcell/list", method=RequestMethod.GET)
     public ResponseEntity<HashMap<String, Object>> getStemcellList() {
-        if(LOG.isInfoEnabled()){ LOG.info("================================> /config/stemcell/lis"); }
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> /config/stemcell/lis"); }
         HashMap<String, Object> list = new HashMap<String, Object>();
         
         List<StemcellManagementVO> stemcellList = service.getPublicStemcellList();
@@ -74,9 +74,9 @@ public class StemcellManagementController extends BaseController {
     @RequestMapping(value="/config/stemcell/regist/info/{testFlag}",  method=RequestMethod.POST)
     public ResponseEntity<StemcellManagementVO> savePublicStemcellInfo(@RequestBody StemcellManagementDTO.Regist dto, @PathVariable String testFlag, Principal principal ){
         
-        if(LOG.isInfoEnabled()){ LOG.info("================================> /config/stemcell/regist/info/"+testFlag); }
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> /config/stemcell/regist/info/"+testFlag); }
         StemcellManagementVO result = null;
-        if("file".equals(dto.getFileType())){
+        if("file".equalsIgnoreCase(dto.getFileType())){
             result = service.saveStemcellInfoByFilePath(dto, testFlag, principal);
         }else{
             result = service.saveStemcellInfoByURL(dto, testFlag, principal);
@@ -94,7 +94,7 @@ public class StemcellManagementController extends BaseController {
     *****************************************************************/
     @RequestMapping(value="/config/stemcell/regist/upload",  method=RequestMethod.POST)
     public ResponseEntity<?> doPublicStemcellUpload( MultipartHttpServletRequest request, Principal principal ){
-        if(LOG.isInfoEnabled()){ LOG.info("================================> /config/stemcell/regist/upload"); }
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> /config/stemcell/regist/upload"); }
         uploadService.uploadStemcellFile(request, principal);
         return new ResponseEntity<>(HttpStatus.OK);
         
@@ -110,7 +110,7 @@ public class StemcellManagementController extends BaseController {
     @SendTo("/config/stemcell/regist/socket/logs")
     public ResponseEntity<?> doPublicStemcellDonwload(@RequestBody @Valid StemcellManagementDTO.Regist dto, Principal principal){
     
-        if(LOG.isInfoEnabled()){ LOG.info("================================> /config/stemcell/regist/stemcellDownloading"); }
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> /config/stemcell/regist/stemcellDownloading"); }
         donwonloadService.stemcellDownloadAsync(dto, principal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -123,8 +123,7 @@ public class StemcellManagementController extends BaseController {
     *****************************************************************/
     @RequestMapping(value="/config/stemcell/delete",  method=RequestMethod.DELETE)
     public ResponseEntity<?> publicStemcellDelete(@RequestBody StemcellManagementDTO.Delete dto ){
-        
-        if(LOG.isInfoEnabled()){ LOG.info("================================> /config/stemcell/deletePublicStemcell"); }
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> /config/stemcell/deletePublicStemcell"); }
         service.deletePublicStemcell(dto);
         
         return new ResponseEntity<>(HttpStatus.OK);

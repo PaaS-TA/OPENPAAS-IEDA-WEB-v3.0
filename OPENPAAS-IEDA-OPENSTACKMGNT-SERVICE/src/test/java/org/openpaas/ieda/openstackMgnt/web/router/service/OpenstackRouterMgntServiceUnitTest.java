@@ -6,10 +6,12 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
+
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-  
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -32,8 +34,6 @@ import org.openstack4j.openstack.networking.domain.NeutronNetwork;
 import org.openstack4j.openstack.networking.domain.NeutronPort;
 import org.openstack4j.openstack.networking.domain.NeutronRouter;
 import org.openstack4j.openstack.networking.domain.NeutronSubnet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,7 +42,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
  
 public class OpenstackRouterMgntServiceUnitTest {
     private Principal principal = null;
-    private final static Logger LOGGER = LoggerFactory.getLogger(OpenstackRouterMgntServiceUnitTest.class);
       
     @InjectMocks OpenstackRouterMgntService mockOpenstackRouterMgntService;
     @Mock CommonIaasService mockCommonIaasService;
@@ -60,7 +59,6 @@ public class OpenstackRouterMgntServiceUnitTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         principal = getLoggined();
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("loging" + principal); }
     }
       
     /***************************************************
@@ -85,7 +83,6 @@ public class OpenstackRouterMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testGetOpenstackRouterInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testGetOpenstackRouterInfoList ================="); }
         getOpenstackAccountInfo(); 
         List<? extends Router> expectList = setResultRouterList();
         doReturn(expectList).when(mockOpenstackRouterMgntApiService).getOpenstackRouterInfoListApiFromOpenstack(any());
@@ -118,7 +115,6 @@ public class OpenstackRouterMgntServiceUnitTest {
      ***************************************************/
      @Test(expected=CommonException.class)
      public void testSaveOpenstackRouterBadRequest(){
-         if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testSaveOpenstackRouterInfo  ================="); }
          getOpenstackAccountInfo();
          OpenstackRouterMgntVO vo = setRouterInfo();
          when (mockMessageSource.getMessage(any(), any(), any())).thenReturn("BadRequest");
@@ -132,23 +128,21 @@ public class OpenstackRouterMgntServiceUnitTest {
       ***************************************************/
       @Test(expected=CommonException.class)
       public void testSaveOpenstackRouterIdMatch(){
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testSaveOpenstackRouterInfo  ================="); }
           getOpenstackAccountInfo();
           OpenstackRouterMgntVO rvo = setRouterInfo();
           List<? extends Router> router = setOpenstackRouterListInfo();
           doReturn(router).when(mockOpenstackRouterMgntApiService).getOpenstackRouterInfoListApiFromOpenstack(any());
-          when (mockMessageSource.getMessage(any(), any(), any())).thenReturn("conflict");
+          when (mockMessageSource.getMessage(any(), any(), any())).thenReturn("Conflict");
           mockOpenstackRouterMgntService.createOpenstackRouter(rvo, principal);
       }
      /***************************************************
       * @project : OPENSTACK 관리 대시보드
       * @description : OPENSTACK Router 삭제 TEST
-      * @title : testSaveOpenstackSubnetkInfo
+      * @title : testDeleteOpenstackSubnetkInfo
       * @return : void
       ***************************************************/
       @Test(expected=CommonException.class)
       public void testDeleteOpenstackRouterInfo(){
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 서브넷 삭제 TEST START  ================="); }
           getOpenstackAccountInfo();
           OpenstackRouterMgntVO vo = setRouterInfo();
           mockOpenstackRouterMgntService.deleteOpenstackRouter(vo, principal);
@@ -161,7 +155,6 @@ public class OpenstackRouterMgntServiceUnitTest {
       ***************************************************/
       @Test
       public void testGetOpenstackRouterInterfaceInfoList(){
-          if(LOGGER.isInfoEnabled()){ LOGGER.info("=================== OPENSTACK 라우터 인터페이스 목록 조회 TEST START ==============="); }
           getOpenstackAccountInfo();
           List<? extends Port> plist = setRouterInterfacePortInfo();
           doReturn(plist).when(mockOpenstackRouterMgntApiService).getOpenstackNetworkPortApiFromOpenstack(any());
@@ -186,7 +179,6 @@ public class OpenstackRouterMgntServiceUnitTest {
       ***************************************************/
       @Test(expected=CommonException.class)
       public void testAttachOpenstackRouterInterfaceSubnetIdMatch(){
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 라우터 인터페이스 연결 서브넷ID 동일 TEST START  ================="); }
           getOpenstackAccountInfo();
           List<? extends Port> plist = setRouterInterfacePortInfo();
           doReturn(plist).when(mockOpenstackRouterMgntApiService).getOpenstackNetworkPortApiFromOpenstack(any());
@@ -206,7 +198,6 @@ public class OpenstackRouterMgntServiceUnitTest {
       ***************************************************/
       @Test(expected=CommonException.class)
       public void testAttachOpenstackRouterInterfaceBadrequest(){
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 라우터 인터페이스 연결 실행 불능 TEST START  ================="); }
           getOpenstackAccountInfo();
           List<? extends Port> plist = setRouterInterfacePortInfo();
           doReturn(plist).when(mockOpenstackRouterMgntApiService).getOpenstackNetworkPortApiFromOpenstack(any());
@@ -226,17 +217,16 @@ public class OpenstackRouterMgntServiceUnitTest {
       ***************************************************/
       @Test(expected=CommonException.class)
       public void testDetachOpenstackRouterInterfaceSubnetIdMatch(){
-    	  if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 라우터 인터페이스 연결해제 서브넷ID를 못 찾을 경우 익셉션 발생 TEST START  ================="); }
-    	  getOpenstackAccountInfo();
-    	  List<? extends Port> plist = setRouterInterfacePortInfo();
-    	  doReturn(plist).when(mockOpenstackRouterMgntApiService).getOpenstackNetworkPortApiFromOpenstack(any());
-    	  Router router = setRouterInterfaceRouteInfo();
-    	  doReturn(router).when(mockOpenstackRouterMgntApiService).getRouterApiFromOpenstack(any(), anyString());
-    	  Network network = setRouterNetworkInterfaceInfo();
-    	  doReturn(network).when(mockOpenstackNetworkMgntApiService).getOpenstackNetworkDetailInfoApiFromOpenstack(any(), anyString());
-    	  OpenstackRouterMgntVO dvo = setRouterInfo();
-    	  when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("Badrequest");
-    	  mockOpenstackRouterMgntService.detachOpenstackRouterInterface(dvo, principal);
+          getOpenstackAccountInfo();
+          List<? extends Port> plist = setRouterInterfacePortInfo();
+          doReturn(plist).when(mockOpenstackRouterMgntApiService).getOpenstackNetworkPortApiFromOpenstack(any());
+          Router router = setRouterInterfaceRouteInfo();
+          doReturn(router).when(mockOpenstackRouterMgntApiService).getRouterApiFromOpenstack(any(), anyString());
+          Network network = setRouterNetworkInterfaceInfo();
+          doReturn(network).when(mockOpenstackNetworkMgntApiService).getOpenstackNetworkDetailInfoApiFromOpenstack(any(), anyString());
+          OpenstackRouterMgntVO dvo = setRouterInfo();
+          when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("Badrequest");
+          mockOpenstackRouterMgntService.detachOpenstackRouterInterface(dvo, principal);
       }
     /***************************************************
      * @project : OPENSTACK 인프라 관리 대시보드
@@ -246,15 +236,14 @@ public class OpenstackRouterMgntServiceUnitTest {
      ***************************************************/
       @Test
       public void TestGetOpenstackNetworkSubnetInfo(){
-    	  if(LOGGER.isInfoEnabled()){ LOGGER.info("=================== Openstack 네트워크 서브넷 정보 리스트 TEST START ==============="); }
-    	  getOpenstackAccountInfo();
-    	  List<? extends Network> nList = setOpenstackNetworkListInfo();
-    	  doReturn(nList).when(mockOpenstackNetworkMgntApiService).getOpenstackNetworkInfoListApiFromOpenstack(any());
-    	  List<? extends Subnet> sList = setOpenstackSubnetListInfo();
-    	  doReturn(sList).when(mockOpenstackRouterMgntApiService).getNetworkSubnetInfoApiFromOpenstack(any(), anyString());
-    	  List<OpenstackNetworkMgntVO> resultList = mockOpenstackRouterMgntService.getOpenstackNetworkSubnetInfo(principal, 1);
-    	  assertEquals(sList.get(0).getId(), resultList.get(0).getSubnetId());
-    	  assertEquals(sList.get(0).getName(), resultList.get(0).getSubnetName());
+          getOpenstackAccountInfo();
+          List<? extends Network> nList = setOpenstackNetworkListInfo();
+          doReturn(nList).when(mockOpenstackNetworkMgntApiService).getOpenstackNetworkInfoListApiFromOpenstack(any());
+          List<? extends Subnet> sList = setOpenstackSubnetListInfo();
+          doReturn(sList).when(mockOpenstackRouterMgntApiService).getNetworkSubnetInfoApiFromOpenstack(any(), anyString());
+          List<OpenstackNetworkMgntVO> resultList = mockOpenstackRouterMgntService.getOpenstackNetworkSubnetInfo(principal, 1);
+          assertEquals(sList.get(0).getId(), resultList.get(0).getSubnetId());
+          assertEquals(sList.get(0).getName(), resultList.get(0).getSubnetName());
       }
     /***************************************************
      * @project : OPENSTACK 인프라 관리 대시보드
@@ -264,13 +253,12 @@ public class OpenstackRouterMgntServiceUnitTest {
      ***************************************************/
       @Test(expected=CommonException.class)
       public void TestSetOpenstackRouterGatewayAttach(){
-    	  if(LOGGER.isInfoEnabled()){ LOGGER.info("=================== Openstack 네트워크 게이트웨이 연결 TEST START ==============="); }
-    	  getOpenstackAccountInfo();
-    	  Router router = setRouterInterfaceRouteInfo();
-    	  doReturn(router).when(mockOpenstackRouterMgntApiService).getRouterApiFromOpenstack(any(), anyString());
-    	  OpenstackRouterMgntVO rvo = setRouterInfo();
-    	  when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("Badrequest");
-    	  mockOpenstackRouterMgntService.setOpenstackRouterGatewayAttach(principal, rvo);
+          getOpenstackAccountInfo();
+          Router router = setRouterInterfaceRouteInfo();
+          doReturn(router).when(mockOpenstackRouterMgntApiService).getRouterApiFromOpenstack(any(), anyString());
+          OpenstackRouterMgntVO rvo = setRouterInfo();
+          when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("Badrequest");
+          mockOpenstackRouterMgntService.setOpenstackRouterGatewayAttach(principal, rvo);
       }
       /***************************************************
        * @project : OPENSTACK 인프라 관리 대시보드
@@ -280,13 +268,12 @@ public class OpenstackRouterMgntServiceUnitTest {
        ***************************************************/
         @Test(expected=CommonException.class)
         public void TestSetOpenstackRouterGatewayDetach(){
-      	  if(LOGGER.isInfoEnabled()){ LOGGER.info("=================== Openstack 네트워크 게이트웨이 연결해제 TEST START ==============="); }
-      	  getOpenstackAccountInfo();
-      	  Router router = setRouterInterfaceRouteInfo();
-      	  doReturn(router).when(mockOpenstackRouterMgntApiService).getRouterApiFromOpenstack(any(), anyString());
-      	  OpenstackRouterMgntVO rvo = setRouterInfo();
-      	  when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("Badrequest");
-      	  mockOpenstackRouterMgntService.setOpenstackRouterGatewayDetach(principal, rvo);
+            getOpenstackAccountInfo();
+            Router router = setRouterInterfaceRouteInfo();
+            doReturn(router).when(mockOpenstackRouterMgntApiService).getRouterApiFromOpenstack(any(), anyString());
+            OpenstackRouterMgntVO rvo = setRouterInfo();
+            when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("Badrequest");
+            mockOpenstackRouterMgntService.setOpenstackRouterGatewayDetach(principal, rvo);
         }
       /***************************************************
        * @project : OPENSTACK 인프라 관리 대시보드
@@ -296,73 +283,40 @@ public class OpenstackRouterMgntServiceUnitTest {
        ***************************************************/
         @Test
         public void testGetOpenstackNetworkInfoList(){
-      	  if(LOGGER.isInfoEnabled()){ LOGGER.info("=================== Openstack 네트워크 정보 리스트 TEST START ==============="); }
-        	getOpenstackAccountInfo();
-        	List<OpenstackNetworkMgntVO> resultList = getOpenstackNetworkInfoVOList();
-        	List<String> idlist = getOpenstackNetworkInfoIdList();
-        	doReturn(idlist).when(mockOpenstackRouterMgntApiService).getNetworkInfoApiFromOpenstack(any());
-        	List<OpenstackNetworkMgntVO> expectList = mockOpenstackRouterMgntService.getOpenstackNetworkInfoList(principal, 1);
-        	assertEquals(resultList.get(0).getNetworkId(), expectList.get(0).getNetworkId());
+            getOpenstackAccountInfo();
+            List<HashMap<String, String>> resultList = setOpenstackExteranlNetwork();
+            doReturn(resultList).when(mockOpenstackRouterMgntApiService).getNetworkInfoApiFromOpenstack(any());
+            List<HashMap<String, String>> expectList = mockOpenstackRouterMgntService.getOpenstackNetworkInfoList(principal, 1);
+            assertEquals(resultList.get(0).get("id"), expectList.get(0).get("id"));
         }
-      /***************************************************
-       * @project : OPENSTACK 인프라 관리 대시보드
-       * @description : Openstack 네트워크 Port 리스트 TEST
-       * @title : TestGetOpenstackNetworkPortInfoList
-       * @return : void
-       ***************************************************/
-          @Test
-          public void TestGetOpenstackNetworkPortInfoList(){
-        	if(LOGGER.isInfoEnabled()){ LOGGER.info("=================== Openstack 네트워크 Port 리스트 TEST START ==============="); }
-        	getOpenstackAccountInfo();
-        	List<? extends Port> resultPlist = setRouterInterfacePortInfo();
-        	List<? extends Port> expectPlist = mockOpenstackRouterMgntService.getOpenstackNetworkPortInfoList(principal, 1);
-          }
-      /***************************************************
-       * @project : OPENSTACK 인프라 관리 대시보드
-       * @description : Openstack 네트워크 정보 Id 리스트 설정
-       * @title : getOpenstackNetworkInfoIdList
-       * @return : void
-       ***************************************************/
-        private List<String> getOpenstackNetworkInfoIdList(){
-        	List<String> iList = new ArrayList<String>();
-        	iList.add("networkId");
-        	return iList;
+
+        /***************************************************
+        * @project : OPENSTACK 인프라 관리 대시보드
+        * @description : Openstack 네트워크 Port 리스트 TEST
+        * @title : TestGetOpenstackNetworkPortInfoList
+        * @return : void
+        ***************************************************/
+        @Test
+        public void TestGetOpenstackNetworkPortInfoList(){
+            getOpenstackAccountInfo();
+            mockOpenstackRouterMgntService.getOpenstackNetworkPortInfoList(principal, 1);
         }
-      /***************************************************
-       * @project : OPENSTACK 인프라 관리 대시보드
-       * @description : Openstack 네트워크 정보 VO 리스트 설정
-       * @title : getOpenstackNetworkInfoVOList
-       * @return : void
-       ***************************************************/
-        private List<OpenstackNetworkMgntVO> getOpenstackNetworkInfoVOList(){
-        	List<OpenstackNetworkMgntVO> nList = new ArrayList<OpenstackNetworkMgntVO>();
-        	OpenstackNetworkMgntVO vo = setOpenstackNetworkVOInfo();
-        	nList.add(vo);
-        	return nList;
+
+        /***************************************************
+         * @project : Openstack 인프라 관리 대시보드
+         * @description : External Network 정보 설정
+         * @title : setOpenstackExteranlNetwork
+         * @return : List<HashMap<String,String>>
+        ***************************************************/
+        private List<HashMap<String, String>> setOpenstackExteranlNetwork(){
+            List<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put("id", "testSubnetId");
+            map.put("name", "testSubnetName");
+            list.add(map);
+            return list;
         }
-      /***************************************************
-       * @project : OPENSTACK 인프라 관리 대시보드
-       * @description : Openstack 네트워크 VO 정보 설정
-       * @title : setOpenstackNetworkVOInfo
-       * @return : OpenstatckNetworkMgntVO
-       ***************************************************/
-        private OpenstackNetworkMgntVO setOpenstackNetworkVOInfo(){
-        	OpenstackNetworkMgntVO vo = new OpenstackNetworkMgntVO();
-        	vo.setAccountId(1);
-            vo.setGatewayIp("192.168.100.1");
-            vo.setNetworkId("networkId");
-            vo.setNetworkName("networkName");
-            vo.setSubnetId("subnetId");
-            vo.setSubnetName("subnetName");
-            vo.getAccountId();
-            vo.getGatewayIp();
-            vo.getIpVersion();
-            vo.getNetworkId();
-            vo.getNetworkName();
-            vo.getSubnetId();
-            vo.getSubnetName();
-            return vo;
-        }
+        
       /***************************************************
        * @project : OPENSTACK 인프라 관리 대시보드
        * @description : Openstack 라우터 리스트 정보 설정
@@ -370,12 +324,12 @@ public class OpenstackRouterMgntServiceUnitTest {
        * @return : List<? extends Router>
        ***************************************************/
         private List<? extends Router> setOpenstackRouterListInfo(){
-        	NeutronRouter router = new NeutronRouter();
-        	List<Router> rList = new ArrayList<Router>();
-        	router.setId("router1a");
-        	router.setName("routerName");
-        	rList.add(router);
-        	return rList;
+            NeutronRouter router = new NeutronRouter();
+            List<Router> rList = new ArrayList<Router>();
+            router.setId("router1a");
+            router.setName("routerName");
+            rList.add(router);
+            return rList;
         }
     /***************************************************
      * @project : OPENSTACK 인프라 관리 대시보드
@@ -384,11 +338,11 @@ public class OpenstackRouterMgntServiceUnitTest {
      * @return : List<? extends Network>
      ***************************************************/
       private List<? extends Network> setOpenstackNetworkListInfo(){
-    	  NeutronNetwork network = new NeutronNetwork();
-    	  List<Network> netList = new ArrayList<Network>();
-    	  network.setId("tnetId");
-    	  netList.add(network);
-    	  return netList;
+          NeutronNetwork network = new NeutronNetwork();
+          List<Network> netList = new ArrayList<Network>();
+          network.setId("tnetId");
+          netList.add(network);
+          return netList;
       }
     /***************************************************
      * @project : OPENSTACK 인프라 관리 대시보드
@@ -397,16 +351,16 @@ public class OpenstackRouterMgntServiceUnitTest {
      * @return : List<? extends Subnet>
      ***************************************************/
       private List<? extends Subnet> setOpenstackSubnetListInfo(){
-    	  NeutronSubnet subnet = new NeutronSubnet();
-    	  List<Subnet> subList = new ArrayList<Subnet>();
-    	  subnet.setId("tnetId");
-    	  subnet.setName("testSubName");
-    	  subList.add(subnet);
-    	  return subList;
+          NeutronSubnet subnet = new NeutronSubnet();
+          List<Subnet> subList = new ArrayList<Subnet>();
+          subnet.setId("tnetId");
+          subnet.setName("testSubName");
+          subList.add(subnet);
+          return subList;
       }
 
      /***************************************************
-      * @project : OPENSTACK 관리 대시보드
+     * @project : OPENSTACK 관리 대시보드
      * @description : OPENSTACK 네트워크 정보 설정
      * @title : setRouterInfo
      * @return : OpenstackRouterMgntVO

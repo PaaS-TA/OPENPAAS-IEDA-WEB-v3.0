@@ -56,7 +56,6 @@ public class CommonApiService {
                     .tenantName(tenant)
                     .authenticate();
         }catch(Exception e){
-            e.printStackTrace();
             if( LOGGER.isErrorEnabled() ){ LOGGER.error(e.getMessage()); }
         }
         return os;
@@ -71,7 +70,7 @@ public class CommonApiService {
     public OSClientV3 getOSClientFromOpenstackV3( String endpoint, String domain, String project, String user, String secret){
         OSClientV3 osV3 = null;
         try{
-            Identifier domainIdentifier = Identifier.byId(domain);
+            Identifier domainIdentifier = Identifier.byName(domain);
             osV3 = OSFactory.builderV3()
                     .endpoint(endpoint )
                     .credentials(user, secret, domainIdentifier)
@@ -98,9 +97,9 @@ public class CommonApiService {
                 InputStream inputStream = new BufferedInputStream(new FileInputStream(file)); 
                 
                 credential= GoogleCredential.fromStream(inputStream);
-                List<String> COMPUTE_SCOPES =Collections.singletonList(ComputeScopes.COMPUTE);
+                List<String> computeScopes =Collections.singletonList(ComputeScopes.COMPUTE);
                 if (credential.createScopedRequired()) {
-                    credential = credential.createScoped(COMPUTE_SCOPES);
+                    credential = credential.createScoped(computeScopes);
                 }
                 
                 credential.refreshToken();

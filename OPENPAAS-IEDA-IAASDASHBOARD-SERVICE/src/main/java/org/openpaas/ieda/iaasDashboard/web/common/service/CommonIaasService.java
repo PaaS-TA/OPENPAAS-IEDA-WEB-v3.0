@@ -73,9 +73,11 @@ public class CommonIaasService {
             map.put("publicKeyModulus", publicKeyModulus);
             map.put("publicKeyExponent", publicKeyExponent);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            throw new CommonException(message.getMessage("common.rsa.privateKey.exception.code", null, Locale.KOREA), 
+                    message.getMessage("common.rsa.publicKey.exception.message",null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
+            throw new CommonException(message.getMessage("common.rsa.privateKey.exception.code", null, Locale.KOREA), 
+                    message.getMessage("common.rsa.publicKey.exception.message",null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
         return map;
     }
@@ -143,7 +145,7 @@ public class CommonIaasService {
         if(map!=null){
             vo = new IaasAccountMgntVO();
             String id = String.valueOf(map.get("id"));
-            if(!dto.getId().equals(id)){
+            if(!dto.getId().equalsIgnoreCase(id)){
                 vo.setId(Integer.parseInt(id));
                 vo.setDefaultYn("N");
                 vo.setIaasType(dto.getIaasType());
@@ -172,22 +174,23 @@ public class CommonIaasService {
         
       //API를 통해 계정 존재 확인
         boolean flag = false;
-        if( vo.getIaasType().toUpperCase().trim().equals("AWS") ){
+        if( vo.getIaasType().trim().equalsIgnoreCase("AWS") ){
             flag = api.getAccountInfoFromAWS(commonAccessUser, commonAccessSecret );
-        } else  if( vo.getIaasType().toUpperCase().trim().equals("OPENSTACK") ){
-            if( vo.getOpenstackKeystoneVersion().equals("v2") ){
+        } else  if( vo.getIaasType().trim().equalsIgnoreCase("OPENSTACK") ){
+            if( vo.getOpenstackKeystoneVersion().equalsIgnoreCase("v2") ){
                 flag = api.getAccountInfoFromOpenstackV2(vo.getCommonAccessEndpoint(), vo.getCommonTenant(), commonAccessUser, commonAccessSecret);
             }else{
                 flag = api.getAccountInfoFromOpenstackV3(vo.getCommonAccessEndpoint(), vo.getOpenstackDomain(), vo.getCommonProject(),
                         commonAccessUser, commonAccessSecret);
             }
-        } else  if( vo.getIaasType().toUpperCase().trim().equals("VSPHERE") ){
+        } else  if( vo.getIaasType().trim().equalsIgnoreCase("VSPHERE") ){
             flag = api.getAccountInfoFromVsphere(vo.getCommonAccessEndpoint(), commonAccessUser, commonAccessSecret);
         }
        
         if(! flag ){
-            throw new CommonException(message.getMessage("iaas.accountManagement.connect.code.exception", null, Locale.KOREA), 
-                    message.getMessage(""+vo.getIaasType().toLowerCase()+".accountManagement.connect.message.exception", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+            throw new CommonException(
+                    message.getMessage("iaas.accountManagement.connect.code.exception", null, Locale.KOREA), 
+                    message.getMessage(vo.getIaasType().toLowerCase()+".accountManagement.connect.message.exception", null, Locale.KOREA)+ "<br/>(계정 :"+commonAccessUser+")", HttpStatus.BAD_REQUEST);
         }else{
             return vo;
         }

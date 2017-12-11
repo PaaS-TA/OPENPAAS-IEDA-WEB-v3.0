@@ -112,7 +112,7 @@ $(function() {
          }
          else{
              w2confirm({
-                 title        : "기본관리자 설정",
+                 title        : "<b>기본관리자 설정</b>",
                  msg          : record.directorName + "를 " + "기본관리자로 설정하시겠습니까?",
                  yes_text     : "확인",
                  no_text      : "취소",
@@ -139,7 +139,7 @@ $("#addSetting").click(function(){
     w2popup.open({
         title   : "<b>설치관리자 설정추가</b>",
         width   : 550,
-        height  : 340,
+        height  : 322,
         modal   : true,
         body    : $("#regPopupDiv").html(),
         buttons : $("#regPopupBtnDiv").html(),
@@ -178,10 +178,10 @@ $("#deleteSetting").click(function(){
     else {
         var record = w2ui['config_directorGrid'].get(selected);
         w2confirm({
-            title        : "설치 관리자 삭제",
-            msg            : "설치 관리자(" + record.directorName + ")를 삭제하시겠습니까?",
+            title       : "<b>설치 관리자 삭제</b>",
+            msg         : "설치 관리자(" + record.directorName + ")를 삭제하시겠습니까?",
             yes_text    : "확인",
-            no_text        : "취소",
+            no_text     : "취소",
             yes_callBack: function(event){
                 // 디렉터 삭제
                 deleteDirector(record.iedaDirectorConfigSeq);
@@ -321,7 +321,7 @@ function updateDirectorConfig() {
      w2popup.lock(update_lock_msg, true);
     $.ajax({
         type : "PUT",
-        url : "/config/director/update/" + $(".w2ui-msg-body input[name='seq']").val(),
+        url : "/config/director/update",
         contentType : "application/json",
         async : true,
         data : JSON.stringify({
@@ -418,10 +418,10 @@ function clearMainPage() {
 <div id="regPopupDiv" hidden="true">
     <form id="settingForm">
         <input name="seq" type="hidden"/>
-        <div class="w2ui-page page-0" style="margin-top:15px;padding:0 1%;">
-	        <div class="panel panel-info" >
+        <div class="w2ui-page page-0">
+	        <div class="panel panel-info" style="margin-top:5px;">
 	            <div class="panel-heading"><b>설치관리자 정보</b></div>
-	            <div class="panel-body" style="padding:25px 5% 5% 5%;">
+	            <div class="panel-body" style="overflow-y:auto;height:185px;">
 	                <div class="w2ui-field">
 	                    <label style="width:30%;text-align: left;padding-left: 20px;">디렉터 IP</label>
 	                    <div style="width: 70%;">

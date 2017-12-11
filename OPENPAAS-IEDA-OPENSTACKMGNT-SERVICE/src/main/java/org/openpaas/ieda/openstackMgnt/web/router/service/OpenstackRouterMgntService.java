@@ -2,6 +2,7 @@ package org.openpaas.ieda.openstackMgnt.web.router.service;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,15 +40,15 @@ public class OpenstackRouterMgntService {
     
     public List<OpenstackRouterMgntVO> getOpenstackRouterInfoList(Principal principal, int accountId){
        IaasAccountMgntVO vo = getOpenstackAccountInfo(principal, accountId);
-       List<? extends Router> RouterList = openstackRouterMgntApiService.getOpenstackRouterInfoListApiFromOpenstack(vo);
+       List<? extends Router> routerList = openstackRouterMgntApiService.getOpenstackRouterInfoListApiFromOpenstack(vo);
        List<OpenstackRouterMgntVO> opvoList = new ArrayList<OpenstackRouterMgntVO>();
-       for(int i=0;i<RouterList.size();i++){
+       for(int i=0;i<routerList.size();i++){
            OpenstackRouterMgntVO opvo = new OpenstackRouterMgntVO();
            opvo.setRecid(i+1);
            opvo.setAccountId(accountId);
-           opvo.setRouterName(RouterList.get(i).getName());
-           opvo.setRouteId(RouterList.get(i).getId());
-           opvo.setStatus(RouterList.get(i).getStatus());
+           opvo.setRouterName(routerList.get(i).getName());
+           opvo.setRouteId(routerList.get(i).getId());
+           opvo.setStatus(routerList.get(i).getStatus());
            opvo.setExternalNetwork(openstackRouterMgntApiService.getRouterExternalNetworkInfoApiFromOpenstack(vo, i));
            opvoList.add(opvo);
        }
@@ -64,7 +65,7 @@ public class OpenstackRouterMgntService {
         IaasAccountMgntVO vo = getOpenstackAccountInfo(principal, rvo.getAccountId());
         List<? extends Router> rlist = openstackRouterMgntApiService.getOpenstackRouterInfoListApiFromOpenstack(vo);
             for(int i=0;i<rlist.size();i++){
-                if(rvo.getRouterName().equals(rlist.get(i).getName())){
+                if(rvo.getRouterName().equalsIgnoreCase(rlist.get(i).getName())){
                     throw new CommonException(
                     message.getMessage("common.conflict.exception.code", null, Locale.KOREA), message.getMessage("common.conflict.message", null, Locale.KOREA), HttpStatus.CONFLICT);
                 }
@@ -105,10 +106,10 @@ public class OpenstackRouterMgntService {
         List<OpenstackRouterMgntDTO> resultlist = new ArrayList<OpenstackRouterMgntDTO>();
         for(int i=0;i<pList.size();i++){
             OpenstackRouterMgntDTO dto = new OpenstackRouterMgntDTO();
-            if(pList.get(i).getDeviceId().equals(router.getId())){
-            	Network network = openstackNetworkMgntApiService.getOpenstackNetworkDetailInfoApiFromOpenstack(vo, pList.get(i).getNetworkId());
-            	dto.setAccountId(accountId);
-            	dto.setRouteId(router.getId());
+            if(pList.get(i).getDeviceId().equalsIgnoreCase(router.getId())){
+                Network network = openstackNetworkMgntApiService.getOpenstackNetworkDetailInfoApiFromOpenstack(vo, pList.get(i).getNetworkId());
+                dto.setAccountId(accountId);
+                dto.setRouteId(router.getId());
                 dto.setSubnetId(pList.get(i).getFixedIps().iterator().next().getSubnetId());
                 dto.setSubnetName(pList.get(i).getName());
                 dto.setSubnetFixedIps(pList.get(i).getFixedIps().iterator().next().getIpAddress());
@@ -132,7 +133,7 @@ public class OpenstackRouterMgntService {
         IaasAccountMgntVO vo = getOpenstackAccountInfo(principal, rvo.getAccountId());
         List<OpenstackRouterMgntDTO> riface = getOpenstackRouterInterfaceInfoList(principal, rvo.getAccountId(), rvo.getRouteId());
         for(int i=0;i<riface.size();i++){
-            if(rvo.getSubnetId().equals(riface.get(i).getSubnetId())){
+            if(rvo.getSubnetId().equalsIgnoreCase(riface.get(i).getSubnetId())){
                 throw new CommonException(
                 message.getMessage("common.conflict.exception.code", null, Locale.KOREA), message.getMessage("common.conflict.message", null, Locale.KOREA), HttpStatus.CONFLICT);
             }
@@ -154,7 +155,7 @@ public class OpenstackRouterMgntService {
         IaasAccountMgntVO vo = getOpenstackAccountInfo(principal, rvo.getAccountId());
         List<OpenstackRouterMgntDTO> riface = getOpenstackRouterInterfaceInfoList(principal, rvo.getAccountId(), rvo.getRouteId());
         for(int i=0;i<riface.size();i++){
-            if(rvo.getSubnetId().equals(riface.get(i).getSubnetId())){
+            if(rvo.getSubnetId().equalsIgnoreCase(riface.get(i).getSubnetId())){
                 flag = openstackRouterMgntApiService.detachRouterInterfaceApiFromOpenstack(vo, rvo);
             }
         }
@@ -187,6 +188,9 @@ public class OpenstackRouterMgntService {
         for(int i=0;i<nList.size();i++){
             String networkId = nList.get(i).getId();
             List<? extends Subnet> subnetList = openstackRouterMgntApiService.getNetworkSubnetInfoApiFromOpenstack(vo, networkId);
+            if(subnetList == null){
+                continue;
+            }
             for(int j=0;j<subnetList.size();j++){
                 OpenstackNetworkMgntVO nvo = new OpenstackNetworkMgntVO();
                 nvo.setSubnetId(subnetList.get(j).getId());
@@ -203,16 +207,16 @@ public class OpenstackRouterMgntService {
     * @title : getOpenstackNetworkInfoList
     * @return : List<OpenstackNetworkMgntVO>
     ***************************************************/
-    public List<OpenstackNetworkMgntVO> getOpenstackNetworkInfoList(Principal principal, int accountId){
-    	IaasAccountMgntVO vo = getOpenstackAccountInfo(principal, accountId);
-    	List<OpenstackNetworkMgntVO> resultlist = new ArrayList<OpenstackNetworkMgntVO>();
-    	List<String> idlist = openstackRouterMgntApiService.getNetworkInfoApiFromOpenstack(vo);
-    	for(int i=0;i<idlist.size();i++){
-    		OpenstackNetworkMgntVO nvo = new OpenstackNetworkMgntVO();
-    		nvo.setNetworkId(idlist.get(i));
-    		resultlist.add(nvo);
-    	}
-    	return resultlist;
+    public List<HashMap<String, String>> getOpenstackNetworkInfoList(Principal principal, int accountId){
+        IaasAccountMgntVO vo = getOpenstackAccountInfo(principal, accountId);
+//        List<OpenstackNetworkMgntVO> resultlist = new ArrayList<OpenstackNetworkMgntVO>();
+        List<HashMap<String, String>> list = openstackRouterMgntApiService.getNetworkInfoApiFromOpenstack(vo);
+//        for(int i=0;i<list.size();i++){
+//            OpenstackNetworkMgntVO nvo = new OpenstackNetworkMgntVO();
+//            nvo.setNetworkId(list.get(i).get("id"));
+//            resultlist.add(nvo);
+//        }
+        return list;
     }
     /***************************************************
     * @project : OPENSTACK 인프라 관리 대시보드
@@ -232,10 +236,10 @@ public class OpenstackRouterMgntService {
      * @return : void
      ***************************************************/
     public void setOpenstackRouterGatewayAttach(Principal principal, OpenstackRouterMgntVO rvo){
-    	boolean flag = false;
-    	IaasAccountMgntVO vo = getOpenstackAccountInfo(principal, rvo.getAccountId());
-    	flag = openstackRouterMgntApiService.setRouterGatewayAttachApiFromOpenstack(vo, rvo);
-    	if( !flag ){
+        boolean flag = false;
+        IaasAccountMgntVO account = getOpenstackAccountInfo(principal, rvo.getAccountId());
+        flag = openstackRouterMgntApiService.setRouterGatewayAttachApiFromOpenstack(account, rvo);
+        if( !flag ){
             throw new CommonException(
                     message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
@@ -247,10 +251,10 @@ public class OpenstackRouterMgntService {
      * @return : void
      ***************************************************/
     public void setOpenstackRouterGatewayDetach(Principal principal, OpenstackRouterMgntVO rvo){
-    	boolean flag = false;
-    	IaasAccountMgntVO vo = getOpenstackAccountInfo(principal, rvo.getAccountId());
-    	flag = openstackRouterMgntApiService.setRouterGatewayDetachApiFromOpenstack(vo, rvo);
-    	if( !flag ){
+        boolean flag = false;
+        IaasAccountMgntVO vo = getOpenstackAccountInfo(principal, rvo.getAccountId());
+        flag = openstackRouterMgntApiService.setRouterGatewayDetachApiFromOpenstack(vo, rvo);
+        if( !flag ){
             throw new CommonException(
                     message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }

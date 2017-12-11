@@ -9,8 +9,7 @@
  * =================================================================
  */ 
 %>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <script type="text/javascript">
@@ -295,15 +294,16 @@ function selectIaas() {
  *********************************************************/
 function doButtonStyle() {
     if ( !bDefaultDirector ) {
+        $('#installBtn').attr('disabled', true);
         $('#modifyBtn').attr('disabled', true);
         $('#deleteBtn').attr('disabled', true);
     } 
     else {
+        $('#installBtn').attr('disabled', false);
         $('#modifyBtn').attr('disabled', true);
         $('#deleteBtn').attr('disabled', true);
     }
 }
-
 
 /********************************************************
  * 설명 : 다른페이지 이동시 호출
@@ -350,9 +350,9 @@ $(window).resize(function() {
 <!--  Diego 설정 유무-->
 <div id="diegoSelectDiv" style="width:100%; height: 80px;" hidden="true">
         <div class="w2ui-lefted" style="text-align: center;">
-            DIEGO를 사용 하시겠습니까?<br />
-            <br/>
-            <div >
+            DIEGO를 사용 하시겠습니까?<br /><br/>
+            <p style="color:red;">(단 cf 버전이 272 이상 일 경우 DIEGO 사용이 필수 입니다.) </p>
+            <div>
                 <label style="width: 100px; ">
                     <input type="radio" name="diegoSelect" id="type1" value="true" checked="checked"  />
                     &nbsp;예
@@ -361,6 +361,7 @@ $(window).resize(function() {
                     <input type="radio" name="diegoSelect" id="type2" value="false"  />
                     &nbsp;아니요
                 </label>
+                <br/>
             </div>
         </div>
 </div>

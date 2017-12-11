@@ -27,7 +27,11 @@ $(function(){
                 }
             }, runnerFlavor: { 
                 required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='runnerFlavor']").val() );
+                    if( $(".w2ui-msg-body #runnerTypeDiv").css("display") == "none" ){
+                        return false;
+                    }else{
+                        return checkEmpty( $(".w2ui-msg-body input[name='runnerFlavor']").val() );
+                    }
                 }
             }
         }, messages: {

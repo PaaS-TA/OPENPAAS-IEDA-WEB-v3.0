@@ -28,8 +28,6 @@ import org.openpaas.ieda.deploy.web.information.iassConfig.dao.IaasConfigMgntDAO
 import org.openpaas.ieda.deploy.web.information.iassConfig.dao.IaasConfigMgntVO;
 import org.openpaas.ieda.deploy.web.information.iassConfig.dto.IaasConfigMgntDTO;
 import org.openpaas.ieda.deploy.web.information.iassConfig.service.IaasConfigMgntService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -48,7 +46,6 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     MessageSource mockMessageSource;
     
     private Principal principal = null;
-    final static Logger LOGGER = LoggerFactory.getLogger(IaasConfigMgntServiceUnitTest.class);
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -70,7 +67,6 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testGetAllIaasConfigInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testGetAllIaasConfigInfoList  ================="); }
         List<IaasConfigMgntVO> expectList = setAllIaasConfigInfoList();
         when(momckIaasConfigMgntDAO.selectAllIaasConfigInfoList(anyString())).thenReturn(expectList);
         List<IaasConfigMgntVO> resultList = mockIaasConfigMgntService.getAllIaasConfigInfoList(principal);
@@ -95,7 +91,6 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testGetIaasConfigCount(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testGetIaasConfigCount  ================="); }
         HashMap<String, Integer> expectMap = setIaasConfigCount();
         when(momckIaasConfigMgntDAO.selectIaasConfigCount(anyString())).thenReturn(expectMap);
         HashMap<String, Integer> resultMap = mockIaasConfigMgntService.getIaasConfigCount(principal);
@@ -113,7 +108,6 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testgetIaasConfigInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testgetIaasConfigInfoList  ================="); }
         List<IaasConfigMgntVO> expectAwsList = setAwsConfigInfoList();
         when(momckIaasConfigMgntDAO.selectIaasConfigInfoList(anyString(), anyString())).thenReturn(expectAwsList);
         List<IaasConfigMgntVO> resultList = mockIaasConfigMgntService.getIaasConfigInfoList("AWS", principal);
@@ -136,7 +130,6 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveIaasConfigInfoConflictError(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testSaveIaasConfigInfoConflictError  ================="); }
         IaasConfigMgntDTO dto = setSaveIaasConfig("insert");
         when(momckIaasConfigMgntDAO.selectIaasConfigDuplicationByConfigInfo(any())).thenReturn(1);
         when(mockMessageSource.getMessage(anyString(), any(Object[].class), any(Locale.class))).thenReturn("충돌");
@@ -151,7 +144,6 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testSaveIaasConfigNameConflictError(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testSaveIaasConfigNameConflictError  ================="); }
         IaasConfigMgntDTO dto = setSaveIaasConfig("insert");
         when(momckIaasConfigMgntDAO.selectIaasConfigDuplicationByConfigInfo(any())).thenReturn(0);
         when(momckIaasConfigMgntDAO.selectIaasConfigDuplicationByConfigName(any())).thenReturn(1);
@@ -167,7 +159,6 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testInsertIaasConfigInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testInsertIaasConfigInfo  ================="); }
         IaasConfigMgntDTO dto = setSaveIaasConfig("insert");
         when(momckIaasConfigMgntDAO.selectIaasConfigDuplicationByConfigInfo(any())).thenReturn(0);
         when(momckIaasConfigMgntDAO.selectIaasConfigDuplicationByConfigName(any())).thenReturn(0);
@@ -182,7 +173,6 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testUpdateIaasConfigInfo(){
-    	if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testUpdateIaasConfigInfo  ================="); }
         IaasConfigMgntDTO dto = setSaveIaasConfig("update");
         IaasConfigMgntVO expect = setUpdateIaasConfigInfo();
         when(momckIaasConfigMgntDAO.selectIaasConfigDuplicationByConfigInfo(any())).thenReturn(0);
@@ -199,19 +189,18 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testGetIaasConfigInfo(){
-    	if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testGetIaasConfigInfo  ================="); }
-    	IaasConfigMgntVO expect = setUpdateIaasConfigInfo();
-    	when(momckIaasConfigMgntDAO.selectIaasConfigInfo(anyString(), anyString(), anyInt())).thenReturn(expect);
-    	IaasConfigMgntVO result = mockIaasConfigMgntService.getIaasConfigInfo("AWS", 1, principal);
-    	assertEquals(result.getAccountId(), expect.getAccountId());
-    	assertEquals(result.getAccountName(), expect.getAccountName());
-    	assertEquals(result.getCommonKeypairName(), expect.getCommonKeypairName());
-    	assertEquals(result.getCommonKeypairPath(), expect.getCommonKeypairPath());
-    	assertEquals(result.getCommonSecurityGroup(), expect.getCommonSecurityGroup());
-    	assertEquals(result.getCommonRegion(), expect.getCommonRegion());
-    	assertEquals(result.getDeployStatus(), expect.getDeployStatus());
-    	assertEquals(result.getId(), expect.getId());
-    	assertEquals(result.getCreateUserId(), expect.getCreateUserId());
+        IaasConfigMgntVO expect = setUpdateIaasConfigInfo();
+        when(momckIaasConfigMgntDAO.selectIaasConfigInfo(anyString(), anyString(), anyInt())).thenReturn(expect);
+        IaasConfigMgntVO result = mockIaasConfigMgntService.getIaasConfigInfo("AWS", 1, principal);
+        assertEquals(result.getAccountId(), expect.getAccountId());
+        assertEquals(result.getAccountName(), expect.getAccountName());
+        assertEquals(result.getCommonKeypairName(), expect.getCommonKeypairName());
+        assertEquals(result.getCommonKeypairPath(), expect.getCommonKeypairPath());
+        assertEquals(result.getCommonSecurityGroup(), expect.getCommonSecurityGroup());
+        assertEquals(result.getCommonRegion(), expect.getCommonRegion());
+        assertEquals(result.getDeployStatus(), expect.getDeployStatus());
+        assertEquals(result.getId(), expect.getId());
+        assertEquals(result.getCreateUserId(), expect.getCreateUserId());
     }
     
     /***************************************************
@@ -222,10 +211,9 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testGetIaasConfigInfoValueNull(){
-    	if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testGetIaasConfigInfoValueNull  ================="); }
-    	when(momckIaasConfigMgntDAO.selectIaasConfigInfo(anyString(), anyString(), anyInt())).thenReturn(null);
-    	when(mockMessageSource.getMessage(anyString(), any(Object[].class), any(Locale.class))).thenReturn("빈 값");
-    	mockIaasConfigMgntService.getIaasConfigInfo("AWS", 1, principal);
+        when(momckIaasConfigMgntDAO.selectIaasConfigInfo(anyString(), anyString(), anyInt())).thenReturn(null);
+        when(mockMessageSource.getMessage(anyString(), any(Object[].class), any(Locale.class))).thenReturn("빈 값");
+        mockIaasConfigMgntService.getIaasConfigInfo("AWS", 1, principal);
     }
     
     /***************************************************
@@ -236,9 +224,8 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test
     public void testDeleteIaasConfigInfo(){
-    	if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testDeleteIaasConfigInfo  ================="); }
-    	IaasConfigMgntDTO dto = setSaveIaasConfig("update");
-    	mockIaasConfigMgntService.deleteIaasConfigInfo(dto, principal);
+        IaasConfigMgntDTO dto = setSaveIaasConfig("update");
+        mockIaasConfigMgntService.deleteIaasConfigInfo(dto, principal);
     }
     
     /***************************************************
@@ -249,10 +236,9 @@ public class IaasConfigMgntServiceUnitTest extends BaseDeployControllerUnitTest{
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testDeleteIaasConfigInfoConfigIdEmpty(){
-    	if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  testDeleteIaasConfigInfoConfigIdEmpty  ================="); }
-    	IaasConfigMgntDTO dto = setSaveIaasConfig("insert");
-    	when(mockMessageSource.getMessage(anyString(), any(Object[].class), any(Locale.class))).thenReturn("빈 값");
-    	mockIaasConfigMgntService.deleteIaasConfigInfo(dto, principal);
+        IaasConfigMgntDTO dto = setSaveIaasConfig("insert");
+        when(mockMessageSource.getMessage(anyString(), any(Object[].class), any(Locale.class))).thenReturn("빈 값");
+        mockIaasConfigMgntService.deleteIaasConfigInfo(dto, principal);
     }
     
     /****************************************************************

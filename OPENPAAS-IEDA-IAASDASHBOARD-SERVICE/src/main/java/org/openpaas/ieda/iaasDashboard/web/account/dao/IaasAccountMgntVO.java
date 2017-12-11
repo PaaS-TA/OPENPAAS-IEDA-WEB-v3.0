@@ -1,8 +1,6 @@
 package org.openpaas.ieda.iaasDashboard.web.account.dao;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 public class IaasAccountMgntVO {
     private Integer recid;
@@ -24,7 +22,6 @@ public class IaasAccountMgntVO {
     private Date createDate;//등록일
     private Date updateDate;//수정일
     private String testFlag;
-    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
     
     public Integer getRecid() {
         return recid;
@@ -71,20 +68,18 @@ public class IaasAccountMgntVO {
     public String getUpdateUserId() {
         return updateUserId;
     }
-    public String getCreateDate() {
+    public Date getCreateDate() {
         if(createDate == null) {
             return null;
         } else {
-            String date1 = format.format(createDate);
-            return date1;
+            return new Date(createDate.getTime());
         }
     }
-    public String getUpdateDate() {
+    public Date getUpdateDate() {
         if(updateDate == null) {
             return null;
         } else {
-            String date1 = format.format(updateDate);
-            return date1;
+            return new Date(updateDate.getTime());
         }
     }
     public void setRecid(Integer recid) {
@@ -127,10 +122,18 @@ public class IaasAccountMgntVO {
         this.updateUserId = updateUserId;
     }
     public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
+        if(createDate == null) {
+            this.createDate = null;
+        } else {
+            this.createDate = new Date(createDate.getTime());
+        }
     }
     public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
+        if(updateDate == null) {
+            this.updateDate = null;
+        } else {
+            this.updateDate = new Date(updateDate.getTime());
+        }
     }
     public String getTestFlag() {
         return testFlag;

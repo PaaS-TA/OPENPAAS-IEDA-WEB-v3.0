@@ -75,10 +75,12 @@ public class BootstrapSaveService {
             vo.setBoshRelease(dto.getBoshRelease().trim());
             vo.setNtp(dto.getNtp());
             vo.setBoshCpiRelease(dto.getBoshCpiRelease().trim());
-            vo.setOsConfRelease(dto.getOsConfRelease());
             vo.setEnableSnapshots(dto.getEnableSnapshots().trim());
             vo.setSnapshotSchedule(dto.getSnapshotSchedule().trim());
             vo.setUpdateUserId(principal.getName());
+            vo.setPaastaMonitoringUse(dto.getPaastaMonitoringUse());
+            vo.setPaastaMonitoringIp(dto.getPaastaMonitoringIp());
+            vo.setPaastaMonitoringRelease(dto.getPaastaMonitoringRelease());
         }else{
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
                     message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
@@ -110,10 +112,10 @@ public class BootstrapSaveService {
             vo.setSubnetGateway(dto.getSubnetGateway());
             vo.setSubnetDns(dto.getSubnetDns());
             vo.setUpdateUserId(principal.getName());
-            vo.setPublicSubnetId(dto.getSubnetId()); //vSphere
-            vo.setPublicSubnetRange(dto.getSubnetRange()); //vSphere
-            vo.setPublicSubnetGateway(dto.getSubnetGateway()); //vSphere
-            vo.setPublicSubnetDns(dto.getSubnetDns()); //vSphere
+            vo.setPublicSubnetId(dto.getPublicSubnetId()); //vSphere
+            vo.setPublicSubnetRange(dto.getPublicSubnetRange()); //vSphere
+            vo.setPublicSubnetGateway(dto.getPublicSubnetGateway()); //vSphere
+            vo.setPublicSubnetDns(dto.getPublicSubnetDns()); //vSphere
             vo.setNetworkName(dto.getNetworkName());
         }else{
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),

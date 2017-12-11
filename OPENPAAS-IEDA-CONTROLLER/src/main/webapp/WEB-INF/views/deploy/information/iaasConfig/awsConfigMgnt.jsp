@@ -138,15 +138,15 @@ $("#deleteConfigBtn").click(function(){
         return;
     }
     var record = w2ui['aws_configGrid'].get(selected);
-    var msg = "계정(" + record.iaasConfigAlias + ")"+ popup_delete_msg;
+    var msg = "환경 설정 정보(" + record.iaasConfigAlias + ")"+ popup_delete_msg;
     if( record.deployStatus == '사용중' ){
         msg = "<span style='color:red'>현재 AWS 플랫폼 설치에서 <br/>해당 환경 설정 정보("+record.iaasConfigAlias+")를 사용하고 있습니다. </span><br/><span style='color:red; font-weight:bolder'>그래도 삭제 하시겠습니까?</span>";
     }
     w2confirm({
-        title : "AWS 환경 설정 정보 삭제",
-        msg : msg,
-        yes_text : "확인",
-        no_text : "취소",
+        title        : "<b>AWS 환경 설정 정보 삭제</b>",
+        msg          : msg,
+        yes_text     : "확인",
+        no_text      : "취소",
         yes_callBack : function(event){
             //delete function 호출
             deleteAwsConfigInfo(record);
@@ -179,7 +179,7 @@ function settingAwsConfigInfo(id){
     w2popup.lock( search_lock_msg, true);
     $.ajax({
         type : "GET",
-        url : "info/iaasConfig/aws/save/detail/"+id,
+        url : "/info/iaasConfig/aws/save/detail/"+id,
         contentType : "application/json",
         dataType : "json",
         success : function(data, status) {
@@ -190,7 +190,7 @@ function settingAwsConfigInfo(id){
             configInfo = {
                     accountId: data.accountId,
                     accountName : data.accountName,
-                    commonAvaliabilityZone : data.commonAvaliabilityZone,
+                    commonAvaliabilityZone : data.commonAvailabilityZone,
                     commonRegion : data.commonRegion,
                     commonKeypairPath : data.commonKeypairPath
             }
@@ -318,7 +318,7 @@ function changeKeyPathStyle( showDiv, hideDiv ){
 function setupIaasAccountName(data){
      var iaasAccountName = "<select class='form-control select-control' style='width: 300px' name='accountName'>";
      if( data.length == 0 ){
-         iaasAccountName +="<option>존재하지 않습니다.</option>";
+         iaasAccountName +="<option value=''>계정을 등록하세요.</option>";
      }else{
          for (var i=0; i<data.length; i++){
              if( configInfo.accountName == data[i].accountName ){
@@ -340,7 +340,7 @@ function setAwsRegionList(data){
      $(".w2ui-msg-body select[name='commonRegion']").attr("disabled", false);
      var regionHtml = "";
     if( data.length ==0 ){
-        regionHtml +="<option>존재하지 않습니다.</option>";
+        regionHtml +="<option value=''>존재하지 않습니다.</option>";
     }else{
         for (var i=0; i<data.length; i++){
             if( data[i].name != "us-gov-west-1" && data[i].name != "cn-north-1" ){ 
@@ -371,19 +371,23 @@ function getAwsAvaliabilityZoneInfoList( event ){
         region = event.value;
     }
     var accountId = $(".w2ui-msg-body select[name='accountName']").val();
-    $.ajax({
-        type : "GET",
-        url : "/common/aws/avaliabilityzone/list/"+accountId + "/" + region,
-        contentType : "application/json",
-        success : function(data, status) {
-            setAwsAvaliabilityZoneInfoList(data);
-            w2popup.unlock();
-        },
-        error : function(request, status, error) {
-            var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message, "해당 계정 별칭 목록 조회");
-        }
-    });
+    if( checkEmpty(accountId) ){
+        w2alert("인프라 관리 대시보드에서 계정을 등록하세요.");
+    }else{
+        $.ajax({
+            type : "GET",
+            url : "/common/aws/avaliabilityzone/list/"+accountId + "/" + region,
+            contentType : "application/json",
+            success : function(data, status) {
+                setAwsAvaliabilityZoneInfoList(data);
+                w2popup.unlock();
+            },
+            error : function(request, status, error) {
+                var errorResult = JSON.parse(request.responseText);
+                w2alert(errorResult.message, "해당 계정 별칭 목록 조회");
+            }
+        });
+    }
 }
 
 /********************************************************
@@ -535,6 +539,7 @@ $( window ).resize(function() {
 
 </script>
 <div id="main">
+    <div class="page_site">정보조회 > 인프라 환경 설정 관리 > <strong>AWS 환경 설정 관리 </strong></div>
      <div class="pdt20">
          <div class="fl" style="width:100%">
             <div class="dropdown" >

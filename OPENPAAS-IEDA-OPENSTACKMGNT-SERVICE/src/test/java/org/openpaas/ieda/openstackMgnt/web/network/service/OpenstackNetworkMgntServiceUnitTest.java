@@ -21,14 +21,13 @@ import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
 import org.openpaas.ieda.openstackMgnt.api.network.OpenstackNetworkMgntApiService;
 import org.openpaas.ieda.openstackMgnt.web.network.dao.OpenstackNetworkMgntVO;
 import org.openpaas.ieda.openstackMgnt.web.network.dto.OpenstackNetworkMgntDTO;
+import org.openstack4j.model.common.ActionResponse;
 import org.openstack4j.model.network.IPVersionType;
 import org.openstack4j.model.network.Network;
 import org.openstack4j.model.network.NetworkType;
 import org.openstack4j.openstack.networking.domain.NeutronNetwork;
 import org.openstack4j.openstack.networking.domain.NeutronNetwork.NetworkConcreteBuilder;
 import org.openstack4j.openstack.networking.domain.NeutronSubnet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,7 +36,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class OpenstackNetworkMgntServiceUnitTest {
     private Principal principal = null;
-    final static Logger LOGGER = LoggerFactory.getLogger(OpenstackNetworkMgntServiceUnitTest.class);
     
     @InjectMocks OpenstackNetworkMgntService mockOpenstackNetworkMgntService;
     @Mock CommonIaasService mockCommonIaasService;
@@ -54,7 +52,6 @@ public class OpenstackNetworkMgntServiceUnitTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         principal = getLoggined();
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("loging" + principal); }
     }
     
     /***************************************************
@@ -79,7 +76,6 @@ public class OpenstackNetworkMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testGetOpenstackNetworkInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 네트워크 목록 조회  TEST START  ================="); }
         getOpenstackAccountInfo();
         List<? extends Network> expectList = setResultNetworkList();
         doReturn(expectList).when(mockOpenstackNetworkMgntApiService).getOpenstackNetworkInfoListApiFromOpenstack(any());
@@ -98,7 +94,6 @@ public class OpenstackNetworkMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testGetOpenstackNetworkDetailInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 네트워크 상세 조회  TEST START  ================="); }
         getOpenstackAccountInfo();
         Network network = setResultNetworkInfo();
         when(mockOpenstackNetworkMgntApiService.getOpenstackNetworkDetailInfoApiFromOpenstack(any(), anyString())).thenReturn(network);
@@ -118,7 +113,6 @@ public class OpenstackNetworkMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSaveOpenstackNetworkIpv4Info(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 네트워크 생성 IPv4 일 경우 TEST TEST START  ================="); }
         getOpenstackAccountInfo();
         OpenstackNetworkMgntDTO dto = setNetworkInfo("ipv4");
         mockOpenstackNetworkMgntService.saveOpenstackNetworkInfo(dto, principal);
@@ -132,7 +126,6 @@ public class OpenstackNetworkMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSaveOpenstackNetworkIpv6Info(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 네트워크 생성 IPv6 일 경우 TEST START  ================="); }
         getOpenstackAccountInfo();
         OpenstackNetworkMgntDTO dto = setNetworkInfo("ipv6");
         mockOpenstackNetworkMgntService.saveOpenstackNetworkInfo(dto, principal);
@@ -146,9 +139,9 @@ public class OpenstackNetworkMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testDeleteOpenstackNetworkInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 네트워크 삭제 TEST START  ================="); }
-        getOpenstackAccountInfo();
+        IaasAccountMgntVO vo = getOpenstackAccountInfo();
         OpenstackNetworkMgntDTO dto = setNetworkInfo("default");
+        when(mockOpenstackNetworkMgntApiService.deleteOpenstackNetworkInfoApiFromOpenstack(vo, dto)).thenReturn(ActionResponse.actionSuccess());
         mockOpenstackNetworkMgntService.deleteOpenstackNetworkInfo(dto, principal);
     }
     
@@ -160,7 +153,6 @@ public class OpenstackNetworkMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testGetOpenstackSubnetInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 서브넷 목록 조회 TEST START  ================="); }
         List<NeutronSubnet> expectList = setResultSubnetList("default");
         doReturn(expectList).when(mockOpenstackNetworkMgntApiService).getOpenstackSubnetInfoListApiFromOpenstack(any(), anyString());
         List<OpenstackNetworkMgntVO> resultList = mockOpenstackNetworkMgntService.getOpenstackSubnetInfoList(principal, 1, "1");
@@ -180,7 +172,6 @@ public class OpenstackNetworkMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testGetOpenstackSubnetInfoListSize2(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 서브넷 목록 조회 TEST START  ================="); }
         List<NeutronSubnet> expectList = setResultSubnetList("size");
         doReturn(expectList).when(mockOpenstackNetworkMgntApiService).getOpenstackSubnetInfoListApiFromOpenstack(any(), anyString());
         List<OpenstackNetworkMgntVO> resultList = mockOpenstackNetworkMgntService.getOpenstackSubnetInfoList(principal, 1, "1");
@@ -203,7 +194,6 @@ public class OpenstackNetworkMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSaveOpenstackSubnetkIpv4Info(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 서브넷 생성 IPv4 일 경우 TEST START  ================="); }
         getOpenstackAccountInfo();
         OpenstackNetworkMgntDTO dto = setNetworkInfo("ipv4");
         mockOpenstackNetworkMgntService.saveOpenstackSubnetkInfo(dto, principal);
@@ -217,7 +207,6 @@ public class OpenstackNetworkMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSaveOpenstackSubnetkIpv6Info(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 서브넷 생성 IPv6 일 경우 TEST START  ================="); }
         getOpenstackAccountInfo();
         OpenstackNetworkMgntDTO dto = setNetworkInfo("ipv6");
         mockOpenstackNetworkMgntService.saveOpenstackSubnetkInfo(dto, principal);
@@ -231,9 +220,9 @@ public class OpenstackNetworkMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testDeleteOpenstackSubnetInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 서브넷 삭제 TEST START  ================="); }
-        getOpenstackAccountInfo();
+        IaasAccountMgntVO vo = getOpenstackAccountInfo();
         OpenstackNetworkMgntDTO dto = setNetworkInfo("default");
+        when(mockOpenstackNetworkMgntApiService.deleteOpenstackSubnetInfoApiFromOpenstack(vo, dto)).thenReturn(ActionResponse.actionSuccess());
         mockOpenstackNetworkMgntService.deleteOpenstackSubnetInfo(dto, principal);
     }
     
@@ -250,8 +239,8 @@ public class OpenstackNetworkMgntServiceUnitTest {
         dto.setDnsNameServers("8.8.8.8");
         dto.setEnableDHCP(true);
         dto.setGatewayIp("192.168.100.1");
-        if("ipv4".equals(type)) dto.setIpVersion("IPv4");
-        else if("ipv6".equals(type)) dto.setIpVersion("IPv6");
+        if("ipv4".equalsIgnoreCase(type)) dto.setIpVersion("IPv4");
+        else if("ipv6".equalsIgnoreCase(type)) dto.setIpVersion("IPv6");
         dto.setNetworkAddress("192.168.100.0.24");
         dto.setNetworkId("networkId");
         dto.setNetworkName("networkName");
@@ -325,7 +314,7 @@ public class OpenstackNetworkMgntServiceUnitTest {
         subnet.toBuilder().addPool("192.168.100.2", "192.168.100.254");
         subnet.toBuilder().addPool("192.168.120.2", "192.168.120.254");
         neutronSubnets.add(subnet);
-        if("size".equals(type)){
+        if("size".equalsIgnoreCase(type)){
             subnet = new NeutronSubnet();
             subnet.toBuilder().addDNSNameServer("8.8.8.8");
             subnet.toBuilder().cidr("192.168.120.0/24");

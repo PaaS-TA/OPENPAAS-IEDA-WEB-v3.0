@@ -8,6 +8,7 @@ import org.openpaas.ieda.common.web.common.service.CommonApiService;
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.openstackMgnt.web.floatingIp.dto.OpenstackFloatingIpMgntDTO;
 import org.openstack4j.api.OSClient.OSClientV2;
+import org.openstack4j.api.OSClient.OSClientV3;
 import org.openstack4j.model.compute.FloatingIP;
 import org.openstack4j.model.network.Network;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +35,34 @@ public class OpenstackFloatingIpMgntApiService {
      
      /***************************************************
       * @project : OPENSTACK 인프라 관리 대시보드
+      * @description : 받아온 Openstack 정보를 통해 OSClientV3 객체 생성
+      * @title : getOpenstackClientV3
+      * @return : OSClientV3
+      ***************************************************/
+      public OSClientV3 getOpenstackClientV3(IaasAccountMgntVO vo){
+          OSClientV3 os= commonApiService.getOSClientFromOpenstackV3(vo.getCommonAccessEndpoint(), vo.getOpenstackDomain(), vo.getCommonProject(), vo.getCommonAccessUser(), vo.getCommonAccessSecret());
+          return os;
+      }
+     
+     /***************************************************
+      * @project : OPENSTACK 인프라 관리 대시보드
       * @description : Openstack Floating IP 목록 정보 조회 실제 API 호출
       * @title : getOpenstackFloatingIPInfoListApiFromOpenstack
       * @return : List<? extends FloatingIP>
       ***************************************************/
      public List<? extends FloatingIP> getOpenstackFloatingIpInfoListApiFromOpenstack(IaasAccountMgntVO vo){
-            OSClientV2 os= getOpenstackClientV2(vo);
-        return os.compute().floatingIps().list();
+            
+         List<? extends FloatingIP> list = null;
+         String version = vo.getOpenstackKeystoneVersion();
+         
+         if(version.equalsIgnoreCase("v2")){
+             OSClientV2 os= getOpenstackClientV2(vo);
+             list = os.compute().floatingIps().list();
+         }else if(version.equalsIgnoreCase("v3")){
+             OSClientV3 os= getOpenstackClientV3(vo);
+             list = os.compute().floatingIps().list();
+         }
+         return list;
      }
      
      /***************************************************
@@ -50,10 +72,17 @@ public class OpenstackFloatingIpMgntApiService {
      * @return : String
     ***************************************************/
     public String getOpenstackInstanceName(IaasAccountMgntVO vo, String instanceId){
-            OSClientV2 os= getOpenstackClientV2(vo);
+          
            String instanceName = "";
+           String version = vo.getOpenstackKeystoneVersion();
             try{
-                instanceName = os.compute().servers().get(instanceId).getName();
+                if(version.equalsIgnoreCase("v2")){
+                    OSClientV2 os= getOpenstackClientV2(vo);
+                    instanceName = os.compute().servers().get(instanceId).getName();
+                }else if(version.equalsIgnoreCase("v3")){
+                    OSClientV3 os= getOpenstackClientV3(vo);
+                    instanceName = os.compute().servers().get(instanceId).getName();
+                    }
             }catch(NullPointerException e){
                 instanceName = "-";
             }catch(Exception e){
@@ -70,11 +99,17 @@ public class OpenstackFloatingIpMgntApiService {
       * @return :void
       ***************************************************/
      public void saveOpenstackFloatingIpInfoApiFromOpenstack(IaasAccountMgntVO vo, OpenstackFloatingIpMgntDTO dto){
-         if("v2".equals(vo.getOpenstackKeystoneVersion())){
+         
+         String version = vo.getOpenstackKeystoneVersion();
+         
+         if(version.equalsIgnoreCase("v2")){
              OSClientV2 os= getOpenstackClientV2(vo);
              String pool = dto.getPool();
              os.compute().floatingIps().allocateIP(pool);
-             
+         }else if(version.equalsIgnoreCase("v3")){
+             OSClientV3 os= getOpenstackClientV3(vo);
+             String pool = dto.getPool();
+             os.compute().floatingIps().allocateIP(pool);
          }
      }
      
@@ -85,7 +120,17 @@ public class OpenstackFloatingIpMgntApiService {
       * @return : List<? extends Network>
       ***************************************************/
      public List<? extends Network> getOpenstackPoolInfoListApiFromOpenstack(IaasAccountMgntVO vo){
-            OSClientV2 os= getOpenstackClientV2(vo);
-        return os.networking().network().list();
+         
+         List<? extends Network> list = null;
+         String version = vo.getOpenstackKeystoneVersion();   
+         
+         if(version.equalsIgnoreCase("v2")){
+             OSClientV2 os= getOpenstackClientV2(vo);
+             list = os.networking().network().list();
+         }else if(version.equalsIgnoreCase("v3")){
+             OSClientV3 os= getOpenstackClientV3(vo);
+             list = os.networking().network().list();
+         }
+        return list;
      }
 }

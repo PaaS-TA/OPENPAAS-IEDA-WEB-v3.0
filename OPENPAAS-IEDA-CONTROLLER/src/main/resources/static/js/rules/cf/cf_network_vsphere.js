@@ -40,7 +40,7 @@ $("#vSphereNetworkInfoForm").validate({
                            var val = validateIpv4(list[i].trim());
                            if( !val ) flag = false;
                        }
-                       if( !flag ) return "";
+                       if( !flag ) return "false";
                        else return list[0].trim();
                    }else{
                        return $(".w2ui-msg-body input[name='subnetDns_1']").val();
@@ -60,13 +60,13 @@ $("#vSphereNetworkInfoForm").validate({
                ,ipv4    : function(){ return $(".w2ui-msg-body input[name='subnetStaticTo_1']").val(); }
             }
          },messages: {
-        	  publicSubnetId_1       : { required: "포트 그룹명"+text_required_msg }
-             ,publicSubnetRange_1        : { required: "서브넷 범위"+text_required_msg } 
-             ,publicSubnetGateway_1       : { required: "서브넷 게이트웨이"+text_required_msg }
-             ,publicSubnetDns_1        : { required: "DNS"+text_required_msg } 
-             ,publicStaticFrom_1       : { required: "IP할당 대역"+text_required_msg }
-             ,publicStaticTo_1       : { required: "IP할당 대역"+text_required_msg }
-             ,publicSubnetRange_1        : { required: "네트워크 명"+text_required_msg } 
+        	  publicSubnetId       : { required: "포트 그룹명"+text_required_msg }
+             ,publicSubnetRange    : { required: "서브넷 범위"+text_required_msg } 
+             ,publicSubnetGateway  : { required: "서브넷 게이트웨이"+text_required_msg }
+             ,publicSubnetDns      : { required: "DNS"+text_required_msg } 
+             ,publicStaticFrom     : { required: "IP할당 대역"+text_required_msg }
+             ,publicStaticTo       : { required: "IP할당 대역"+text_required_msg }
+             ,publicSubnetRange    : { required: "네트워크 명"+text_required_msg } 
              ,subnetId_1           : { required: "포트 그룹명"+text_required_msg }
              ,subnetRange_1        : { required: "서브넷 범위"+text_required_msg }
              ,subnetGateway_1      : { required: "게이트웨이"+text_required_msg }

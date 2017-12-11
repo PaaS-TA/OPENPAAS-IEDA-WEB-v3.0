@@ -148,7 +148,7 @@ jobs:
     resource_pool: database_z1
     networks:
       - name: diego1
-        static_ips: (( static_ips(1) ))
+        static_ips: (( static_ips(1, 2, 3) ))
     update:
       serial: true
       max_in_flight: 1
@@ -164,7 +164,7 @@ jobs:
     resource_pool: database_z2
     networks:
       - name: diego2
-        static_ips: (( static_ips(1) ))
+        static_ips: (( static_ips(1, 2, 3) ))
     update:
       serial: true
       max_in_flight: 1
@@ -180,7 +180,7 @@ jobs:
     resource_pool: database_z3
     networks:
       - name: diego3
-        static_ips: (( static_ips(1) ))
+        static_ips: (( static_ips(1, 2, 3) ))
     update:
       serial: true
       max_in_flight: 1
@@ -195,7 +195,7 @@ jobs:
     resource_pool: brain_z1
     networks:
       - name: diego1
-        static_ips: (( static_ips(2) ))
+        static_ips: (( static_ips(4, 5, 6) ))
     update:
       serial: true
       max_in_flight: 1
@@ -209,7 +209,7 @@ jobs:
     resource_pool: cell_z1
     networks:
       - name: diego1
-        #static_ips: (( static_ips(3) ))
+        static_ips: (( static_ips(7, 8, 9) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.cell_z1.max_in_flight || 1 ))
@@ -227,7 +227,7 @@ jobs:
     resource_pool: cc_bridge_z1
     networks:
       - name: diego1
-        static_ips: (( static_ips(4) ))
+        static_ips: (( static_ips(10, 11, 12) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.cc_bridge_z1.max_in_flight || 1 ))
@@ -241,7 +241,7 @@ jobs:
     resource_pool: route_emitter_z1
     networks:
       - name: diego1
-        static_ips: (( static_ips(5) ))
+        static_ips: (( static_ips(13) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.route_emitter_z1.max_in_flight || 1 ))
@@ -255,7 +255,7 @@ jobs:
     resource_pool: access_z1
     networks:
       - name: diego1
-        static_ips: (( static_ips(6) ))
+        static_ips: (( static_ips(16, 17, 18) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.access_z1.max_in_flight || 1 ))
@@ -269,7 +269,7 @@ jobs:
     resource_pool: brain_z2
     networks:
       - name: diego2
-        static_ips: (( static_ips(2) ))
+        static_ips: (( static_ips(4, 5, 6) ))
     update:
       serial: true
       max_in_flight: 1
@@ -283,7 +283,7 @@ jobs:
     resource_pool: cell_z2
     networks:
       - name: diego2
-        static_ips: (( static_ips(3) ))
+        static_ips: (( static_ips(7, 8, 9) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.cell_z2.max_in_flight || 1 ))
@@ -301,7 +301,7 @@ jobs:
     resource_pool: cc_bridge_z2
     networks:
       - name: diego2
-        static_ips: (( static_ips(4) ))
+        static_ips: (( static_ips(10, 11, 12) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.cc_bridge_z2.max_in_flight || 1 ))
@@ -315,7 +315,7 @@ jobs:
     resource_pool: route_emitter_z2
     networks:
       - name: diego2
-        static_ips: (( static_ips(5) ))
+        static_ips: (( static_ips(13) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.route_emitter_z2.max_in_flight || 1 ))
@@ -329,7 +329,7 @@ jobs:
     resource_pool: access_z2
     networks:
       - name: diego2
-        static_ips: (( static_ips(6) ))
+        static_ips: (( static_ips(16, 17, 18) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.access_z2.max_in_flight || 1))
@@ -343,7 +343,7 @@ jobs:
     resource_pool: brain_z3
     networks:
       - name: diego3
-        static_ips: (( static_ips(2) ))
+        static_ips: (( static_ips(4, 5, 6) ))
     update:
       serial: true
       max_in_flight: 1
@@ -357,7 +357,7 @@ jobs:
     resource_pool: cell_z3
     networks:
       - name: diego3
-        static_ips: (( static_ips(3) ))
+        static_ips: (( static_ips(7, 8, 9) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.cell_z3.max_in_flight || 1 ))
@@ -375,7 +375,7 @@ jobs:
     resource_pool: cc_bridge_z3
     networks:
       - name: diego3
-        static_ips: (( static_ips(4) ))
+        static_ips: (( static_ips(10, 11, 12) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.cc_bridge_z3.max_in_flight || 1 ))
@@ -389,7 +389,7 @@ jobs:
     resource_pool: route_emitter_z3
     networks:
       - name: diego3
-        static_ips: (( static_ips(5) ))
+        static_ips: (( static_ips(13) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.route_emitter_z3.max_in_flight || 1 ))
@@ -403,7 +403,7 @@ jobs:
     resource_pool: access_z3
     networks:
       - name: diego3
-        static_ips: (( static_ips(6) ))
+        static_ips: (( static_ips(16, 17, 18) ))
     update:
       serial: false
       max_in_flight: (( instance_count_overrides.access_z3.max_in_flight || 1))

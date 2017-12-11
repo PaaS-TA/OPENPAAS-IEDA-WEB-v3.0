@@ -3,7 +3,7 @@ package org.openpaas.ieda.deploy.web.deploy.bootstrap.dto;
 import javax.validation.constraints.NotNull;
 
 public class BootStrapDeployDTO{
-	
+    
     public static class IaasConfig{
         private String id;
         @NotNull
@@ -40,26 +40,28 @@ public class BootStrapDeployDTO{
         
     }
     
-	public static class Default{
-	    @NotNull
-		private String id; //id
-		@NotNull
-		private String iaasConfigId;
-		@NotNull
-		private String deploymentName; //배포명
-		@NotNull
-		private String directorName; //디렉터 명
-		@NotNull
-		private String boshRelease; //bosh 릴리즈
-		private String osConfRelease; //google os conf 릴리즈
-		@NotNull
-		private String ntp; //내부 NTP
-		@NotNull
-		private String boshCpiRelease; //bosh cpi 릴리즈
-		@NotNull
-		private String enableSnapshots;//스냅샷 사용 유무
-		@NotNull
-		private String snapshotSchedule;//스냅샷 스케줄
+    public static class Default{
+        @NotNull
+        private String id; //id
+        @NotNull
+        private String iaasConfigId;
+        @NotNull
+        private String deploymentName; //배포명
+        @NotNull
+        private String directorName; //디렉터 명
+        @NotNull
+        private String boshRelease; //bosh 릴리즈
+        @NotNull
+        private String ntp; //내부 NTP
+        @NotNull
+        private String boshCpiRelease; //bosh cpi 릴리즈
+        @NotNull
+        private String enableSnapshots;//스냅샷 사용 유무
+        @NotNull
+        private String snapshotSchedule;//스냅샷 스케줄
+        private String paastaMonitoringUse;// PaaS-TA 모니터링 사용 유무
+        private String paastaMonitoringIp; //PaaS-TA 모니터링 사용시 ingrestorIP
+        private String paastaMonitoringRelease; //PaaS-TA 모니터링 사용시 릴리즈
         public String getId() {
             return id;
         }
@@ -114,34 +116,46 @@ public class BootStrapDeployDTO{
         public void setSnapshotSchedule(String snapshotSchedule) {
             this.snapshotSchedule = snapshotSchedule;
         }
-        public String getOsConfRelease() {
-            return osConfRelease;
+        public String getPaastaMonitoringUse() {
+            return paastaMonitoringUse;
         }
-        public void setOsConfRelease(String osConfRelease) {
-            this.osConfRelease = osConfRelease;
+        public void setPaastaMonitoringUse(String paastaMonitoringUse) {
+            this.paastaMonitoringUse = paastaMonitoringUse;
         }
-		
-	}
-	
-	public static class Network{
-		@NotNull
-		private String id; //id
-		@NotNull
-		private String privateStaticIp; //디렉터 내부 ip
-		@NotNull
-		private String subnetId; //내부 네트워크id
-		private String networkName;//네트워크 명
-		@NotNull
-		private String subnetRange; //내부 서브넷 범위 
-		@NotNull
-		private String subnetGateway; //내부 게이트웨이
-		@NotNull
-		private String subnetDns; //내부 DNS
-		private String publicStaticIp; //디렉터 공인 ip
-		private String publicSubnetId; //public 네트워크id
-		private String publicSubnetRange; //public 서브넷 범위 
-		private String publicSubnetGateway; //public 게이트웨이
-		private String publicSubnetDns; //public DNS
+        public String getPaastaMonitoringIp() {
+            return paastaMonitoringIp;
+        }
+        public void setPaastaMonitoringIp(String paastaMonitoringIp) {
+            this.paastaMonitoringIp = paastaMonitoringIp;
+        }
+        public String getPaastaMonitoringRelease() {
+            return paastaMonitoringRelease;
+        }
+        public void setPaastaMonitoringRelease(String paastaMonitoringRelease) {
+            this.paastaMonitoringRelease = paastaMonitoringRelease;
+        }
+        
+    }
+    
+    public static class Network{
+        @NotNull
+        private String id; //id
+        @NotNull
+        private String privateStaticIp; //디렉터 내부 ip
+        @NotNull
+        private String subnetId; //내부 네트워크id
+        private String networkName;//네트워크 명
+        @NotNull
+        private String subnetRange; //내부 서브넷 범위 
+        @NotNull
+        private String subnetGateway; //내부 게이트웨이
+        @NotNull
+        private String subnetDns; //내부 DNS
+        private String publicStaticIp; //디렉터 공인 ip
+        private String publicSubnetId; //public 네트워크id
+        private String publicSubnetRange; //public 서브넷 범위 
+        private String publicSubnetGateway; //public 게이트웨이
+        private String publicSubnetDns; //public DNS
         public String getId() {
             return id;
         }
@@ -215,87 +229,67 @@ public class BootStrapDeployDTO{
             this.networkName = networkName;
         }
         
-		
-	}
-	
-	public static class Resource{
-		@NotNull
-		private String id; //id
-		@NotNull
-		private String stemcell; //스템셀
-		private String cloudInstanceType; //인스턴스유형
-		@NotNull
-		private String boshPassword; //VM 비밀번호
-		private String resourcePoolCpu;//리소스 풀 CPU
-		private String resourcePoolRam;//리소스 풀 RAM
-		private String resourcePoolDisk;//리소스 풀 DISK
-		
-		public String getId() {
-			return id;
-		}
-		public void setId(String id) {
-			this.id = id;
-		}
-		public String getStemcell() {
-			return stemcell;
-		}
-		public void setStemcell(String stemcell) {
-			this.stemcell = stemcell;
-		}
-		public String getCloudInstanceType() {
-			return cloudInstanceType;
-		}
-		public void setCloudInstanceType(String cloudInstanceType) {
-			this.cloudInstanceType = cloudInstanceType;
-		}
-		public String getBoshPassword() {
-			return boshPassword;
-		}
-		public void setBoshPassword(String boshPassword) {
-			this.boshPassword = boshPassword;
-		}
-		public String getResourcePoolCpu() {
-			return resourcePoolCpu;
-		}
-		public void setResourcePoolCpu(String resourcePoolCpu) {
-			this.resourcePoolCpu = resourcePoolCpu;
-		}
-		public String getResourcePoolRam() {
-			return resourcePoolRam;
-		}
-		public void setResourcePoolRam(String resourcePoolRam) {
-			this.resourcePoolRam = resourcePoolRam;
-		}
-		public String getResourcePoolDisk() {
-			return resourcePoolDisk;
-		}
-		public void setResourcePoolDisk(String resourcePoolDisk) {
-			this.resourcePoolDisk = resourcePoolDisk;
-		}
-	}
-	
-	public static class Install{
-		@NotNull
-		private String iaasType; //Iaas
-		@NotNull
-		private String id; //id
-		
-		public String getIaasType() {
-            return iaasType;
-        }
-        public void setIaasType(String iaasType) {
-            this.iaasType = iaasType;
-        }
+        
+    }
+    
+    public static class Resource{
+        @NotNull
+        private String id; //id
+        @NotNull
+        private String stemcell; //스템셀
+        private String cloudInstanceType; //인스턴스유형
+        @NotNull
+        private String boshPassword; //VM 비밀번호
+        private String resourcePoolCpu;//리소스 풀 CPU
+        private String resourcePoolRam;//리소스 풀 RAM
+        private String resourcePoolDisk;//리소스 풀 DISK
+        
         public String getId() {
-			return id;
-		}
-		public void setId(String id) {
-			this.id = id;
-		}
-	}
-	
-	public static class Delete{
-	    @NotNull
+            return id;
+        }
+        public void setId(String id) {
+            this.id = id;
+        }
+        public String getStemcell() {
+            return stemcell;
+        }
+        public void setStemcell(String stemcell) {
+            this.stemcell = stemcell;
+        }
+        public String getCloudInstanceType() {
+            return cloudInstanceType;
+        }
+        public void setCloudInstanceType(String cloudInstanceType) {
+            this.cloudInstanceType = cloudInstanceType;
+        }
+        public String getBoshPassword() {
+            return boshPassword;
+        }
+        public void setBoshPassword(String boshPassword) {
+            this.boshPassword = boshPassword;
+        }
+        public String getResourcePoolCpu() {
+            return resourcePoolCpu;
+        }
+        public void setResourcePoolCpu(String resourcePoolCpu) {
+            this.resourcePoolCpu = resourcePoolCpu;
+        }
+        public String getResourcePoolRam() {
+            return resourcePoolRam;
+        }
+        public void setResourcePoolRam(String resourcePoolRam) {
+            this.resourcePoolRam = resourcePoolRam;
+        }
+        public String getResourcePoolDisk() {
+            return resourcePoolDisk;
+        }
+        public void setResourcePoolDisk(String resourcePoolDisk) {
+            this.resourcePoolDisk = resourcePoolDisk;
+        }
+    }
+    
+    public static class Install{
+        @NotNull
         private String iaasType; //Iaas
         @NotNull
         private String id; //id
@@ -312,20 +306,38 @@ public class BootStrapDeployDTO{
         public void setId(String id) {
             this.id = id;
         }
-	}
-	
-	public static class Deployment{
-		@NotNull
-		private String deploymentFile; //배포파일
+    }
+    
+    public static class Delete{
+        @NotNull
+        private String iaasType; //Iaas
+        @NotNull
+        private String id; //id
+        
+        public String getIaasType() {
+            return iaasType;
+        }
+        public void setIaasType(String iaasType) {
+            this.iaasType = iaasType;
+        }
+        public String getId() {
+            return id;
+        }
+        public void setId(String id) {
+            this.id = id;
+        }
+    }
+    
+    public static class Deployment{
+        @NotNull
+        private String deploymentFile; //배포파일
 
-		public String getDeploymentFile() {
-			return deploymentFile;
-		}
+        public String getDeploymentFile() {
+            return deploymentFile;
+        }
 
-		public void setDeploymentFile(String deploymentFile) {
-			this.deploymentFile = deploymentFile;
-		}
-		
-		
-	}
+        public void setDeploymentFile(String deploymentFile) {
+            this.deploymentFile = deploymentFile;
+        }
+    }
 }

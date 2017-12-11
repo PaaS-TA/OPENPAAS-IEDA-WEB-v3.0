@@ -62,8 +62,9 @@ public class LocalDirectoryConfiguration {
         boolean isOk = true;
         try {
             File dir = new File(dirToCheck);
-            if ( !dir.isDirectory() ) 
+            if ( !dir.isDirectory() ) {
                 isOk = dir.mkdirs();
+            }
         } catch ( Exception e ) {
             isOk = false;
         }
@@ -78,9 +79,9 @@ public class LocalDirectoryConfiguration {
      * @return : String
     *****************************************************************/
     public static String getSshDir() {
-        if ( !checkAndMakeDirectory(SSH_DIR) )
+        if ( !checkAndMakeDirectory(SSH_DIR) ) {
             throw new CommonException("notfound.ssh.local.exception", "Key 파일 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
-
+        }
         return SSH_DIR;
     }
     
@@ -91,8 +92,9 @@ public class LocalDirectoryConfiguration {
      * @return : String
     *****************************************************************/
     public static String getTmpDir() {
-        if ( !checkAndMakeDirectory(TMP_DIR) )
+        if ( !checkAndMakeDirectory(TMP_DIR) ) {
             throw new CommonException("notfound.tmp.local.exception", "tmp 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
         return TMP_DIR;
     }
 
@@ -103,9 +105,9 @@ public class LocalDirectoryConfiguration {
      * @return : String
     *****************************************************************/
     public static String getStemcellDir() {
-        if ( !checkAndMakeDirectory(STEMCELL_DIR) )
+        if ( !checkAndMakeDirectory(STEMCELL_DIR) ) {
             throw new CommonException("notfound.stemcell.local.exception", "스템셀 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
-
+        }
         return STEMCELL_DIR;
     }
     
@@ -116,8 +118,9 @@ public class LocalDirectoryConfiguration {
      * @return : String
     *****************************************************************/
     public static String getReleaseDir() {
-        if ( !checkAndMakeDirectory(RELEASE_DIR) )
+        if ( !checkAndMakeDirectory(RELEASE_DIR) ) {
             throw new CommonException("notfound.release.local.exception", "릴리즈 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
         return RELEASE_DIR;
     }
     
@@ -128,8 +131,9 @@ public class LocalDirectoryConfiguration {
      * @return : String
     *****************************************************************/
     public static String getDeploymentDir() {
-        if ( !checkAndMakeDirectory(DEPLOYMENT_DIR) )
+        if ( !checkAndMakeDirectory(DEPLOYMENT_DIR) ) {
             throw new CommonException("notfound.deployment.local.exception", "배포관련 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
         return DEPLOYMENT_DIR;
     }
     
@@ -140,8 +144,9 @@ public class LocalDirectoryConfiguration {
      * @return : String
     *****************************************************************/
     public static String getTempDir() {
-        if ( !checkAndMakeDirectory(TEMP_DIR) )
+        if ( !checkAndMakeDirectory(TEMP_DIR) ) {
             throw new CommonException("notfound.temp.local.exception", "임시 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
         return TEMP_DIR;
     }
     
@@ -152,8 +157,9 @@ public class LocalDirectoryConfiguration {
      * @return : String
     *****************************************************************/
     public static String getManifastTemplateDir(){
-        if(!checkAndMakeDirectory(MANIFEST_TEMPLATE_DIR))
+        if(!checkAndMakeDirectory(MANIFEST_TEMPLATE_DIR)) {
             throw new CommonException("notfound.ManifestTemp.local.exception", "Manifest 템플릿 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
         return MANIFEST_TEMPLATE_DIR;
     }
     
@@ -164,8 +170,9 @@ public class LocalDirectoryConfiguration {
      * @return : String
     *****************************************************************/
     public static String getManifastDir(){
-        if(!checkAndMakeDirectory(DEPLOYMENT_MANIFEST_DIR))
+        if(!checkAndMakeDirectory(DEPLOYMENT_MANIFEST_DIR)) {
             throw new CommonException("notfound.manifest.local.exception", "Manifest 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
         return DEPLOYMENT_MANIFEST_DIR;
     }
     
@@ -176,8 +183,9 @@ public class LocalDirectoryConfiguration {
      * @return : String
     *****************************************************************/
     public static String getLockDir(){
-        if(!checkAndMakeDirectory(LOCK_DIR))
+        if(!checkAndMakeDirectory(LOCK_DIR)) {
             throw new CommonException("notfound.lock.local.exception", "lock 파일 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
         return LOCK_DIR;
     }
     
@@ -188,8 +196,9 @@ public class LocalDirectoryConfiguration {
      * @return : String
     *****************************************************************/
     public static String getKeyDir(){
-        if(!checkAndMakeDirectory(KEY_DIR))
+        if(!checkAndMakeDirectory(KEY_DIR)) {
             throw new CommonException("notfound.key.local.exception", "key 파일 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
         return KEY_DIR;
     }
 
@@ -200,8 +209,9 @@ public class LocalDirectoryConfiguration {
      * @return : String
     *****************************************************************/
     public static String getGenerateCertsDir(){
-        if(!checkAndMakeDirectory(GENERATE_CERTS_DIR))
+        if(!checkAndMakeDirectory(GENERATE_CERTS_DIR)) {
             throw new CommonException("notfound.generateCerts.local.exception", "Generate Certs 파일 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
         return GENERATE_CERTS_DIR;
     }
     

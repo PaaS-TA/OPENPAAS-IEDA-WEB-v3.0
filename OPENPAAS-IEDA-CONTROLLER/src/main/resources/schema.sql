@@ -195,7 +195,6 @@ CREATE TABLE ieda_bootstrap
   ntp                               VARCHAR(100),
   bosh_release                      VARCHAR(100),
   bosh_cpi_release                  VARCHAR(100),
-  os_conf_release                  VARCHAR(100),
   enable_snapshots                  VARCHAR(100),
   snapshot_schedule                 VARCHAR(100),
   subnet_id                         VARCHAR(100),
@@ -222,6 +221,9 @@ CREATE TABLE ieda_bootstrap
   create_date                       DATE          NOT NULL,
   update_user_id                    VARCHAR(255)  NOT NULL,
   update_date                       DATE          NOT NULL,
+  paasta_monitoring_use             VARCHAR(100) NULL,
+  paasta_monitoring_ip              VARCHAR(100) NULL,
+  paasta_monitoring_release         VARCHAR(100) NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB ROW_FORMAT=COMPRESSED CHARSET=utf8;
 
@@ -333,6 +335,8 @@ CREATE TABLE ieda_cf
   director_uuid                     VARCHAR(100),
   release_name                      VARCHAR(100),
   release_version                   VARCHAR(100),
+  loggregator_release_name          VARCHAR(100),
+  loggregator_release_version       VARCHAR(100),
   app_ssh_fingerprint               VARCHAR(200),
   dea_memory_mb                     INT(11),
   dea_disk_mb                       INT(11),
@@ -342,7 +346,6 @@ CREATE TABLE ieda_cf
   login_secret                      VARCHAR(100),
   paasta_monitoring_use             VARCHAR(100),
   ingestor_ip                       VARCHAR(100),
-  ingestor_port                     VARCHAR(100),
   country_code                      VARCHAR(255),
   state_name                        VARCHAR(255),
   locality_name                     VARCHAR(255),
@@ -362,32 +365,35 @@ CREATE TABLE ieda_cf
 
 #job setting
 CREATE table ieda_job_setting (
-  id                            INT NOT NULL AUTO_INCREMENT,
-  seq                           INT NOT null,
+  id                            INT          NOT NULL AUTO_INCREMENT,
+  seq                           INT          NOT NULL,
   deploy_type                   VARCHAR(100) NOT NULL,
-  job_code                      VARCHAR(100) NOT NULL,
-  #password                      VARCHAR(100) NULL,
+  job_id                        VARCHAR(100),
+  zone                          VARCHAR(100),
   instances                     INT NOT NULL,
   create_user_id                VARCHAR(255) NOT NULL,
-  create_date                   DATE NOT NULL,
+  create_date                   DATE         NOT NULL,
   update_user_id                VARCHAR(255) NOT NULL,
-  update_date                   DATE NOT NULL,
-  PRIMARY KEY (id,seq)
+  update_date                   DATE         NOT NULL,
+  PRIMARY KEY (id,seq, deploy_type)
 ) ENGINE=InnoDB ROW_FORMAT=COMPRESSED CHARSET=utf8;
 
 #job template
 CREATE table ieda_job_template (
   id                             INT NOT NULL AUTO_INCREMENT, 
-  seq                            INT NOT null,
-  iaas_type                      VARCHAR(100) NOT NULL,
+  seq                            INT NOT NULL,
   deploy_type                    VARCHAR(100) NOT NULL,
-  release_version                VARCHAR(100) NOT NULL,
-  job_code                       INT NOT NULL,
+  job_name                       VARCHAR(100),
+  min_release_version            VARCHAR(100),
+  max_release_version            VARCHAR(100),
+  zone_z1                        VARCHAR(100),
+  zone_z2                        VARCHAR(100),
+  zone_z3                        VARCHAR(100),
   create_user_id                 VARCHAR(255) NOT NULL,
   create_date                    DATE NOT NULL,
   update_user_id                 VARCHAR(255) NOT NULL,
   update_date                    DATE NOT NULL,
-  PRIMARY KEY (id,seq)
+  PRIMARY KEY (id)
 ) ENGINE=InnoDB ROW_FORMAT=COMPRESSED CHARSET=utf8;
 
 
@@ -409,7 +415,6 @@ CREATE TABLE ieda_diego
   etcd_release_version              VARCHAR(100),
   paasta_monitoring_use             VARCHAR(100),
   cadvisor_driver_ip                VARCHAR(100),
-  cadvisor_driver_port              VARCHAR(100),
   key_file                          VARCHAR(100),
   deployment_file                   VARCHAR(255),
   deploy_status                     VARCHAR(100),
@@ -462,6 +467,7 @@ CREATE TABLE ieda_iaas_account
   openstack_keystone_version  VARCHAR(255) NULL,
   common_tenant               VARCHAR(255) NULL,
   common_project              VARCHAR(255) NULL,
+  common_region              VARCHAR(255) NULL,
   openstack_domain            VARCHAR(255) NULL,
   google_json_key             VARCHAR(255) NULL,
   default_yn                  VARCHAR(100) NULL,

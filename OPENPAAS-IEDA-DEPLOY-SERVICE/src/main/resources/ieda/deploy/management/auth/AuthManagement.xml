@@ -34,7 +34,11 @@
         
     <select id="selectRoleDetailListByRoleId" resultMap="findDetailAushMap">
         select
-             c.code_idx, c.code_name_kr, c.code_description, d.auth_code, c.usub_group_code
+             c.code_idx
+            ,c.code_name_kr
+            ,c.code_description
+            ,d.auth_code
+            ,c.usub_group_code
         from (
                 select * from ieda_common_code where parent_code= #{parentCode} 
                ) c 

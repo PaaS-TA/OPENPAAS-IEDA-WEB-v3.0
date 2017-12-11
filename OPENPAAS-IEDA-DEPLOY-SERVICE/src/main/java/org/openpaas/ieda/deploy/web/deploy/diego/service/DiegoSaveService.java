@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.transaction.Transactional;
 
 import org.openpaas.ieda.common.exception.CommonException;
-import org.openpaas.ieda.common.web.security.SessionInfoDTO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.network.NetworkDAO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.network.NetworkVO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceDAO;
@@ -20,8 +19,6 @@ import org.openpaas.ieda.deploy.web.deploy.common.dto.resource.ResourceDTO;
 import org.openpaas.ieda.deploy.web.deploy.diego.dao.DiegoDAO;
 import org.openpaas.ieda.deploy.web.deploy.diego.dao.DiegoVO;
 import org.openpaas.ieda.deploy.web.deploy.diego.dto.DiegoParamDTO;
-import org.openpaas.ieda.deploy.web.management.code.dao.CommonCodeDAO;
-import org.openpaas.ieda.deploy.web.management.code.dao.CommonCodeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -33,11 +30,7 @@ public class DiegoSaveService {
     @Autowired private DiegoDAO diegoDao;
     @Autowired private NetworkDAO networkDao;
     @Autowired private ResourceDAO resourceDao;
-    @Autowired private CommonCodeDAO commonCodeDao;
     @Autowired MessageSource message;
-    final private static String PARENT_CODE="1000"; //배포 코드
-    final private static String SUB_GROUP_CODE="1100"; //배포 유형 코드
-    final private static String CODE_NAME="DEPLOY_TYPE_DIEGO"; //배포 할 플랫폼명
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -46,7 +39,7 @@ public class DiegoSaveService {
      * @return : DiegoVO
     *****************************************************************/
     public DiegoVO saveDefaultInfo(DiegoParamDTO.Default dto, Principal principal) {
-        DiegoVO vo;
+        DiegoVO vo = null;
         if( StringUtils.isEmpty(dto.getId()) ){
             vo = new DiegoVO();
             vo.setCreateUserId(principal.getName());
@@ -54,7 +47,6 @@ public class DiegoSaveService {
         }else{
             vo = diegoDao.selectDiegoInfo(Integer.parseInt(dto.getId()));
         }
-        
         // 1.1 기본정보
         vo.setDeploymentName(dto.getDeploymentName());
         vo.setDirectorUuid(dto.getDirectorUuid());
@@ -73,8 +65,15 @@ public class DiegoSaveService {
         vo.setEtcdReleaseVersion(dto.getEtcdReleaseVersion());
         vo.setPaastaMonitoringUse(dto.getPaastaMonitoringUse());
         vo.setCadvisorDriverIp(dto.getCadvisorDriverIp());
-        vo.setCadvisorDriverPort(dto.getCadvisorDriverPort());
         vo.setUpdateUserId(principal.getName());
+        
+        //배포 명 중복 검사
+        int count = diegoDao.selectDiegoDeploymentNameDuplication(vo.getIaasType(), vo.getDeploymentName(), vo.getId());
+        if( count > 0 ){
+            throw new CommonException(setMessageSourceValue("common.conflict.exception.code"), 
+                    setMessageSourceValue("common.conflict.deployment.name.message"), HttpStatus.CONFLICT);
+        }
+        
         if( StringUtils.isEmpty(dto.getId()) ) { 
             diegoDao.insertDiegoDefaultInfo(vo);//저장
         }else{  
@@ -90,15 +89,16 @@ public class DiegoSaveService {
      * @return : DiegoVO
     *****************************************************************/
     @Transactional
-    public DiegoVO saveNetworkInfo(List<NetworkDTO> dto){
-        SessionInfoDTO sessionInfo = new SessionInfoDTO();
+    public DiegoVO saveNetworkInfo(List<NetworkDTO> dto, Principal principal){
         List<NetworkVO> networkList = new ArrayList<NetworkVO>();
-        CommonCodeVO codeVo = commonCodeDao.selectCommonCodeByCodeName(PARENT_CODE, SUB_GROUP_CODE, CODE_NAME);
+        String deployType = setMessageSourceValue("common.deploy.type.diego.name");
         if(!dto.isEmpty()){
+            int diegoId = 0;
             for(NetworkDTO network: dto){
                 NetworkVO vo = new NetworkVO();
-                vo.setId(Integer.parseInt(network.getDiegoId()));
-                vo.setDeployType(codeVo.getCodeName());
+                diegoId = Integer.parseInt(network.getDiegoId());
+                vo.setId(diegoId);
+                vo.setDeployType(deployType);
                 vo.setNet(network.getNet());
                 vo.setSubnetRange(network.getSubnetRange());
                 vo.setSubnetGateway(network.getSubnetGateway());
@@ -111,15 +111,29 @@ public class DiegoSaveService {
                 vo.setSubnetId(network.getSubnetId());
                 vo.setCloudSecurityGroups(network.getCloudSecurityGroups());
                 vo.setAvailabilityZone(network.getAvailabilityZone());
-                vo.setCreateUserId(sessionInfo.getUserId());
-                vo.setUpdateUserId(sessionInfo.getUserId());
+                vo.setCreateUserId(principal.getName());
+                vo.setUpdateUserId(principal.getName());
                 networkList.add(vo);
             }
-            int cnt = networkDao.selectNetworkList(Integer.parseInt(dto.get(0).getDiegoId()), codeVo.getCodeName()).size();
+            int cnt = networkDao.selectNetworkList(Integer.parseInt(dto.get(0).getDiegoId()), deployType).size();
             if(cnt > 0){
-                networkDao.deleteNetworkInfoRecord(Integer.parseInt(dto.get(0).getDiegoId()), codeVo.getCodeName());
+                networkDao.deleteNetworkInfoRecord(Integer.parseInt(dto.get(0).getDiegoId()), deployType);
             }
             networkDao.insertNetworkList(networkList);
+            List<HashMap<String, Object>> jobs = diegoDao.selectDiegoJobSettingInfoListBycfId(setMessageSourceValue("common.deploy.type.diego.name"),diegoId);
+            for( HashMap<String, Object> job : jobs ) {
+                if( networkList.size() == 1 ) {
+                    if( job.get("zone").toString().equalsIgnoreCase("z2") || job.get("zone").toString().equalsIgnoreCase("z3") ) {
+                        diegoDao.deleteDiegoJobSettingRecordsByIdAndZone(diegoId, job.get("zone").toString());
+                        break;
+                    }
+                } else if ( networkList.size() == 2  ){
+                    if( job.get("zone").toString().equalsIgnoreCase("z3") ) {
+                        diegoDao.deleteDiegoJobSettingRecordsByIdAndZone(diegoId, job.get("zone").toString());
+                        break;
+                    }
+                }
+            }
         }
         
         DiegoVO vo = new DiegoVO();
@@ -136,16 +150,16 @@ public class DiegoSaveService {
     @Transactional
     public Map<String, Object> saveResourceInfo(ResourceDTO dto, Principal principal){
         String deploymentFile = null;
-        Map<String, Object> map  = new HashMap<>();
+        Map<String, Object> map = new HashMap<String, Object>();
         ResourceVO resourceVo = new ResourceVO();
+        String deployType  =setMessageSourceValue("common.deploy.type.diego.name");
+        DiegoVO vo = diegoDao.selectResourceInfoById(Integer.parseInt(dto.getId()), deployType);
         
-        DiegoVO vo = diegoDao.selectResourceInfoById(Integer.parseInt(dto.getId()), CODE_NAME);
-        CommonCodeVO codeVo = commonCodeDao.selectCommonCodeByCodeName(PARENT_CODE, SUB_GROUP_CODE, CODE_NAME);
-        
-        if(vo.getDeploymentFile() == null  || StringUtils.isEmpty(vo.getDeploymentFile()))
+        if(vo.getDeploymentFile() == null  || StringUtils.isEmpty(vo.getDeploymentFile())) {
             deploymentFile = makeDeploymentName(vo);
-        else
+        } else {
             deploymentFile = vo.getDeploymentFile();
+        }
         
         //3. set resourceVo(insert/update)
         if( vo.getResource().getId() != null ){
@@ -153,7 +167,7 @@ public class DiegoSaveService {
             resourceVo.setId(vo.getId());
         }else{
             resourceVo.setId(vo.getId());
-            resourceVo.setDeployType(codeVo.getCodeName());
+            resourceVo.setDeployType(deployType);
             resourceVo.setCreateUserId(principal.getName());
         }
         
@@ -164,7 +178,7 @@ public class DiegoSaveService {
         
         //Flavor setting
         //vSphere Flavor setting 
-        if( "vsphere".equals(vo.getIaasType().toLowerCase()) ){
+        if( "vsphere".equalsIgnoreCase(vo.getIaasType()) ){
             resourceVo.setSmallCpu(Integer.parseInt(dto.getSmallCpu()));
             resourceVo.setSmallDisk(Integer.parseInt(dto.getSmallDisk()));
             resourceVo.setSmallRam(Integer.parseInt(dto.getSmallRam()));
@@ -212,9 +226,9 @@ public class DiegoSaveService {
         String settingFileName = "";
         if(vo.getIaasType() != null || vo.getId() != null){
             settingFileName = vo.getIaasType().toLowerCase() + "-diego-"+ vo.getId() +".yml";
-        }else{
-            throw new CommonException("notfound.deigo.exception",
-                    "Diego 배포 파일명을 생성할 수 없습니다.", HttpStatus.NOT_FOUND);
+        } else{
+            throw new CommonException(setMessageSourceValue("common.badRequest.exception.code"),
+                    setMessageSourceValue("common.badRequest.message"), HttpStatus.BAD_REQUEST);
         }
         return settingFileName;
     }
@@ -225,12 +239,10 @@ public class DiegoSaveService {
      * @title : saveCfJobsInfo
      * @return : void
     *****************************************************************/
-    public void diegoSaveService(List<HashMap<String, String>> maps, Principal principal) {
+    public void saveDiegoJobsInfo(List<HashMap<String, String>> maps, Principal principal) {
         if(  maps.size() != 0){
-            String deploy_type  =setMessageSourceValue("common.deploy.type.diego.name");
-            String parent_code = setMessageSourceValue("common.code.deploy.jobs.parent");
-            int count= diegoDao.selectDiegoJobSettingInfoListBycfId(
-                    deploy_type, Integer.parseInt(maps.get(0).get("id")), parent_code).size();
+            String deployType  =setMessageSourceValue("common.deploy.type.diego.name");
+            int count= diegoDao.selectDiegoJobSettingInfoListBycfId( deployType, Integer.parseInt(maps.get(0).get("id"))).size();
             
             if( count > 0 ){
                 diegoDao.deleteDiegoJobSettingInfo(maps.get(0));

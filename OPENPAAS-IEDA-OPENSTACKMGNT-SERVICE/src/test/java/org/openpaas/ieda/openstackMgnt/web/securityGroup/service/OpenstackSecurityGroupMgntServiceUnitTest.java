@@ -21,15 +21,12 @@ import org.openpaas.ieda.common.exception.CommonException;
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
 import org.openpaas.ieda.openstackMgnt.api.securityGroup.OpenstackSecurityGroupMgntApiService;
-import org.openpaas.ieda.openstackMgnt.web.network.service.OpenstackNetworkMgntServiceUnitTest;
 import org.openpaas.ieda.openstackMgnt.web.securityGroup.dao.OpenstackSecurityGroupMgntVO;
 import org.openpaas.ieda.openstackMgnt.web.securityGroup.dto.OpenstackSecurityGroupMgntDTO;
 import org.openstack4j.model.common.Link;
 import org.openstack4j.model.compute.SecGroupExtension;
 import org.openstack4j.model.network.SecurityGroupRule;
 import org.openstack4j.openstack.networking.domain.NeutronSecurityGroupRule.SecurityGroupRuleConcreteBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,7 +36,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class OpenstackSecurityGroupMgntServiceUnitTest {
     
     private Principal principal = null;
-    final static Logger LOGGER = LoggerFactory.getLogger(OpenstackNetworkMgntServiceUnitTest.class);
     @InjectMocks OpenstackSecurityGroupMgntService mockOpenstackSecurityGroupMgntService;
     @Mock OpenstackSecurityGroupMgntApiService mockOpenstackSecurityGroupMgntApiService;
     @Mock CommonIaasService mockCommonIaasService;
@@ -55,7 +51,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         principal = getLoggined();
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("loging" + principal); }
     }
     
     /***************************************************
@@ -80,7 +75,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testGetOpenstackSecrityGroupInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 보안 그룹 목록 조회  TEST START  ================="); }
         getOpenstackAccountInfo();
         List<? extends SecGroupExtension> expectList = setSecGroupList();
         doReturn(expectList).when(mockOpenstackSecurityGroupMgntApiService).getOpenstackSecrityGroupInfoListFromOpenstack(any());
@@ -97,7 +91,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testGetOpenstackSecrityGroupIngressInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 보안 그룹 Inbound Rule 목록 조회  TEST START  ================="); }
         getOpenstackAccountInfo();
         List<? extends SecurityGroupRule> expectRules = setInboundRule("default");
         doReturn(expectRules).when(mockOpenstackSecurityGroupMgntApiService).getOpenstackSecrityGroupIngressInfoFromOpenstack(any(), anyString());
@@ -116,7 +109,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSetOpenstackRulesList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 보안 그룹 Inbound Rule 설정 TEST START  ================="); }
         getOpenstackAccountInfo();
         IaasAccountMgntVO vo = new IaasAccountMgntVO();
         List<? extends SecurityGroupRule> expectRules = setInboundRule("default");
@@ -135,7 +127,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSetPortRangeMinAndMaxValueMinus1(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= port Range 가 -1 인 경우 TEST START  ================="); }
         getOpenstackAccountInfo();
         IaasAccountMgntVO vo = new IaasAccountMgntVO();
         List<? extends SecurityGroupRule> expectRules = setInboundRule("-1");
@@ -154,7 +145,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSetPortRangeMinAndMaxValue0(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= port Range 가 0 인 경우 TEST START  ================="); }
         getOpenstackAccountInfo();
         IaasAccountMgntVO vo = new IaasAccountMgntVO();
         List<? extends SecurityGroupRule> expectRules = setInboundRule("0");
@@ -173,7 +163,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSetPortRangeOtherValue(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= port Range 가 서로 다를 경우 TEST START  ================="); }
         getOpenstackAccountInfo();
         IaasAccountMgntVO vo = new IaasAccountMgntVO();
         List<? extends SecurityGroupRule> expectRules = setInboundRule("Other");
@@ -192,7 +181,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSetProtocolValueNull(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= Procotol 정보가 NUll 값을 경우 TEST START  ================="); }
         getOpenstackAccountInfo();
         IaasAccountMgntVO vo = new IaasAccountMgntVO();
         List<? extends SecurityGroupRule> expectRules = setInboundRule("protocolNull");
@@ -211,7 +199,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSetRemoteBySecurityGroupId(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= Security Group가 remote 되어 있을 경우 TEST START  ================="); }
         getOpenstackAccountInfo();
         IaasAccountMgntVO vo = new IaasAccountMgntVO();
         List<? extends SecGroupExtension> expectList = setSecGroupList();
@@ -230,7 +217,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSaveOpenstackSecurityGroupInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 보안 그룹 생성 TEST START  ================="); }
         getOpenstackAccountInfo();
         OpenstackSecurityGroupMgntDTO dto = setSecurityGroupInfo("defaule");
         mockOpenstackSecurityGroupMgntService.saveOpenstackSecurityGroupInfo(dto, principal);
@@ -244,7 +230,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testSaveOpenstackSecurityGroupInboundRuleInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 보안 그룹 Ingress Rules 생성 TEST START  ================="); }
         getOpenstackAccountInfo();
         OpenstackSecurityGroupMgntDTO dto = setSecurityGroupInfo("ingressRule");
         when(mockOpenstackSecurityGroupMgntApiService.saveOpenstackSecurityGroupInfoFromOpenstack(any(), any())).thenReturn("secId");
@@ -259,7 +244,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test
     public void testDeleteOpenstackSecurityGroupInfo(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 보안 그룹 삭제 TEST START  ================="); }
         getOpenstackAccountInfo();
         when(mockOpenstackSecurityGroupMgntApiService.deleteOpenstackSecurityGroupInfoFromOpenstack(any(), anyString())).thenReturn(200);
         OpenstackSecurityGroupMgntDTO dto = setSecurityGroupInfo("default");
@@ -274,7 +258,6 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
     ***************************************************/
     @Test(expected=CommonException.class)
     public void testDeleteOpenstackSecurityGroupInfoExcepiton(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 보안 그룹 삭제 Exception TEST START  ================="); }
         getOpenstackAccountInfo();
         when(mockOpenstackSecurityGroupMgntApiService.deleteOpenstackSecurityGroupInfoFromOpenstack(any(), anyString())).thenReturn(404);
         OpenstackSecurityGroupMgntDTO dto = setSecurityGroupInfo("default");
@@ -292,7 +275,7 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
         dto.setAccountId(1);
         dto.setDescription("test");
         dto.setSecurityGroupName("test");
-        if(type.equals("ingressRule")){
+        if(type.equalsIgnoreCase("ingressRule")){
             dto.setSecurityGroupId("secId");
             List<HashMap<String, String>> maps = new ArrayList<HashMap<String, String>> ();
             HashMap<String, String> map = new HashMap<String, String>();
@@ -325,19 +308,19 @@ public class OpenstackSecurityGroupMgntServiceUnitTest {
         } else if(type.equals("0")){
             builder.portRangeMin(0);
             builder.portRangeMax(0);
-        } else if(type.equals("Other")){
+        } else if(type.equalsIgnoreCase("Other")){
             builder.portRangeMin(1);
             builder.portRangeMax(3306);
         } else{
             builder.portRangeMin(25555);
             builder.portRangeMax(25555);
         }
-        if(type.equals("protocolNull")){
+        if(type.equalsIgnoreCase("protocolNull")){
             builder.protocol(null);
         } else{
             builder.protocol("tcp");
         }
-        if(type.equals("remoteId")){
+        if(type.equalsIgnoreCase("remoteId")){
             builder.remoteGroupId("secId");
         }else{
             builder.remoteIpPrefix("0.0.0.0/0");

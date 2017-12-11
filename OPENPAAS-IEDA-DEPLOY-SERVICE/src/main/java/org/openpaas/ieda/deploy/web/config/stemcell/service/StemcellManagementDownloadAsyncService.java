@@ -64,11 +64,11 @@ public class StemcellManagementDownloadAsyncService {
             throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
                     message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        if(stemcellFile.exists() && "true".equals(dto.getOverlayCheck())){
+        if(stemcellFile.exists() && "true".equalsIgnoreCase(dto.getOverlayCheck())){
             CommonDeployUtils.deleteFile(STEMCELL_DIR, result.getStemcellFileName());//스템셀 파일 삭제
         }
         //덮어쓰기 불가능
-        if(stemcellFile.exists() && "false".equals(dto.getOverlayCheck()) ){
+        if(stemcellFile.exists() && "false".equalsIgnoreCase(dto.getOverlayCheck()) ){
             deleteLockFile(status, dto.getStemcellFileName());//lock 파일 삭제
             throw new CommonException(message.getMessage("common.conflict.exception.code", null, Locale.KOREA),
                     message.getMessage("common.conflict.file.messag", null, Locale.KOREA), HttpStatus.CONFLICT);
@@ -165,9 +165,6 @@ public class StemcellManagementDownloadAsyncService {
             dto.setStemcellSize(result.getSize());
             dto.setUpdateUserId(sessionInfo.getUserId());
             dao.updatePublicStemcellById(dto);
-        }else{
-            throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
-                    message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     
@@ -190,7 +187,7 @@ public class StemcellManagementDownloadAsyncService {
      * @return : void
     *****************************************************************/
     public void deleteLockFile(String status,String  fileName){
-        if( status.equals("error") || status.equals("done")){
+        if( status.equalsIgnoreCase("error") || status.equalsIgnoreCase("done")){
             //lock file delete
             if( !StringUtils.isEmpty(fileName) ){
                 int index = fileName.lastIndexOf(".");

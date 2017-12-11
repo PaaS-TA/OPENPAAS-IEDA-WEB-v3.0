@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
- 
+
 import javax.servlet.http.HttpServletResponse;
- 
+
 import org.apache.commons.io.IOUtils;
 import org.openpaas.ieda.common.exception.CommonException;
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
@@ -51,10 +51,10 @@ public class OpenstackKeypairsMgntService {
          IaasAccountMgntVO vo =  getOpenstackAccountInfo(principal, accountId);
          try{
              String openstackKeyFile = openstackKeypairsMgntApiService.saveOpenstackKeypairsInfoApiFromOpenstack(vo, keyFileName);
-             openstackKeyFile.replace("\n", "\r\n");
+             openstackKeyFile = openstackKeyFile.replace("\n", "\r\n");
              response.setContentType("application/octet-stream");
              response.setHeader("Content-Disposition", "attachment; filename=" + keyFileName+".pem");
-             IOUtils.write(openstackKeyFile, response.getOutputStream());
+             IOUtils.write(openstackKeyFile, response.getOutputStream(), "UTF-8");
          }catch (Exception e) {
              throw new CommonException(
                      message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);

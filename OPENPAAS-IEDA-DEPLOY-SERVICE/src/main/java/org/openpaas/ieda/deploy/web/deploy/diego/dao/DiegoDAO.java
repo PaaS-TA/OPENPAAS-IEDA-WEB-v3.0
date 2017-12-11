@@ -69,7 +69,7 @@ public interface DiegoDAO {
      * @title : selectDiegoJobSettingInfoListBycfId
      * @return : List<HashMap<String,String>>
     *****************************************************************/
-    List<HashMap<String, Object>> selectDiegoJobSettingInfoListBycfId(@Param("deployType")String deployType, @Param("diegoId")int diegoId, @Param("parentCode")String parentCode);
+    List<HashMap<String, Object>> selectDiegoJobSettingInfoListBycfId(@Param("deployType")String deployType, @Param("diegoId")int diegoId);
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -86,6 +86,22 @@ public interface DiegoDAO {
      * @return : void
     *****************************************************************/
     void deleteDiegoJobSettingInfo(@Param("map")HashMap<String, String> hashMap);
+    
+    /***************************************************
+    * @project : Paas 플랫폼 설치 자동화
+    * @description : 배포 명 중복 조회
+    * @title : selectDiegoDeploymentNameDuplication
+    * @return : int
+    ***************************************************/
+    int selectDiegoDeploymentNameDuplication(@Param("iaasType") String iaasType, 
+            @Param("deploymentName") String deploymentName, @Param("id")Integer id);
 
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : cf id 및 해당 zone에 일치하는 레코드 삭제
+     * @title : deleteCfJobSettingRecords
+     * @return : void
+    ***************************************************/
+    void deleteDiegoJobSettingRecordsByIdAndZone(@Param("id")int id, @Param("zone") String zone );
     
 }

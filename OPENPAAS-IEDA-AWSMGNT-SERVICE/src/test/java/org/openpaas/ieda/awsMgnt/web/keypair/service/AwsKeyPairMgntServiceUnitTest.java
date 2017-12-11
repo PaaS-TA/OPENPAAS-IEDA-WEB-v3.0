@@ -20,8 +20,6 @@ import org.mockito.MockitoAnnotations;
 import org.openpaas.ieda.awsMgnt.web.common.base.BaseAwsMgntControllerUnitTest;
 import org.openpaas.ieda.common.exception.CommonException;
 import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -40,7 +38,6 @@ public class AwsKeyPairMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest
 
     private Principal principal = null;
     
-    final static Logger LOGGER = LoggerFactory.getLogger(AwsKeyPairMgntServiceUnitTest.class);
     
     @InjectMocks AwsKeypairMgntService mockAwsKeypairMgntService;
     @Mock AwsKeypairMgntApiService mockAwsKeypairMgntApiService;
@@ -67,9 +64,6 @@ public class AwsKeyPairMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest
      **********************************************/
     @Test
     public void testGetAwsKeyPairInfoList(){
-        if(LOGGER.isInfoEnabled()){
-            LOGGER.info("================= AWS Key Pair 목록 조회 TEST START  =================");
-        }
         List<KeyPairInfo> awsKeyList = getKeyPairInfoList();
         when(mockAwsKeypairMgntApiService.getAwsKeypairInfoListApiFromAws(any(), anyString())).thenReturn(awsKeyList);
         when(mockCommonIaasService.getAwsRegionInfo(any())).thenReturn(Region.getRegion(Regions.fromName("us-west-2")));
@@ -89,9 +83,6 @@ public class AwsKeyPairMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest
      ***************************************************/
      @Test
      public void testCreateAwsKeyPair(){
-         if(LOGGER.isInfoEnabled()){
-             LOGGER.info("================= AWS Key Pair 생성 TEST START  =================");
-         }
          HttpServletResponse req = new MockHttpServletResponse();
          List<KeyPairInfo> awsKeyList = getKeyPairInfoList();
          when(mockAwsKeypairMgntApiService.getAwsKeypairInfoListApiFromAws(any(), anyString())).thenReturn(awsKeyList);
@@ -102,9 +93,6 @@ public class AwsKeyPairMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest
      
      @Test(expected=CommonException.class)
      public void testCreateAwsKeyPairFromException(){
-         if(LOGGER.isInfoEnabled()){
-             LOGGER.info("================= AWS Key Pair 생성 Exception TEST START  =================");
-         }
          HttpServletResponse response = new MockHttpServletResponse();
          List<KeyPairInfo> awsKeyList = getKeyPairInfoList();
          when(mockAwsKeypairMgntApiService.getAwsKeypairInfoListApiFromAws(any(), anyString())).thenReturn(awsKeyList);
@@ -115,9 +103,6 @@ public class AwsKeyPairMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest
      
      @Test(expected=CommonException.class)
      public void testCreateAwsKeyPairFromDuplication(){
-         if(LOGGER.isInfoEnabled()){
-             LOGGER.info("================= AWS Key Pair 생성 Duplication TEST START  =================");
-         }
          HttpServletResponse response = new MockHttpServletResponse();
          List<KeyPairInfo> awsKeyList = getKeyPairInfoList();
          when(mockAwsKeypairMgntApiService.getAwsKeypairInfoListApiFromAws(any(), anyString())).thenReturn(awsKeyList);

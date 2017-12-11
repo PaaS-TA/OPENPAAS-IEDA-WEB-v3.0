@@ -3,7 +3,6 @@ package org.openpaas.ieda.deploy.web.deploy.common.dao.network;
 import java.util.Date;
 
 public class NetworkVO {
-
         private Integer id;//id
         private String createUserId;//생성자
         private String updateUserId;//수정자

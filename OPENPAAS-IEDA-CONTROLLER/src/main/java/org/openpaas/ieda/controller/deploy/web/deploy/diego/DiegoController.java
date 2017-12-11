@@ -75,11 +75,10 @@ public class DiegoController extends BaseController{
     *****************************************************************/
     @RequestMapping(value="/deploy/diego/list/{iaasType}", method=RequestMethod.GET)
     public ResponseEntity<Map<String, Object>> getDiegoInfoList(@PathVariable String iaasType) {
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.debug("========================================> /deploy/diego/list/"+iaasType); }
         List<DiegoListDTO> content = diegoService.getDiegoInfoList(iaasType);
 
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<String, Object>();
         result.put("total", (content == null) ? 0:content.size());
         result.put("records", content);
 
@@ -142,10 +141,9 @@ public class DiegoController extends BaseController{
      * @return : ResponseEntity<DiegoVO>
     *****************************************************************/
     @RequestMapping(value="/deploy/diego/install/saveNetworkInfo", method=RequestMethod.PUT)
-    public ResponseEntity<DiegoVO> saveNetworkInfo(@RequestBody @Valid List<NetworkDTO> dto){
+    public ResponseEntity<DiegoVO> saveNetworkInfo(@RequestBody @Valid List<NetworkDTO> dto, Principal principal){
         if(LOGGER.isInfoEnabled()){ LOGGER.debug("========================================> /deploy/diego/install/saveNetworkInfo"); }
-        DiegoVO vo = diegoSaveService.saveNetworkInfo(dto);
-
+        DiegoVO vo = diegoSaveService.saveNetworkInfo(dto, principal);
         return new ResponseEntity<DiegoVO>(vo, HttpStatus.CREATED);
     }
 
@@ -157,7 +155,6 @@ public class DiegoController extends BaseController{
     *****************************************************************/
     @RequestMapping(value="/deploy/diego/install/saveResourceInfo", method=RequestMethod.PUT)
     public ResponseEntity<Map<String, Object> > saveResourceInfo(@RequestBody @Valid ResourceDTO dto, Principal principal){
-
         if(LOGGER.isInfoEnabled()){ LOGGER.debug("========================================> /deploy/diego/install/saveResourceInfo"); }
         Map<String, Object> map = diegoSaveService.saveResourceInfo(dto,principal);
 
@@ -175,7 +172,7 @@ public class DiegoController extends BaseController{
         if(LOGGER.isInfoEnabled()){ LOGGER.info("====================================> /deploy/diego/install/createSettingFile"); }
         //Manifest file Create
         DiegoVO vo = diegoService.getDiegoDetailInfo( Integer.parseInt(dto.getId()) );
-        diegoService.createSettingFile(vo, dto.getIaas());
+        diegoService.createSettingFile(vo);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -188,10 +185,8 @@ public class DiegoController extends BaseController{
     @MessageMapping("/deploy/diego/install/diegoInstall")
     @SendTo("/deploy/diego/install/logs")
     public ResponseEntity<Object> diegoInstall(@RequestBody @Valid DiegoParamDTO.Install dto, Principal principal ){
-
         if(LOGGER.isInfoEnabled()){ LOGGER.debug("========================================> /deploy/diego/install/diegoInstall"); }
         diegoDeployAsyncService.deployAsync(dto, principal, "diego");
-        
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -217,7 +212,6 @@ public class DiegoController extends BaseController{
     @MessageMapping("/deploy/diego/delete/instance")
     @SendTo("/deploy/diego/delete/logs")
     public ResponseEntity<Object> deleteDiego(@RequestBody @Valid DiegoParamDTO.Delete dto, Principal principal ){
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.debug("========================================> deploy/diego/delete/instance"); }
         diegoDeleteDeployAsyncService.deleteDeployAsync(dto, "diego", principal);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -229,10 +223,10 @@ public class DiegoController extends BaseController{
      * @title : getCfJobList
      * @return : ResponseEntity<List<HashMap<String, String>>>
     *****************************************************************/
-    @RequestMapping(value="/deploy/diego/install/save/job/list/{version}/{iaasType}", method=RequestMethod.GET)
-    public ResponseEntity<List<HashMap<String, String>>> getCfJobList(@PathVariable String version, @PathVariable String iaasType){
+    @RequestMapping(value="/deploy/diego/install/save/job/list/{version}/{deployType}", method=RequestMethod.GET)
+    public ResponseEntity<List<HashMap<String, String>>> getDiegoJobList(@PathVariable String version, @PathVariable String deployType){
         if(LOGGER.isInfoEnabled()){ LOGGER.info("====================================> /deploy/cf/install/save/job/list/"+version); }
-        List<HashMap<String, String>> list = diegoService.getJobTemplateList(iaasType, version);
+        List<HashMap<String, String>> list = diegoService.getJobTemplateList(deployType, version);
         return new ResponseEntity<List<HashMap<String, String>>>(list, HttpStatus.OK);
     }
     
@@ -245,7 +239,7 @@ public class DiegoController extends BaseController{
     @RequestMapping(value="/deploy/diego/install/save/jobsInfo", method=RequestMethod.PUT)
     public ResponseEntity<List<HashMap<String, String>>> saveDiegoJobsInfo(@RequestBody List<HashMap<String, String>> maps, Principal principal){
         if(LOGGER.isInfoEnabled()){ LOGGER.info("====================================> /deploy/cf/install/save/jobsInfo"); }
-        diegoSaveService.diegoSaveService(maps, principal);
+        diegoSaveService.saveDiegoJobsInfo(maps, principal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     

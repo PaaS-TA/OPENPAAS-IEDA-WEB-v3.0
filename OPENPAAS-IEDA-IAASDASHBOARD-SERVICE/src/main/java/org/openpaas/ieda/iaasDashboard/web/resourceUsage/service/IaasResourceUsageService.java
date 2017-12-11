@@ -38,11 +38,13 @@ public class IaasResourceUsageService {
     ***************************************************/
     public List<IaasResourceUsageVO> getIaasResourceUsageTotalInfo( Principal principal  ){
         List<IaasResourceUsageVO> resourceList = new ArrayList<IaasResourceUsageVO>();
+        //aws
         String region = message.getMessage("common.aws.region.default", null, Locale.KOREA);
         List<IaasResourceUsageVO> awsResources = getAwsResourceUsageInfoList(region, principal);
         for( IaasResourceUsageVO resource : awsResources ){
             resourceList.add(resource);
         }
+        //openstack
         List<IaasResourceUsageVO> openstackResources =  getOpenstackResourceUsageInfoList(principal);
         for( IaasResourceUsageVO resource2 : openstackResources ){
             resourceList.add(resource2);
@@ -58,10 +60,9 @@ public class IaasResourceUsageService {
     ***************************************************/
     public List<IaasResourceUsageVO> getAwsResourceUsageInfoList( String regionName, Principal principal ){
         List<IaasResourceUsageVO> resources = new ArrayList<IaasResourceUsageVO>();
-        String iaasType = message.getMessage("iaas.aws", null, Locale.KOREA);
         Region region = getAwsRegionInfo(regionName);
         try{
-            List<HashMap<String, Object>> accounts = commonDao.selectAccountInfoList(iaasType, principal.getName());
+            List<HashMap<String, Object>> accounts = commonDao.selectAccountInfoList("AWS", principal.getName());
             for( HashMap<String, Object> at : accounts ){ 
                 IaasResourceUsageVO resource = new IaasResourceUsageVO();
                 HashMap<String, Object> result = apiService.getResourceInfoFromAWS(at.get("commonAccessUser").toString(), at.get("commonAccessSecret").toString(), region);
@@ -93,7 +94,20 @@ public class IaasResourceUsageService {
             List<HashMap<String, Object>> accounts = commonDao.selectAccountInfoList(iaasType, principal.getName());
             for( HashMap<String, Object> at : accounts ){
                 IaasResourceUsageVO resource = new IaasResourceUsageVO();
-                HashMap<String, Object> result = apiService.getResourceInfoFromOpenstackV2( at.get("commonAccessEndpoint").toString(), at.get("commonTenant").toString(), at.get("commonAccessUser").toString(), at.get("commonAccessSecret").toString());
+                HashMap<String, Object> result = null;
+                //keystone 버전 v2
+                if( at.get("openstackKeystoneVersion").toString().equalsIgnoreCase("v2") ) {
+                    result = apiService.getResourceInfoFromOpenstackV2( at.get("commonAccessEndpoint").toString()
+                                                                       ,at.get("commonTenant").toString()
+                                                                       ,at.get("commonAccessUser").toString()
+                                                                       ,at.get("commonAccessSecret").toString());
+                }else { //keystone 버전 v3
+                    result = apiService.getResourceInfoFromOpenstackV3( at.get("commonAccessEndpoint").toString()
+                                                                       ,at.get("openstackDomain").toString()
+                                                                       ,at.get("commonProject").toString()
+                                                                       ,at.get("commonAccessUser").toString()
+                                                                       ,at.get("commonAccessSecret").toString());
+                }
                 resource.setAccountName( at.get("accountName").toString() );
                 resource.setInstance( Long.parseLong(result.get("instance").toString()) );
                 resource.setNetwork( Long.parseLong(result.get("network").toString()) );

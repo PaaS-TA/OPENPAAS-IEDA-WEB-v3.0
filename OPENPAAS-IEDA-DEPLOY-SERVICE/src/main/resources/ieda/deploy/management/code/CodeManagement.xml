@@ -20,7 +20,7 @@
     </resultMap>
     
     <select id="selectCodeName" resultMap="managementCode">
-        /** CodeManagement.selectCodeName **/
+        /** ieda.deploy.management.code..selectCodeName **/
         Select
             code_idx, 
             code_description,
@@ -37,12 +37,13 @@
         From 
             ieda_common_code
         Where 
-            code_name = #{codeName}         
+            code_name = #{codeName}
         Order by 
             code_idx asc
     </select>
     
     <select id="selectCodeValueCheck" resultType="int">
+      /**ieda.deploy.management.code..selectCodeValueCheck**/
         Select
             count(*)
         From ieda_common_code
@@ -56,7 +57,7 @@
     </select>
     
     <select id="selectCodeIdx" resultMap="managementCode">
-        /** CodeManagement.selectCodeIdx **/
+        /** ieda.deploy.management.code..selectCodeIdx **/
         Select
             code_idx, 
             code_description,
@@ -73,13 +74,13 @@
         From 
             ieda_common_code
         Where 
-            code_idx = #{CodeIdx}         
+            code_idx = #{CodeIdx}
         Order by 
             code_idx asc
     </select>
     
     <select id="selectParentCodeIsNull" resultMap="managementCode">
-        /** CodeManagement.selectParentCodeIsNull **/
+        /** ieda.deploy.management.code..selectParentCodeIsNull **/
         Select
             code_idx, 
             code_description,
@@ -102,7 +103,7 @@
     </select>
     
     <select id="selectMaxSortOrder" resultType="Integer">
-        /** CodeManagement.selectMaxSortOrder **/
+        /** ieda.deploy.management.code..selectMaxSortOrder **/
         Select
             ifnull(max(sort_order),0)+1 as sort_order
         From 
@@ -112,8 +113,9 @@
         and
             sub_group_code = #{subGroupCode}
     </select>
-    <select id="selectParentCodeAndSubGroupCode" resultMap="managementCode">
-        /** CodeManagement.selectParentCodeAndSubGroupCode **/
+    
+    <select id="selectCodeList" resultMap="managementCode">
+        /** ieda.deploy.management.code.selectCodeList **/
         Select
             code_idx, 
             code_description,
@@ -131,19 +133,65 @@
         From 
             ieda_common_code
         Where 
-            parent_code = #{parentCode}    
-        <if test="type == 2">
-            And sub_group_code is null
-        </if>
-        <if test="type == 3">
-            And sub_group_code = #{subGroupCode}
-        </if>         
+            parent_code = #{parentCode}
+        Order by 
+            code_value asc, sort_order asc
+    </select>
+    
+    <select id="selectParentCodeAndSubGroupCode" resultMap="managementCode">
+        /** ieda.deploy.management.code..selectParentCodeAndSubGroupCode **/
+        Select
+            code_idx, 
+            code_description,
+            code_name, 
+            code_name_kr,
+            code_value, 
+            create_date, 
+            create_user_id,
+            parent_code, 
+            code_idx as recid, 
+            sort_order,
+            sub_group_code, 
+            update_date, 
+            update_user_id 
+        From 
+            ieda_common_code
+        Where 
+            parent_code = #{parentCode}
+        And 
+            sub_group_code = #{subGroupCode}
+        Order by 
+            code_value asc, sort_order asc
+    </select>
+    
+    <select id="selectSubCodeListBySubGroupCodeNull" resultMap="managementCode">
+        /** ieda.deploy.management.code..selectSubCodeListBySubGroupCodeNull **/
+        Select
+            code_idx, 
+            code_description,
+            code_name, 
+            code_name_kr,
+            code_value, 
+            create_date, 
+            create_user_id,
+            parent_code, 
+            code_idx as recid, 
+            sort_order,
+            sub_group_code, 
+            update_date, 
+            update_user_id 
+        From 
+            ieda_common_code
+        Where 
+            parent_code = #{parentCode}
+        And 
+            sub_group_code is null
         Order by 
             code_value asc, sort_order asc
     </select>
     
     <insert id="insertCode" >
-        /** CodeManagement.createCode **/
+        /** ieda.deploy.management.code..createCode **/
         insert into ieda_common_code (
             code_idx,
             code_description, 
@@ -173,7 +221,7 @@
     </insert>
     
     <update id="updateCode">
-        /** CodeManagement.updateCode **/
+        /** ieda.deploy.management.code..updateCode **/
         Update 
             ieda_common_code 
         Set 
@@ -191,6 +239,7 @@
     </update>
     
     <delete id="deleteCode">
+      /**ieda.deploy.management.code..deleteCode**/
         Delete from 
             ieda_common_code 
         Where 
@@ -198,7 +247,7 @@
     </delete>
     
     <select id="selectCommonCodeList" resultMap="managementCode">
-        /** CodeManagement.selectCommonCodeList **/
+        /** ieda.deploy.management.code..selectCommonCodeList **/
         select * 
         from ieda_common_code 
         where parent_code = #{parentCode}
@@ -206,7 +255,7 @@
     </select>
     
     <select id="selectCommonCodeByCodeName" resultMap="managementCode">
-        /** CodeManagement.selectCommonCodeByCodeName **/
+        /** ieda.deploy.management.code..selectCommonCodeByCodeName **/
         Select 
              code_idx
             ,code_name
@@ -220,13 +269,14 @@
     </select>
     
     <select id="selectReleaseTypeList" resultType="String">
+      /**ieda.deploy.management.code..selectReleaseTypeList**/
         Select code_name
         from ieda_common_code 
         where parent_code  in (select code_value from ieda_common_code where code_name=#{parentCodeName}) ;
     </select>
     
     <select id="selectCountryCodeList" resultMap="managementCode">
-        /** CodeManagement.selectCountryCodeList **/
+        /** ieda.deploy.management.code..selectCountryCodeList **/
         Select
             code_idx, 
             code_description,
@@ -247,6 +297,26 @@
             parent_code = #{parentCode}    
         Order by 
             if( code_name='KR', 'A', code_name ) asc
+    </select>
+    
+    <select id="selectCommonCodeInfo" resultMap="managementCode">
+        /** ieda.deploy.management.code.selectCodeGroupInfo **/
+        Select
+            code_idx
+           ,code_name
+           ,code_name_kr
+           ,code_description
+           ,code_value
+           ,sort_order
+           ,sub_group_code
+           ,usub_group_code
+           ,parent_code
+           ,create_user_id
+           ,create_date
+           ,update_user_id
+           ,update_date
+        From ieda_common_code
+       Where code_idx=#{codeIdx}
     </select>
 
 </mapper>

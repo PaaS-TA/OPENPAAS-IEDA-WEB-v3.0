@@ -22,6 +22,9 @@ var delete_lock_msg='<spring:message code="common.delete.data.lock"/>';//삭제 
 var attach_lock_msg='<spring:message code="common.attach.data.lock"/>';//연결 중 입니다.
 var detach_lock_msg='<spring:message code="common.detach.data.lock"/>';//연결 해제 중입니다. 
 var text_required_msg='<spring:message code="common.text.vaildate.required.message"/>';//을(를) 입력하세요.
+var delete_confirm_msg='<spring:message code="common.popup.delete.message"/>';//을(를) 삭제 하시겠습니까?
+var delete_confirm_msg='<spring:message code="common.popup.detach.message"/>';//을(를) 해제하시겠습니까?
+
 $(function() {
     bDefaultAccount = setDefaultIaasAccountList("aws");
     
@@ -96,10 +99,10 @@ $(function() {
     $("#addBtn").click(function(){
        if($("#addBtn").attr('disabled') == "disabled") return;
        w2popup.open({
-           title     : "<b>AWS 게이트웨이 생성</b>",
-           width     : 710,
-           height    : 223,
-           modal    : true,
+           title   : "<b>AWS 게이트웨이 생성</b>",
+           width   : 710,
+           height  : 223,
+           modal   : true,
            body    : $("#registPopupDiv").html(),
            buttons : $("#registPopupBtnDiv").html(),
            onClose : function(event){
@@ -123,12 +126,11 @@ $(function() {
        else {
            var record = w2ui['aws_internetGateWayGrid'].get(selected);
            w2confirm({
-               title : "인터넷 게이트웨이 삭제",
-               msg : "InternetGateway (" + record.internetGatewayId + ")을 삭제하시겠습니까?",
+               title    : "<b>인터넷 게이트웨이 삭제</b>",
+               msg      : "InternetGateway (" + record.internetGatewayId + ")"+delete_confirm_msg,
                yes_text : "확인",
-               no_text : "취소",
+               no_text  : "취소",
                yes_callBack: function(event){
-                   w2utils.lock($("#layout_layout_panel_main"),delete_lock_msg, true);
                    deleteAwsinternetGatewayInfo(record);
                },
                no_callBack    : function(){
@@ -146,10 +148,10 @@ $(function() {
    $("#attachBtn").click(function(){
        if($("#attachBtn").attr('disabled') == "disabled") return;
        w2popup.open({
-           title     : "<b>AWS VPC 연결</b>",
-           width     : 540,
-           height    : 230,
-           modal    : true,
+           title   : "<b>AWS VPC 연결</b>",
+           width   : 540,
+           height  : 230,
+           modal   : true,
            body    : $("#attachPopupDiv").html(),
            buttons : $("#attachPopupBtnDiv").html(),
            onOpen : function(event){
@@ -178,12 +180,11 @@ $(function() {
       else {
           var record = w2ui['aws_internetGateWayGrid'].get(selected);
           w2confirm({
-              title : "VPC 연결 해제",
-              msg : "InternetGateway (" + record.internetGatewayId + ")와 VPC ("+record.vpcId+") </br> 연결을 헤제 하시겠습니까?",
+              title    : "<b>VPC 연결 해제</b>",
+              msg      : "InternetGateway (" + record.internetGatewayId + ")와 VPC ("+record.vpcId+") </br>" +delete_confirm_msg,
               yes_text : "확인",
-              no_text : "취소",
+              no_text  : "취소",
               yes_callBack: function(event){
-                  w2utils.lock($("#layout_layout_panel_main"),detach_lock_msg, true);
                   detachToVpc(record);
               },
               no_callBack    : function(){
@@ -197,16 +198,16 @@ $(function() {
 });
 
 /********************************************************
- * 설명 : AWS 인터넷 게이트웨이 생성 Function 
+ * 설명 : AWS 인터넷 게이트웨이 생성 
  * 기능 : saveAwsInternetGatewayInfo
  *********************************************************/
 function saveAwsInternetGatewayInfo(){
-    w2utils.lock($("#layout_layout_panel_main"),save_lock_msg, true);
-    var internetGatewayInfo = {
-        accountId : $("select[name='accountId']").val(),
-        region : $("select[name='region']").val(),
-        internetGatewayName : $(".w2ui-msg-body input[name='internetGatewayName']").val()
-    }
+     w2popup.lock(save_lock_msg, true);
+     var internetGatewayInfo = {
+         accountId : $("select[name='accountId']").val(),
+         region : $("select[name='region']").val(),
+         internetGatewayName : $(".w2ui-msg-body input[name='internetGatewayName']").val()
+     }
      $.ajax({
          type : "POST",
             url : "/awsMgnt/internetGateWay/save",
@@ -215,14 +216,11 @@ function saveAwsInternetGatewayInfo(){
             data : JSON.stringify(internetGatewayInfo),
             success : function(status) {
                 w2popup.unlock();
-                w2utils.unlock($("#layout_layout_panel_main"));
                 w2popup.close();
                 accountId = internetGatewayInfo.accountId;
                 doSearch();
             }, error : function(request, status, error) {
                 w2popup.unlock();
-                w2popup.close();
-                w2utils.unlock($("#layout_layout_panel_main"));
                 var errorResult = JSON.parse(request.responseText);
                 w2alert(errorResult.message);
             }
@@ -233,30 +231,28 @@ function saveAwsInternetGatewayInfo(){
  * 기능 : deleteAwsinternetGatewayInfo
  *******************************************************/
 function deleteAwsinternetGatewayInfo(record){
-    var internetGatewayInfo = {
-            accountId : record.accountId,
-            region : $("select[name='region']").val(),
-            internetGatewayId : record.internetGatewayId
-    }
-    $.ajax({
-        type : "DELETE",
-        url : "/awsMgnt/internetGateWay/delete",
-        contentType : "application/json",
-        async : true,
-        data : JSON.stringify(internetGatewayInfo),
-        success : function(status) {
-            w2popup.unlock();
-            w2popup.close();
-            w2utils.unlock($("#layout_layout_panel_main"));
-            accountId = internetGatewayInfo.accountId;
-            doSearch();
-        }, error : function(request, status, error) {
-            w2popup.unlock();
-            w2utils.unlock($("#layout_layout_panel_main"));
-            var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message);
-        }
-        
+     w2popup.lock( delete_lock_msg, true );
+     var internetGatewayInfo = {
+             accountId : record.accountId,
+             region : $("select[name='region']").val(),
+             internetGatewayId : record.internetGatewayId
+     }
+     $.ajax({
+         type : "DELETE",
+         url : "/awsMgnt/internetGateWay/delete",
+         contentType : "application/json",
+         async : true,
+         data : JSON.stringify(internetGatewayInfo),
+         success : function(status) {
+             w2popup.unlock();
+             w2popup.close();
+             accountId = internetGatewayInfo.accountId;
+             doSearch();
+         }, error : function(request, status, error) {
+             w2popup.unlock();
+             var errorResult = JSON.parse(request.responseText);
+             w2alert(errorResult.message);
+         }
     });
 }
 
@@ -338,12 +334,13 @@ function attachToVpc(){
  * 기능 : detachToVpc
  *******************************************************/
 function detachToVpc(record){
-    var internetGatewayInfo = {
+     w2popup.lock(detach_lock_msg, true);
+     var internetGatewayInfo = {
             region : $("select[name='region']").val(),
             accountId : record.accountId,
             internetGatewayId : record.internetGatewayId,
             vpcId : record.vpcId
-    }
+     }
     $.ajax({
         type : "PUT",
         url : "/awsMgnt/internetGateWay/detach",
@@ -352,7 +349,6 @@ function detachToVpc(record){
         data : JSON.stringify(internetGatewayInfo),
         success : function(status) {
             w2popup.unlock();
-            w2utils.unlock($("#layout_layout_panel_main"));
             w2popup.close();
             w2ui['aws_internetGateWayGrid'].clear();
             accountId = internetGatewayInfo.accountId;
@@ -415,7 +411,8 @@ function clearMainPage() {
     
 </script>
 <div id="main">
-    <div id="awsMgnt">
+     <div class="page_site pdt20">인프라 관리 > AWS 관리 > <strong>AWS Internal Gateway 관리 </strong></div>
+     <div id="awsMgnt" class="pdt20">
         <ul>
             <li>
                 <label style="font-size: 14px">AWS 관리 화면</label> &nbsp;&nbsp;&nbsp; 
@@ -555,7 +552,6 @@ $(function() {
                 setInvalidHandlerStyle(errors, validator);
             }
         }, submitHandler: function (form) {
-            w2popup.lock(save_lock_msg, true);
             saveAwsInternetGatewayInfo();
         }
     });

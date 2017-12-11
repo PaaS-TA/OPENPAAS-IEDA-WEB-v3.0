@@ -5,17 +5,20 @@ $(function() {
     $("#defaultNetworkInfoForm").validate({
         ignore : "",
         rules:{
-           publicStaticIp_1 : {
-               required : function(){ return checkEmpty( $(".w2ui-msg-body input[name='publicStaticIp_1']").val() ); } 
-              ,ipv4     : function(){ return $(".w2ui-msg-body input[name='publicStaticIp_1']").val(); }
+            publicStaticIp : {
+               required : function(){ return checkEmpty( $(".w2ui-msg-body input[name='publicStaticIp']").val() ); } 
+              ,ipv4     : function(){ return $(".w2ui-msg-body input[name='publicStaticIp']").val(); }
            },subnetId_1 : { 
                required : function(){ return checkEmpty( $(".w2ui-msg-body input[name='subnetId_1']").val() ); } 
            },cloudSecurityGroups_1 : {
                required : function(){ return checkEmpty( $(".w2ui-msg-body input[name='cloudSecurityGroups_1']").val() ); }
            },availabilityZone_1 : {
                required : function(){ 
-                   if( iaas.toLowerCase() == "openstack" ) return false;
-                   else return checkEmpty( $(".w2ui-msg-body input[name='availabilityZone_1']").val() ); 
+                   if( iaas.toLowerCase() == "openstack" ){
+                       return false;
+                   }else{
+                       return checkEmpty( $(".w2ui-msg-body input[name='availabilityZone_1']").val() ); 
+                   }
                }
            }, subnetRange_1: { 
                 required : function(){ return checkEmpty( $(".w2ui-msg-body input[name='subnetRange_1']").val() ); }
@@ -33,7 +36,7 @@ $(function() {
                            var val = validateIpv4(list[i].trim());
                            if( !val ) flag = false;
                        }
-                       if( !flag ) return "";
+                       if( !flag ) return "false";
                        else return list[0].trim();
                    }else{
                        return $(".w2ui-msg-body input[name='subnetDns_1']").val();

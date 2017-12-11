@@ -20,8 +20,6 @@ import org.openpaas.ieda.awsMgnt.web.common.base.BaseAwsMgntControllerUnitTest;
 import org.openpaas.ieda.awsMgnt.web.elasticIp.dao.AwsElasticIpMgntVO;
 import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 
 import com.amazonaws.regions.Region;
@@ -34,7 +32,6 @@ import com.amazonaws.services.opsworks.model.ElasticIp;
 public class AwsElasticIpMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
     
     private Principal principal = null;
-    final static Logger LOGGER = LoggerFactory.getLogger(AwsElasticIpMgntServiceUnitTest.class);
     
     @InjectMocks AwsElasticIpMgntService mockAwsElasticIpMgntService;
     @Mock AwsElasticIpMgntApiService mockAwsElasticIpMgntApiService;
@@ -62,7 +59,6 @@ public class AwsElasticIpMgntServiceUnitTest extends BaseAwsMgntControllerUnitTe
     ***************************************************/
     @Test
     public void testGetAwsElasticIpInfoList(){
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testGetAwsElasticIpInfoList  ================="); }
         getAwsAccountInfo();
         getAwsRegionInfo();
         List<Address> elasticIpList = getResultElasticIpListInfo(null);
@@ -93,14 +89,13 @@ public class AwsElasticIpMgntServiceUnitTest extends BaseAwsMgntControllerUnitTe
      @SuppressWarnings("unchecked")
      @Test
      public void testGetAwsElasticIpDeatilInfo(){
-         if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testGetAwsElasticIpDeatilInfo  ================="); }
          getAwsAccountInfo();
          getAwsRegionInfo();
          HashMap<String, Object> elastic = setElasticDetailInfo("networkInterfaceId");
          List<NetworkInterface> networks = getNetworkInterfaces();
          
-         when(mockAwsElasticIpMgntApiService.getAwsElasticIpDetailInfoFromAws(any(), anyString(), any())).thenReturn( elastic );
-         when(mockAwsElasticIpMgntApiService.getNetworkInterfaces(any(), anyString(), any(), any())).thenReturn(networks);
+         when(mockAwsElasticIpMgntApiService.getAwsElasticIpDetailInfoFromAws(any(), any())).thenReturn( elastic );
+         when(mockAwsElasticIpMgntApiService.getNetworkInterfaces(any(), any(), any())).thenReturn(networks);
          
          HashMap<String, Object> resultMap = mockAwsElasticIpMgntService.getAwsElasticIpDetailInfo(1,"publicIp", principal, "region");
          List<Address> elasticIps = (List<Address>) elastic.get("addressList");
@@ -126,11 +121,10 @@ public class AwsElasticIpMgntServiceUnitTest extends BaseAwsMgntControllerUnitTe
      @SuppressWarnings("unchecked")
      @Test
      public void testGetAwsElasticIpDeatilInfoPublicDnsNullCase(){
-         if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testGetAwsElasticIpDeatilInfoPublicDnsNullCase  ================="); }
          getAwsAccountInfo();
          getAwsRegionInfo();
          HashMap<String, Object> elastic = setElasticDetailInfo(null);
-         when(mockAwsElasticIpMgntApiService.getAwsElasticIpDetailInfoFromAws(any(), anyString(), any())).thenReturn( elastic );
+         when(mockAwsElasticIpMgntApiService.getAwsElasticIpDetailInfoFromAws(any(), any())).thenReturn( elastic );
          HashMap<String, Object> resultMap = mockAwsElasticIpMgntService.getAwsElasticIpDetailInfo(1,"publicIp", principal, "region");
          List<Address> elasticIps = (List<Address>) elastic.get("addressList");
          Address elasticIpInfo = elasticIps.get(0);
@@ -154,7 +148,6 @@ public class AwsElasticIpMgntServiceUnitTest extends BaseAwsMgntControllerUnitTe
       ***************************************************/
       @Test
       public void testSaveAwsElasticIpInfo(){
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("================= testSaveAwsElasticIpInfo ================="); }
           getAwsAccountInfo();
           getAwsRegionInfo();
           mockAwsElasticIpMgntService.allocateElasticIp(principal, 1, "region");

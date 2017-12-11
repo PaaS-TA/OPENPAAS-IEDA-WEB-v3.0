@@ -30,10 +30,11 @@
         background-color:#e9e9e9;
         transition: 0.4s;    
     }
+    #header { background-color:#2c3349; height:71px; }
     #header > a >label { padding:15px; font-size:23px; color:white;cursor:pointer }
-    #header .logo { background:url(../images/feather.png); background-repeat: no-repeat; width:58px; height:40px; display:inline-block; vertical-align:middle; }
+    #header .logo { background:url(../images/logo3.png); background-repeat: no-repeat; width:42px; height:40px; background-size:38px;margin-left:15px; display:inline-block; vertical-align:middle; }
     #header a.logout { float:right; font-size:14px; padding:23px;}
-     #header a.logout:hover{color:#fbfbfb;  }
+    #header a.logout:hover{color:#fbfbfb;  }
 </style>
 
 

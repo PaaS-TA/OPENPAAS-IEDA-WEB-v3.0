@@ -21,14 +21,10 @@ import org.openpaas.ieda.iaasDashboard.web.account.dao.IaasAccountMgntVO;
 import org.openpaas.ieda.iaasDashboard.web.common.service.CommonIaasService;
 import org.openpaas.ieda.openstackMgnt.api.floatingIp.OpenstackFloatingIpMgntApiService;
 import org.openpaas.ieda.openstackMgnt.web.floatingIp.dto.OpenstackFloatingIpMgntDTO;
-import org.openpaas.ieda.openstackMgnt.web.network.service.OpenstackNetworkMgntServiceUnitTest;
 import org.openstack4j.model.compute.FloatingIP;
 import org.openstack4j.model.network.Network;
 import org.openstack4j.openstack.compute.domain.NovaFloatingIP.FloatingIPConcreteBuilder;
 import org.openstack4j.openstack.networking.domain.NeutronNetwork;
-import org.openstack4j.openstack.networking.domain.NeutronNetwork.NetworkConcreteBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,7 +33,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class OpenstackFloatingIpMgntServiceUnitTest {
     private Principal principal = null;
-    final static Logger LOGGER = LoggerFactory.getLogger(OpenstackNetworkMgntServiceUnitTest.class);
     
     @InjectMocks OpenstackFloatingIpMgntService mockOpenstackFloatingIpMgntService;
     @Mock CommonIaasService mockCommonIaasService;
@@ -54,7 +49,6 @@ public class OpenstackFloatingIpMgntServiceUnitTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         principal = getLoggined();
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("loging" + principal); }
     }
     
     /***************************************************
@@ -79,7 +73,6 @@ public class OpenstackFloatingIpMgntServiceUnitTest {
       ***************************************************/
      @Test
      public void testgetOpenstackFloatingIpInfoList(){
-         if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK Floating IP 목록 조회  TEST START  ================="); }
          getOpenstackAccountInfo();
          List<? extends FloatingIP> expectList = setResultFloatingIpList();
          doReturn(expectList).when(mockOpenstackFloatingIpMgntApiService).getOpenstackFloatingIpInfoListApiFromOpenstack(any());
@@ -98,7 +91,6 @@ public class OpenstackFloatingIpMgntServiceUnitTest {
       ***************************************************/
       @Test
       public void testSaveOpenstackFloatingIpInfo(){
-          if(LOGGER.isInfoEnabled()){  LOGGER.info("================= OPENSTACK 네트워크 생성 IPv4 일 경우 TEST TEST START  ================="); }
           getOpenstackAccountInfo();
           OpenstackFloatingIpMgntDTO dto = setFlotingIpInfo();
           mockOpenstackFloatingIpMgntService.saveFloatingIpInfo(dto,principal);

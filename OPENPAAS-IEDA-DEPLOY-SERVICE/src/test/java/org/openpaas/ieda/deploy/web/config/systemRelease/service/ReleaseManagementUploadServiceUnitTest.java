@@ -12,8 +12,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openpaas.ieda.deploy.web.config.systemRelease.dao.ReleaseManagementDAO;
 import org.openpaas.ieda.deploy.web.config.systemRelease.dto.ReleaseManagementDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,7 +30,6 @@ public class ReleaseManagementUploadServiceUnitTest {
     @Mock
     ReleaseManagementDAO mockReleaseManagementDao;
     
-    final static Logger LOGGER = LoggerFactory.getLogger(ReleaseManagementUploadServiceUnitTest.class);
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
      * @description : 하나의 메소드가 실행되기전 호출

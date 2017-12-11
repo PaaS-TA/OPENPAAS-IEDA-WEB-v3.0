@@ -27,7 +27,6 @@ public class CommonCodeController extends BaseController {
     @Autowired private CommonCodeService service;
     @Autowired private CommonCodeDAO dao;
     
-    private final static String SUB_CODE_TYPE_1 = "1";
     private final static Logger LOGGER= LoggerFactory.getLogger(CommonCodeController.class);
     
     /****************************************************************
@@ -38,21 +37,19 @@ public class CommonCodeController extends BaseController {
     *****************************************************************/
     @RequestMapping(value="/admin/code", method=RequestMethod.GET)
     public String goCodeManagement() {
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================================> 코드 관리 화면 이동");  }
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> goCodeManagement");  }
         return "/deploy/management/code/codeManagement";
     }
     
-    
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : 코드 그룹 조회
+     * @description : 코드 그룹 목록 조회
      * @title : getCodeGroups
      * @return : ResponseEntity<HashMap<String,Object>>
     *****************************************************************/
     @RequestMapping(value="/admin/code/groupList", method=RequestMethod.GET)
     public ResponseEntity<HashMap<String, Object>> getCodeGroups() {
-
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================================> 코드 그룹 조회 요청");  }
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> getCodeGroups");  }
         List<CommonCodeVO> page = dao.selectParentCodeIsNull();
         HashMap<String, Object> list = new HashMap<String, Object>();
         list.put("total", page.size());
@@ -63,20 +60,19 @@ public class CommonCodeController extends BaseController {
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : 코드 조회
+     * @description : 코드 목록 조회
      * @title : getCodeList
      * @return : ResponseEntity<HashMap<String,Object>>
     *****************************************************************/
     @RequestMapping(value="/admin/code/codeList/{parentCode}", method=RequestMethod.GET)
     public ResponseEntity<HashMap<String, Object>> getCodeList(@PathVariable String parentCode) {
-
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================================> 코드 조회 요청");  }
-        List<CommonCodeVO> page = service.getSubGroupCodeList(parentCode, "", SUB_CODE_TYPE_1);
-        
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> getCodeList");  }
+        List<CommonCodeVO> page = service.getCodeList(parentCode);
         HashMap<String, Object> list = new HashMap<String, Object>();
-        
         int count = 0;
-        if (page != null) count = page.size();
+        if (page.size() >0) {
+            count = page.size();
+        }
         list.put("total", count);
         list.put("records", page);
         return new ResponseEntity<HashMap<String, Object>>(list, HttpStatus.OK);
@@ -85,20 +81,41 @@ public class CommonCodeController extends BaseController {
 
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : 코드그룹 및 코드 추가
-     * @title : createCode
+     * @description : 코드 그룹 추가 및 수정
+     * @title : saveCodeGroup
      * @return : ResponseEntity<?>
     *****************************************************************/
+    @RequestMapping(value="/admin/code/codeGroup/add", method=RequestMethod.POST)
+    public ResponseEntity<?> saveCodeGroupInfo( @RequestBody @Valid CommonCodeDTO.Regist codeDto, Principal principal) {
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> saveCodeGroup");  }
+        service.saveCodeGroupInfo(codeDto, principal);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : 수정에 필요한 코드 그룹 정보 조회
+     * @title : getCodeGroupInfo
+     * @return : ResponseEntity<?>
+    ***************************************************/
+    @RequestMapping(value="/admin/code/list/{codeIdx}", method=RequestMethod.GET)
+    public ResponseEntity<CommonCodeVO> getCodeGroupInfo(@PathVariable int codeIdx) {
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> getCodeGroupInfo");  }
+        CommonCodeVO vo = service.getCommonCodeList(codeIdx);
+        return new ResponseEntity<CommonCodeVO>(vo, HttpStatus.OK);
+    }
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : 하위 코드 등록
+     * @title : saveCodeInfo
+     * @return : ResponseEntity<?>
+    ***************************************************/
     @RequestMapping(value="/admin/code/add", method=RequestMethod.POST)
-    public ResponseEntity<?> createCode( @RequestBody @Valid CommonCodeDTO.Regist codeDto, Principal principal) {
-        
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================================> 코드그룹 및 코드 추가 요청");  }
-        if(codeDto.getParentCode() == null){
-            service.createCode(codeDto, principal);
-        } else{
-            service.createSubCode(codeDto, principal);
-        }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT, HttpStatus.CREATED);
+    public ResponseEntity<?> saveCodeInfo( @RequestBody @Valid CommonCodeDTO.Regist codeDto, Principal principal) {
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> saveCodeInfo");  }
+        service.createSubCode(codeDto, principal);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
     
     /****************************************************************
@@ -111,25 +128,36 @@ public class CommonCodeController extends BaseController {
     public ResponseEntity<?> updateCode(@PathVariable int codeIdx,
             @RequestBody @Valid CommonCodeDTO.Regist updateCodeDto, Principal principal) {
         
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================================> 해당 코드 수정 요청");  }
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> updateCode");  }
         updateCodeDto.setCodeIdx(codeIdx);
         service.updateCode(updateCodeDto, principal);
-        return new ResponseEntity<> (HttpStatus.NO_CONTENT, HttpStatus.OK); 
+        return new ResponseEntity<> (HttpStatus.OK); 
     }
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : 해당 코드 삭제
+     * @description : 코드 그룹 정보 삭제
      * @title : deleteCode
      * @return : ResponseEntity<?>
     *****************************************************************/
-    @RequestMapping(value="/admin/code/delete/{codeIdx}", method=RequestMethod.DELETE)
-    public ResponseEntity<?> deleteCode(@PathVariable int codeIdx) {
-        
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================================> 해당 코드 삭제 요청");  }
-        service.deleteCode(codeIdx);
-        return new ResponseEntity<> (HttpStatus.NO_CONTENT,  HttpStatus.OK); 
+    @RequestMapping(value="/admin/code/codeGroup/delete/{codeIdx}", method=RequestMethod.DELETE)
+    public ResponseEntity<?> deleteCodeGroupInfo(@PathVariable int codeIdx) {
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> deleteCodeGroupInfo");  }
+        service.deleteCodeGroupInfo(codeIdx);
+        return new ResponseEntity<> (HttpStatus.OK); 
     }
-     
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : 코드 정보 삭제
+     * @title : deleteCodeInfo
+     * @return : ResponseEntity<?>
+    ***************************************************/
+    @RequestMapping(value="/admin/code/delete/{codeIdx}", method=RequestMethod.DELETE)
+    public ResponseEntity<?> deleteCodeInfo(@PathVariable int codeIdx) {
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> deleteCodeInfo");  }
+        service.deleteCodeInfo(codeIdx);
+        return new ResponseEntity<> (HttpStatus.OK); 
+    }
 }
 

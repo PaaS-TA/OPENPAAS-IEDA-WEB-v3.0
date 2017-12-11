@@ -34,8 +34,6 @@ import org.openpaas.ieda.deploy.web.config.systemRelease.dto.ReleaseManagementDT
 import org.openpaas.ieda.deploy.web.config.systemRelease.service.ReleaseManagementDownloadService;
 import org.openpaas.ieda.deploy.web.config.systemRelease.service.ReleaseManagementService;
 import org.openpaas.ieda.deploy.web.config.systemRelease.service.ReleaseManagementUploadService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -77,7 +75,6 @@ public class ReleaseManagementControllerUnitTest extends BaseControllerUnitTest 
     final static String SYSTEM_RELEASE_UPLOAD_URL = "/config/systemRelease/regist/upload";
     final static String SYSTEM_RELEASE_DELETE_URL = "/config/systemRelease/delete";
     
-    final static Logger LOGGER = LoggerFactory.getLogger(ReleaseManagementControllerUnitTest.class);
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -100,7 +97,6 @@ public class ReleaseManagementControllerUnitTest extends BaseControllerUnitTest 
     *****************************************************************/
     @Test
     public void testGoReleaseManagement() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================>  testGoReleaseManagement"); }
         mockMvc.perform(get(VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/deploy/config/releaseManagement"));
@@ -114,7 +110,6 @@ public class ReleaseManagementControllerUnitTest extends BaseControllerUnitTest 
     *****************************************************************/
     @Test
     public void testGetSystemReleaseList() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================>  testGetSystemReleaseList"); }
         List<ReleaseManagementVO> list = setReleaseListInfo();
         when(mockReleaseManagementService.getSystemReleaseList()).thenReturn(list);
         mockMvc.perform(get(SYSTEM_RELEASE_LIST_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
@@ -136,7 +131,6 @@ public class ReleaseManagementControllerUnitTest extends BaseControllerUnitTest 
     *****************************************************************/
     @Test
     public void testGetSystemReleaseTypeList() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================>  testGetSystemReleaseTypeList"); }
         List<String> list = setReleaseTypeListInfo();
         when(mockReleaseManagementService.getSystemReleaseTypeList()).thenReturn(list);
         
@@ -158,7 +152,6 @@ public class ReleaseManagementControllerUnitTest extends BaseControllerUnitTest 
     *****************************************************************/
     @Test
     public void testSystemReleaseFileInfoRegist() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("============================>  testSystemReleaseFileInfoRegist"); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistFileTypeInputInfo();
         ReleaseManagementVO vo = getRegistSystemReleaseUploadInfo();
         String requestJson = mapper.writeValueAsString(dto);
@@ -183,7 +176,6 @@ public class ReleaseManagementControllerUnitTest extends BaseControllerUnitTest 
     ***************************************************/
     @Test
     public void testSystemReleaseUrlInfoRegist() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  시스템 릴리즈 Url Type 정보 저장 TEST START  ================="); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistUrlTypeInputInfo();
         ReleaseManagementVO vo = getRegistSystemReleaseUploadInfo();
         when(mockReleaseManagementService.saveSystemReleaseUrlInfo(any(),any())).thenReturn(vo);
@@ -207,7 +199,6 @@ public class ReleaseManagementControllerUnitTest extends BaseControllerUnitTest 
     *****************************************************************/
     @Test
     public void testDoSystemReleaseDonwload() throws JsonProcessingException, Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  시스템 릴리즈 다운로드 TEST START  ================="); }
         ReleaseManagementDTO.Regist dto = setReleaseRegistUrlTypeInputInfo();
         doNothing().when(mockReleaseDownloadService).releaseDownloadAsync(dto,principal);
         mockReleaseController.doSystemReleaseDownload(dto, principal);
@@ -223,7 +214,6 @@ public class ReleaseManagementControllerUnitTest extends BaseControllerUnitTest 
     *****************************************************************/
     @Test
     public void testDoSystemReleaseUpload() throws Exception{
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  시스템 릴리즈 업로드 TEST START  ================="); }
         MultipartHttpServletRequest mockMultipartHttpReqeust = mock(MultipartHttpServletRequest.class);
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "orig", null, "bar".getBytes());
         doNothing().when(mockReleaseUploadService).uploadReleaseFile(mockMultipartHttpReqeust, principal);
@@ -245,7 +235,6 @@ public class ReleaseManagementControllerUnitTest extends BaseControllerUnitTest 
     @Test
     public void testSystemRelaseDelete() throws Exception{
         ReleaseManagementDTO.Delete dto = setReleaseDelete();
-        if(LOGGER.isInfoEnabled()){  LOGGER.info("=================  시스템 릴리즈 삭제 TEST START  ================="); }
         doNothing().when(mockReleaseManagementService).deleteSystemRelease(any());
         mockMvc.perform(MockMvcRequestBuilders.delete(SYSTEM_RELEASE_DELETE_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(dto)))

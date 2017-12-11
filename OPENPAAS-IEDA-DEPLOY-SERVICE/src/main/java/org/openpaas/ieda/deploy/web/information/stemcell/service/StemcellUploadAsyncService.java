@@ -11,11 +11,10 @@ import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.openpaas.ieda.common.api.LocalDirectoryConfiguration;
 import org.openpaas.ieda.deploy.api.director.utility.DirectorRestHelper;
+import org.openpaas.ieda.deploy.web.common.service.CommonDeployUtils;
 import org.openpaas.ieda.deploy.web.config.setting.dao.DirectorConfigVO;
 import org.openpaas.ieda.deploy.web.config.setting.service.DirectorConfigService;
 import org.openpaas.ieda.deploy.web.information.stemcell.dto.FileUploadRequestDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -28,9 +27,9 @@ public class StemcellUploadAsyncService {
     @Autowired private SimpMessagingTemplate messagingTemplate;
     @Autowired private DirectorConfigService directorConfigService;
     
+    final private static String LOCK_DIR = LocalDirectoryConfiguration.getLockDir();
     final private static String MESSAGE_ENDPOINT  = "/info/stemcell/upload/logs"; 
     final private static String EXCEPTION_MESSAGE = "스템셀 업로드 중 오류가 발생하였습니다.";
-    final private static Logger LOGGER = LoggerFactory.getLogger(StemcellUploadAsyncService.class);
     
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -40,7 +39,6 @@ public class StemcellUploadAsyncService {
     ***************************************************/
     public void uploadStemcell(String stemcellDir, String stemcellFileName, String userId) {
         DirectorConfigVO defaultDirector = directorConfigService.getDefaultDirector();
-        Boolean check = true;
         try {
             HttpClient httpClient = DirectorRestHelper.getHttpClient(defaultDirector.getDirectorPort());
             PostMethod postMethod  = new PostMethod(DirectorRestHelper.getUploadStemcellURI(defaultDirector.getDirectorUrl(), defaultDirector.getDirectorPort()));
@@ -64,11 +62,7 @@ public class StemcellUploadAsyncService {
         } catch ( IOException e) {
             DirectorRestHelper.sendTaskOutputWithTag(userId, messagingTemplate, MESSAGE_ENDPOINT, "error", stemcellFileName, Arrays.asList(EXCEPTION_MESSAGE));
         }finally{
-            File file = new File(LocalDirectoryConfiguration.getLockDir() + System.getProperty("file.separator") + stemcellFileName.split(".tgz")[0]+"-upload.lock");
-            if(file.exists()){
-                check = file.delete();
-                if( LOGGER.isDebugEnabled() ) LOGGER.debug("make check you have deleted lock file :: " + check);
-            }
+            CommonDeployUtils.deleteFile(LOCK_DIR, stemcellFileName.split(".tgz")[0]+"-upload.lock");
         }
     }
 

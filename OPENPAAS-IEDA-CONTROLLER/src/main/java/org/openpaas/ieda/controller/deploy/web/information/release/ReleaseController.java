@@ -62,7 +62,9 @@ public class ReleaseController extends BaseController {
         List<ReleaseInfoDTO> contents = releaseService.getUploadedReleaseList();
         HashMap<String, Object> result = new HashMap<String, Object>();
         int size = 0;
-        if ( contents != null ) size = contents.size();
+        if ( contents != null ) {
+            size = contents.size();
+        }
         result.put("total", size);
         result.put("records", contents);
         return new ResponseEntity<HashMap<String, Object>>( result, HttpStatus.OK);
@@ -81,7 +83,9 @@ public class ReleaseController extends BaseController {
         List<ReleaseManagementVO> contents = systemReleaseService.getSystemReleaseList();
         HashMap<String, Object> result = new HashMap<String, Object>();
         int size=0;
-        if ( contents != null ) size= contents.size();
+        if ( contents != null ) {
+            size= contents.size();
+        }
         result.put("total", size);
         result.put("records", contents);
         return new ResponseEntity<HashMap<String, Object>>( result, HttpStatus.OK);

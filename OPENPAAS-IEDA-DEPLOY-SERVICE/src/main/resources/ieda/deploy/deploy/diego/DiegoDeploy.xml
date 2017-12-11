@@ -176,28 +176,23 @@
     
     <select id="selectDiegoJobTemplatesByReleaseVersion" resultType="hashMap">
     /** ieda.deploy.deploy.diego.diegoDeploy.selectDiegoJobTemplatesByReleaseVersion  **/
-        SELECT 
-               code_name 
-              ,code_value
-              ,release_version
-              ,iaas_type
-              ,deploy_type
-              ,parent_code
-              ,( SELECT code_description 
-                   FROM ieda_common_code cm2 
-                  WHERE parent_code = #{map.parentCode} 
-                    AND sub_group_code = common.code_value
-              ) as code_desc
+    <![CDATA[
+         Select
+               id
               ,seq
-          FROM ieda_job_template template INNER JOIN ieda_common_code common
-            ON common.code_value = template.job_code
-      GROUP BY code_name, code_value, iaas_type, release_version, deploy_type, parent_code, seq, sub_group_code
-        HAVING template.release_version=#{map.releaseVersion}
-           AND UPPER(iaas_type)=UPPER(#{map.iaasType})
-           AND deploy_type = #{map.deployType}
-           AND parent_code=#{map.parentCode}
-           AND sub_group_code is null
-      ORDER BY seq
+              ,deploy_type
+              ,job_name
+              ,zone_z1
+              ,zone_z2
+              ,zone_z3
+         From ieda_job_template
+        Where deploy_type = #{map.deployType}
+          And 
+            min_release_version <= #{map.releaseVersion}
+          And 
+            max_release_version >= #{map.releaseVersion} 
+        ORDER BY seq;
+    ]]>
     </select>
     
     <select id="selectResourceInfoById" resultMap="diego">
@@ -277,6 +272,17 @@
         Where id=#{diego.id}
     </update>
     
+    <select id="selectDiegoDeploymentNameDuplication" resultType="int">
+        Select
+            count(*)
+          From ieda_diego
+         Where deployment_name=#{deploymentName}
+           And LOWER(iaas_type) = LOWER(#{iaasType})
+        <if test="id != null">
+           And id != #{id}
+        </if>
+    </select>
+    
     <delete id="deleteDiegoInfoRecord">
         /** DiegoDeploy.deleteDiegoInfoRecord **/
         Delete From ieda_diego
@@ -288,8 +294,9 @@
              id
             ,seq
             ,deploy_type
-            ,job_code
+            ,job_id
             ,instances
+            ,zone
             ,create_user_id
             ,create_date
             ,update_user_id
@@ -300,8 +307,9 @@
              #{item.id}
             ,#{item.seq}
             ,#{item.deploy_type}
-            ,#{item.job_code}
+            ,#{item.job_id}
             ,#{item.instances}
+            ,#{item.zone}
             ,#{item.create_user_id}
             ,now()
             ,#{item.update_user_id}
@@ -312,21 +320,21 @@
     
     <select id="selectDiegoJobSettingInfoListBycfId" resultType="hashMap">
         Select
-                id
-               ,seq
-               ,deploy_type
-               ,job_code
-               ,instances
+                job.id as id
+               ,job.seq as seq
+               ,job.deploy_type as deploy_type
+               ,job_id as job_id
+               ,job.instances as instances
+               ,job.zone as zone
                ,job.create_user_id as create_user_id
                ,job.create_date as create_date
                ,job.update_user_id as update_user_id
                ,job.update_date as update_date
-               ,common.code_name as code_name
-          From ieda_job_setting job, ieda_common_code common
-         Where job.job_code = common.code_value
-           And parent_code = #{parentCode}
-           And id =#{diegoId}
-           And deploy_type = #{deployType}
+               ,template.job_name as job_name
+          From ieda_job_setting job, ieda_job_template template
+         Where job.job_id = template.id
+           And job.id =#{diegoId}
+           And job.deploy_type = #{deployType}
     </select>
     
     <delete id="deleteDiegoJobSettingInfo">
@@ -336,5 +344,12 @@
            And deploy_type = #{map.deploy_type}
     </delete>
     
+    <delete id="deleteDiegoJobSettingRecordsByIdAndZone">
+    /** ieda.deploy.deploy.diego.diegoDeploy.deleteDiegoJobSettingRecords  **/
+        Delete
+           From ieda_job_setting
+        Where id = #{id}
+            And zone = #{zone}
+    </delete>
     
 </mapper>

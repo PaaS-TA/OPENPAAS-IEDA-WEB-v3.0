@@ -86,7 +86,7 @@ public class CfDiegoController {
     @RequestMapping(value = "/deploy/cfDiego/install/diegoPopup", method=RequestMethod.GET)
     public String goDiegoPopup() {
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> Diego  설치 팝업 화면 요청"); }
-        return "/deploy/diego/diegoPopup";
+        return "/deploy/deploy/diego/diegoPopup";
     }
     
     /****************************************************************
@@ -100,7 +100,7 @@ public class CfDiegoController {
         
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> CF & Diego 정보 목록 조회 요청"); }
         List<CfDiegoVO> content = cfDiegoService.getCfDiegoList(iaas.toLowerCase());
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<String, Object>();
         result.put("records", content);
         
         return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
@@ -114,7 +114,6 @@ public class CfDiegoController {
     *****************************************************************/
     @RequestMapping(value="/deploy/cfDiego/install/detail/{id}", method=RequestMethod.GET)
     public ResponseEntity<Map<String, Object>> getCfDiegoInfo(@PathVariable int id) {
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> CF & Diego  정보 상세 조회 요청"); }
         CfDiegoVO vo = cfDiegoService.getCfDiegoInfo(id);
         Map<String, Object> result =  new HashMap<>();
@@ -129,8 +128,7 @@ public class CfDiegoController {
      * @return : ResponseEntity<Map<String,Object>>
     *****************************************************************/
     @RequestMapping(value="/deploy/cfDiego/list/cf/{iaas}", method=RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> getCfDeploymentLst(@PathVariable String iaas) {
-        
+    public ResponseEntity<Map<String, Object>> getCfDeploymentList(@PathVariable String iaas) {
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> CF 정보 목록 조회 요청"); }
         List<CfListDTO> content = cfService.getCfLIst(iaas.toLowerCase(), "cfDiego");
         Map<String, Object> result = new HashMap<>();
@@ -148,10 +146,9 @@ public class CfDiegoController {
     *****************************************************************/
     @RequestMapping(value="/deploy/cfDiego/install/saveDefaultInfo", method=RequestMethod.PUT)
     public ResponseEntity<Map<String, Object>> saveDefaultInfo(@RequestBody @Valid CfDiegoParamDTO.Default dto, Principal principal){
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> CF & Diego 기본 정보 저장 요청"); }
         CfDiegoVO vo =  cfDiegoSaveService.saveDefaultInfo( dto, principal );
-        Map<String, Object> result  = new HashMap<>();
+        Map<String, Object> result  = new HashMap<String, Object>();
         result.put("content", vo);
         return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
@@ -164,7 +161,7 @@ public class CfDiegoController {
     *****************************************************************/
     @RequestMapping(value="/deploy/cfDiego/install/saveKeyInfo", method=RequestMethod.PUT)
     public ResponseEntity<?> saveKeyInfo(@RequestBody @Valid KeyInfoDTO dto, Principal principal){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> CF 기본 정보 저장 요청"); }
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> CF 키 생성 정보 저장 요청"); }
         cfSaveService.saveKeyInfo(dto, principal);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -192,11 +189,22 @@ public class CfDiegoController {
     *****************************************************************/
     @RequestMapping(value="/deploy/cfDiego/install/saveResourceInfo", method=RequestMethod.PUT)
     public ResponseEntity<Map<String, Object>> saveResourceInfo(@RequestBody @Valid ResourceDTO dto, Principal principal){
-        
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> CF & Diego 리소스 정보 저장 요청"); }
         Map<String, Object> result = cfDiegoSaveService.saveResourceInfo(dto, principal);
-        
         return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+    }
+    
+    /***************************************************
+    * @project : Paas 플랫폼 설치 자동화
+    * @description : CF 고급 설정 정보 저장
+    * @title : saveCfJobsInfo
+    * @return : ResponseEntity<List<HashMap<String, String>>>
+    ***************************************************/
+    @RequestMapping(value="/deploy/cfDiego/install/save/jobsInfo", method=RequestMethod.PUT)
+    public ResponseEntity<List<HashMap<String, String>>> saveCfJobsInfo(@RequestBody List<HashMap<String, String>> maps, Principal principal){
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("====================================> /deploy/cfDiego/install/save/jobsInfo"); }
+        cfSaveService.saveCfJobsInfo(maps, principal);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     
     /****************************************************************
@@ -267,8 +275,7 @@ public class CfDiegoController {
      * @return : ResponseEntity<Object>
     *****************************************************************/
     @RequestMapping( value="/deploy/cfDiego/delete/data", method=RequestMethod.DELETE)
-    public ResponseEntity<Object> deleteJustOnlyCfDiegoRecord(@RequestBody @Valid  CfDiegoParamDTO.Delete dto){
-        
+    public ResponseEntity<?> deleteJustOnlyCfDiegoRecord(@RequestBody @Valid CfDiegoParamDTO.Delete dto){
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> CF & Diego 단순 레코드 삭제 요청"); }
         cfDiegoService.deleteCfDiegoInfoRecord(dto);
         return new ResponseEntity<>(HttpStatus.OK);

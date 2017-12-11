@@ -155,22 +155,26 @@ public class BootstrapService {
             //해당 Bosh 릴리즈 버전의 Manifest Template 파일 조회
             ManifestTemplateVO result = commonDeployDao.selectManifetTemplate(vo.getIaasType(), releaseVersion, "BOOTSTRAP", releaseName );
             if(result != null){
-                content = commonDeployService.getManifestInputTemplateStream("bootstrap", result.getTemplateVersion(), vo.getIaasType(), result.getInputTemplate());
+                content = commonDeployService.getManifestInputTemplateStream("bootstrap", result.getTemplateVersion(), vo.getIaasType(), result.getInputTemplate(), vo.getIaasAccount().get("openstackVersion").toString());
             }else {
                 throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
                         message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
             }
             //필요한 Manifest Template 파일의 디렉토리 정보 설정
-            ManifestTemplateVO manifestTemplate = setOptionManifestTemplateInfo(result, vo.getIaasType().toLowerCase() );
+            ManifestTemplateVO manifestTemplate = setOptionManifestTemplateInfo(result, vo.getIaasType().toLowerCase() , vo.getIaasAccount().get("openstackVersion").toString());
+            manifestTemplate.setDeployType(result.getDeployType());
+            manifestTemplate.setIaasType(result.getIaasType());
+            
             //입력한 정보를 바탕으로 Input Template의 항목과 데이터 치환할 항목들 설정
             List<ReplaceItemDTO> replaceItems = makeReplaceItems(vo);
             for (ReplaceItemDTO item : replaceItems) {
-                content = content.replace(item.getTargetItem(), (item.getSourceItem() == null ? "":item.getSourceItem()));
+                content = content.replace(item.getTargetItem(), item.getSourceItem() == null ? "":item.getSourceItem());
             }
+            LOGGER.debug(content);
             //플랫폼 설치 자동화(.bosh_plugin)의 temp 디렉토리에 치환한 Input Template 파일 출력
             IOUtils.write(content, new FileOutputStream(TEMP_DIR + SEPARATOR + vo.getDeploymentFile()), "UTF-8");
             //spiff 프로그램을 통해 배포파일 생성
-            CommonDeployUtils.setSpiffMerge(vo.getIaasType().toLowerCase(), vo.getId(), "microbosh", vo.getDeploymentFile(),  manifestTemplate);
+            CommonDeployUtils.setSpiffMerge("", vo.getDeploymentFile(),  manifestTemplate, vo.getPaastaMonitoringUse());
         } catch (IOException e) {
             throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA),
                     message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -178,12 +182,13 @@ public class BootstrapService {
     }
     
     /***************************************************
+     * @param string 
      * @project : Paas 플랫폼 설치 자동화
      * @description : Manifest Template 디렉토리 정보
      * @title : setOptionManifestTemplateInfo
      * @return : ManifestTemplateVO
     ***************************************************/
-    public ManifestTemplateVO setOptionManifestTemplateInfo(ManifestTemplateVO result, String iaasType){
+    public ManifestTemplateVO setOptionManifestTemplateInfo(ManifestTemplateVO result, String iaasType, String openstackVerison){
         ManifestTemplateVO  manifestTemplate = new ManifestTemplateVO();
         //base
         if(result.getCommonBaseTemplate() != null  && !(StringUtils.isEmpty( result.getCommonBaseTemplate()) )){
@@ -197,6 +202,23 @@ public class BootstrapService {
         }else{
             manifestTemplate.setCommonJobTemplate("");
         }
+        if(!openstackVerison.isEmpty()) {
+            if(openstackVerison.equalsIgnoreCase("v3")){
+                iaasType = "v3";
+            }
+        }
+        
+        //option etc Template File
+        if( result.getCommonOptionTemplate() != null && !(StringUtils.isEmpty( result.getCommonOptionTemplate())  )){
+            if( result.getDeployType().equalsIgnoreCase("bootstrap") || result.getDeployType().equals("cf")){
+                manifestTemplate.setCommonOptionTemplate(MANIFEST_TEMPLATE_PATH + SEPARATOR + result.getTemplateVersion() + SEPARATOR + "common" + SEPARATOR + result.getCommonOptionTemplate() );
+            }else{
+                manifestTemplate.setCommonOptionTemplate("");
+            }
+        }else{
+            manifestTemplate.setCommonOptionTemplate("");
+        }
+        
         //iaasProperty
         if(result.getIaasPropertyTemplate() != null && !(StringUtils.isEmpty( result.getIaasPropertyTemplate()) )){
             manifestTemplate.setIaasPropertyTemplate(  MANIFEST_TEMPLATE_PATH + SEPARATOR + result.getTemplateVersion()  + SEPARATOR + iaasType + SEPARATOR  +  result.getIaasPropertyTemplate() );
@@ -219,16 +241,24 @@ public class BootstrapService {
      * @return : List<ReplaceItemDTO>
     ***************************************************/
     public List<ReplaceItemDTO> makeReplaceItems(BootstrapVO vo) {
-        
         List<ReplaceItemDTO> items = new ArrayList<ReplaceItemDTO>();
         
         //인프라 환경 설정 정보
+        if(vo.getIaasAccount().get("openstackVersion") != null) {
+            if(vo.getIaasAccount().get("openstackVersion").toString().equalsIgnoreCase("v3")){
+                items.add(new ReplaceItemDTO("[project]", vo.getIaasAccount().get("commonProject").toString()));
+                items.add(new ReplaceItemDTO("[domain]", vo.getIaasAccount().get("openstackDomain").toString()));
+                items.add(new ReplaceItemDTO("[region]", vo.getIaasAccount().get("commonRegion").toString()));
+            }else {
+                items.add(new ReplaceItemDTO("[tenant]", vo.getIaasAccount().get("commonTenant").toString()));
+            }
+        }
         items.add(new ReplaceItemDTO("[accessEndpoint]", vo.getIaasAccount().get("commonAccessEndpoint").toString()));
         items.add(new ReplaceItemDTO("[accessUser]", vo.getIaasAccount().get("commonAccessUser").toString()));
         items.add(new ReplaceItemDTO("[accessSecret]", vo.getIaasAccount().get("commonAccessSecret").toString()));
         items.add(new ReplaceItemDTO("[region]", vo.getIaasConfig().getCommonRegion()));
         items.add(new ReplaceItemDTO("[defaultSecurityGroups]", vo.getIaasConfig().getCommonSecurityGroup()));
-        items.add(new ReplaceItemDTO("[tenant]", vo.getIaasAccount().get("commonTenant").toString()));
+        
         items.add(new ReplaceItemDTO("[availabilityZone]", vo.getIaasConfig().getCommonAvailabilityZone()));
         items.add(new ReplaceItemDTO("[privateKeyName]", vo.getIaasConfig().getCommonKeypairName()));
         items.add(new ReplaceItemDTO("[privateKeyPath]", PRIVATE_KEY_PATH + vo.getIaasConfig().getCommonKeypairPath()));
@@ -236,8 +266,6 @@ public class BootstrapService {
         if( vo.getIaasType().equalsIgnoreCase("Google") ){
             String googleJsonKey=setGoogleJosnKeyReplaceEnter(JSON_KEY_PATH + vo.getIaasAccount().get("googleJsonKey").toString());
             items.add(new ReplaceItemDTO("[jsonKey]", googleJsonKey));
-            items.add(new ReplaceItemDTO("[googlePublicKey]", "|+"+"\n    "+ vo.getIaasConfig().getGooglePublicKey()));
-            items.add(new ReplaceItemDTO("[osConfRelease]", RELEASE_DIR + SEPARATOR + vo.getOsConfRelease()));
             items.add(new ReplaceItemDTO("[projectId]", vo.getIaasAccount().get("commonProject").toString()));
         }
         
@@ -260,15 +288,29 @@ public class BootstrapService {
         items.add(new ReplaceItemDTO("[cpiName]", vo.getIaasType().toLowerCase()+"_cpi"));
         items.add(new ReplaceItemDTO("[cpiReleaseName]", "bosh-"+vo.getIaasType().toLowerCase()+"-cpi"));
         
-        //네트워크 정보
-        //- Internal
+        if( vo.getPaastaMonitoringUse().equalsIgnoreCase("true") ) {
+            items.add(new ReplaceItemDTO("[paastaMonitoringIp]", vo.getPaastaMonitoringIp()));
+            items.add(new ReplaceItemDTO("[paastaMonitoringReleaseName]", vo.getPaastaMonitoringRelease().replace("-3.0.tgz", "")));
+            items.add(new ReplaceItemDTO("[paastaMonitoringRelease]", RELEASE_DIR + SEPARATOR + vo.getPaastaMonitoringRelease()));
+        }else {
+            items.add(new ReplaceItemDTO("[paastaMonitoringIp]", ""));
+            items.add(new ReplaceItemDTO("[paastaMonitoringReleaseName]", ""));
+            items.add(new ReplaceItemDTO("[paastaMonitoringRelease]", ""));
+        }
+        
+        //Internal 네트워크 정보
         items.add(new ReplaceItemDTO("[privateStaticIp]", vo.getPrivateStaticIp()));
         items.add(new ReplaceItemDTO("[subnetId]", vo.getSubnetId()));
-        items.add(new ReplaceItemDTO("[networkName]", vo.getNetworkName()));
+        
+        if( vo.getIaasType().equalsIgnoreCase("vSphere") ){
+            items.add(new ReplaceItemDTO("[networkName]", vo.getSubnetId()));
+        }else{
+            items.add(new ReplaceItemDTO("[networkName]", vo.getNetworkName()));
+        }
         items.add(new ReplaceItemDTO("[subnetRange]", vo.getSubnetRange() ));
         items.add(new ReplaceItemDTO("[subnetGateway]", vo.getSubnetGateway()));
         items.add(new ReplaceItemDTO("[subnetDns]", vo.getSubnetDns()));
-        //- External
+        //External 네트워크 정보
         items.add(new ReplaceItemDTO("[publicStaticIp]", vo.getPublicStaticIp()));
         items.add(new ReplaceItemDTO("[publicNetworkName]", vo.getPublicSubnetId()));
         items.add(new ReplaceItemDTO("[publicSubnetRange]", vo.getPublicSubnetRange() ));
@@ -300,7 +342,7 @@ public class BootstrapService {
             fis = new FileInputStream(new File(jsonKeyPath));
             rd = new BufferedReader(new InputStreamReader(fis,"UTF-8"));
             String line = null;
-            jsonKey.append("|+" + "\n"+ "    " );
+            jsonKey.append("|+").append("\n").append("    ");
             while((line = rd.readLine()) != null) {
                 jsonKey.append(line);
             }
@@ -311,13 +353,17 @@ public class BootstrapService {
             throw new CommonException("notfound.createKey.exception", e.getMessage(), HttpStatus.NOT_FOUND);
         } finally {
             try {
-                rd.close();
+                if( rd != null ) {
+                    rd.close();
+                }
             } catch (IOException e) {
                 throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA), 
                         message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             try {
-                fis.close();
+                if( fis != null ) {
+                    fis.close();
+                }
             } catch (IOException e) {
                 throw new CommonException(message.getMessage("common.internalServerError.exception.code", null, Locale.KOREA), 
                         message.getMessage("common.internalServerError.message", null, Locale.KOREA), HttpStatus.INTERNAL_SERVER_ERROR);

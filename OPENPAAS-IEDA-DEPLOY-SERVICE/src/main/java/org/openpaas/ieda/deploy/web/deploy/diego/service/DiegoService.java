@@ -24,10 +24,6 @@ import org.openpaas.ieda.deploy.web.deploy.diego.dao.DiegoDAO;
 import org.openpaas.ieda.deploy.web.deploy.diego.dao.DiegoVO;
 import org.openpaas.ieda.deploy.web.deploy.diego.dto.DiegoListDTO;
 import org.openpaas.ieda.deploy.web.deploy.diego.dto.DiegoParamDTO;
-import org.openpaas.ieda.deploy.web.management.code.dao.CommonCodeDAO;
-import org.openpaas.ieda.deploy.web.management.code.dao.CommonCodeVO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -39,19 +35,15 @@ import org.springframework.util.StringUtils;
 public class DiegoService {
 
     @Autowired private DiegoDAO diegoDao; 
-    @Autowired private CommonDeployDAO commonDao;
     @Autowired private NetworkDAO networkDao;
     @Autowired private ResourceDAO resourceDao;
-    @Autowired private CommonCodeDAO commonCodeDao;
+    @Autowired private CommonDeployDAO commonDao;
     @Autowired MessageSource message;
     
-    final private static String PARENT_CODE="1000"; //배포 코드
-    final private static String SUB_GROUP_CODE="1100"; //배포 유형 코드
-    final private static String CODE_NAME="DEPLOY_TYPE_DIEGO"; //배포 할 플랫폼명
     final private static String SEPARATOR = System.getProperty("file.separator");
     final private static String CF_FILE  = LocalDirectoryConfiguration.getDeploymentDir()+ SEPARATOR;
+    final private static String TEMP_FILE = LocalDirectoryConfiguration.getTempDir() + SEPARATOR;
     final private static String SHELLSCRIPT_FILE = LocalDirectoryConfiguration.getManifastTemplateDir() + SEPARATOR  + "diego" + SEPARATOR;
-    final private static Logger LOGGER = LoggerFactory.getLogger(DiegoService.class);
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -62,10 +54,10 @@ public class DiegoService {
     public List<DiegoListDTO> getDiegoInfoList(String iaasType) {
         List<DiegoListDTO> diegoList = null;
         List<DiegoVO> resultList = diegoDao.selectDiegoListInfo(iaasType);
-        CommonCodeVO codeVo = commonCodeDao.selectCommonCodeByCodeName(PARENT_CODE, SUB_GROUP_CODE, CODE_NAME);
+        String deployType = setMessageSourceValue("common.deploy.type.diego.name");
         
         if( resultList != null ){
-            diegoList = new ArrayList<>();
+            diegoList = new ArrayList<DiegoListDTO>();
             int recid = 0;
 
             for(DiegoVO vo:resultList){
@@ -89,8 +81,8 @@ public class DiegoService {
                 diegoInfo.setGardenReleaseVersion(vo.getGardenReleaseVersion());
                 diegoInfo.setEtcdReleaseName(vo.getEtcdReleaseName());
                 diegoInfo.setEtcdReleaseVersion(vo.getEtcdReleaseVersion());
-                vo.setNetworks(networkDao.selectNetworkList(vo.getId(), codeVo.getCodeName()));
-                List<NetworkVO> netowrks = networkDao.selectNetworkList(vo.getId(), codeVo.getCodeName());
+                List<NetworkVO> netowrks = networkDao.selectNetworkList(vo.getId(), deployType);
+                vo.setNetworks(netowrks);
                 String br = "";
                 int cnt = 0;
                 String subnetRange , subnetGateway , subnetDns , subnetReservedIp;
@@ -100,12 +92,14 @@ public class DiegoService {
                 
                 if(netowrks  != null){
                     for(NetworkVO networkVO: netowrks){
-                        if( "internal".equals(networkVO.getNet().toLowerCase() )){
+                        if( "internal".equalsIgnoreCase(networkVO.getNet().toLowerCase() )){
                             cnt ++;
                             if( cnt > 2  && cnt < netowrks.size() ){
                                 br = ""; 
-                            }else br = "<br>";
-        
+                            }else {
+                                br = "<br>";
+                            }
+
                             subnetRange += networkVO.getSubnetRange()  + br;
                             subnetGateway += networkVO.getSubnetGateway() + br;
                             subnetDns += networkVO.getSubnetDns() + br;
@@ -128,21 +122,21 @@ public class DiegoService {
                     diegoInfo.setAvailabilityZone(availabilityZone);
                     diegoInfo.setPublicStaticIp(publicStaticIp);
                 }
-                vo.setResource(resourceDao.selectResourceInfo(vo.getId(), codeVo.getCodeName()));
+                vo.setResource(resourceDao.selectResourceInfo(vo.getId(), deployType));
                 if(vo.getResource() != null){
-                //4 리소스 정보    
-                diegoInfo.setStemcellName(vo.getResource().getStemcellName());
-                diegoInfo.setStemcellVersion(vo.getResource().getStemcellVersion());
-                diegoInfo.setBoshPassword(vo.getResource().getBoshPassword());
-                diegoInfo.setDeployStatus(vo.getDeployStatus());
-                diegoInfo.setDeploymentFile(vo.getDeploymentFile());
-                if( !StringUtils.isEmpty( vo.getTaskId() ) ) diegoInfo.setTaskId(vo.getTaskId());
+                    //4 리소스 정보    
+                    diegoInfo.setStemcellName(vo.getResource().getStemcellName());
+                    diegoInfo.setStemcellVersion(vo.getResource().getStemcellVersion());
+                    diegoInfo.setBoshPassword(vo.getResource().getBoshPassword());
+                    diegoInfo.setDeployStatus(vo.getDeployStatus());
+                    diegoInfo.setDeploymentFile(vo.getDeploymentFile());
+                    if( !StringUtils.isEmpty(vo.getTaskId()) ) {
+                        diegoInfo.setTaskId(vo.getTaskId());
+                    }
                 }
                 diegoList.add(diegoInfo);
             }
-
         }
-
         return diegoList;
     }
     
@@ -154,12 +148,11 @@ public class DiegoService {
     *****************************************************************/
     public DiegoVO getDiegoDetailInfo(int id) {
         DiegoVO vo =  diegoDao.selectDiegoInfo(id);
+        String deployType= setMessageSourceValue("common.deploy.type.diego.name");
         if( vo != null ){
-            CommonCodeVO codeVo = commonCodeDao.selectCommonCodeByCodeName(PARENT_CODE, SUB_GROUP_CODE, CODE_NAME);
-            vo.setNetworks(networkDao.selectNetworkList(id, codeVo.getCodeName()));
-            vo.setResource(resourceDao.selectResourceInfo(id, codeVo.getCodeName()));
-            vo.setJobs(diegoDao.selectDiegoJobSettingInfoListBycfId(
-                    setMessageSourceValue("common.deploy.type.diego.name"), id, setMessageSourceValue("common.code.deploy.jobs.parent")));
+            vo.setNetworks(networkDao.selectNetworkList(id, deployType));
+            vo.setResource(resourceDao.selectResourceInfo(id, deployType));
+            vo.setJobs(diegoDao.selectDiegoJobSettingInfoListBycfId( deployType, id));
         }
         return vo;
     }
@@ -170,7 +163,7 @@ public class DiegoService {
      * @title : createSettingFile
      * @return : void
     *****************************************************************/
-    public void createSettingFile(DiegoVO vo, String iaas) {
+    public void createSettingFile(DiegoVO vo) {
         String content = "";
         ManifestTemplateVO result = null;
         InputStream inputs  = null;
@@ -184,26 +177,25 @@ public class DiegoService {
                 manifestTemplate = new ManifestTemplateVO();
                 manifestTemplate = setOptionManifestTemplateInfo(result, manifestTemplate, vo);
                 manifestTemplate.setMinReleaseVersion(result.getTemplateVersion());
+                manifestTemplate.setDeployType("DIEGO");
+                manifestTemplate.setIaasType(vo.getIaasType());
             }else {
-                throw new CommonException("notFound.diego.exception",
-                        "해당하는 Manifest 템플릿 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+                throw new CommonException(setMessageSourceValue("common.badRequest.exception.code"),
+                        setMessageSourceValue("common.notFound.template.message"), HttpStatus.BAD_REQUEST);
             }
-
             List<ReplaceItemDTO> replaceItems = setReplaceItems(vo);
             for (ReplaceItemDTO item : replaceItems) {
                 content = content.replace(item.getTargetItem(), item.getSourceItem());
+                
             }
-            if(LOGGER.isDebugEnabled()){ LOGGER.debug("content : " + content);  }
-            
-            IOUtils.write(content, new FileOutputStream(LocalDirectoryConfiguration.getTempDir() + SEPARATOR + vo.getDeploymentFile()), "UTF-8");
-            
-            CommonDeployUtils.setShellScript("diego",  vo.getDeploymentFile(),  manifestTemplate, vo, SEPARATOR);
+            IOUtils.write(content, new FileOutputStream(TEMP_FILE+ vo.getDeploymentFile()), "UTF-8");
+            CommonDeployUtils.setShellScript(vo.getDeploymentFile(),  manifestTemplate, vo);
         } catch (IOException e) {
-            if( LOGGER.isErrorEnabled() ){
-                LOGGER.error( e.getMessage() );
-            }
+            throw new CommonException(setMessageSourceValue("common.badRequest.exception.code"),
+                    setMessageSourceValue("common.badRequest.message"), HttpStatus.BAD_REQUEST);
         } catch(NullPointerException e){
-            throw new CommonException("notFound.diego.exception", "배포 파일을 만드는데 실패하셨습니다.", HttpStatus.NOT_FOUND);
+            throw new CommonException(setMessageSourceValue("common.badRequest.exception.code"),
+                    setMessageSourceValue("common.badRequest.message"), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -285,7 +277,8 @@ public class DiegoService {
         items.add(new ReplaceItemDTO("[etcdReleaseVersion]", "\"" + vo.getEtcdReleaseVersion() + "\""));
         items.add(new ReplaceItemDTO("[gardenLinuxReleaseName]", vo.getGardenReleaseName()));
         items.add(new ReplaceItemDTO("[gardenLinuxReleaseVersion]", "\"" + vo.getGardenReleaseVersion() + "\""));
-        if(vo.getCflinuxfs2rootfsreleaseName()!=null && !vo.getCflinuxfs2rootfsreleaseName().equals("")&&vo.getCflinuxfs2rootfsreleaseVersion()!=null && !vo.getCflinuxfs2rootfsreleaseVersion().equals("")){
+        if(vo.getCflinuxfs2rootfsreleaseName()!=null && !vo.getCflinuxfs2rootfsreleaseName().equalsIgnoreCase("") 
+                && vo.getCflinuxfs2rootfsreleaseVersion() != null && !vo.getCflinuxfs2rootfsreleaseVersion().equalsIgnoreCase("")){
             items.add(new ReplaceItemDTO("[cflinuxfs2RootfsReleaseName]", vo.getCflinuxfs2rootfsreleaseName()));
             items.add(new ReplaceItemDTO("[cflinuxfs2RootfsReleaseVersion]", ("\"" + vo.getCflinuxfs2rootfsreleaseVersion()+"\"").trim()));
         }else{
@@ -293,11 +286,10 @@ public class DiegoService {
             items.add(new ReplaceItemDTO("[cflinuxfs2RootfsReleaseVersion]", "\"" + "" + "\""));
         }
         items.add(new ReplaceItemDTO("[cadvisorDriverIp]", vo.getCadvisorDriverIp()));
-        items.add(new ReplaceItemDTO("[cadvisorDriverPort]", vo.getCadvisorDriverPort()));
         // 2. 네트워크 정보
         for( int i=0; i<vo.getNetworks().size(); i++ ){
-            if( "INTERNAL".equals(vo.getNetworks().get(i).getNet().toUpperCase())){
-                if( !vo.getIaasType().toUpperCase().equals("VSPHERE") ){//aws or openstack
+            if( "internal".equalsIgnoreCase(vo.getNetworks().get(i).getNet())){
+                if( !vo.getIaasType().equalsIgnoreCase("VSPHERE") ){
                     if(i  == 0 ){
                         items.add(new ReplaceItemDTO("[subnetRange]", vo.getNetworks().get(i).getSubnetRange()));
                         items.add(new ReplaceItemDTO("[subnetGateway]", vo.getNetworks().get(i).getSubnetGateway()));
@@ -307,7 +299,7 @@ public class DiegoService {
                         items.add(new ReplaceItemDTO("[subnetId]", vo.getNetworks().get(i).getSubnetId()));            
                         items.add(new ReplaceItemDTO("[cloudSecurityGroups]", vo.getNetworks().get(i).getCloudSecurityGroups()));
                         items.add(new ReplaceItemDTO("[availabilityZone]", vo.getNetworks().get(i).getAvailabilityZone()));
-                        if( "GOOGLE".equalsIgnoreCase(vo.getIaasType()) ){
+                        if( "google".equalsIgnoreCase(vo.getIaasType()) ){
                             items.add(new ReplaceItemDTO("[zone]", vo.getNetworks().get(i).getAvailabilityZone()));
                             items.add(new ReplaceItemDTO("[networkName]", vo.getNetworks().get(i).getNetworkName()));
                         }
@@ -320,12 +312,12 @@ public class DiegoService {
                         items.add(new ReplaceItemDTO("[subnetId"+i+"]", vo.getNetworks().get(i).getSubnetId()));            
                         items.add(new ReplaceItemDTO("[cloudSecurityGroups"+i+"]", vo.getNetworks().get(i).getCloudSecurityGroups()));
                         items.add(new ReplaceItemDTO("[availabilityZone"+i+"]", vo.getNetworks().get(i).getAvailabilityZone()));
-                        if( "GOOGLE".equalsIgnoreCase(vo.getIaasType()) ){
+                        if( "google".equalsIgnoreCase(vo.getIaasType()) ){
                             items.add(new ReplaceItemDTO("[zone"+i+"]", vo.getNetworks().get(i).getAvailabilityZone()));
                             items.add(new ReplaceItemDTO("[networkName"+i+"]", vo.getNetworks().get(i).getNetworkName()));
                         }
                     }
-                }else if(vo.getIaasType().toUpperCase().equals("VSPHERE")){
+                }else if(vo.getIaasType().equalsIgnoreCase("vsphere")){
                     if(i == 0){
                         items.add(new ReplaceItemDTO("[subnetRange]", vo.getNetworks().get(i).getSubnetRange()));
                         items.add(new ReplaceItemDTO("[subnetGateway]", vo.getNetworks().get(i).getSubnetGateway()));
@@ -387,7 +379,7 @@ public class DiegoService {
         items.add(new ReplaceItemDTO("[stemcellVersion]", "\"" + vo.getResource().getStemcellVersion() + "\"" ));    
         items.add(new ReplaceItemDTO("[boshPassword]", Sha512Crypt.Sha512_crypt(vo.getResource().getBoshPassword(), RandomStringUtils.randomAlphabetic(10), 0)));
         
-        if("VSPHERE".equals(vo.getIaasType().toUpperCase())){
+        if("vsphere".equalsIgnoreCase(vo.getIaasType())){
             //small Flavor
             items.add(new ReplaceItemDTO("[sInsTypeCPU]",  String.valueOf(vo.getResource().getSmallCpu())));
             items.add(new ReplaceItemDTO("[sInsTypeRAM]", String.valueOf(vo.getResource().getSmallRam())));
@@ -410,24 +402,60 @@ public class DiegoService {
             items.add(new ReplaceItemDTO("[largeInstanceType]", vo.getResource().getLargeFlavor()));
             items.add(new ReplaceItemDTO("[cellInstanceType]", vo.getResource().getRunnerFlavor()));
         }
+        boolean z1Flag = false;
+        boolean z2Flag = false;
+        boolean z3Flag = false;
         
-        List<CommonCodeVO> jobs = commonCodeDao.selectCommonCodeList(setMessageSourceValue("common.code.deploy.jobs.parent"));
-        //2. replaceItemDTO에 설정
-        for( CommonCodeVO job : jobs){
-            boolean flag = false;
-            for( HashMap<String, Object> map: vo.getJobs() ){
-                if( map.get("code_name").toString().equals(job.getCodeName()) ){
-                    items.add( new ReplaceItemDTO("["+job.getCodeName()+"Z1]", map.get("instances").toString()) );
-                    flag = true;
-                    break;
+         // 고급 기능을 사용 하지 않았을 경우 network 사이즈를 기준으로 Replace 초기화
+        if( vo.getJobs().size() == 0 ){
+            List<HashMap<String, String>> map = getJobTemplateList("DEPLOY_TYPE_DIEGO", vo.getDiegoReleaseVersion());
+            for(int i=1; i < 4; i++ ) {
+                if(i <= vo.getNetworks().size() ){
+                    for(int j=0; j < map.size(); j++){
+                        items.add( new ReplaceItemDTO("["+map.get(j).get("job_name")+"Z"+i+"]", "1") );
+                    }
+                }else {
+                    for(int j=0; j < map.size(); j++){
+                        items.add( new ReplaceItemDTO("["+map.get(j).get("job_name")+"Z"+i+"]", "0") );
+                    }
                 }
             }
-            if( !flag ){
-                items.add(new ReplaceItemDTO("[databaseZ1]", "1"));
-                items.add(new ReplaceItemDTO("[accessZ1]", "1"));
-                items.add(new ReplaceItemDTO("[cc_bridgeZ1]", "1"));
-                items.add(new ReplaceItemDTO("[cellZ1]", "1"));
-                items.add(new ReplaceItemDTO("[brainZ1]", "1"));
+        }
+        
+        for( int j=0; j< vo.getJobs().size(); j++){
+            HashMap<String, Object> map = vo.getJobs().get(j);
+            if( vo.getNetworks().size() > 0) {
+                items.add( new ReplaceItemDTO("["+map.get("job_name").toString()+map.get("zone").toString().toUpperCase()+"]"
+                        , map.get("instances").toString()) );
+            }
+            if( map.get("zone").toString().equalsIgnoreCase("z1") ) {
+                z1Flag = true;
+            }
+            if( map.get("zone").toString().equalsIgnoreCase("z2") ) {
+                z2Flag = true;
+            }
+            if( map.get("zone").toString().equalsIgnoreCase("z3") ) {
+                z3Flag = true;
+            }
+        }
+        
+        if( vo.getNetworks().size() == 1 && !z1Flag) {
+            for( HashMap<String, Object> map: vo.getJobs()){
+                items.add( new ReplaceItemDTO("["+map.get("job_name").toString()+"Z1]", "1") );
+                items.add( new ReplaceItemDTO("["+map.get("job_name").toString()+"Z2]", "0") );
+                items.add( new ReplaceItemDTO("["+map.get("job_name").toString()+"Z3]", "0") );
+            }
+        }
+        if( ( vo.getNetworks().size() == 2 && !z2Flag ) || z2Flag ) {
+            for( HashMap<String, Object> map: vo.getJobs()){
+                items.add( new ReplaceItemDTO("["+map.get("job_name").toString()+"Z2]", "1") );
+                items.add( new ReplaceItemDTO("["+map.get("job_name").toString()+"Z3]", "0") );
+            }
+        }
+        if( vo.getNetworks().size() == 3 && !z3Flag ){
+            for( HashMap<String, Object> map: vo.getJobs()){
+                items.add( new ReplaceItemDTO("["+map.get("job_name").toString()+"Z2]", "1") );
+                items.add( new ReplaceItemDTO("["+map.get("job_name").toString()+"Z3]", "1") );
             }
         }
         return items;
@@ -441,11 +469,15 @@ public class DiegoService {
     *****************************************************************/
     @Transactional
     public void deleteDiegoInfoRecord(DiegoParamDTO.Delete dto){
+        HashMap<String, String> map = new HashMap<String, String>();
         diegoDao.deleteDiegoInfoRecord(Integer.parseInt(dto.getId()));
+        String deployType = setMessageSourceValue("common.deploy.type.diego.name");
         if( dto.getId() != null ){
-            CommonCodeVO codeVo = commonCodeDao.selectCommonCodeByCodeName(PARENT_CODE, SUB_GROUP_CODE, CODE_NAME);
-            networkDao.deleteNetworkInfoRecord(Integer.parseInt(dto.getId()), codeVo.getCodeName());
-            resourceDao.deleteResourceInfo(Integer.parseInt(dto.getId()), codeVo.getCodeName());
+            networkDao.deleteNetworkInfoRecord(Integer.parseInt(dto.getId()), deployType);
+            resourceDao.deleteResourceInfo(Integer.parseInt(dto.getId()), deployType);
+            map.put("id", dto.getId());
+            map.put("deploy_type", deployType);
+            diegoDao.deleteDiegoJobSettingInfo(map);
         }
     }
 
@@ -455,12 +487,10 @@ public class DiegoService {
      * @title : getJobTemplateList
      * @return : List<HashMap<String,String>>
     *****************************************************************/
-    public List<HashMap<String, String>> getJobTemplateList(String iaasType, String releaseVersion) {
+    public List<HashMap<String, String>> getJobTemplateList(String deployType, String releaseVersion) {
         HashMap<String, String> map = new HashMap<String, String>();
-        map.put("iaasType", iaasType);
         map.put("releaseVersion", releaseVersion);
-        map.put("deployType", setMessageSourceValue("common.deploy.type.diego.name"));
-        map.put("parentCode", setMessageSourceValue("common.code.deploy.jobs.parent"));
+        map.put("deployType",deployType);
         List<HashMap<String, String>> list = diegoDao.selectDiegoJobTemplatesByReleaseVersion(map);
         return list;
     }

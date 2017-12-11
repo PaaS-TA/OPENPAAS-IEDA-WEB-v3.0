@@ -37,7 +37,6 @@ public class IaasConfigMgntController{
         return "/deploy/information/iaasConfig/iaasConfigMgnt";
     }
     
-    
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
      * @description : AWS 환경 설정 관리 화면 이동
@@ -101,12 +100,14 @@ public class IaasConfigMgntController{
         List<IaasConfigMgntVO> allIaasConfigInfoList = service.getAllIaasConfigInfoList(principal);
         HashMap<String, Object> list = new HashMap<String, Object>();
         int size = 0;
-        if ( allIaasConfigInfoList != null ) size = allIaasConfigInfoList.size();
+        if ( allIaasConfigInfoList != null ) {
+            size = allIaasConfigInfoList.size();
+        }
         list.put("total", size);
         list.put("records", allIaasConfigInfoList);
     
         return new ResponseEntity<HashMap<String, Object>>(list, HttpStatus.OK);
-    };
+    }
 
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -121,7 +122,7 @@ public class IaasConfigMgntController{
         }
         HashMap<String, Integer> cnt = service.getIaasConfigCount(principal);
         return new ResponseEntity<HashMap<String, Integer>>(cnt, HttpStatus.OK);
-    };
+    }
 
 
     /***************************************************
@@ -139,7 +140,9 @@ public class IaasConfigMgntController{
         List<IaasConfigMgntVO> list = service.getIaasConfigInfoList(iaasType, principal);
         HashMap<String, Object> result = new HashMap<String, Object>();
         int size = 0;
-        if (list != null) size = list.size();
+        if (list != null) {
+            size = list.size();
+        }
         result.put("total", size);
         result.put("records", list);
         return new ResponseEntity<HashMap<String, Object>>(result, HttpStatus.OK);
