@@ -46,6 +46,9 @@ meta:
    ram: [rInsTypeRAM]
    disk: [rInsTypeDISK]
    cpu: [rInsTypeCPU]
+   
+  ## PaaSTA Properties Block
+  cadvisor-driver-ip: [cadvisorDriverIp]
 
   ## Releases Block
   diego-release-name: [diegoReleaseName]

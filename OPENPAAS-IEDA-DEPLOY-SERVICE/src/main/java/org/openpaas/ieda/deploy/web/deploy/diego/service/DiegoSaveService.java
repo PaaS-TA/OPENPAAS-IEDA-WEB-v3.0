@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.transaction.Transactional;
 
 import org.openpaas.ieda.common.exception.CommonException;
+import org.openpaas.ieda.deploy.web.deploy.cf.dao.CfDAO;
+import org.openpaas.ieda.deploy.web.deploy.cf.dao.CfVO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.network.NetworkDAO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.network.NetworkVO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceDAO;
@@ -27,6 +29,7 @@ import org.springframework.util.StringUtils;
 
 @Service
 public class DiegoSaveService {
+    @Autowired private CfDAO cfDao;
     @Autowired private DiegoDAO diegoDao;
     @Autowired private NetworkDAO networkDao;
     @Autowired private ResourceDAO resourceDao;
@@ -205,7 +208,14 @@ public class DiegoSaveService {
         map.put("id", vo.getId());
         
         //update Diego Info
-        vo.setKeyFile(dto.getKeyFile());
+        CfVO cfVo = cfDao.selectCfInfoByDeploymentName(vo.getIaasType(), vo.getCfDeployment());
+        if( cfVo.getReleaseName().equalsIgnoreCase("cf") && Integer.parseInt(cfVo.getReleaseVersion()) > 271 || 
+                cfVo.getReleaseName().equalsIgnoreCase("paasta-controller") && cfVo.getReleaseVersion().equals("3.0") ) {
+            vo.setKeyFile(cfVo.getKeyFile());
+        }else {
+            vo.setKeyFile(dto.getKeyFile());
+        }
+        
         diegoDao.updateDiegoDefaultInfo(vo);
         //Insert OR Update Diego Resource Info
         if( vo.getResource().getId() == null ){

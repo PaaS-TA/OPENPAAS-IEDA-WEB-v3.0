@@ -406,4 +406,40 @@
           Where id = #{id}
             And zone = #{zone}
     </delete>
+    
+    <select id="selectCfInfoByDeploymentName" resultMap="cf" >
+    /** ieda.deploy.deploy.cf.cfDeploy.selectCfInfoByDeploymentName  **/
+        Select 
+             id
+            ,iaas_type
+            ,dea_memory_mb
+            ,dea_disk_mb
+            ,diego_yn
+            ,app_ssh_fingerprint
+            ,deploy_status
+            ,deployment_file
+            ,deployment_name
+            ,description
+            ,director_uuid
+            ,domain
+            ,domain_organization
+            ,login_secret
+            ,release_name
+            ,release_version
+            ,loggregator_release_name
+            ,loggregator_release_version
+            ,paasta_monitoring_use
+            ,ingestor_ip
+            ,country_code
+            ,state_name
+            ,locality_name
+            ,organization_name
+            ,unit_name
+            ,email
+            ,key_file
+            ,task_id
+        From ieda_cf
+       Where iaas_type = #{iaasType}
+         And deployment_file = #{deploymentFile}
+    </select>
 </mapper>

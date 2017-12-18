@@ -256,7 +256,7 @@ final public class CommonDeployUtils {
                     cmd.add("");
                 }
                 //2.4 Path to Path to PaaSTA-overrides stub file.
-                if( !StringUtils.isEmpty(manifestTemplate.getCommonOptionTemplate()) && "true".equalsIgnoreCase(vo.getPaastaMonitoringUse().toLowerCase()) ){
+                if( !StringUtils.isEmpty(manifestTemplate.getCommonOptionTemplate())){
                     cmd.add(manifestTemplate.getCommonOptionTemplate());
                 }else{
                     cmd.add("");

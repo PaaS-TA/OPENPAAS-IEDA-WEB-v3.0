@@ -186,7 +186,6 @@ public class DiegoService {
             List<ReplaceItemDTO> replaceItems = setReplaceItems(vo);
             for (ReplaceItemDTO item : replaceItems) {
                 content = content.replace(item.getTargetItem(), item.getSourceItem());
-                
             }
             IOUtils.write(content, new FileOutputStream(TEMP_FILE+ vo.getDeploymentFile()), "UTF-8");
             CommonDeployUtils.setShellScript(vo.getDeploymentFile(),  manifestTemplate, vo);
@@ -219,10 +218,10 @@ public class DiegoService {
             manifestTemplate.setCommonJobTemplate("");
         }
         //common option Template File 
-        if( result.getCommonOptionTemplate() != null  && !(StringUtils.isEmpty( result.getCommonOptionTemplate())) ){
+        if( "true".equals(vo.getPaastaMonitoringUse().toLowerCase()) && result.getCommonOptionTemplate() != null  && !(StringUtils.isEmpty( result.getCommonOptionTemplate())) ){
             manifestTemplate.setCommonOptionTemplate( result.getCommonOptionTemplate() );
         } else{
-            manifestTemplate.setCommonOptionTemplate("");    
+            manifestTemplate.setCommonOptionTemplate("");
         }
         //iaas Property Template File
         if( result.getIaasPropertyTemplate() != null && !(StringUtils.isEmpty( result.getIaasPropertyTemplate())) ){
@@ -408,8 +407,9 @@ public class DiegoService {
         
          // 고급 기능을 사용 하지 않았을 경우 network 사이즈를 기준으로 Replace 초기화
         if( vo.getJobs().size() == 0 ){
-            List<HashMap<String, String>> map = getJobTemplateList("DEPLOY_TYPE_DIEGO", vo.getDiegoReleaseVersion());
-            for(int i=1; i < 4; i++ ) {
+        	String releaseVersion = setDiegoReleaseVersionToJobInfo(vo.getDiegoReleaseVersion());
+            List<HashMap<String, String>> map = getJobTemplateList("DEPLOY_TYPE_DIEGO", releaseVersion);
+            for(int i=1; i < 4; i++ ) {//job 인스턴스 최대 개수가 3개이기 때문
                 if(i <= vo.getNetworks().size() ){
                     for(int j=0; j < map.size(); j++){
                         items.add( new ReplaceItemDTO("["+map.get(j).get("job_name")+"Z"+i+"]", "1") );
@@ -459,6 +459,25 @@ public class DiegoService {
             }
         }
         return items;
+    }
+    
+    /****************************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : job 릴리즈 버전 설정 
+     * @title : setDiegoReleaseVersionToJobInfo
+     * @return : String
+    *****************************************************************/
+    public String setDiegoReleaseVersionToJobInfo(String releaseVersion){
+    	String jobReleaseVersion = "";
+    	if( releaseVersion.equals("2.0")) {
+    		jobReleaseVersion = "1.1.0";
+    	}else if( releaseVersion.equals("3.0") ) {
+    		jobReleaseVersion = "1.25.3";
+    	}else{
+    		jobReleaseVersion = releaseVersion;
+    	}
+    	
+    	return jobReleaseVersion;
     }
 
     /****************************************************************

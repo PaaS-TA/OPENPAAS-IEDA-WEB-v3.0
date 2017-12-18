@@ -327,7 +327,11 @@ public class CommonDeployService{
         } else if( platform.equalsIgnoreCase("cfdiego") ){
             code = "3";
         } else {
-            code = "1";
+            if( ( platform.equalsIgnoreCase("cf") || platform.equalsIgnoreCase("diego") ) && releaseVersion.equals("3.0") ) {
+                code = "3";
+            }else {
+                code = "1";
+            }
         }
         return code;
     }

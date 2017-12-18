@@ -868,6 +868,22 @@ INSERT INTO ieda_role_detail VALUES ( '172', '1000', '183245', 'SYSTEM', now(), 
 INSERT INTO ieda_role_detail VALUES ( '173', '1000', '183250', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_role_detail VALUES ( '174', '1000', '183251', 'SYSTEM', now(), 'SYSTEM', now());
 INSERT INTO ieda_role_detail VALUES ( '175', '1000', '183252', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '176', '1000', '182300', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '177', '1000', '182310', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '178', '1000', '182320', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '179', '1000', '182330', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '180', '1000', '182340', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '181', '1000', '182400', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '182', '1000', '182410', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '183', '1000', '182420', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '184', '1000', '182430', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '185', '1000', '182440', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '186', '1000', '182500', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '187', '1000', '182510', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '188', '1000', '182520', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '189', '1000', '182530', 'SYSTEM', now(), 'SYSTEM', now());
+INSERT INTO ieda_role_detail VALUES ( '190', '1000', '182540', 'SYSTEM', now(), 'SYSTEM', now());
+
 
 #manifest tamplate info
 INSERT INTO ieda_manifest_template VALUES (1, 'BOOTSTRAP','aws','bosh','233','233','generic_manifest_mask.yml','', '', 'aws-microbosh-stub.yml','','','','','aws-microbosh-param.yml','SYSTEM',now(),'SYSTEM',now());

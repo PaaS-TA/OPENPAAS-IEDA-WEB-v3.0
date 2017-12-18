@@ -253,7 +253,6 @@ function defaultPopup() {
         showMax :false,
         onOpen :function(event) {
             event.onComplete = function() {
-                
                 //릴리즈 정보 popup over
                  $('[data-toggle="popover"]').popover();
                  //Diego Release Info
@@ -434,6 +433,9 @@ function getCfRelease() {
                 });
             }
             getDiegoRelease();
+            if( defaultInfo != "" ){
+                setCfDeployFile(defaultInfo.cfDeploymentName);
+            }
         },
         error :function(e, status) {
             w2alert("CF 정보를 가져오는데 실패하였습니다.", "DIEGO 설치");
@@ -625,14 +627,14 @@ function createKeyConfirm(){
      }
      
      w2confirm({
-        width             : 350,
-        height             : 180,
-        title             : '<b>Key 생성 여부</b>',
-        msg             : message,
-        modal            : true,
-        yes_text         : "확인",
-        no_text         : "취소",
-        yes_callBack     : function(){
+        width        : 350,
+        height       : 180,
+        title        : '<b>Key 생성 여부</b>',
+        msg          : message,
+        modal        : true,
+        yes_text     : "확인",
+        no_text      : "취소",
+        yes_callBack : function(){
             createKey();
         },
         no_callBack : function(event){
@@ -1174,7 +1176,7 @@ function vSphereResourceInfoPopup() {
         showMax : false,
         onOpen : function(event) {
             event.onComplete = function() {
-                if( menu == "cfDiego" || defaultInfo.cfReleaseVersion > 271 ){
+                if( menu == "cfDiego" || defaultInfo.cfReleaseVersion > 271 || defaultInfo.cfReleaseVersion == "3.0" ){
                     $('.w2ui-msg-body #keyBtn').css("display","none");
                     diegoKeyFile = defaultInfo.cfKeyFile;
                 } else {
@@ -1862,7 +1864,7 @@ function popupComplete(){
  * 기능 : popupClose
  *********************************************************/
 function popupClose() {
-     $().w2destroy(config.layout2);
+     $().w2destroy("layout2");
     //params init
     initSetting();
     //grid Reload
@@ -2343,7 +2345,7 @@ function gridReload() {
 <!--  vSphere Resource -->
 <div id="vSphereResourceInfoDiv" style="width: 100%; height: 100%;" hidden="true">
     <form id="vSphereResourceInfoForm">
-        <div style="margin-left: 2%;display:inline-block;width: 98%;">
+        <div style="margin-left: 2%;display:inline-block;width: 98%;padding-top:20px;">
             <ul class="progressStep_5">
                 <li class="pass">기본 정보</li>
                 <li class="pass">네트워크 정보</li>
@@ -2511,7 +2513,7 @@ function gridReload() {
 
 <!-- diego 설치화면 -->
 <div id="installDiv" style="width:100%; height:100%;" hidden="true">
-    <div style="margin-left:2%;display:inline-block;width:97%;">
+    <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
         <ul class="progressStep_5">
             <li class="pass">기본 정보</li>
             <li class="pass">네트워크 정보</li>

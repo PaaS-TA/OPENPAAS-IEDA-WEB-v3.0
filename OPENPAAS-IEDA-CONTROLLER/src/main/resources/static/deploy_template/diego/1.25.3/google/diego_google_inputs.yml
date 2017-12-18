@@ -54,6 +54,9 @@ meta:
   cell-z1-instances: [cellZ1]
   brain-z1-instances: [brainZ1]
   
+  ## PaaSTA Properties Block
+  cadvisor-driver-ip: [cadvisorDriverIp]
+  
   database-z2-instances: [databaseZ2]
   access-z2-instances: [accessZ2]
   cc_bridge-z2-instances: [cc_bridgeZ2]

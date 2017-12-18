@@ -10,4 +10,4 @@ paasta_overrides:
     storage_driver_db: (( meta.cadvisor-db || "container_metric_db" ))
     storage_driver_ip: (( meta.cadvisor-driver-ip ))
     storage_driver_port: (( meta.cadvisor-driver-port || "8069" ))
-    container_housekeeping_interval: (( meta.cadvisor-interval || "15s" ))
+    #container_housekeeping_interval: (( meta.cadvisor-interval || "15s" ))

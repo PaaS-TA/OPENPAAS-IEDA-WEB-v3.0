@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openpaas.ieda.common.exception.CommonException;
 import org.openpaas.ieda.deploy.web.common.base.BaseDeployControllerUnitTest;
+import org.openpaas.ieda.deploy.web.deploy.cf.dao.CfDAO;
+import org.openpaas.ieda.deploy.web.deploy.cf.dao.CfVO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.network.NetworkDAO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.network.NetworkVO;
 import org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceDAO;
@@ -40,13 +43,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @WebAppConfiguration
 public class DiegoSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     
-    
     @InjectMocks DiegoSaveService mockDiegoSaveService;
     @Mock DiegoDAO mockDiegoDAO;
+    @Mock CfDAO mockCfDAO;
     @Mock NetworkDAO mockNetworkDAO;
     @Mock ResourceDAO mockResourceDAO;
     @Mock MessageSource mockMessageSource;
-    
     
     private Principal principal = null;
     /****************************************************************
@@ -162,7 +164,9 @@ public class DiegoSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     public void testInsertResourceInfo(){
         ResourceDTO dto = setResourceInfo("defalut");
         DiegoVO expectVo = setResultDiegoInfo("default");
+        CfVO cfVo = setResultCfInfo();
         when(mockDiegoDAO.selectResourceInfoById(anyInt(), anyString())).thenReturn(expectVo);
+        when(mockCfDAO.selectCfInfoByDeploymentName(anyString(), anyString())).thenReturn(cfVo);
         mockDiegoSaveService.saveResourceInfo(dto, principal);
     }
     
@@ -188,7 +192,9 @@ public class DiegoSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     public void testUpdateResourceInfo(){
         ResourceDTO dto = setResourceInfo("update");
         DiegoVO expectVo = setResultDiegoInfo("update");
+        CfVO cfVo = setResultCfInfo();
         when(mockDiegoDAO.selectResourceInfoById(anyInt(), anyString())).thenReturn(expectVo);
+        when(mockCfDAO.selectCfInfoByDeploymentName(anyString(), anyString())).thenReturn(cfVo);
         Map<String, Object> map = mockDiegoSaveService.saveResourceInfo(dto, principal);
         assertEquals(map.get("deploymentFile"), "aws-diego.yml");
         assertEquals(map.get("id"), 1);
@@ -204,6 +210,33 @@ public class DiegoSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     public void testSaveDiegoJobsInfo(){
         when(mockDiegoDAO.selectDiegoJobSettingInfoListBycfId(anyString(), anyInt())).thenReturn(resultJobListInfo());
         mockDiegoSaveService.saveDiegoJobsInfo(resultJobListInfo2(), principal);
+    }
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : CF 정보 설정
+     * @title : setResultCfInfo
+     * @return : CfVO
+    ***************************************************/
+    public CfVO setResultCfInfo() {
+        CfVO cfVo = new CfVO();
+        cfVo.setAppSshFingerprint("");
+        cfVo.setCountryCode("Korea");
+        cfVo.setCreateDate(new Date());
+        cfVo.setCreateUserId(principal.getName());
+        cfVo.setDeploymentFile("openstack-cf-1.yml");
+        cfVo.setDeploymentName("cf");
+        cfVo.setDescription("desc");
+        cfVo.setDiegoYn("Y");
+        cfVo.setDirectorUuid("");
+        cfVo.setDomain("10.10.10.10.xip.io");
+        cfVo.setDomainOrganization("domain desc");
+        cfVo.setIaasType("openstack");
+        cfVo.setId(1);
+        cfVo.setKeyFile("openstack-cf-key-1.yml");
+        cfVo.setReleaseName("cf");
+        cfVo.setReleaseVersion("272");
+        return cfVo;
     }
     
     /***************************************************

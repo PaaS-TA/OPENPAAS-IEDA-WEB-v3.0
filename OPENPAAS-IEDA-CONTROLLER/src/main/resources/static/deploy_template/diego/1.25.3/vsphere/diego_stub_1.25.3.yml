@@ -43,6 +43,7 @@ property_overrides:
       server_cert: (( diego-certs.auctioneer-server-certs ))
       server_key: (( diego-certs.auctioneer-server-key ))
       active_key_label: key1
+    active_key_label: key1
     encryption_keys:
       - label: key1
         passphrase: (( diego-certs.bbs-encrypt-keys ))

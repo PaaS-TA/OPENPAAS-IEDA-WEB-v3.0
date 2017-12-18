@@ -111,4 +111,12 @@ public interface CfDAO {
      * @return : void
     ***************************************************/
     void deleteCfJobSettingRecordsByIdAndZone(@Param("id")int id, @Param("zone") String zone );
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : 
+     * @title : selectCfInfoByDeploymentName
+     * @return : CfVO
+    ***************************************************/
+    CfVO selectCfInfoByDeploymentName(@Param("iaasType") String iaasType,@Param("deploymentFile") String deploymentFile);
 }

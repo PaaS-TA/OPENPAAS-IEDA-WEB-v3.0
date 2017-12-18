@@ -48,6 +48,9 @@ meta:
   cflinuxfs2-release-name: [cflinuxfs2RootfsReleaseName]
   cflinuxfs2-release-version: [cflinuxfs2RootfsReleaseVersion]
   
+  ## PaaSTA Properties Block
+  cadvisor-driver-ip: [cadvisorDriverIp]
+  
   ## Instacnce Setting
   database-z1-instances: [databaseZ1]
   access-z1-instances: [accessZ1]
