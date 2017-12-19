@@ -239,7 +239,7 @@ base:
           key:         (( property_overrides.loggregator.tls.key || config_from_cf.loggregator.key ))
 
     - name: cell_z1
-      templates: (( base_job_templates.cell volman_overrides.driver_templates cf_networking_overrides.driver_templates route_emitter_overrides.templates grootfs_overrides.templates ))
+      templates: (( base_job_templates.cell volman_overrides.driver_templates cf_networking_overrides.driver_templates route_emitter_overrides.templates grootfs_overrides.templates paasta_overrides.templates ))
       instances: (( instance_count_overrides.cell_z1.instances || 1 ))
       resource_pool: cell_z1
       networks:
@@ -350,7 +350,7 @@ base:
         loggregator: *brain-loggregator
 
     - name: cell_z2
-      templates: (( base_job_templates.cell volman_overrides.driver_templates cf_networking_overrides.driver_templates route_emitter_overrides.templates grootfs_overrides.templates ))
+      templates: (( base_job_templates.cell volman_overrides.driver_templates cf_networking_overrides.driver_templates route_emitter_overrides.templates grootfs_overrides.templates paasta_overrides.templates ))
       instances: (( instance_count_overrides.cell_z2.instances || 0 ))
       resource_pool: cell_z2
       networks:
@@ -443,7 +443,7 @@ base:
         loggregator: *brain-loggregator
 
     - name: cell_z3
-      templates: (( base_job_templates.cell volman_overrides.driver_templates cf_networking_overrides.driver_templates route_emitter_overrides.templates grootfs_overrides.templates ))
+      templates: (( base_job_templates.cell volman_overrides.driver_templates cf_networking_overrides.driver_templates route_emitter_overrides.templates grootfs_overrides.templates paasta_overrides.templates ))
       instances: (( instance_count_overrides.cell_z3.instances || 0 ))
       resource_pool: cell_z3
       networks:
@@ -1038,7 +1038,7 @@ route_emitter_overrides:
 
 paasta_overrides:
   templates: (( merge || [] ))
-  cadvisor_properties: (( merge || [] ))
+  cadvisor_properties: (( merge || nil ))
 
 base_releases:
   - name: (( release_versions.diego.name || "diego" ))
@@ -1115,8 +1115,7 @@ base_job_templates:
       release: paasta-loggregator
     - name: cfdot
       release: (( release_versions.diego.name || "diego" ))
-    - name: cadvisor
-      release: (( release_versions.diego.name || "diego" ))
+
   database:
     - name: consul_agent
       consumes:
