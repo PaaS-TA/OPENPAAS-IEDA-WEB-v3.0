@@ -615,7 +615,7 @@ $(window).resize(function() {
 #releasePathFile { display:none; } 
 </style>
 <div id="main">
-    <div class="page_site">환경설정 및 환리 > <strong>릴리즈 관리</strong></div>
+    <div class="page_site">환경설정 및 관리 > <strong>릴리즈 관리</strong></div>
     
     <!-- OpenPaaS 릴리즈 목록-->
     <div class="pdt20">
