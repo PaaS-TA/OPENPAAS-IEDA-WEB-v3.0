@@ -214,6 +214,8 @@ public class StemcellManagementService {
         if( dto == null ) {
             dto = new StemcellManagementDTO.Regist();
         }
+        String downloadUrlInfo = setStemcellUrlForWget(dto);
+        dto.setDownloadLink(downloadUrlInfo);
         return doWgetToGetPublicStemcellInfo(dto, testFlag, principal);
     }
     
