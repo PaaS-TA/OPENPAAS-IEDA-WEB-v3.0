@@ -28,7 +28,6 @@
         <result property="cflinuxfs2rootfsreleaseVersion" column="CFLINUXFS2_ROOTFS_RELEASE_VERSION" />
         <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE" />
         <result property="cadvisorDriverIp" column="CADVISOR_DRIVER_IP" />
-        <result property="cadvisorDriverPort" column="CADVISOR_DRIVER_PORT" />
         <collection property="resource" ofType="org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceVO"  javaType="org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceVO">
             <result property="id" column="RESOURCE_ID" />
             <result property="deployType" column="RESOURCE_DEPLOY_TYPE"/>
@@ -78,7 +77,6 @@
             ,etcd_release_version
             ,paasta_monitoring_use
             ,cadvisor_driver_ip
-            ,cadvisor_driver_port
             ,task_id
             ,d.update_date as update_date
             ,d.create_date as create_date
@@ -111,7 +109,6 @@
             ,a.key_file
             ,a.paasta_monitoring_use
             ,a.cadvisor_driver_ip
-            ,a.cadvisor_driver_port
             ,a.task_id
             ,a.update_date
             ,(select c.deployment_name from ieda_diego a, ieda_cf c where c.deployment_file = a.cf_deployment and a.id=#{id}) as cfName
@@ -138,7 +135,6 @@
             ,etcd_release_version
             ,paasta_monitoring_use
             ,cadvisor_driver_ip
-            ,cadvisor_driver_port
             ,deployment_file
             ,cf_deployment
             ,key_file
@@ -161,7 +157,6 @@
             ,#{diego.etcdReleaseVersion}
             ,#{diego.paastaMonitoringUse}
             ,#{diego.cadvisorDriverIp}
-            ,#{diego.cadvisorDriverPort}
             ,#{diego.deploymentFile}
             ,#{diego.cfDeployment}
             ,#{diego.keyFile}
@@ -215,7 +210,6 @@
             ,etcd_release_version
             ,paasta_monitoring_use
             ,cadvisor_driver_ip
-            ,cadvisor_driver_port
             ,key_file
             ,task_id
             ,resource.id as resource_id
@@ -263,7 +257,6 @@
             etcd_release_version=#{diego.etcdReleaseVersion},
             paasta_monitoring_use = #{diego.paastaMonitoringUse},
             cadvisor_driver_ip=#{diego.cadvisorDriverIp},
-            cadvisor_driver_port=#{diego.cadvisorDriverPort},
             key_file=#{diego.keyFile},
             deployment_file=#{diego.deploymentFile}, 
             deploy_status=#{diego.deployStatus}, 
