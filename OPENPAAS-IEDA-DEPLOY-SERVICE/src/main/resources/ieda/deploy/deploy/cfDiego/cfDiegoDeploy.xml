@@ -48,7 +48,6 @@
             <result property="cflinuxfs2rootfsreleaseVersion" column="CFLINUXFS2_ROOTFS_RELEASE_VERSION" />
             <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE" />
             <result property="cadvisorDriverIp" column="CADVISOR_DRIVER_IP" />
-            <result property="cadvisorDriverPort" column="CADVISOR_DRIVER_PORT" />
             <result property="deploymentFile" column="DIEGO_DEPLOYMENT_FILE" />
             <result property="deployStatus" column="DIEGO_DEPLOY_STATUS" />
             <result property="taskId" column="DIEGO_TASK_ID" />
@@ -88,7 +87,6 @@
             ,d.etcd_release_version as etcd_release_version 
             ,d.paasta_monitoring_use
             ,d.cadvisor_driver_ip
-            ,d.cadvisor_driver_port
             ,d.deployment_file as diego_deployment_file 
             ,d.deploy_status as diego_deploy_status
             ,d.task_id as diego_task_id 
@@ -166,7 +164,6 @@
                     ,d.etcd_release_version as garden_release_version
                     ,d.paasta_monitoring_use
                     ,d.cadvisor_driver_ip
-                    ,d.cadvisor_driver_port
                     ,d.deployment_file as diego_deployment_file
                     ,d.deploy_status as diego_deploy_status
                     ,d.task_id as diego_task_id

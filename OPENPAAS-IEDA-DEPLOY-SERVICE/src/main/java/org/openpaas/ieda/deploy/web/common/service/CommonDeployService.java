@@ -447,7 +447,7 @@ public class CommonDeployService{
         String content ="";
         if(!openstackVersion.isEmpty()) {
             if(openstackVersion.equalsIgnoreCase("v3")){
-                iaasType = "v3";
+                iaasType += "v3";
             }
         }
         try {

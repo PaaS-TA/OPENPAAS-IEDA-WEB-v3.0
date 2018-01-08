@@ -204,7 +204,7 @@ public class BootstrapService {
         }
         if(!openstackVerison.isEmpty()) {
             if(openstackVerison.equalsIgnoreCase("v3")){
-                iaasType = "v3";
+                iaasType += "v3";
             }
         }
         

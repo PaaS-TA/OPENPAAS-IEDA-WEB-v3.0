@@ -287,11 +287,14 @@ function doSearch() {
             var start = directorName.indexOf("(");
             var end = directorName.indexOf("_CPI)", start+1);
             iaas = directorName.substring(start+1, end);
+            $('#installBtn').attr('disabled', false);
     }
+    console.log(iaas);
     if(iaas != ""){
         w2ui['config_cfDiegoGrid'].load("<c:url value='/deploy/cfDiego/list/"+iaas+"'/>",
             function() { doButtonStyle(); });
     }else{
+    	$('#installBtn').attr('disabled', true);
         doButtonStyle();
     }
 }

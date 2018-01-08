@@ -465,16 +465,6 @@ $(function() {
                 }, sqlInjection : function(){
                     return $(".w2ui-msg-body input[name='commonProject']").val().trim();
                 }
-            }, openstackDomain: {
-                required: function(){
-                    if( $(".w2ui-msg-body .openstackDomainDiv").css("display") == "none"){
-                        return false;
-                    }else{
-                        return checkEmpty($(".w2ui-msg-body input[name='openstackDomain']").val().trim());
-                    }
-                }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='openstackDomain']").val().trim();
-                }
             }
         },messages: {
             accountName: { 
@@ -489,8 +479,6 @@ $(function() {
                 required:  "Tenant"+ text_required_msg
             }, commonProject: {
                 required: "Project"+ text_required_msg
-            }, openstackDomain: {
-                required: "Domain"+ text_required_msg
             }
         }, unhighlight: function(element) {
             setSuccessStyle(element);
