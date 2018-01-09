@@ -187,6 +187,7 @@ public class DiegoService {
             for (ReplaceItemDTO item : replaceItems) {
                 content = content.replace(item.getTargetItem(), item.getSourceItem());
             }
+            System.out.println(content);
             IOUtils.write(content, new FileOutputStream(TEMP_FILE+ vo.getDeploymentFile()), "UTF-8");
             CommonDeployUtils.setShellScript(vo.getDeploymentFile(),  manifestTemplate, vo);
         } catch (IOException e) {
@@ -413,6 +414,7 @@ public class DiegoService {
                 if(i <= vo.getNetworks().size() ){
                     for(int j=0; j < map.size(); j++){
                         items.add( new ReplaceItemDTO("["+map.get(j).get("job_name")+"Z"+i+"]", "1") );
+                        System.out.println(map.get(j).get("job_name"));
                     }
                 }else {
                     for(int j=0; j < map.size(); j++){
