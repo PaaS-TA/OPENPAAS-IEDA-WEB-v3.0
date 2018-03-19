@@ -115,7 +115,7 @@ properties:
   loggregator_endpoint:
     shared_secret: (( meta.loggregator-secret || "loggregator-secret" ))
   login:
-    protocol: (( meta.login-protocol || "https" ))
+    protocol: (( meta.login-protocol || nil ))
     saml:
       serviceProviderCertificate: (( cf-certs.uaa-saml-cert ))
       serviceProviderKey: (( cf-certs.uaa-saml-key ))
@@ -166,6 +166,10 @@ properties:
         - openid
         - cloud_controller.admin
         - doppler.firehose
+        - clients.read
+        - clients.write
+        - routing.router_groups.read
+        - routing.router_groups.write
     sslCertificate: (( cf-certs.uaa-ssl-cert ))
     sslPrivateKey: (( cf-certs.uaa-ssl-key ))
     

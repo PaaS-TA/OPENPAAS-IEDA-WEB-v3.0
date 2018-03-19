@@ -453,7 +453,6 @@ function setCfDeployFile(value){
     var cfDeploymentFile;
     var cfReleaseVersion;
     var cfKey;
-    
     for(var i=0;i<arrayCFInfoJSON.records.length;i++){
         if(value==arrayCFInfoJSON.records[i].deploymentName){
             cf_id = arrayCFInfoJSON.records[i].id;
@@ -490,7 +489,7 @@ function getgardenRelease() {
                     if( defaultInfo.gardenReleaseName == obj.name && defaultInfo.gardenReleaseVersion == obj.version){
                         option += "<option value='"+obj.name+"/"+obj.version+"' selected>"+obj.name+"/"+obj.version+"</option>";
                     }else{
-                        option += "<option value='"+obj.name+"/"+obj.version+"'>"+obj.name+"/"+obj.version+"</option>";    
+                        option += "<option value='"+obj.name+"/"+obj.version+"'>"+obj.name+"/"+obj.version+"</option>";
                     }
                 });
             }
@@ -1120,9 +1119,11 @@ function resourcePopup(div, height) {
         showMax :false,
         onOpen  :function(event) {
             event.onComplete = function() {
-                if( menu == "cfDiego" || defaultInfo.cfReleaseVersion > 271 || defaultInfo.cfReleaseVersion == "3.0" ){
+            	console.log(defaultInfo);
+                if( menu == "cfDiego" || defaultInfo.cfReleaseVersion > 271 || defaultInfo.cfReleaseVersion == "3.0" || defaultInfo.cfReleaseVersion == "3.1" ){
                     $('.w2ui-msg-body #keyBtn').css("display","none");
                     diegoKeyFile = defaultInfo.cfKeyFile;
+                    console.log(diegoKeyFile);
                     
                 } else {
                     $('.w2ui-msg-body #keyBtn').css("display","block");
@@ -1176,7 +1177,7 @@ function vSphereResourceInfoPopup() {
         showMax : false,
         onOpen : function(event) {
             event.onComplete = function() {
-                if( menu == "cfDiego" || defaultInfo.cfReleaseVersion > 271 || defaultInfo.cfReleaseVersion == "3.0" ){
+                if( menu == "cfDiego" || defaultInfo.cfReleaseVersion > 271 || defaultInfo.cfReleaseVersion == "3.0" || defaultInfo.cfReleaseVersion == "3.1" ){
                     $('.w2ui-msg-body #keyBtn').css("display","none");
                     diegoKeyFile = defaultInfo.cfKeyFile;
                 } else {
@@ -1275,11 +1276,11 @@ function vSphereResourceInfoPopup() {
      w2popup.lock(save_info_msg, true);
      var i=0;
      var flag=true;
-     $(".w2ui-msg-body #diegoJobListDiv li > ul").each(function(){
+      $(".w2ui-msg-body #diegoJobListDiv li > ul").each(function(){
          var input = $($(this).children()[0]).find("input");
          if ($(input).val != "" && $(input).val() >=0 && $(input).val() <= 3) {
          } else flag = false;
-     });
+     }); 
      jobsInfo = [];
      $(".w2ui-msg-body #diegoJobListDiv li > ul").each(function(){
          var input = $($(this).children()[0]).find("input");
@@ -1385,7 +1386,7 @@ function vSphereResourceInfoPopup() {
  }
  
  /********************************************************
-  * 설명 : CF 고급 설정 paasta release version 설정
+  * 설명 : diego 고급 설정 paasta release version 설정
   * 기능 : settingReleaseVersion
   *********************************************************/
  function settingReleaseVersion( version ){
@@ -1393,7 +1394,9 @@ function vSphereResourceInfoPopup() {
       if( version == "3.0" ){
          releaseVersion = "1.25.3";
      }else if( version == "2.0" ){
-         releaseVersion = "1.1.0"
+         releaseVersion = "1.1.0";
+     }else if(releaseVersion == "3.1"){
+    	 releaseVersion = "1.34.0";
      }
      return releaseVersion;
  }
@@ -1644,7 +1647,7 @@ function diegoDeploy(type) {
  *********************************************************/
 function installPopup(){
     var deploymentName = defaultInfo.deploymentName;
-    var message = "DIEGO(배포명:" + deploymentName +  ") ";
+    var message = "DIEGO & Container";
     
     var requestParameter = {
             id          : diegoId,

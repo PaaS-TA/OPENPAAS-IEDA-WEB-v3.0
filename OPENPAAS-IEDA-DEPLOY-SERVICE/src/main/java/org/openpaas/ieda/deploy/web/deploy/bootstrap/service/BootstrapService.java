@@ -292,10 +292,12 @@ public class BootstrapService {
             items.add(new ReplaceItemDTO("[paastaMonitoringIp]", vo.getPaastaMonitoringIp()));
             items.add(new ReplaceItemDTO("[paastaMonitoringReleaseName]", vo.getPaastaMonitoringRelease().replace("-3.0.tgz", "")));
             items.add(new ReplaceItemDTO("[paastaMonitoringRelease]", RELEASE_DIR + SEPARATOR + vo.getPaastaMonitoringRelease()));
+            items.add(new ReplaceItemDTO("[influxdbIp]", vo.getInfluxdbIp()+":8059"));
         }else {
             items.add(new ReplaceItemDTO("[paastaMonitoringIp]", ""));
             items.add(new ReplaceItemDTO("[paastaMonitoringReleaseName]", ""));
             items.add(new ReplaceItemDTO("[paastaMonitoringRelease]", ""));
+            items.add(new ReplaceItemDTO("[influxdbIp]", ""));
         }
         
         //Internal 네트워크 정보

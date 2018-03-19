@@ -89,7 +89,8 @@ function setBootstrapData(contents){
             snapshotSchedule : contents.snapshotSchedule,
             paastaMonitoringUse : contents.paastaMonitoringUse,
             paastaMonitoringIp : contents.paastaMonitoringIp,
-            paastaMonitoringRelease : contents.paastaMonitoringRelease
+            paastaMonitoringRelease : contents.paastaMonitoringRelease,
+            influxdbIp : contents.influxdbIp
     }
     networkInfo = {
             id                  : bootstrapId,
@@ -364,14 +365,16 @@ function defaultInfoPop(iaas){
         buttons : $("#DefaultInfoButtonDiv").html(),
         onOpen:function(event){
             event.onComplete = function(){
+            	$(".w2ui-msg-body select[name='paastaMonitoringRelease']").attr("disabled", true);
                 $(".w2ui-msg-body input[name='ingestorIp']").attr("disabled", true);
+                $(".w2ui-msg-body input[name='influxdbIp']").attr("disabled", true);
                 $('[data-toggle="popover"]').popover();
                 $(".paastaMonitoring-info").attr('data-content', "paasta-controller v3.0 이상에서 지원")
                 if( !checkEmpty(boshInfo) && boshInfo != "" ){
                     $(".w2ui-msg-body input[name='deploymentName']").val(boshInfo.deploymentName);
                     $(".w2ui-msg-body input[name='directorName']").val(boshInfo.directorName);
                     $(".w2ui-msg-body input[name='ntp']").val(boshInfo.ntp);
-                    $('.w2ui-msg-body input:radio[name=enableSnapshots]:input[value="' +boshInfo.enableSnapshots + '"]').attr("checked", true);    
+                    $('.w2ui-msg-body input:radio[name=enableSnapshots]:input[value="' +boshInfo.enableSnapshots + '"]').attr("checked", true);
                     if( !checkEmpty(boshInfo.enableSnapshots) ){
                         $(".w2ui-msg-body input[name='snapshotSchedule']").val(boshInfo.snapshotSchedule);
                         enableSnapshotsFn(boshInfo.enableSnapshots);
@@ -384,6 +387,10 @@ function defaultInfoPop(iaas){
                             $(".w2ui-msg-body input[name='paastaMonitoring']").attr("checked", true);
                             $(".w2ui-msg-body input[name='ingestorIp']").removeAttr("disabled");
                             $(".w2ui-msg-body input[name='ingestorIp']").val(boshInfo.paastaMonitoringIp);
+                            
+                            $(".w2ui-msg-body input[name='influxdbIp']").removeAttr("disabled");
+                            $(".w2ui-msg-body input[name='influxdbIp']").val(boshInfo.influxdbIp);
+                            
                             $(".w2ui-msg-body select[name='paastaMonitoringRelease']").val(boshInfo.paastaMonitoringRelease);
                         }else{
                             $(".w2ui-msg-body input[name='paastaMonitoring']").attr("checked", false);
@@ -396,7 +403,7 @@ function defaultInfoPop(iaas){
                     checkPaasTAMonitoringUseYn();
                 }
                 //ETC 릴리즈 정보 가져오기(PaaS-TA Monitoring 릴리즈)
-                getLocalPaasTAMonitoringReleaseList('agent');
+                getLocalPaasTAMonitoringReleaseList('BOSH_MONITORING_AGENT');
                 //BOSH 릴리즈 정보 가져오기
                 getLocalBoshList('bosh');
                 //BOSH CPI 릴리즈 정보 가져오기
@@ -520,13 +527,19 @@ function checkPaasTAMonitoringUseYn(){
     var value = $("#paastaMonitoring:checked").val();
     if( value == "on"){
         $(".w2ui-msg-body  input[name=ingestorIp]").attr("disabled", false);
+        $(".w2ui-msg-body  input[name=influxdbIp]").attr("disabled", false);
         $(".w2ui-msg-body  select[name=paastaMonitoringRelease]").attr("disabled", false);
+        
+        
         //ETC 릴리즈 정보 가져오기(PaaS-TA Monitoring 릴리즈)
-        getLocalPaasTAMonitoringReleaseList('etc');
+        getLocalPaasTAMonitoringReleaseList('BOSH_MONITORING_AGENT');
     }else{
         $(".w2ui-msg-body  input[name=ingestorIp]").val("");
         $(".w2ui-msg-body  select[name=paastaMonitoringRelease]").val("");
         $(".w2ui-msg-body  input[name=ingestorIp]").attr("disabled", true);
+        
+        $(".w2ui-msg-body  input[name=influxdbIp]").attr("disabled", true);
+        $(".w2ui-msg-body  input[name=influxdbIp]").val("");
         $(".w2ui-msg-body  select[name=paastaMonitoringRelease]").attr("disabled", true);
     }
 }
@@ -545,7 +558,7 @@ function getLocalPaasTAMonitoringReleaseList(type){
             if( data.length == 0 ){
                 return;
             }
-            if(type == 'agent'){
+            if(type == 'BOSH_MONITORING_AGENT'){
                 var options = '<option value="">PaaS-TA 모니터링 릴리즈를 선택하세요.</option>';
                 for( var i=0; i<data.length; i++ ){
                     if( data[i] == boshInfo.paastaMonitoringRelease){
@@ -570,8 +583,10 @@ function saveDefaultInfo(type){
         var monitoringUse = "true";
         var ingrestorIp = $(".w2ui-msg-body input[name=ingestorIp]").val();
         var monitoringRelease = $(".w2ui-msg-body select[name=paastaMonitoringRelease]").val();
+        var influxdbIp = $(".w2ui-msg-body input[name='influxdbIp']").val();
     }else{
         var monitoringUse = "false";
+        var influxdbIp =  "";
         var ingrestorIp = "";
         var monitoringRelease = "";
     }
@@ -584,6 +599,7 @@ function saveDefaultInfo(type){
             boshCpiRelease      : $(".w2ui-msg-body select[name=boshCpiRelease]").val(),
             enableSnapshots     : $(".w2ui-msg-body input:radio[name=enableSnapshots]:checked").val(),
             snapshotSchedule    : $(".w2ui-msg-body input[name=snapshotSchedule]").val(),
+            influxdbIp : influxdbIp,
             paastaMonitoringUse : monitoringUse,
             paastaMonitoringIp  : ingrestorIp,
             paastaMonitoringRelease : monitoringRelease
@@ -1617,6 +1633,13 @@ function popupClose() {
                             <input name="ingestorIp" type="text" style="display:inline-block; width: 70%;" placeholder="예)10.0.0.0" />
                         </div>
                     </div>
+                    <div class="w2ui-field">
+                        <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 Influxdb 서버 IP</label>
+                        <div>
+                            <input name="influxdbIp" type="text" style="display:inline-block; width: 70%;" placeholder="예)10.0.0.0" />
+                        </div>
+                    </div>
+                    
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 릴리즈</label>
                         <div>

@@ -16,13 +16,13 @@ jobs:
             file_path: /var/vcap/store/director/tasks/**/debug
         metrics_agent:
           influxdb:
-            url: 10.10.6.11:8059
+            url: (( meta.influxdbIp ))
             database: bosh_metric_db
             measurement: bosh_metrics
             processMeasurement: bosh_process_metrics
         
         <<: (( merge ))
-         
+      
       templates:
       - name: metrics_agent
         release: bosh-monitoring-agent

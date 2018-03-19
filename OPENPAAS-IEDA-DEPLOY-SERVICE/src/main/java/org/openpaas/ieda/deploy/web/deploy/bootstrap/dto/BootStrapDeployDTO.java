@@ -36,8 +36,6 @@ public class BootStrapDeployDTO{
         public void setTestFlag(String testFlag) {
             this.testFlag = testFlag;
         }
-        
-        
     }
     
     public static class Default{
@@ -61,6 +59,7 @@ public class BootStrapDeployDTO{
         private String snapshotSchedule;//스냅샷 스케줄
         private String paastaMonitoringUse;// PaaS-TA 모니터링 사용 유무
         private String paastaMonitoringIp; //PaaS-TA 모니터링 사용시 ingrestorIP
+        private String influxdbIp;
         private String paastaMonitoringRelease; //PaaS-TA 모니터링 사용시 릴리즈
         public String getId() {
             return id;
@@ -134,7 +133,12 @@ public class BootStrapDeployDTO{
         public void setPaastaMonitoringRelease(String paastaMonitoringRelease) {
             this.paastaMonitoringRelease = paastaMonitoringRelease;
         }
-        
+        public String getInfluxdbIp() {
+            return influxdbIp;
+        }
+        public void setInfluxdbIp(String influxdbIp) {
+            this.influxdbIp = influxdbIp;
+        }
     }
     
     public static class Network{

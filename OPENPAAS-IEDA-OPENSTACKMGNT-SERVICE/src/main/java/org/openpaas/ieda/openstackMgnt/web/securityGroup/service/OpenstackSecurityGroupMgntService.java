@@ -147,8 +147,7 @@ public class OpenstackSecurityGroupMgntService {
     }
 
     /***************************************************
-    * @param vo 
-     * @project : OPENSTACK 인프라 관리 대시보드
+    * @project : OPENSTACK 인프라 관리 대시보드
     * @description : OPENSTACK 보안 그룹 Ingress Rules Remote 값 설정
     * @title : setRemote
     * @return : void

@@ -130,7 +130,9 @@ public class AwsSecurityGroupMgntApiService {
             String portRanges = ports[0];
             int fromPort = Integer.valueOf(portRanges);
             int toPort = ports.length == 2 ? Integer.valueOf(portRanges) : fromPort;
-            
+            if(toPort == 0){
+                toPort = 65535;
+            }
             //if security id
             UserIdGroupPair userIdGroupPairs = new UserIdGroupPair();
             userIdGroupPairs.withGroupId(dto.getGroupId()).withVpcId(dto.getVpcId());
@@ -140,7 +142,6 @@ public class AwsSecurityGroupMgntApiService {
                         .withIpProtocol(dto.getIngressRules().get(i).get("protocol"))
                         .withFromPort(fromPort)
                         .withToPort(toPort);
-
             ingressRequest.withGroupId(dto.getGroupId()).withIpPermissions(ipPermission);
             AuthorizeSecurityGroupIngressResult ingressResult = ec2.authorizeSecurityGroupIngress(ingressRequest);
             if( ingressResult.getSdkHttpMetadata().getHttpStatusCode() == 200 ){

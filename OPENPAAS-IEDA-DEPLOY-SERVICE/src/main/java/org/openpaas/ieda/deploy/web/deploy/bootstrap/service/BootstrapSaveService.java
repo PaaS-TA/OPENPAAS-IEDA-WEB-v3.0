@@ -80,6 +80,7 @@ public class BootstrapSaveService {
             vo.setUpdateUserId(principal.getName());
             vo.setPaastaMonitoringUse(dto.getPaastaMonitoringUse());
             vo.setPaastaMonitoringIp(dto.getPaastaMonitoringIp());
+            vo.setInfluxdbIp(dto.getInfluxdbIp());
             vo.setPaastaMonitoringRelease(dto.getPaastaMonitoringRelease());
         }else{
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),

@@ -285,9 +285,9 @@ public class StemcellManagementService {
     * @return : String
     ***************************************************/
     public String setStemcellUrlForWget(StemcellManagementDTO.Regist dto){
-        String iaas = setIaasHypervisor(dto);
         String downloadUrl = "";
         if(dto.getFileType().toLowerCase().equalsIgnoreCase("version")){
+            String iaas = setIaasHypervisor(dto);
             String baseUrl = setStemcellDownLoadBaseUrlByVersionType(dto);
             String subUrl = setStemcellDownLoadSubUrlByVersionType(dto);
             if(("centos").equalsIgnoreCase(dto.getOsName().toLowerCase())){

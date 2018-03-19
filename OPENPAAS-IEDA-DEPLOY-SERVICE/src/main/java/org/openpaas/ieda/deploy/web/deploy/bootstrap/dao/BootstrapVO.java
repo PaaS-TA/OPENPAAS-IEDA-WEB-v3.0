@@ -30,6 +30,7 @@ public class BootstrapVO {
     private String ntp; // NTP
     private String paastaMonitoringUse; //PaaS-TA 모니터링 사용 유무
     private String paastaMonitoringIp; //PaaS-TA 모니터링 사용시 ingrestorIP
+    private String influxdbIp;
     private String paastaMonitoringRelease; //PaaS-TA 모니터링 사용시 릴리즈
 
     /** Network Info **/
@@ -330,6 +331,13 @@ public class BootstrapVO {
     public void setPaastaMonitoringRelease(String paastaMonitoringRelease) {
         this.paastaMonitoringRelease = paastaMonitoringRelease;
     }
-    
+
+    public String getInfluxdbIp() {
+        return influxdbIp;
+    }
+
+    public void setInfluxdbIp(String influxdbIp) {
+        this.influxdbIp = influxdbIp;
+    }
 
 }

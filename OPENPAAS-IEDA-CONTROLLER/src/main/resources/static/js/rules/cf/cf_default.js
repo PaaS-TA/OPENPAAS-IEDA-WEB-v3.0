@@ -57,6 +57,10 @@ $("#defaultInfoForm").validate({
                     var name = $(".w2ui-msg-body select[name='releases']").val().split("/")[0];
                     var version = $(".w2ui-msg-body select[name='releases']").val().split("/")[1];
                     if( (name.indexOf("cf") > -1 &&  Number(version) >= 272 ) || (name.indexOf("paasta-controller") > -1 && compare(version, "3.0") > -1) ){
+                    	
+                        if( (name.indexOf("paasta-controller") > -1 && compare(version, "3.1") > -1) || (name.indexOf("cf") > -1 &&  Number(version) >= 287 ) ){
+                            return false;
+                        }
                         return checkEmpty( $(".w2ui-msg-body select[name='loggregatorReleases']").val() );
                     }else{
                         return false;

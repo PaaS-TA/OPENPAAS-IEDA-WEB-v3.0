@@ -210,7 +210,7 @@ public class DiegoSaveService {
         //update Diego Info
         CfVO cfVo = cfDao.selectCfInfoByDeploymentName(vo.getIaasType(), vo.getCfDeployment());
         if( cfVo.getReleaseName().equalsIgnoreCase("cf") && Integer.parseInt(cfVo.getReleaseVersion()) > 271 || 
-                cfVo.getReleaseName().equalsIgnoreCase("paasta-controller") && cfVo.getReleaseVersion().equals("3.0") ) {
+                cfVo.getReleaseName().equalsIgnoreCase("paasta-controller") && cfVo.getReleaseVersion().equals("3.0") || cfVo.getReleaseName().equalsIgnoreCase("paasta-controller") && cfVo.getReleaseVersion().equals("3.1") ) {
             vo.setKeyFile(cfVo.getKeyFile());
         }else {
             vo.setKeyFile(dto.getKeyFile());

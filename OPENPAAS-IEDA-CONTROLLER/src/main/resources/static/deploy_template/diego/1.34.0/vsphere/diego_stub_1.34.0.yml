@@ -1,0 +1,189 @@
+property_overrides:
+  loggregator:
+    use_v2_api: true
+    tls: # These are metron certs from the loggregator repo
+      cert: (( cf-certs.metron-cert ))
+      key: (( cf-certs.metron-key ))
+  etcd:
+    require_ssl: true
+    peer_require_ssl: true
+    ca_cert: (( cf-certs.etcd-ca-cert ))
+    server_cert: (( cf-certs.etcd-server-cert ))
+    server_key: (( cf-certs.etcd-server-key ))
+    client_cert: (( cf-certs.etcd-client-cert ))
+    client_key: (( cf-certs.etcd-client-key ))
+    peer_ca_cert: (( cf-certs.peer-ca-cert ))
+    peer_cert: (( cf-certs.peer-cert ))
+    peer_key: (( cf-certs.peer-key ))
+  locket:
+    tls:
+      ca_cert: (( diego-certs.locket-ca-certs ))
+      #(( diego-certs.locket-server-cert ))
+      cert: (( diego-certs.locket-certs ))
+      #(( diego-certs.locket-server-key ))
+      key: (( diego-certs.locket-key ))
+  auctioneer:
+    ca_cert: (( diego-certs.auctioneer-ca-certs ))
+    client_cert: (( diego-certs.auctioneer-client-certs ))
+    client_key: (( diego-certs.auctioneer-client-key ))
+    server_cert: (( diego-certs.auctioneer-server-certs ))
+    server_key: (( diego-certs.auctioneer-server-key ))
+  rep:
+    ca_cert: (( diego-certs.rep-ca-cert ))
+    client_cert: (( diego-certs.rep-client-cert ))
+    client_key: (( diego-certs.rep-client-key ))
+    server_cert: (( diego-certs.rep-server-cert ))
+    server_key: (( diego-certs.rep-server-key ))
+  bbs:
+    ca_cert: (( diego-certs.bbs-ca-cert ))
+    auctioneer:
+      ca_cert: (( diego-certs.auctioneer-ca-certs ))
+      client_cert: (( diego-certs.auctioneer-client-certs ))
+      client_key: (( diego-certs.auctioneer-client-key ))
+      server_cert: (( diego-certs.auctioneer-server-certs ))
+      server_key: (( diego-certs.auctioneer-server-key ))
+      active_key_label: key1
+    active_key_label: key1
+    encryption_keys:
+      - label: key1
+        passphrase: (( diego-certs.bbs-encrypt-keys ))
+    etcd:
+      machines: ["etcd.service.cf.internal"]
+    client_cert: (( diego-certs.bbs-client-cert ))
+    client_key: (( diego-certs.bbs-client-key ))
+    server_cert: (( diego-certs.bbs-server-cert ))
+    server_key: (( diego-certs.bbs-server-key ))
+  tps:
+    cc:
+      ca_cert: (( diego-certs.tps-ca-certs ))
+      #(( diego-certs.tps-client-cert ))
+      client_cert: (( diego-certs.tps-certs ))
+      #(( diego-certs.tps-client-key ))
+      client_key: (( diego-certs.tps-key ))
+  cc_uploader:
+    cc:
+      ca_cert: (( diego-certs.cc-uploader-ca-certs ))
+      #(( diego-certs.cc_uploader.cc-client-cert ))
+      client_cert: (( diego-certs.cc-uploader-client-certs ))
+      #(( diego-certs.cc_uploader.cc-client-key ))
+      client_key: (( diego-certs.cc-uploader-client-key )) 
+      #(( diego-certs.capi-cc_uploader-cc-ca_cert ))
+    ca_cert: (( diego-certs.cc-uploader-ca-certs ))
+    #(( diego-certs.cc-uploader-server-certs ))
+    server_cert: (( diego-certs.cc-uploader-server-certs ))
+    #(( diego-certs.cc_uploader-server-key ))
+    server_key: (( diego-certs.cc-uploader-server-key ))
+  
+  executor:
+    drain_timeout_in_seconds: 0
+    garden:
+      network: tcp
+      address: 127.0.0.1:7777
+    log_level: debug
+  garden:
+    listen_network: tcp
+    listen_address: 0.0.0.0:7777
+    log_level: debug
+  nsync:
+    log_level: debug
+  stager:
+    log_level: debug
+  rep:
+    evacuation_timeout_in_seconds: 60
+    log_level: debug
+    require_tls: false
+    ca_cert: (( diego-certs.rep-ca-cert ))
+    server_cert: (( diego-certs.rep-server-cert ))
+    server_key: (( diego-certs.rep-server-key ))
+    client_cert: (( diego-certs.rep-client-cert ))
+    client_key: (( diego-certs.rep-client-key ))
+  route_emitter:
+    log_level: debug
+  skip_cert_verify: true
+  ssh_proxy:
+    host_key: (( diego-certs.ssh-proxy-key ))
+  auctioneer:
+    rep:
+      require_tls: false
+
+instance_count_overrides:
+  - name: cell_z1
+    instances: (( meta.cell-z1-instances || 1 ))
+  - name: cell_z3
+    instances: 0
+  - name: access_z1
+    instances: (( meta.access-z1-instances || 1 ))
+  - name: cc_bridge_z1
+    instances: (( meta.cc_bridge-z1-instances || 1 ))
+  - name: route_emitter_z1
+    instances: (( meta.route_emitter-z1-instances || 1 ))
+  - name: brain_z1
+    instances: (( meta.brain-z1-instances || 1 ))  
+  - name: database_z1
+    instances: (( meta.database-z1-instances || 1 ))  
+  - name: access_z2
+    instances: 0
+  - name: access_z3
+    instances: 0
+  - name: brain_z2
+    instances: 0
+  - name: brain_z3
+    instances: 0
+  - name: cc_bridge_z2
+    instances: 0
+  - name: cc_bridge_z3
+    instances: 0
+  - name: cell_z2
+    instances: 0
+  - name: database_z2
+    instances: 0
+  - name: database_z3
+    instances: 0
+  - name: route_emitter_z2
+    instances: 0
+  - name: route_emitter_z3
+    instances: 0
+
+sql_overrides:
+  bbs: &db_params
+    db_driver: (( meta.db_driver || config_from_cf.bbs.db_driver ))
+    db_host: (( meta.db_host || config_from_cf.bbs.db_host ))
+    db_port: (( meta.db_port || config_from_cf.bbs.db_port ))
+    db_username: (( meta.db_username || config_from_cf.bbs.db_username ))
+    db_password: (( meta.db_password || config_from_cf.bbs.db_password ))
+    db_schema: (( meta.db_schema || config_from_cf.bbs.db_schema ))
+    max_open_connections: (( meta.max_open_connections || 500 ))
+  locket:
+    <<: *db_params
+    db_schema: locket
+  
+
+resource_pool_overrides:
+  base_stemcell_env:
+    # Default vcap & root password on deployed VMs (ie c1oudc0w)
+    # Generated using mkpasswd -m sha-512
+    bosh:
+      password: (( meta.stemcell-password || "$6$4gDD3aV0rdqlrKC$2axHCxGKIObs6tAmMTqYCspcdvQXh3JJcvWOY2WGb4SrdXtnCyNaWlrf3WEqvYR2MYizEGp3kMmbpwBC6jsHt0" ))
+
+release_versions:
+  diego:
+    name: (( meta.diego-release-name ))
+    version: (( meta.diego-release-version ))
+  garden-runc:
+    name: (( meta.garden-runc-release-name ))
+    version: (( meta.garden-runc-release-version ))
+  cflinuxfs2:
+    name: (( meta.cflinuxfs2-release-name ))
+    version: (( meta.cflinuxfs2-release-version ))
+  etcd:
+    name: (( meta.etcd-release-name ))
+    version: (( meta.etcd-release-version ))
+  loggregator:
+    release: (( config_from_cf.cf_release.name || "cf" ))
+    version: (( config_from_cf.cf_release.version || "latest" ))
+config_from_cf: ~
+
+meta: ~
+
+diego-certs: ~
+cf-certs: ~

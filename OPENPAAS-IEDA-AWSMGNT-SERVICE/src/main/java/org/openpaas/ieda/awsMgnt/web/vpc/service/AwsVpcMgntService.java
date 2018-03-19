@@ -93,7 +93,6 @@ public class AwsVpcMgntService {
         try{
             apiVpcInfo = awsVpcMgntApiService.getAwsVpcDetailInfoFromAws(vo, vpcId, region.getName());
             dnsHostMap = awsVpcMgntApiService.getVpcDnsNameInfoFromAws(vo, vpcId, region.getName());
-            classicLinkDns = awsVpcMgntApiService.getClassicLinkDnsInfoFromAws(vo, vpcId, region.getName());
             routeTableId = awsVpcMgntApiService.getRouteTableInfoFromAws(vo, vpcId, region.getName());
             networkAcleId = awsVpcMgntApiService.getNetworkAcleInfoFromAws(vo, vpcId, region.getName());
         }catch (Exception e) {
@@ -136,7 +135,6 @@ public class AwsVpcMgntService {
         awsVpcVo.setClassicLinkDns(classicLinkDns);
         awsVpcVo.setRouteTable(routeTableId);
         awsVpcVo.setNetworkAcle(networkAcleId);
-        
         return awsVpcVo;
     }
     
@@ -169,6 +167,7 @@ public class AwsVpcMgntService {
         try{
         awsVpcMgntApiService.deleteAwsVpcInfoApiFromAws(vo, dto, region.getName());
         }catch (Exception e) {
+            e.printStackTrace();
             throw new CommonException(
                     message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
@@ -193,7 +192,4 @@ public class AwsVpcMgntService {
     public Region getAwsRegionInfo(String regionName) {
         return commonIaasService.getAwsRegionInfo(regionName);
     }
-    
-
-    
 }

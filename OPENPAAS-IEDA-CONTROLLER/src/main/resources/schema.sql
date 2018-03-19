@@ -223,6 +223,7 @@ CREATE TABLE ieda_bootstrap
   update_date                       DATE          NOT NULL,
   paasta_monitoring_use             VARCHAR(100) NULL,
   paasta_monitoring_ip              VARCHAR(100) NULL,
+  influxdb_ip                       VARCHAR(100) NULL,
   paasta_monitoring_release         VARCHAR(100) NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB ROW_FORMAT=COMPRESSED CHARSET=utf8;

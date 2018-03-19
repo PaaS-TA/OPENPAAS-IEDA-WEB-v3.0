@@ -19,7 +19,6 @@ import com.amazonaws.services.ec2.model.CreateVpcRequest;
 import com.amazonaws.services.ec2.model.CreateVpcResult;
 import com.amazonaws.services.ec2.model.DeleteVpcRequest;
 import com.amazonaws.services.ec2.model.DescribeVpcAttributeRequest;
-import com.amazonaws.services.ec2.model.DescribeVpcClassicLinkDnsSupportRequest;
 import com.amazonaws.services.ec2.model.DescribeVpcsRequest;
 import com.amazonaws.services.ec2.model.NetworkAcl;
 import com.amazonaws.services.ec2.model.RouteTable;
@@ -88,22 +87,6 @@ public class AwsVpcMgntApiService {
         request.setAttribute("enableDnsSupport");
         dnsMap.put("DNSresolution", ec2.describeVpcAttribute(request).isEnableDnsSupport());
         return dnsMap;
-    }
-    
-    /***************************************************
-    * @param string 
-     * @project : AWS 인프라 관리 대시보드
-    * @description : ClassicLinkDnsInfo 조회 실제 AWS API 호출
-    * @title : getClassicLinkDnsInfoFromAws
-    * @return : Boolean
-    ***************************************************/
-    public Boolean getClassicLinkDnsInfoFromAws(IaasAccountMgntVO vo, String vpcId, String regionName) {
-        AmazonEC2Client ec2 =  getAmazonEC2Client(vo, regionName);
-        DescribeVpcClassicLinkDnsSupportRequest classicDnsRequest = new DescribeVpcClassicLinkDnsSupportRequest();
-        List<String> vpcIds = new ArrayList<String>();
-        vpcIds.add(vpcId);
-        classicDnsRequest.setVpcIds(vpcIds);
-        return ec2.describeVpcClassicLinkDnsSupport(classicDnsRequest).getVpcs().get(0).getClassicLinkDnsSupported();
     }
     
     /***************************************************

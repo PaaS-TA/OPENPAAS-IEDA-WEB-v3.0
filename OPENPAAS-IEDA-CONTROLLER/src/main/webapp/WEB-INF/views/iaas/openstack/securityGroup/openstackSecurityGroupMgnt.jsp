@@ -417,7 +417,7 @@ $( window ).resize(function() {
                 <div class="w2ui-field">
                     <label style="width: 36%; text-align: left; padding-left: 20px;">Ingress Rule</label>
                     <div>
-                        <label><input  type="radio" name="ingressRuleType" id="none" value="none"  checked="checked" />없음</label>&nbsp;&nbsp;&nbsp;
+                        <label><input type="radio" name="ingressRuleType" id="none" value="none"  checked="checked" />없음</label>&nbsp;&nbsp;&nbsp;
                         <label><input type="radio" name="ingressRuleType" id="boshSecurity" value="boshSecurity" />bosh-security</label>&nbsp;&nbsp;&nbsp;
                         <label><input type="radio" name="ingressRuleType" id="cfSecurity" value="cfSecurity" />cf-security</label>
                     </div>
@@ -432,6 +432,8 @@ $( window ).resize(function() {
                         <input type="text" name="http" value="80" class="cf_security_rules">
                         <input type="text" name="https" value="443" class="cf_security_rules">
                         <input type="text" name="cfLogs" value="4443" class="cf_security_rules">
+                        <input type="text" name="allTcp" value="1-65535" class="cf_security_rules">
+                        <input type="text" name="allUdp" value="1-65535" class="cf_security_rules">
                     </div>
                 </div>
             </div>

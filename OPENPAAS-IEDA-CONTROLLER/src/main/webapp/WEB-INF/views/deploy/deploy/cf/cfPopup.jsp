@@ -362,6 +362,7 @@ function getLoggregatorRelease(){
         url : "/common/deploy/release/list/loggregator",
         contentType : "application/json",
         success : function(data, status) {
+        	console.log(data);
             w2popup.unlock();
             var option = "";
             if( data.records.length > 0){
@@ -410,16 +411,22 @@ function setDisabledMonitoring(val){
 function setInputDisplay(val){
     var name = val.split("/")[0];
     var version = val.split("/")[1];
-    if( Number(version) >= 272 || (name.indexOf("paasta-controller") > -1 && compare(version, "3.0") > -1)){
+    if( Number(version) >= 272 || (name.indexOf("paasta-controller") > -1 && compare(version, "3.0") > -1 ) || (name.indexOf("paasta-controller") > -1 && compare(version, "3.1") > -1 )){
         //핑거프린트 자동 입력
         $(".w2ui-msg-body #fingerprint").css("display", "none");
         $(".w2ui-msg-body #deaDiskmbDiv").css("display", "none");
         $(".w2ui-msg-body #deaMemorymbDiv").css("display", "none");
         $(".w2ui-msg-body #loggregator").css("display", "block");
+        console.log(version);
+        if( Number(version) == "3.1" || Number(version) == "287" ){
+        	$(".w2ui-msg-body #loggregator").css("display", "none");
+        	$(".w2ui-msg-body #loggregator").val("");
+        }
         $(".w2ui-msg-body input[name='appSshFingerprint']").val("");
         $(".w2ui-msg-body input[name='deaMemoryMB']").val("");
         $(".w2ui-msg-body input[name='deaDiskMB']").val("");
-    }else{
+    } 
+    else{
         if( diegoUse == "true" ){
             $(".w2ui-msg-body #fingerprint").css("display", "block");
         }
@@ -428,6 +435,7 @@ function setInputDisplay(val){
         $(".w2ui-msg-body #deaMemorymbDiv").css("display", "block");
     }
     getLoggregatorRelease();
+    
 }
 
 /********************************************************
@@ -1177,13 +1185,13 @@ function saveCfJobsInfo(){
      var i=0;
      var flag=true;
      
-     $(".w2ui-msg-body #cfJobListDiv li > ul").each(function(){
+      $(".w2ui-msg-body #cfJobListDiv li > ul").each(function(){
          var input = $($(this).children()[0]).find("input");
          if ($(input).val != "" && $(input).val() >=0 && $(input).val() <=3) {
          }else{
              flag = false;
          }
-     });
+     }); 
      
      jobsInfo = [];
      $(".w2ui-msg-body #cfJobListDiv li > ul").each(function(){
@@ -1355,9 +1363,9 @@ function instanceControl(e){
          }else{
 //              $(e).val("1");
          }
-	     if( $(e).parent().find("p").length == 0 ){
-	         $(e).parent().append("<p>0부터 3까지 숫자만 입력 가능 합니다.</p>");
-	     }
+         if( $(e).parent().find("p").length == 0 ){
+             $(e).parent().append("<p>0부터 3까지 숫자만 입력 가능 합니다.</p>");
+         }
      }
 }
 

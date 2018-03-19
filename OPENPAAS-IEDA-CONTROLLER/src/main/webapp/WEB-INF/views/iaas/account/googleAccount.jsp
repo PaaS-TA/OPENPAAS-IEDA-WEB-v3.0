@@ -518,14 +518,10 @@ $(function() {
             accountName : { 
                 required : function(){
                     return checkEmpty( $(".w2ui-msg-body input[name='accountName']").val().trim() );
-                }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='accountName']").val().trim();
                 }
             }, commonProject: { 
                 required: function(){
                     return checkEmpty( $(".w2ui-msg-body input[name='commonProject']").val().trim() );
-                }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='commonProject']").val().trim();
                 }
             }, keyPathList: { 
                 required: function(){

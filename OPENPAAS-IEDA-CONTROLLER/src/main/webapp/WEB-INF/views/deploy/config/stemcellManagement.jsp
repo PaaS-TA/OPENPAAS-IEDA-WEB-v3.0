@@ -240,7 +240,7 @@ function setOsVersion(value){
             subCodeValue = osVersionArray[i].codeValue;
         }
     }
-    setCommonCode('<c:url value="/common/deploy/codes/parent/"/>' + OS_TYPE_CODE + '<c:url value="/subcode/"/>' + subCodeValue, 'osVersion');
+    setCommonCode('<c:url value="/common/deploy/codes/parent/"/>' + os_type_code + '<c:url value="/subcode/"/>' + subCodeValue, 'osVersion');
 }
 /**************************************************************
  * 설명 : 스템셀 다운 유형 change 이벤트
@@ -531,7 +531,7 @@ function deletePop(record){
         async : true,
         data : JSON.stringify(requestParameter),
         success : function(data, status) {
-            if( downloadClient != "" || downloadClient != null ){
+            if( downloadClient != "" ){
                 downloadClient.disconnect();
                 downloadClient = "";
             }

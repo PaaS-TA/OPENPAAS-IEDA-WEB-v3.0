@@ -129,7 +129,7 @@ public class OpenstackSecurityGroupMgntApiService {
                       .createRule(Builders.secGroupRule()
                       .parentGroupId(dto.getSecurityGroupId())
                       .protocol(protocol)
-                      .groupId(dto.getSecurityGroupId())
+                      .cidr("0.0.0.0/0")
                       .range(fromPort, toPort).build());
                 }else{
                     os.compute().securityGroups()
@@ -158,7 +158,7 @@ public class OpenstackSecurityGroupMgntApiService {
                       .createRule(Builders.secGroupRule()
                       .parentGroupId(dto.getSecurityGroupId())
                       .protocol(protocol)
-                      .groupId(dto.getSecurityGroupId())
+                      .cidr("0.0.0.0/0")
                       .range(fromPort, toPort).build());
                 }else{
                     os.compute().securityGroups()

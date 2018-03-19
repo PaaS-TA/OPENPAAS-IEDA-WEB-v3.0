@@ -79,3 +79,6 @@ meta:
   
   ## PaaS-TA Monitoring Ip <- 화면에서 추가 입력을 받는다.
   paastaMonitoringIp: [paastaMonitoringIp]
+  
+  ## PaaS-TA influxdbIp Ip <- 화면에서 추가 입력을 받는다.
+  influxdbIp: [influxdbIp]

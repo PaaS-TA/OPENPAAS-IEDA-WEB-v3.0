@@ -47,7 +47,7 @@ public class DeploymentsController extends BaseController {
         
         HashMap<String, Object> result = new HashMap<String, Object>();
         int size = 0;
-        if( result.size() > 0 ) {
+        if( contents.size() > 0 ) {
             result.put("records", contents);
             result.put("total", size); 
         }

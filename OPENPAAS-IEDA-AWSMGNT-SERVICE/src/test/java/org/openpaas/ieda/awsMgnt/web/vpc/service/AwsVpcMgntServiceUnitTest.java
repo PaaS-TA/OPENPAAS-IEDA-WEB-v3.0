@@ -325,7 +325,6 @@ public class AwsVpcMgntServiceUnitTest extends BaseAwsMgntControllerUnitTest{
         map.put("DNShostnames", false);
         map.put("DNSresolution", false);
         when(mockAwsVpcMgntApiService.getVpcDnsNameInfoFromAws(any(), anyString(), anyString())).thenReturn(map);
-        when(mockAwsVpcMgntApiService.getClassicLinkDnsInfoFromAws(any(), anyString(), anyString())).thenReturn(false);
         when(mockAwsVpcMgntApiService.getRouteTableInfoFromAws(any(), anyString(), anyString())).thenReturn("route-1111");
         when(mockAwsVpcMgntApiService.getNetworkAcleInfoFromAws(any(), anyString(), anyString())).thenReturn("ncl-1111");
     }

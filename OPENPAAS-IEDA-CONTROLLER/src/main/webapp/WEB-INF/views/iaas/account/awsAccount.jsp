@@ -290,8 +290,6 @@ $(function() {
             }, commonAccessUser: { 
                 required: function(){
                     return checkEmpty( $(".w2ui-msg-body input[name='commonAccessUser']").val().trim() );
-                }, sqlInjection :   function(){
-                    return $(".w2ui-msg-body input[name='commonAccessUser']").val().trim();
                 }
             }, commonAccessSecret: { 
                 required: function(){

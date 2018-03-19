@@ -13,6 +13,7 @@
     <result property="updateDate" column="UPDATE_DATE" />
     <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE" />
     <result property="paastaMonitoringIp" column="PAASTA_MONITORING_IP" />
+    <result property="influxdbIp" column="influxdb_ip" />
     <result property="paastaMonitoringRelease" column="PAASTA_MONITORING_RELEASE" />
     <result property="deploymentName" column ="DEPLOYMENT_NAME"/>
     <result property="directorName" column ="DIRECTOR_NAME"/>
@@ -100,6 +101,7 @@
         ,bootstrap.update_date as update_date
         ,bootstrap.paasta_monitoring_use as paasta_monitoring_use
         ,bootstrap.paasta_monitoring_ip as paasta_monitoring_ip
+        ,bootstrap.influxdb_ip as influxdb_ip
         ,bootstrap.paasta_monitoring_release as paasta_monitoring_release
         ,config.iaas_config_alias as iaas_config_alias
         ,config.id as iaas_config_id
@@ -145,6 +147,7 @@ Order by iaas_type asc, update_date asc
             ,bootstrap.update_date as update_date
             ,bootstrap.paasta_monitoring_use as paasta_monitoring_use
             ,bootstrap.paasta_monitoring_ip as paasta_monitoring_ip
+            ,bootstrap.influxdb_ip as influxdb_ip
             ,bootstrap.paasta_monitoring_release as paasta_monitoring_release
             ,config.iaas_config_alias as iaas_config_alias
             ,config.id as iaas_config_id
@@ -190,6 +193,7 @@ Order by iaas_type asc, update_date asc
         ,update_date
         ,paasta_monitoring_use
         ,paasta_monitoring_ip
+        ,influxdb_ip
         ,paasta_monitoring_release
         ) 
     VALUES(
@@ -203,6 +207,7 @@ Order by iaas_type asc, update_date asc
         ,now()
         ,#{bootstrap.paastaMonitoringUse}
         ,#{bootstrap.paastaMonitoringIp}
+        ,#{bootstrap.influxdbIp}
         ,#{bootstrap.paastaMonitoringRelease}
     )
     <selectKey keyProperty="bootstrap.id" resultType="int" order="AFTER">
@@ -246,6 +251,7 @@ Order by iaas_type asc, update_date asc
         ,update_date= now()
         ,paasta_monitoring_use=#{bootstrap.paastaMonitoringUse}
         ,paasta_monitoring_ip=#{bootstrap.paastaMonitoringIp}
+        ,influxdb_ip=#{bootstrap.influxdbIp}
         ,paasta_monitoring_release=#{bootstrap.paastaMonitoringRelease}
     WHERE
     id=#{bootstrap.id}

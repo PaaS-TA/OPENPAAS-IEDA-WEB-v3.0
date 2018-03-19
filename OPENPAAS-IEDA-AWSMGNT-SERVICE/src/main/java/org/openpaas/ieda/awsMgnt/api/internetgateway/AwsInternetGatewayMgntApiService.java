@@ -16,10 +16,12 @@ import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.AttachInternetGatewayRequest;
 import com.amazonaws.services.ec2.model.CreateInternetGatewayRequest;
 import com.amazonaws.services.ec2.model.CreateInternetGatewayResult;
+import com.amazonaws.services.ec2.model.CreateRouteRequest;
 import com.amazonaws.services.ec2.model.CreateTagsRequest;
 import com.amazonaws.services.ec2.model.DeleteInternetGatewayRequest;
 import com.amazonaws.services.ec2.model.DetachInternetGatewayRequest;
 import com.amazonaws.services.ec2.model.InternetGateway;
+import com.amazonaws.services.ec2.model.RouteTable;
 import com.amazonaws.services.ec2.model.Tag;
 
 @Service
@@ -103,6 +105,23 @@ public class AwsInternetGatewayMgntApiService {
         req.setInternetGatewayId(dto.getInternetGatewayId());
         req.setVpcId(dto.getVpcId());
         ec2.attachInternetGateway(req);
+        String routeTableId = "";
+        
+        List<RouteTable> routeTableList = ec2.describeRouteTables().getRouteTables();
+        
+        for(RouteTable routeable : routeTableList ){
+            if(routeable.getVpcId().equals(dto.getVpcId())){
+                routeTableId = routeable.getRouteTableId();
+                break;
+            }
+        }
+        if(!routeTableId.isEmpty()){
+            CreateRouteRequest routeReq = new CreateRouteRequest();
+            routeReq.setGatewayId(dto.getInternetGatewayId());
+            routeReq.setRouteTableId(routeTableId);
+            routeReq.setDestinationCidrBlock("0.0.0.0/0");
+            ec2.createRoute(routeReq);
+        }
     }
     
     /***************************************************
@@ -118,6 +137,7 @@ public class AwsInternetGatewayMgntApiService {
         req.setInternetGatewayId(dto.getInternetGatewayId());
         req.setVpcId(dto.getVpcId());
         ec2.detachInternetGateway(req);
+        
     }
     
 }

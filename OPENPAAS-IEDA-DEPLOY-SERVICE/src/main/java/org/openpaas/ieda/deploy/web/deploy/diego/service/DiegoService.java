@@ -408,7 +408,7 @@ public class DiegoService {
         
          // 고급 기능을 사용 하지 않았을 경우 network 사이즈를 기준으로 Replace 초기화
         if( vo.getJobs().size() == 0 ){
-        	String releaseVersion = setDiegoReleaseVersionToJobInfo(vo.getDiegoReleaseVersion());
+            String releaseVersion = setDiegoReleaseVersionToJobInfo(vo.getDiegoReleaseVersion());
             List<HashMap<String, String>> map = getJobTemplateList("DEPLOY_TYPE_DIEGO", releaseVersion);
             for(int i=1; i < 4; i++ ) {//job 인스턴스 최대 개수가 3개이기 때문
                 if(i <= vo.getNetworks().size() ){
@@ -470,16 +470,18 @@ public class DiegoService {
      * @return : String
     *****************************************************************/
     public String setDiegoReleaseVersionToJobInfo(String releaseVersion){
-    	String jobReleaseVersion = "";
-    	if( releaseVersion.equals("2.0")) {
-    		jobReleaseVersion = "1.1.0";
-    	}else if( releaseVersion.equals("3.0") ) {
-    		jobReleaseVersion = "1.25.3";
-    	}else{
-    		jobReleaseVersion = releaseVersion;
-    	}
-    	
-    	return jobReleaseVersion;
+        String jobReleaseVersion = "";
+        if( releaseVersion.equals("2.0")) {
+            jobReleaseVersion = "1.1.0";
+        }else if( releaseVersion.equals("3.0") ) {
+            jobReleaseVersion = "1.25.3";
+        }else if( releaseVersion.equals("3.1") )
+            jobReleaseVersion = "1.34.0";
+        else{
+            jobReleaseVersion = releaseVersion;
+        }
+        
+        return jobReleaseVersion;
     }
 
     /****************************************************************

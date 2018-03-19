@@ -96,7 +96,7 @@ public class AwsInternetGatewayMgntService {
             awsInternetGatewayMgntApiService.saveAwsInternetGatewayInfoFromAws(dto, vo, region);
         }catch (Exception e) {
             throw new CommonException(
-                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage(".common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -113,7 +113,7 @@ public class AwsInternetGatewayMgntService {
             awsInternetGatewayMgntApiService.deleteAwsInternetGatewayInfoFromAws(dto, vo, region);
         }catch (Exception e) {
             throw new CommonException(
-                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage(".common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -135,7 +135,7 @@ public class AwsInternetGatewayMgntService {
             for(int j=0;j<apiInternetList.size();j++){
                 if(apiInternetList.get(j).getAttachments().size()!=0 
                         && apiInternetList.get(j).getAttachments().get(0).getVpcId()!= null 
-                        && apiVpcList.get(i).getVpcId().equals(apiInternetList.get(j).getAttachments().get(0).getVpcId())){
+                            && apiVpcList.get(i).getVpcId().equals(apiInternetList.get(j).getAttachments().get(0).getVpcId())){
                     apiVpcList.remove(i);
                 }
             }
@@ -162,7 +162,7 @@ public class AwsInternetGatewayMgntService {
             awsInternetGatewayMgntApiService.internetGatewayAttachVpcFromAws(dto, vo, region);
         }catch (Exception e) {
             throw new CommonException(
-                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage(".common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -179,7 +179,7 @@ public class AwsInternetGatewayMgntService {
             awsInternetGatewayMgntApiService.internetGatewayDetachVpcFromAws(dto, vo, region);
         }catch (Exception e) {
             throw new CommonException(
-                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage(".common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+                    message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
         }
     }
     

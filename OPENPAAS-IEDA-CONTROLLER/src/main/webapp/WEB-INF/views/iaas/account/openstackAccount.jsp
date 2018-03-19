@@ -442,8 +442,6 @@ $(function() {
             }, commonAccessSecret: { 
                 required: function(){
                     return checkEmpty( $(".w2ui-msg-body input[name='commonAccessSecret']").val().trim() );
-                }, sqlInjection : function(){
-                    return $(".w2ui-msg-body input[name='commonAccessSecret']").val().trim();
                 }
             }, commonTenant: { 
                 required: function(){
