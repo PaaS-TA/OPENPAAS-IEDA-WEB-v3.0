@@ -75,10 +75,13 @@ $(function() {
             modal   : true,
             body    : $("#registPopupDiv").html(),
             buttons : $("#registPopupBtnDiv").html(),
+            onOpen : function(event){
+            },
             onClose:function(event){
-                accountId = $("select[name='accountId']").val();
+                event.onComplete = function(){
                 initsetting();
                 doSearch();
+              }
             }
         });
     });
@@ -92,10 +95,8 @@ function createKeyPair(){
         var keyPairName = $(".w2ui-msg-body input[name='keyPairName']").val();
         var region = $("select[name='region']").val();
         var debugLogdownUrl = "/awsMgnt/keypair/create/"+ accountId+"/"+keyPairName+"/"+region;
-	    window.open(debugLogdownUrl, '', '');
-	    w2popup.unlock();
-	    w2popup.close();
-	    doSearch();
+        window.open(debugLogdownUrl, '', '');
+        w2popup.close();
 }
  
 /********************************************************
@@ -179,10 +180,9 @@ $( window ).resize(function() {
             </li>
             <li>
                 <label style="font-size: 14px">AWS 계정 명</label>
-		        &nbsp;&nbsp;&nbsp;
-		        <select name="accountId" id="setAccountList" class="select" style="width: 300px; font-size: 15px; height: 32px;" onchange="setAccountInfo(this.value, 'aws')">
-		        </select>
-		        <span id="doSearch" onclick="setDefaultIaasAccount('noPopup','aws');" class="btn btn-info" style="width:80px" >선택</span>
+                &nbsp;&nbsp;&nbsp;
+                <select name="accountId" id="setAccountList" class="select" style="width: 300px; font-size: 15px; height: 32px;" onchange="setAccountInfo(this.value, 'aws')"></select>
+                <span id="doSearch" onclick="setDefaultIaasAccount('noPopup','aws');" class="btn btn-info" style="width:80px" >선택</span>
             </li>
         </ul>
     </div> 

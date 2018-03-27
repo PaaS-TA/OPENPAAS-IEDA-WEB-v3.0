@@ -254,7 +254,6 @@ public class OpenstackNetworkMgntService {
         try{
             openstackNetworkMgntApiService.saveOpenstackSubnetkInfoApiFromOpenstack(vo, dto, ipVersion);
         }catch (Exception e) {
-            e.printStackTrace();
             throw new CommonException(
                     message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), e.getMessage(), HttpStatus.BAD_REQUEST);
         }

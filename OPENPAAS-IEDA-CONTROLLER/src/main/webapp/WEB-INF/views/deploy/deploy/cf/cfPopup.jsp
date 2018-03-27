@@ -362,7 +362,6 @@ function getLoggregatorRelease(){
         url : "/common/deploy/release/list/loggregator",
         contentType : "application/json",
         success : function(data, status) {
-        	console.log(data);
             w2popup.unlock();
             var option = "";
             if( data.records.length > 0){
@@ -387,11 +386,11 @@ function getLoggregatorRelease(){
  * 기능 : setDisabledMonitoring
  *********************************************************/
 function setDisabledMonitoring(val){
-    if( !checkEmpty(val) && val != "undefined/undefined"){
+    if( !checkEmpty(val) || val != "undefined/undefined"){
         var cfReleaseName = val.split("/")[0];
         var cfReleaseVersion = val.split("/")[1];
         //paasta-controller v2.0.0 이상 PaaS-TA 모니터링 지원 checkbox
-        if( cfReleaseName.indexOf("paasta-controller") > -1 && compare(cfReleaseVersion, "2.0") > -1 ){
+        if( cfReleaseName.indexOf("paasta-controller") > -1 && ( compare(cfReleaseVersion, "2.0") > -1 || compare(cfReleaseVersion, "3.0") > -1 || compare(cfReleaseVersion, "3.1") > -1) ){
             $('.w2ui-msg-body #paastaMonitoring').attr('disabled',false);
         }else{
             if( $(".w2ui-msg-body input:checkbox[name='paastaMonitoring']").is(":checked")){
@@ -417,7 +416,6 @@ function setInputDisplay(val){
         $(".w2ui-msg-body #deaDiskmbDiv").css("display", "none");
         $(".w2ui-msg-body #deaMemorymbDiv").css("display", "none");
         $(".w2ui-msg-body #loggregator").css("display", "block");
-        console.log(version);
         if( Number(version) == "3.1" || Number(version) == "287" ){
         	$(".w2ui-msg-body #loggregator").css("display", "none");
         	$(".w2ui-msg-body #loggregator").val("");
@@ -1251,6 +1249,7 @@ function jobPopupComplete(){
  * 기능 : settingCfJobs
  *********************************************************/
 function settingCfJobs(){
+	console.log("1");
     var release_version = defaultInfo.releaseVersion;
     release_version = settingReleaseVersion(release_version);
     $.ajax({
@@ -1258,6 +1257,7 @@ function settingCfJobs(){
         url : "/deploy/cf/install/save/job/list/"+release_version+"/"+'DEPLOY_TYPE_CF',
         contentType : "application/json",
         success : function(data, status) {
+        	console.log(data);
             if( !checkEmpty(data) ){
                 var div = "";
                 var html = "";
@@ -1304,6 +1304,8 @@ function settingReleaseVersion( version ){
         releaseVersion = "272";
     }else if( version == "2.0" ){
         releaseVersion = "247"
+    } else if(version == "3.1"){
+    	releaseVersion = "287";
     }
     return releaseVersion;
 }
