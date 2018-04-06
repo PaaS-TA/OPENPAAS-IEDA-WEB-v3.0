@@ -19,6 +19,8 @@ import org.openpaas.ieda.deploy.web.common.service.CommonDeployUtils;
 import org.openpaas.ieda.deploy.web.config.stemcell.dao.StemcellManagementDAO;
 import org.openpaas.ieda.deploy.web.config.stemcell.dao.StemcellManagementVO;
 import org.openpaas.ieda.deploy.web.config.stemcell.dto.StemcellManagementDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,7 @@ public class StemcellManagementDownloadAsyncService {
     @Autowired private StemcellManagementDAO dao;
     @Autowired private MessageSource message;
     
+    final private static Logger LOGGER = LoggerFactory.getLogger(StemcellManagementDownloadAsyncService.class);
     final private static String SEPARATOR = System.getProperty("file.separator");
     final private static String LOCK_DIR=LocalDirectoryConfiguration.getLockDir();
     final private static String TMPDIRECTORY = LocalDirectoryConfiguration.getTmpDir();
@@ -76,6 +79,8 @@ public class StemcellManagementDownloadAsyncService {
             } catch (IOException e) {
                 deleteLockFile(status, dto.getStemcellFileName());//LOCK 파일 삭제
                 CommonDeployUtils.deleteFile(STEMCELL_DIR, result.getStemcellFileName());//스템셀 파일 삭제
+                
+                LOGGER.error(e.getMessage());
                 throw new CommonException(message.getMessage("common.conflict.exception.code", null, Locale.KOREA),
                         message.getMessage("common.conflict.file.message", null, Locale.KOREA), HttpStatus.CONFLICT);
             }finally{

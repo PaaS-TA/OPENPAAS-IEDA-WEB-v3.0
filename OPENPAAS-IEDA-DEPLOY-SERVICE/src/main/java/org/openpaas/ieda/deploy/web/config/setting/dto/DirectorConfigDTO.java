@@ -25,6 +25,8 @@ public class DirectorConfigDTO {
         @NotNull
         private Integer directorPort; //포트번호
         
+        private String credentialFile; //Credential File 이름
+        
         public Integer getIedaDirectorConfigSeq() {
             return iedaDirectorConfigSeq;
         }
@@ -65,6 +67,13 @@ public class DirectorConfigDTO {
             this.directorPort = directorPort;
         }
 
+        public String getCredentialFile() {
+            return credentialFile;
+        }
+
+        public void setCredentialFile(String credentialFile) {
+            this.credentialFile = credentialFile;
+        }
 
     }
     

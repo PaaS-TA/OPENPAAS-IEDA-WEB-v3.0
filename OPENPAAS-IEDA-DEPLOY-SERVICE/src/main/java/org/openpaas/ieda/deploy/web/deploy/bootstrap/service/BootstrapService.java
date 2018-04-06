@@ -155,10 +155,13 @@ public class BootstrapService {
             //해당 Bosh 릴리즈 버전의 Manifest Template 파일 조회
             ManifestTemplateVO result = commonDeployDao.selectManifetTemplate(vo.getIaasType(), releaseVersion, "BOOTSTRAP", releaseName );
             if(result != null){
-                content = commonDeployService.getManifestInputTemplateStream("bootstrap", result.getTemplateVersion(), vo.getIaasType(), result.getInputTemplate(), vo.getIaasAccount().get("openstackVersion").toString());
+                if(vo.getPaastaMonitoringUse().equals("true")) {
+                    String paastaMoniteringDeploymentFile = result.getCommonJobTemplate().split("\\.")[0] + "-paasta-monitering.yml";
+                    result.setCommonJobTemplate(paastaMoniteringDeploymentFile);
+                }
+                content = commonDeployService.getManifestInputTemplateStream("bootstrap", result.getTemplateVersion(), vo.getIaasType(), result.getCommonJobTemplate(), vo.getIaasAccount().get("openstackVersion").toString());
             }else {
-                throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
-                        message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+                throw new CommonException("null.boshTemplate.exception", "설치 가능한 BOSH 릴리즈 버전을 확인 하세요.", HttpStatus.NOT_FOUND);
             }
             //필요한 Manifest Template 파일의 디렉토리 정보 설정
             ManifestTemplateVO manifestTemplate = setOptionManifestTemplateInfo(result, vo.getIaasType().toLowerCase() , vo.getIaasAccount().get("openstackVersion").toString());
@@ -190,6 +193,11 @@ public class BootstrapService {
     ***************************************************/
     public ManifestTemplateVO setOptionManifestTemplateInfo(ManifestTemplateVO result, String iaasType, String openstackVerison){
         ManifestTemplateVO  manifestTemplate = new ManifestTemplateVO();
+        if(!openstackVerison.isEmpty()) {
+            if(openstackVerison.equalsIgnoreCase("v3")){
+                iaasType += "v3";
+            }
+        }
         //base
         if(result.getCommonBaseTemplate() != null  && !(StringUtils.isEmpty( result.getCommonBaseTemplate()) )){
             manifestTemplate.setCommonBaseTemplate( MANIFEST_TEMPLATE_PATH + SEPARATOR + result.getTemplateVersion()  + SEPARATOR  + "common" + SEPARATOR  + result.getCommonBaseTemplate());
@@ -198,14 +206,9 @@ public class BootstrapService {
         }
         //job
         if(result.getCommonJobTemplate() != null && !(StringUtils.isEmpty( result.getCommonJobTemplate()) )){
-            manifestTemplate.setCommonJobTemplate(  MANIFEST_TEMPLATE_PATH + SEPARATOR + result.getTemplateVersion()  + SEPARATOR + "common"+ SEPARATOR  +  result.getCommonJobTemplate() );
+            manifestTemplate.setCommonJobTemplate(  MANIFEST_TEMPLATE_PATH + SEPARATOR + result.getTemplateVersion()  + SEPARATOR + iaasType+ SEPARATOR  +  result.getCommonJobTemplate() );
         }else{
             manifestTemplate.setCommonJobTemplate("");
-        }
-        if(!openstackVerison.isEmpty()) {
-            if(openstackVerison.equalsIgnoreCase("v3")){
-                iaasType += "v3";
-            }
         }
         
         //option etc Template File
@@ -242,7 +245,6 @@ public class BootstrapService {
     ***************************************************/
     public List<ReplaceItemDTO> makeReplaceItems(BootstrapVO vo) {
         List<ReplaceItemDTO> items = new ArrayList<ReplaceItemDTO>();
-        
         //인프라 환경 설정 정보
         if(vo.getIaasAccount().get("openstackVersion") != null) {
             if(vo.getIaasAccount().get("openstackVersion").toString().equalsIgnoreCase("v3")){
@@ -253,6 +255,11 @@ public class BootstrapService {
                 items.add(new ReplaceItemDTO("[tenant]", vo.getIaasAccount().get("commonTenant").toString()));
             }
         }
+        if("AZURE".equalsIgnoreCase(vo.getIaasType())){
+            items.add(new ReplaceItemDTO("[commonTenant]", vo.getIaasAccount().get("commonTenant").toString()));
+            items.add(new ReplaceItemDTO("[azureSubscriptionId]", vo.getIaasAccount().get("azureSubscriptionId").toString()));
+        }
+        
         items.add(new ReplaceItemDTO("[accessEndpoint]", vo.getIaasAccount().get("commonAccessEndpoint").toString()));
         items.add(new ReplaceItemDTO("[accessUser]", vo.getIaasAccount().get("commonAccessUser").toString()));
         items.add(new ReplaceItemDTO("[accessSecret]", vo.getIaasAccount().get("commonAccessSecret").toString()));
@@ -267,6 +274,8 @@ public class BootstrapService {
             String googleJsonKey=setGoogleJosnKeyReplaceEnter(JSON_KEY_PATH + vo.getIaasAccount().get("googleJsonKey").toString());
             items.add(new ReplaceItemDTO("[jsonKey]", googleJsonKey));
             items.add(new ReplaceItemDTO("[projectId]", vo.getIaasAccount().get("commonProject").toString()));
+            items.add(new ReplaceItemDTO("[sshKeyFile]", vo.getIaasConfig().getGooglePublicKey()));
+            items.add(new ReplaceItemDTO("[boshOsConfRelease]", RELEASE_DIR + SEPARATOR + vo.getOsConfRelease()));
         }
         
         items.add(new ReplaceItemDTO("[vCenterName]", vo.getIaasConfig().getVsphereVcentDataCenterName()));
@@ -276,6 +285,10 @@ public class BootstrapService {
         items.add(new ReplaceItemDTO("[vCenterPersistentDatastore]", vo.getIaasConfig().getVsphereVcenterPersistentDatastore()));
         items.add(new ReplaceItemDTO("[vCenterDiskPath]", vo.getIaasConfig().getVsphereVcenterDiskPath()));
         items.add(new ReplaceItemDTO("[vCenterCluster]", vo.getIaasConfig().getVsphereVcenterCluster()));
+        
+        items.add(new ReplaceItemDTO("[azureResourceGroup]", vo.getIaasConfig().getAzureResourceGroup()));
+        items.add(new ReplaceItemDTO("[azureStorageAccountName]", vo.getIaasConfig().getAzureStorageAccountName()));
+        items.add(new ReplaceItemDTO("[azureSshPublicKey]", vo.getIaasConfig().getAzureSshPublicKey()));
         
         //기본 정보
         items.add(new ReplaceItemDTO("[deploymentName]", vo.getDeploymentName()));
@@ -290,7 +303,7 @@ public class BootstrapService {
         
         if( vo.getPaastaMonitoringUse().equalsIgnoreCase("true") ) {
             items.add(new ReplaceItemDTO("[paastaMonitoringIp]", vo.getPaastaMonitoringIp()));
-            items.add(new ReplaceItemDTO("[paastaMonitoringReleaseName]", vo.getPaastaMonitoringRelease().replace("-3.0.tgz", "")));
+            items.add(new ReplaceItemDTO("[paastaMonitoringReleaseName]", "bosh-monitoring-agent"));
             items.add(new ReplaceItemDTO("[paastaMonitoringRelease]", RELEASE_DIR + SEPARATOR + vo.getPaastaMonitoringRelease()));
             items.add(new ReplaceItemDTO("[influxdbIp]", vo.getInfluxdbIp()+":8059"));
         }else {
@@ -344,7 +357,6 @@ public class BootstrapService {
             fis = new FileInputStream(new File(jsonKeyPath));
             rd = new BufferedReader(new InputStreamReader(fis,"UTF-8"));
             String line = null;
-            jsonKey.append("|+").append("\n").append("    ");
             while((line = rd.readLine()) != null) {
                 jsonKey.append(line);
             }

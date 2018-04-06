@@ -320,6 +320,29 @@ public class IaasAccountMgntServiceUnitTest {
     
     /***************************************************
      * @project : 인프라 관리 대시보드
+     * @description : Azure 계정 정보 등록
+     * @title : testSaveIaasAccountInfoRegistCaseFromAzure
+     * @return : void
+    ***************************************************/
+    
+    public void testSaveIaasAccountInfoRegistCaseFromAzure(){
+        
+        HttpServletRequest req = new MockHttpServletRequest();
+        PublicKey publicKey = setPublicKey(req, "success");
+        
+        IaasAccountMgntVO expectedVo = setIaasAccountInfo();
+        IaasAccountMgntDTO dto = setSaveIaasAccountInfoDto(publicKey, "azure", "");
+        
+        when(mockIaasAccountMgntDao.selectIaasAccountDuplicationByInfraAccount(expectedVo)).thenReturn(0);
+        when(mockIaasAccountMgntDao.selectIaasAccountDuplicationByAccountName(expectedVo)).thenReturn(0);
+        when(mockIaasAccountMgntDao.insertIaasAccountInfo(expectedVo)).thenReturn(1);
+        
+        mockIaasAccountMgntService.saveIaasAccountInfo("azure", dto, req, principal);
+    }
+    
+    
+    /***************************************************
+     * @project : 인프라 관리 대시보드
      * @description : 인프라 계정 등록 중복 오류
      * @title : testSaveIaasAccountInfoRegistInfraAccountDuplicationError
      * @return : void
@@ -504,6 +527,7 @@ public class IaasAccountMgntServiceUnitTest {
         accountVo.getOpenstackDomain();
         accountVo.setOpenstackDomain("");
         
+        
         accountVo.getUpdateUserId();
         accountVo.setUpdateUserId(principal.getName());
         
@@ -576,6 +600,16 @@ public class IaasAccountMgntServiceUnitTest {
         vo.setUpdateUserId("admin");
         list.add(vo);
         
+      //when azure
+        vo.setId(1);
+        vo.setAccountName("azure-test1");
+        vo.setCommonAccessUser("779daebc-febe-4901-bb05-464d3b877b7b"); //application id
+        vo.setCommonAccessSecret("lNYSO2Bm4j/FwsW+HbefnNc1V7742N5jiA8vNIC4rXs="); // application key
+        vo.setCommonTenant("aeacdca2-4f9e-4bc5-8c8b-b0403fbdcfd1"); //tenant id
+        vo.setCreateUserId("admin");
+        vo.setUpdateUserId("admin");
+        list.add(vo);
+        
         return list;
     }
     
@@ -591,6 +625,7 @@ public class IaasAccountMgntServiceUnitTest {
         map.put("openstack_cnt", 5);
         map.put("vsphere_cnt", 2);
         map.put("google_cnt", 1);
+        map.put("azure_cnt", 1);
         
         return map;
     }
@@ -723,6 +758,12 @@ public class IaasAccountMgntServiceUnitTest {
             dto.setIaasType("google");
             dto.setCommonProject("paas-ta");
             dto.setGoogleJsonKeyPath("google-key.json");
+        }else if( iaasType.equalsIgnoreCase("azure") ){
+            dto.setIaasType("azure");
+            dto.setAccountName("azure-test1");
+            dto.setCommonAccessUser("779daebc-febe-4901-bb05-464d3b877b7b");//Application Id
+            dto.setCommonAccessSecret("lNYSO2Bm4j/FwsW+HbefnNc1V7742N5jiA8vNIC4rXs=");//Application key
+            dto.setCommonTenant("aeacdca2-4f9e-4bc5-8c8b-b0403fbdcfd1"); //tenant id
         }
         
         //RSA(commonAccessUser & commonAccessSecret)

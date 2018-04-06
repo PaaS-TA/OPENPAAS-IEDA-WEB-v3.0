@@ -1022,6 +1022,14 @@ properties:
         authorities: routing.routes.read
         authorized-grant-types: client_credentials
         secret: (( merge ))
+      ssh-proxy:
+        authorized-grant-types: authorization_code
+        autoapprove: true
+        override: true
+        scope: openid,cloud_controller.read,cloud_controller.write,cloud_controller.admin,uaa.user      #uaa.user added
+        authroities: uaa.user
+        secret: ssh-proxy-secret
+        redirect-uri: (( "https://login." system_domain ))
       tcp_emitter:
         authorities: routing.routes.write,routing.routes.read
         authorized-grant-types: client_credentials

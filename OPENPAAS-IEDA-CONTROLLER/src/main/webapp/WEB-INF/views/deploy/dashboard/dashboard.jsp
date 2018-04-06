@@ -99,6 +99,10 @@ $( window ).resize(function() {
 });
 </script>
 
+<style>
+   #main {margin-top:70px;}
+</style>
+
 <div id="main">
     
     <!-- 설치 관리자 -->

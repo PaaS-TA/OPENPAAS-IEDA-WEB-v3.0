@@ -32,7 +32,7 @@ public class BootstrapVO {
     private String paastaMonitoringIp; //PaaS-TA 모니터링 사용시 ingrestorIP
     private String influxdbIp;
     private String paastaMonitoringRelease; //PaaS-TA 모니터링 사용시 릴리즈
-
+    private String osConfRelease;
     /** Network Info **/
     private String subnetId; // 네트워크id
     private String privateStaticIp; // 디렉터 내부 ip
@@ -122,6 +122,12 @@ public class BootstrapVO {
         } else {
             this.createDate = new Date(createDate.getTime());
         }
+    }
+    public String getOsConfRelease() {
+        return osConfRelease;
+    }
+    public void setOsConfRelease(String osConfRelease) {
+        this.osConfRelease = osConfRelease;
     }
     public String getDeploymentName() {
         return deploymentName;

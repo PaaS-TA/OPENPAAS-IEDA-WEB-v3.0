@@ -27,6 +27,11 @@ public class IaasConfigMgntVO{
     private String vsphereVcenterPersistentDatastore; // vCenter 영구 데이터 스토어을 
     private String vsphereVcenterDiskPath; //vCenter 디스크 경로
     private String vsphereVcenterCluster; //vCenter 클러스터
+    private String azureResourceGroup;
+    private String azureStorageAccountName;
+    private String azureSshPublicKey;
+    private String azurePrivateKey;
+    private String googlePublicKey; //구글 Public key
     private String createUserId;//등록자 아이디
     private String updateUserId;//수정자 아이디
     private Date createDate;//등록일
@@ -142,6 +147,36 @@ public class IaasConfigMgntVO{
     }
     public void setVsphereVcenterCluster(String vsphereVcenterCluster) {
         this.vsphereVcenterCluster = vsphereVcenterCluster;
+    }
+    public String getAzureResourceGroup() {
+        return azureResourceGroup;
+    }
+    public void setAzureResourceGroup(String azureResourceGroup) {
+        this.azureResourceGroup = azureResourceGroup;
+    }
+    public String getAzureStorageAccountName() {
+        return azureStorageAccountName;
+    }
+    public void setAzureStorageAccountName(String azureStorageAccountName) {
+        this.azureStorageAccountName = azureStorageAccountName;
+    }
+    public String getAzureSshPublicKey() {
+        return azureSshPublicKey;
+    }
+    public void setAzureSshPublicKey(String azureSshPublicKey) {
+        this.azureSshPublicKey = azureSshPublicKey;
+    }
+    public String getAzurePrivateKey() {
+        return azurePrivateKey;
+    }
+    public void setAzurePrivateKey(String azurePrivateKey) {
+        this.azurePrivateKey = azurePrivateKey;
+    }
+    public String getGooglePublicKey() {
+        return googlePublicKey;
+    }
+    public void setGooglePublicKey(String googlePublicKey) {
+        this.googlePublicKey = googlePublicKey;
     }
     public String getCreateUserId() {
         return createUserId;

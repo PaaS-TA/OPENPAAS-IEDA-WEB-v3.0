@@ -123,9 +123,13 @@ AND
       ,config.vsphere_vcenter_persistent_datastore as vsphereVcenterPersistentDatastore
       ,config.vsphere_vcenter_disk_path as vsphereVcenterDiskPath
       ,config.vsphere_vcenter_cluster as vsphereVcenterCluster
+      ,config.azure_resource_group as azureResourceGroupName 
+      ,config.azure_storage_account_name as azureStorageAccountName
+      ,config.azure_ssh_public_key as azureSshPublicKey
       ,config.create_user_id as createUserId
       ,config.create_date as createDate
       ,config.update_date as updateDate
+      ,config.google_public_key as googlePublicKey
       ,account.account_name as accountName
       ,account.common_access_endpoint as commonAccessEndpoint
       ,account.common_access_user as commonAccessUser
@@ -135,6 +139,8 @@ AND
       ,account.common_project as commonProject
       ,account.openstack_domain as openstackDomain
       ,account.google_json_key as googleJsonKey
+      ,account.azure_subscription_id  as azureSubscriptionId
+      
     From ieda_iaas_config config, ieda_iaas_account account
    Where config.account_id = account.id
      And config.create_user_id = #{createUserId}

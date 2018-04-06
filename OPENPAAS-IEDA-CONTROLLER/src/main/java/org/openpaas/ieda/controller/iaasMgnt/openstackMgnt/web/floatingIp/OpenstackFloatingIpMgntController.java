@@ -38,8 +38,7 @@ public class OpenstackFloatingIpMgntController{
         return "iaas/openstack/floatingIp/openstackFloatingIpMgnt";
         
     }
-    
-    /***************************************************
+     /****************************************************
      * @project : 인프라 관리 대시보드
      * @description : OPENSTACK FLOATING IP 목록 조회
      * @title : getFloatingIpList

@@ -37,7 +37,6 @@ import org.springframework.stereotype.Service;
 
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
-
 @Service
 public class CommonIaasService {
     
@@ -183,6 +182,8 @@ public class CommonIaasService {
                 flag = api.getAccountInfoFromOpenstackV3(vo.getCommonAccessEndpoint(), vo.getOpenstackDomain(), vo.getCommonProject(),
                         commonAccessUser, commonAccessSecret);
             }
+        } else  if( vo.getIaasType().toUpperCase().trim().equals("AZURE") ){
+            flag = api.getAccountInfoFromAzure(commonAccessUser, vo.getCommonTenant(), commonAccessSecret, vo.getAzureSubscriptionId());
         } else  if( vo.getIaasType().trim().equalsIgnoreCase("VSPHERE") ){
             flag = api.getAccountInfoFromVsphere(vo.getCommonAccessEndpoint(), commonAccessUser, commonAccessSecret);
         }
@@ -199,7 +200,7 @@ public class CommonIaasService {
     /***************************************************
     * @project : 인프라 관리 대시보드
     * @description : 공통 인프라 계정 정보 조회
-    * @title : getAwsAccountInfo
+    * @title : getIaaSAccountInfo
     * @return : IaasAccountMgntVO
     ***************************************************/
     public IaasAccountMgntVO getIaaSAccountInfo(Principal principal, int accountId, String iaasType) {
@@ -222,6 +223,22 @@ public class CommonIaasService {
     
     /***************************************************
      * @project : 인프라 관리 대시보드
+     * @description : Azure 리전 명 정보 조회
+     * @title : getAzureLocationInfo
+     * @return : Location
+     ***************************************************/
+    public String getAzureLocationInfo(String location){
+    	com.microsoft.azure.management.resources.fluentcore.arm.Region theRegion = 
+    			com.microsoft.azure.management.resources.fluentcore.arm.Region.fromName(location);
+    	String regionName = theRegion.name().toString();
+    	 String rglocation = com.microsoft.azure.management.resources.fluentcore.arm.Region.findByLabelOrName(regionName).name();
+    	return  rglocation;
+    }
+    
+    
+   
+    /***************************************************
+     * @project : 인프라 관리 대시보드
      * @description : 서브그룹 정보 목록을 조회 
      * @title : getSubGroupCodeList
      * @return : List<CommonIaasVO>
@@ -234,4 +251,6 @@ public class CommonIaasService {
         }
         return list;
     }
+    
+    
 }

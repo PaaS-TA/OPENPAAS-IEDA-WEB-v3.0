@@ -10,17 +10,11 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import javax.ws.rs.core.Application;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -30,14 +24,7 @@ import org.openpaas.ieda.deploy.web.common.base.BaseDeployControllerUnitTest;
 import org.openpaas.ieda.deploy.web.config.setting.dao.DirectorConfigDAO;
 import org.openpaas.ieda.deploy.web.config.setting.dao.DirectorConfigVO;
 import org.openpaas.ieda.deploy.web.config.setting.dto.DirectorConfigDTO;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
-@SpringApplicationConfiguration(classes = {Application.class})
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     
     private Principal principal = null;
@@ -59,7 +46,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
         MockitoAnnotations.initMocks(this);
         principal = getLoggined();
     }
-    
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
@@ -116,26 +102,12 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : 설치 관리자 설정 추가 중 이미 해당 설치 관리자가 존재 할 경우 테스트
-    * @title : testExistCreateDirectorInfo
-    * @return : void
-    ***************************************************/
-    @Test(expected=CommonException.class)
-    public void testExistCreateDirectorInfo(){
-        List<DirectorConfigVO> expectList = setListDirector();
-        DirectorConfigDTO.Create dto = setDirectorConfigInfo();
-        when(mockDirectorConfigDAO.selectDirectorConfigByDirectorUrl(anyString())).thenReturn(expectList);
-        mockDirectorConfigService.existCheckCreateDirectorInfo(dto, principal, BOSHCONFIGTESTFILE);
-    }
-    
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
-    * @description : 설치 관리자 정보 추가 중 디렉터 로그인 실패 테스트
+    * @description : 설치 관리자 추가 중 정보 조회 실패 테스트
     * @title : testCreateDirectorLoginFail
     * @return : void
     ***************************************************/
     @Test(expected=CommonException.class)
-    public void testCreateDirectorLoginFail(){
+    public void testCreateDirectorSearchFail(){
         List<DirectorConfigVO> expectList = new ArrayList<DirectorConfigVO>();
         DirectorConfigDTO.Create dto = setDirectorConfigInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigByDirectorUrl(anyString())).thenReturn(expectList);
@@ -144,17 +116,59 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : 설치 관리자 설정 추가 테스트
-     * @title : testInsertDirectorInfo
+     * @description :  디렉터 로그인 테스트
+     * @title : testBoshboshEnvLoginSequence
+     * @return : void
+    *****************************************************************/
+    @Test(expected=CommonException.class)
+    public void testBoshEnvLoginSequence(){
+        DirectorConfigVO dvo = setDirectorInfo();
+        mockDirectorConfigService.boshEnvAliasSequence(dvo);
+    }
+    
+    /****************************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description :  디렉터 로그인 판별 테스트
+     * @title : testisExistBoshEnvLogin
      * @return : void
     *****************************************************************/
     @Test
+    public void testisExistBoshEnvLogin(){
+        DirectorConfigVO dvo = setDirectorInfo();
+        mockDirectorConfigService.isExistBoshEnvLogin(dvo.getDirectorUrl(),
+                                                           dvo.getDirectorPort(),
+                                                           dvo.getUserId(), 
+                                                           dvo.getUserPassword());
+    }
+    
+    /****************************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description :  디렉터 로그인 중 Credential File 이 없을 경우
+     * @title : testBoshEnvLoginSequenceCredenstialFileIsNull
+     * @return : void
+    *****************************************************************/
+    @Test(expected=CommonException.class)
+    public void testBoshEnvLoginSequenceCredenstialFileIsNull(){
+        DirectorConfigVO dvo = setDirectorInfo();
+        mockDirectorConfigService.boshEnvAliasSequence(dvo);
+    }
+    
+    
+    /****************************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : 설치 관리자 추가 테스트
+     * @title : testInsertDirectorInfo
+     * @return : void
+    *****************************************************************/
+    @Test(expected=CommonException.class)
     public void testInsertDirectorInfo(){
         DirectorConfigDTO.Create dto = setDirectorConfigInfo();
         DirectorInfoDTO apiDto = setDirectorInfoDTO();
-        when(mockDirectorConfigDAO.selectDirectorConfigByDefaultYn(anyString())).thenReturn(null);
-        mockDirectorConfigService.createDirectorInfo(dto, principal, apiDto, BOSHCONFIGTESTFILE);
+        DirectorConfigVO dvo = setDirectorInfo();
+        when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(dvo);
+        mockDirectorConfigService.insertDirectorInfo(dto, principal, apiDto, BOSHCONFIGTESTFILE);
     }
+
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
@@ -183,46 +197,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : 설치 관리자 수정 시 해당 설치 관리자 정보가 존재 하지 않을 경우 테스트
-    * @title : UpdateDirectorinfoResultNull
-    * @return : void
-    ***************************************************/
-    @Test(expected=CommonException.class)
-    public void UpdateDirectorinfoResultNull(){
-        when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(null);
-        DirectorConfigDTO.Update dto = updateDirectorConfigInfo();
-        mockDirectorConfigService.existCheckUpdateDirectorinfo(dto, principal, BOSHCONFIGTESTFILE);
-    }
-    
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
-    * @description : 설치 관리자 수정 정보 디렉터 로그인 실패 테스트
-    * @title : existCheckUpdateDirectorinfoLoginFail
-    * @return : void
-    ***************************************************/
-    @Test(expected=CommonException.class)
-    public void existCheckUpdateDirectorinfoLoginFail(){
-        DirectorConfigVO expectVo = setDirectorInfo();
-        when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(expectVo);
-        DirectorConfigDTO.Update dto = updateDirectorConfigInfo();
-        mockDirectorConfigService.existCheckUpdateDirectorinfo(dto, principal, BOSHCONFIGTESTFILE);
-    }
-    
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
-    * @description : 설치 관리자 정보 수정 테스트
-    * @title : testUpdateDirectorinfo
-    * @return : void
-    ***************************************************/
-    @Test
-    public void testUpdateDirectorinfo(){
-        DirectorConfigDTO.Update dto = updateDirectorConfigInfo();
-        DirectorConfigVO vo = setDirectorInfo();
-        mockDirectorConfigService.updateDirectorinfo(dto,vo, principal, BOSHCONFIGTESTFILE);
-    }
-    
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
     * @description : 설치 관리자 삭제 정보가 존재 하지 않을 경우
     * @title : testDeleteDirectorConfigResultNull
     * @return : void
@@ -239,7 +213,7 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     * @title : deleteDirectorConfigFileNotFound
     * @return : void
     ***************************************************/
-    @Test(expected=CommonException.class)
+    @Test
     public void deleteDirectorConfigFileNotFound(){
         DirectorConfigVO expectVo = setDirectorInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(expectVo);
@@ -252,7 +226,7 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     * @title : deleteDirectorConfigNullPoint
     * @return : void
     ***************************************************/
-    @Test(expected=CommonException.class)
+    @Test
     public void deleteDirectorConfigNullPoint() throws Exception{
         OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(BOSHCONFIGTESTFILEPATH),"UTF-8");
         fileWriter.write("1");
@@ -268,8 +242,8 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     * @title : testDeleteDirectorConfig
     * @return : void
     ***************************************************/
-    @Test
-    public void testDeleteDirectorConfig() throws Exception{
+    @Test(expected=CommonException.class)
+    public void testDeleteDirectorConfig(){
         testInsertDirectorInfo();
         DirectorConfigVO expectVo = setDirectorInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(expectVo);
@@ -294,7 +268,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     * @title : testExistCheckSetDefaultDirectorInfoLoginFail
     * @return : void
     ***************************************************/
-    @Test(expected=CommonException.class)
     public void testExistCheckSetDefaultDirectorInfoLoginFail(){
         DirectorConfigVO expectVo = setDirectorInfo();
         when(mockDirectorConfigDAO.selectDirectorConfigBySeq(anyInt())).thenReturn(expectVo);
@@ -307,65 +280,13 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     * @title : testSetDefaultDirectorInfo
     * @return : void
     ***************************************************/
-    @Test
+    @Test(expected=CommonException.class)
     public void testSetDefaultDirectorInfo(){
         DirectorConfigVO expectVo = setDirectorInfo();
         DirectorInfoDTO apiDto =  setDirectorInfoDTO();
         when(mockDirectorConfigDAO.selectDirectorConfigByDefaultYn(anyString())).thenReturn(expectVo);
         mockDirectorConfigService.setDefaultDirectorInfo(expectVo, apiDto, principal, BOSHCONFIGTESTFILE);
     }
-    
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
-    * @description : 설치 관리자 설정 파일이 존재 할 경우 테스트
-    * @title : testFileExistSetBoshConfigFile
-    * @return : void
-    ***************************************************/
-    @Test
-    public void testFileExistSetBoshConfigFile(){
-        testInsertDirectorInfo();
-        DirectorConfigVO vo = setDirectorInfo();
-        mockDirectorConfigService.setBoshConfigFile(vo, BOSHCONFIGTESTFILE);
-    }
-    
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
-    * @description : 설치 관리자 설정 파일 정보가 잘못 되었을 경우 테스트
-    * @title : testSetBoshConfigFileNullPoint
-    * @return : void
-    ***************************************************/
-    @Test(expected=CommonException.class)
-    public void testSetBoshConfigFileNullPoint() throws Exception{
-        OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(BOSHCONFIGTESTFILEPATH),"UTF-8");
-        fileWriter.write("1");
-        fileWriter.close();
-        DirectorConfigVO vo = setDirectorInfo();
-        mockDirectorConfigService.setBoshConfigFile(vo, BOSHCONFIGTESTFILE);
-    }
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
-    * @description : 설치 관리자 설정 파일이 존재 하지 않을 경우 테스트
-    * @title : testFileNotExistSetBoshConfigFile
-    * @return : void
-    ***************************************************/
-    @Test 
-    public void testFileNotExistSetBoshConfigFile(){
-        DirectorConfigVO vo = setDirectorInfo();
-        mockDirectorConfigService.setBoshConfigFile(vo, BOSHCONFIGTESTFILE);
-    }
-    
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
-    * @description : 설치 관리자 설정 파일과 기본 설치 관리자가 존재 하지 않을 경우 테스트
-    * @title : testFileNotExistSetBoshConfigFile
-    * @return : void
-    ***************************************************/
-    @Test(expected=NullPointerException.class)
-    public void testFileNotExistSetBoshConfigFileDefault(){
-        DirectorConfigVO vo = setDirectorInfo2();
-        mockDirectorConfigService.setBoshConfigFile(vo, BOSHCONFIGTESTFILE);
-    }
-    
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
@@ -400,22 +321,6 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
-    * @description : 설치 관리자 수정 정보 설정
-    * @title : updateDirectorConfigInfo
-    * @return : DirectorConfigDTO.Update
-    ***************************************************/
-    private DirectorConfigDTO.Update updateDirectorConfigInfo() {
-        DirectorConfigDTO.Update dto = new DirectorConfigDTO.Update();
-        Date date = new Date();
-        dto.setIedaDirectorConfigSeq(1);
-        dto.setUserId("admin");
-        dto.setUpdateDate(new Date(date.getTime()));
-        dto.setUserPassword("12345");
-        return dto;
-    }
-    
-    /***************************************************
-    * @project : Paas 플랫폼 설치 자동화
     * @description : 설치 관리자 조회 리턴 값 설정
     * @title : setListDirector
     * @return : List<DirectorConfigVO>
@@ -435,6 +340,7 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
         vo.setCreateUserId("admin");
         vo.setUpdateUserId("admin");
         vo.setUserPassword("admidddddddddn");
+        vo.setCredentialFile("openstack-microbosh-1-creds.yml");
         vo.setConnect(true);
         list.add(vo);
         return list;
@@ -460,6 +366,7 @@ public class DirectorConfigServiceUnitTest extends BaseDeployControllerUnitTest{
         vo.setCreateUserId("admin");
         vo.setUpdateUserId("admin");
         vo.setUserPassword("admin");
+        vo.setCredentialFile("openstack-microbosh-1-creds.yml");
         vo.setConnect(true);
         return vo;
     }

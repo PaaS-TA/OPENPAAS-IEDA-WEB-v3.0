@@ -18,8 +18,8 @@ body {
     }
 }
 
-/**w2ui popup**/
-.navbar-inverse { background-color:#293846  }
+/**w2ui popup*#293846*/
+.navbar-inverse { background-color:#296573  }
 .w2ui-popup .w2ui-box1{ bottom:40px; }
 .panel { margin-bottom:0px; }
 .w2ui-field>div { margin-left:0px; float:left;}
@@ -59,7 +59,7 @@ body {
     height: 50px;
     position:relative;
     background-size: 52px;
-    top: 6px;
+    
 }
 
 .top-nav {
@@ -77,7 +77,7 @@ body {
     padding-top: 15px;
     padding-bottom: 15px;
     line-height: 20px;
-    color: #cacaca;
+    color: #ffffff;
     font-size:16px;
 }
 
@@ -87,7 +87,7 @@ body {
 .top-nav>.open>a:hover,
 .top-nav>.open>a:focus {
     color: #fff;
-    background-color: #293846;
+    background-color: #296573;
 }
 
 .top-nav>.open>.dropdown-menu {
@@ -132,10 +132,10 @@ ul.alert-dropdown {
 }
 
 /* Side Navigation */
-.navbar { min-height:100px; }
+.navbar { min-height:86px; }
 .navbar-inverse .navbar-nav>.active>a {
 	color:#fff;
-	background-color:#293846 !important
+	background-color:#296573 !important
 }
 
 .navbar-inverse .navbar-brand {  
@@ -143,23 +143,23 @@ ul.alert-dropdown {
 	font-size:30px;
 	font-weight:bolder;
 	height:70px;
-	padding:25px 15px;
+	padding:17px 15px;
 }
 .navbar-inverse .navbar-brand:visited {  
-    color:#FFC107;
+    color:#ffffff;
 }
 
 @media(min-width:768px) {
     .side-nav {
         position: fixed;
-        top: 100px;
+        top: 85px;
         left: 225px;
         width: 256px;
         margin-left: -225px;
         border: none;
         border-radius: 0;
         overflow-y: auto;
-        background-color: #2f4050;
+        background-color: #f5f5f5;
         bottom: 0;
         overflow-x: hidden;
         padding-bottom: 40px;
@@ -167,7 +167,7 @@ ul.alert-dropdown {
 
 .navbar-inverse .navbar-nav>li>a{
 	width:256px;
-	color:#a7b1c2;
+	color:#4d4d4d;
 	font-size:16px;
 }
 
@@ -177,13 +177,13 @@ ul.alert-dropdown {
 }
 
 
-.side-nav li a:hover, .side-nav li a:focus { outline: none; background-color: #293846 !important; }
+.side-nav li a:hover, .side-nav li a:focus { outline: none; color: #ffffff; background-color: #296473 !important; }
 .side-nav>li>ul { padding: 0; }
 .side-nav>li>ul>li>a {
     display: block;
     padding: 10px 15px 10px 38px;
     text-decoration: none;
-    color: #a7b1c2;
+    color: #293030;
     font-size:15px;
 }
 

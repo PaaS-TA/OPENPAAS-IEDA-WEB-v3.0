@@ -16,6 +16,7 @@ public class IaasAccountMgntVO {
     private String commonProject;//공통 프로젝트 아이디
     private String openstackDomain;//오픈스택 도메인
     private String googleJsonKeyPath;//google json 키 파일
+    private String azureSubscriptionId; //azure 구독 아이디
     private String defaultYn;
     private String createUserId;//등록자 아이디
     private String updateUserId;//수정자 아이디
@@ -147,7 +148,13 @@ public class IaasAccountMgntVO {
     public void setGoogleJsonKeyPath(String googleJsonKeyPath) {
         this.googleJsonKeyPath = googleJsonKeyPath;
     }
-    public String getCommonProject() {
+    public String getAzureSubscriptionId() {
+		return azureSubscriptionId;
+	}
+	public void setAzureSubscriptionId(String azureSubscriptionId) {
+		this.azureSubscriptionId = azureSubscriptionId;
+	}
+	public String getCommonProject() {
         return commonProject;
     }
     public void setCommonProject(String commonProject) {

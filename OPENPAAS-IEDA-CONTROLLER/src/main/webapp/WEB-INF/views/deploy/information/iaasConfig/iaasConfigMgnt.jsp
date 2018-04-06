@@ -63,6 +63,7 @@ function setIaasConfigCountInfo(){
             $("#iaas_config_mgnt_wrap .openstack-config-cnt").append(data.openstack_config_cnt + " (개)");
             $("#iaas_config_mgnt_wrap .google-config-cnt").append(data.google_config_cnt + " (개)");
             $("#iaas_config_mgnt_wrap .vSphere-config-cnt").append(data.vsphere_config_cnt + " (개)");
+            $("#iaas_config_mgnt_wrap .azure-config-cnt").append(data.azure_config_cnt + " (개)");
 
         },
         error : function(request, status, error){
@@ -142,6 +143,13 @@ $( window ).resize(function() {
                     <li class="config-go-style">| vSphere 환경 설정 관리 화면 이동</li>
                     <li><img src='images/iaasMgnt/vSphere-icon.png' class="vSphere-icon" alt="vSphere 조회"></li>
                     <li class="vSphere-config-cnt"><span style="font-size: 14px;color:#000;">설정 정보 : </span></li>
+                </ul>
+            </sec:authorize>
+            <sec:authorize access="hasAuthority('INFO_IAASCONFIG_AZURE_MENU')">
+                <ul class="vSphere-box col-md-3 well" onmouseover="hover(this);" onmouseout="unhover(this);" onclick="javascript:goPage('<c:url value="/info/iaasConfig/azure"/>','Azure 조회');">
+                    <li class="config-go-style">| Azure 환경 설정 관리 화면 이동</li>
+                    <li><img src='images/iaasMgnt/azure-icon.png' class="azure-icon" alt="Azure 조회"></li>
+                    <li class="azure-config-cnt"><span style="font-size: 14px;color:#000;">설정 정보 : </span></li>
                 </ul>
             </sec:authorize>
         </div>

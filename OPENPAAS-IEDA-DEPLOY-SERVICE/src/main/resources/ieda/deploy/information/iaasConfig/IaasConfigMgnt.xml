@@ -29,6 +29,8 @@
         ,(select count(*) from ieda_iaas_config where UPPER(iaas_type)='OPENSTACK' And create_user_id= #{userId}) as openstack_config_cnt
         ,(select count(*) from ieda_iaas_config where UPPER(iaas_type)='GOOGLE' And create_user_id= #{userId}) as google_config_cnt
         ,(select count(*) from ieda_iaas_config where UPPER(iaas_type)='VSPHERE' And create_user_id= #{userId}) as vsphere_config_cnt
+        ,(select count(*) from ieda_iaas_config where UPPER(iaas_type)='AZURE' And create_user_id= #{userId}) as azure_config_cnt
+    
     From dual
 </select>
 
@@ -47,6 +49,7 @@
         ,b.common_project as commonProject
         ,b.openstack_domain as openstackDomain
         ,b.openstack_keystone_version as openstackKeystoneVersion
+        ,a.google_public_key as googlePublicKey
         ,a.vsphere_vcenter_datacenter_name as vsphereVcentDataCenterName
         ,a.vsphere_vcenter_vm_folder as vsphereVcenterVmFolder
         ,a.vsphere_vcenter_template_folder as vsphereVcenterTemplateFolder
@@ -54,6 +57,10 @@
         ,a.vsphere_vcenter_persistent_datastore as vsphereVcenterPersistentDatastore
         ,a.vsphere_vcenter_disk_path as vsphereVcenterDiskPath
         ,a.vsphere_vcenter_cluster as vsphereVcenterCluster
+        ,a.azure_resource_group as azureResourceGroup
+        ,a.azure_storage_account_name as azureStorageAccountName
+        ,a.azure_ssh_public_key as azureSshPublicKey
+        ,a.azure_private_key as azurePrivateKey
         ,a.create_user_id as createUserId
         ,a.create_date as createDate
         ,a.update_date as updateDate
@@ -83,6 +90,7 @@
         ,a.common_keypair_path as commonKeypairPath
         ,a.common_availability_zone as commonAvailabilityZone
         ,a.common_region as commonRegion
+        ,a.google_public_key as googlePublicKey
         ,a.vsphere_vcenter_datacenter_name as vsphereVcentDataCenterName
         ,a.vsphere_vcenter_vm_folder as vsphereVcenterVmFolder
         ,a.vsphere_vcenter_template_folder as vsphereVcenterTemplateFolder
@@ -90,6 +98,10 @@
         ,a.vsphere_vcenter_persistent_datastore as vsphereVcenterPersistentDatastore
         ,a.vsphere_vcenter_disk_path as vsphereVcenterDiskPath
         ,a.vsphere_vcenter_cluster as vsphereVcenterCluster
+        ,a.azure_resource_group as azureResourceGroup
+        ,a.azure_storage_account_name as azureStorageAccountName
+        ,a.azure_ssh_public_key as azureSshPublicKey
+        ,a.azure_private_key as azurePrivateKey
         ,a.create_user_id as createUserId
         ,a.create_date as createDate
         ,a.update_date as updateDate
@@ -109,7 +121,8 @@
     Select count(*)
       From ieda_iaas_config
     Where iaas_type=#{config.iaasType}
-       And iaas_config_alias= #{config.iaasConfigAlias}
+    
+    
     <choose>
          <when test="config.iaasType == 'AWS'">
             And common_region = #{config.commonRegion}
@@ -124,6 +137,7 @@
         </when>
         <when test="config.iaasType == 'Google'">
             And common_keypair_path = #{config.commonKeypairPath}
+            And google_public_key = #{config.googlePublicKey}
         </when>
         <when test="config.iaasType == 'vSphere'">
             And vsphere_vcenter_vm_folder = #{config.vsphereVcenterVmFolder}
@@ -133,6 +147,12 @@
             And vsphere_vcenter_disk_path = #{config.vsphereVcenterDiskPath} 
             And vsphere_vcenter_cluster = #{config.vsphereVcenterCluster}  
         </when>
+         <when test="config.iaasType == 'azure'">
+            And common_security_group = #{config.commonSecurityGroup}
+            And azure_resource_group = #{config.azureResourceGroup}
+            And azure_storage_account_name = #{config.azureStorageAccountName}
+            And azure_ssh_public_key = #{config.azureSshPublicKey}
+        </when>
     </choose>
 </select>
 
@@ -140,7 +160,7 @@
 /** ieda.iaas.information.iaasConfig.selectIaasAccountDuplicationByAccountName **/
     Select count(*)
       From ieda_iaas_config
-    Where iaas_type=#{config.iaasType}
+    Where iaas_type = #{config.iaasType}
        And iaas_config_alias = #{config.iaasConfigAlias}
        And id != #{config.id}
 </select>
@@ -157,6 +177,7 @@
         ,common_keypair_name
         ,common_keypair_path
         ,common_availability_zone
+        ,google_public_key
         ,vsphere_vcenter_datacenter_name
         ,vsphere_vcenter_vm_folder
         ,vsphere_vcenter_template_folder
@@ -164,6 +185,10 @@
         ,vsphere_vcenter_persistent_datastore
         ,vsphere_vcenter_disk_path
         ,vsphere_vcenter_cluster
+        ,azure_resource_group
+        ,azure_storage_account_name
+        ,azure_ssh_public_key
+        ,azure_private_key
         ,create_user_id
         ,update_user_id
         ,create_date
@@ -178,6 +203,7 @@
         ,#{config.commonKeypairName}
         ,#{config.commonKeypairPath}
         ,#{config.commonAvailabilityZone}
+        ,#{config.googlePublicKey}
         ,#{config.vsphereVcentDataCenterName}
         ,#{config.vsphereVcenterVmFolder}
         ,#{config.vsphereVcenterTemplateFolder}
@@ -185,6 +211,10 @@
         ,#{config.vsphereVcenterPersistentDatastore}
         ,#{config.vsphereVcenterDiskPath}
         ,#{config.vsphereVcenterCluster}
+        ,#{config.azureResourceGroup}
+        ,#{config.azureStorageAccountName}
+        ,#{config.azureSshPublicKey}
+        ,#{config.azurePrivateKey}
         ,#{config.createUserId}
         ,#{config.updateUserId}
         ,now()
@@ -203,6 +233,7 @@
         ,common_keypair_name = #{config.commonKeypairName}
         ,common_keypair_path = #{config.commonKeypairPath}
         ,common_availability_zone = #{config.commonAvailabilityZone}
+        ,google_public_key = #{config.googlePublicKey}
         ,vsphere_vcenter_datacenter_name = #{config.vsphereVcentDataCenterName}
         ,vsphere_vcenter_vm_folder = #{config.vsphereVcenterVmFolder}
         ,vsphere_vcenter_template_folder = #{config.vsphereVcenterTemplateFolder}
@@ -210,6 +241,10 @@
         ,vsphere_vcenter_persistent_datastore = #{config.vsphereVcenterPersistentDatastore}
         ,vsphere_vcenter_disk_path = #{config.vsphereVcenterDiskPath}
         ,vsphere_vcenter_cluster = #{config.vsphereVcenterCluster}
+        ,azure_resource_group = #{config.azureResourceGroup}
+        ,azure_storage_account_name = #{config.azureStorageAccountName}
+        ,azure_ssh_public_key = #{config.azureSshPublicKey}
+        ,azure_private_key = #{config.azurePrivateKey}
         ,update_user_id = #{config.createUserId}
         ,update_date = now()
      Where

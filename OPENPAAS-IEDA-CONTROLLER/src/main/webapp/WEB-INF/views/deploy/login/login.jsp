@@ -143,8 +143,8 @@ function loginFn() {
     }
     .btn-login {
         color: #fff;
-        border-color: rgb(75, 84, 100);
-        background: rgb(75, 84, 100);
+        border-color: #296573;
+        background: #296573;
     }
     .btn-login:hover{ color:#dae5ee }
     .span-left {
@@ -172,8 +172,8 @@ function loginFn() {
         </div>
         
         <div class="panel panel-default" >
-            <div class="panel-heading" style="background: rgb(75, 84, 100);">
-                <div class="panel-title text-center" style="background: rgb(75, 84, 100);"><img src="../images/penne_login.png" style="width:272px; margin-left:-64px;"></div>
+            <div class="panel-heading" style="background: #296573;">
+                <div class="panel-title text-center" style="background: #296573;"><img src="../images/penne_login.png" style="width:272px; margin-left:-64px;"></div>
             </div>
             
         <div class="panel-body2" >

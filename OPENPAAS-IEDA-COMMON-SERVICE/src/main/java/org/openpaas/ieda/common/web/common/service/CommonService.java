@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,7 +32,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.compute.Compute;
 import com.google.api.services.compute.model.Zone;
 import com.google.api.services.compute.model.ZoneList;
-
 @Service
 public class CommonService {
 
@@ -131,5 +131,16 @@ public class CommonService {
         }
         return zones;
     }
-
+    
+    /***************************************************
+     * @project : 인프라 관리 대시보드
+     * @description : Azure 리전 목록 조회
+     * @title : getAzureRegionList
+     * @return : List<Region>
+     ***************************************************/
+   public List<com.microsoft.azure.management.resources.fluentcore.arm.Region> getAzureRegionList(){
+    	com.microsoft.azure.management.resources.fluentcore.arm.Region[] region = com.microsoft.azure.management.resources.fluentcore.arm.Region.values();
+    	List<com.microsoft.azure.management.resources.fluentcore.arm.Region> regions = Arrays.stream(region).collect(Collectors.toList());
+    	return regions;
+    }
 }

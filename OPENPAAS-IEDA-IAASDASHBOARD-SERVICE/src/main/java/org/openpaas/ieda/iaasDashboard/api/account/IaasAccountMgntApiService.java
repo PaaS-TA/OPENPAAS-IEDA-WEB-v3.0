@@ -3,6 +3,9 @@ package org.openpaas.ieda.iaasDashboard.api.account;
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openpaas.ieda.common.web.common.service.CommonApiService;
@@ -23,11 +26,22 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.compute.Compute;
 import com.google.api.services.compute.model.Project;
+import com.microsoft.aad.adal4j.AuthenticationContext;
+import com.microsoft.aad.adal4j.AuthenticationResult;
+import com.microsoft.aad.adal4j.ClientCredential;
+import com.microsoft.azure.AzureEnvironment;
+import com.microsoft.azure.PagedList;
+import com.microsoft.azure.credentials.ApplicationTokenCredentials;
+import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.resources.Subscription;
 import com.vmware.vim25.mo.ServiceInstance;
 
 @Service
 public class IaasAccountMgntApiService {
     
+    
+    final private static String AZURE_TOKEN_URL = "https://login.microsoftonline.com/";
+    final private static String AZURE_ACQUIRE_TOKEN_URL = "https://management.azure.com/";
     final private static Logger LOGGER = LoggerFactory.getLogger(IaasAccountMgntApiService.class);
     
     /***************************************************
@@ -153,4 +167,124 @@ public class IaasAccountMgntApiService {
         }
         return flag;
    }
+    
+    /***************************************************
+     * @project : 인프라 관리 대시보드
+     * @description : Azure 계정 정보 조회
+     * @title : getAccountInfoFromAzure
+     * @return : boolean
+    ***************************************************/
+   /* public boolean getAccountInfoFromAzure( String client, String tenant, String key, String azureSubscriptionId){
+        boolean flag = false;
+        try{
+             CommonApiService credential = new CommonApiService();
+             
+             Azure azure =credential.getAzureCredentialsFromAzure(client, tenant, key, azureSubscriptionId);
+            
+             
+             if( !StringUtils.isEmpty(azure) ){
+                 flag = true;
+            }
+        }catch(Exception e){
+            if( LOGGER.isErrorEnabled() ){ LOGGER.error(e.getMessage()); }
+        }
+        return flag;
+   }*/
+    
+    /***************************************************
+     * @project : 인프라 관리 대시보드
+     * @description : MS Azure 계정 조회
+     * @title : getAccountInfoFromAzure
+     * @return : boolean
+    ***************************************************/
+    public boolean getAccountInfoFromAzure(String commonAccessUser, String tenant, String secret, String subscriptionId){
+        boolean flag = false;
+        
+        // use adal to Authenticate
+        AuthenticationContext authContext = null;
+        AuthenticationResult authResult = null;
+        ExecutorService service = null;
+        try {
+            service = Executors.newFixedThreadPool(1);
+            String url = AZURE_TOKEN_URL + tenant + "/oauth2/token";
+            authContext = new AuthenticationContext(url, false, service);
+            ClientCredential clientCred = new ClientCredential(commonAccessUser, secret);
+            Future<AuthenticationResult> future = authContext.acquireToken(AZURE_ACQUIRE_TOKEN_URL, clientCred, null);
+            authResult = future.get();
+            if( !StringUtils.isEmpty(authResult.getAccessToken())){
+                flag = true;
+                ApplicationTokenCredentials credentials = new ApplicationTokenCredentials(commonAccessUser, tenant, secret, AzureEnvironment.AZURE);
+                //subscription Id 유효성 check
+                PagedList<Subscription> azurelist = Azure.authenticate(credentials).subscriptions().list();
+                for(int i=0; i<azurelist.size(); i++){
+                    String subId = azurelist.get(i).subscriptionId();
+                    int cnt = 0;
+                    if (subId.equals(subscriptionId)){
+                        cnt ++;
+                    }
+                    if (cnt == 0){
+                    	flag = false;
+                    }
+                 }
+            }
+        } catch (Exception ex) {
+                    if( LOGGER.isErrorEnabled() ){ LOGGER.error(ex.getMessage()); }
+        } finally {
+            if(service != null){
+                service.shutdown();
+            }
+        }
+        return flag;
+   }
+    
+    /***************************************************
+     * @project : 인프라 관리 대시보드
+     * @description : MS Azure 계정 Subscription ID 유효성 확인 
+     * @title : getSubscriptionFromAzure
+     * @return : boolean
+    ***************************************************/    
+    /*public boolean getSubscriptionFromAzure( String commonAccessUser,  String secret, String tenant, String subscriptionId ){
+    	boolean flag = false;
+     // use adal to Authenticate
+        AuthenticationContext authContext = null;
+        AuthenticationResult authResult = null;
+        ExecutorService service = null;
+        try {
+            service = Executors.newFixedThreadPool(1);
+            String url = AZURE_TOKEN_URL + tenant + "/oauth2/token";
+            authContext = new AuthenticationContext(url, false, service);
+            ClientCredential clientCred = new ClientCredential(commonAccessUser, secret);
+            Future<AuthenticationResult> future = authContext.acquireToken(AZURE_ACQUIRE_TOKEN_URL, clientCred, null);
+            authResult = future.get(); 
+            
+            if( !StringUtils.isEmpty(authResult.getAccessToken())){
+                ApplicationTokenCredentials credentials = new ApplicationTokenCredentials(commonAccessUser, tenant, secret, AzureEnvironment.AZURE);
+                PagedList<Subscription> azurelist = Azure.authenticate(credentials).subscriptions().list();
+                
+                for(int i=0; i<azurelist.size(); i++){
+                    String subId = azurelist.get(i).subscriptionId();
+                    boolean match = subId.equals(subscriptionId);
+                    int cnt = 0;
+                    if (match == true){
+                        cnt ++;
+                        if (cnt == 0){
+                            flag = false;
+                        }else{
+                            flag = true;
+                        }
+                    }
+                 }
+             }
+            }catch (Exception ex) {
+                    if( LOGGER.isErrorEnabled() ){ LOGGER.error(ex.getMessage()); }
+        } finally {
+            if(service != null){
+                service.shutdown();
+            }
+        }
+        return flag;
+    }*/
 }
+
+
+

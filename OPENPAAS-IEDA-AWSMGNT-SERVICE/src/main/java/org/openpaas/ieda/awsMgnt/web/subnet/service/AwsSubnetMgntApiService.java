@@ -91,7 +91,7 @@ public class AwsSubnetMgntApiService {
         subnetRequest.setVpcId(dto.getVpcId());
         subnetRequest.setAvailabilityZone(dto.getAvailabilityZone());
         
-        //필수는 아니지만 입력값이 있으면 받아와서 입력해준다.
+         //필수는 아니지만 입력값이 있으면 받아와서 입력해준다.
         if( !StringUtils.isEmpty(dto.getCidrBlock()) ){
             subnetRequest.setCidrBlock(dto.getCidrBlock());
         }

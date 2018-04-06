@@ -2,7 +2,6 @@ package org.openpaas.ieda.deploy.web.deploy.bootstrap.service;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.Principal;
@@ -35,12 +34,13 @@ public class BootstrapDeployAsyncService {
     final private static String SEPARATOR = System.getProperty("file.separator");
     final private static String DEPLOYMENT_DIR = LocalDirectoryConfiguration.getDeploymentDir() + SEPARATOR;
     final private static String KEY_DIR = LocalDirectoryConfiguration.getLockDir()+SEPARATOR;
+    final private static String CREDENTIAL_DIR = LocalDirectoryConfiguration.getGenerateCredentialDir() + SEPARATOR;
     final private static String MESSAGE_ENDPOINT = "/deploy/bootstrap/install/logs"; 
     private final static Logger LOGGER = LoggerFactory.getLogger(BootstrapDeployAsyncService.class);
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : bosh-init을 실행하여 Bootstrap 설치 실행
+     * @description : bosh를 실행하여 Bootstrap 설치 실행
      * @title : deployBootstrap
      * @return : void
     *****************************************************************/
@@ -66,12 +66,13 @@ public class BootstrapDeployAsyncService {
                 String deployStatus = message.getMessage("common.deploy.status.processing", null, Locale.KOREA);
                 bootstrapInfo.setDeployStatus( deployStatus );
                 saveDeployStatus(bootstrapInfo);
-
-                //2. bosh-init 실행 
-                ProcessBuilder builder = new ProcessBuilder("bosh-init", "deploy", deployFile);
+                //2. bosh 실행
+                ProcessBuilder builder = new ProcessBuilder("bosh", "create-env", deployFile, 
+                        "--state="+deployFile.replace(".yml", "")+"-state.json", 
+                        "--vars-store="+CREDENTIAL_DIR+bootstrapInfo.getDeploymentFile().replace(".yml", "-creds.yml"), "--tty");
                 builder.redirectErrorStream(true);
                 Process process = builder.start();
-                
+
                 //실행 출력하는 로그를 읽어온다.
                 InputStream inputStream = process.getInputStream();
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
@@ -99,28 +100,29 @@ public class BootstrapDeployAsyncService {
                     status = "error";
                     bootstrapInfo.setDeployStatus(message.getMessage("common.deploy.status.failed", null, Locale.KOREA) );
                     saveDeployStatus(bootstrapInfo);
-                    DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "error", Arrays.asList("", "BOOTSTRAP 설치 중 오류가 발생하였습니다.<br> 로그 파일 및 서버 환경을 확인하세요."));
+                    DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "error", Arrays.asList("", "MICRO BOSH 설치 중 오류가 발생하였습니다.<br> 배포 정보를 확인 하세요."));
                 }    else {
                     // 타겟 테스트
-                    DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "started", Arrays.asList("","BOOTSTRAP 디렉터 정보 : https://" + bootstrapInfo.getPublicStaticIp() + ":25555"));
-                    DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "started", Arrays.asList("BOOTSTRAP 디렉터 타겟 접속 테스트..."));
+                    DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "started", Arrays.asList("","MICRO BOSH 디렉터 정보 : https://" + bootstrapInfo.getPublicStaticIp() + ":25555"));
+                    DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "started", Arrays.asList("MICRO BOSH 디렉터 타겟 접속 테스트..."));
                     DirectorInfoDTO directorInfo = directorConfigService.getDirectorInfo(bootstrapInfo.getPublicStaticIp(), 25555, "admin", "admin");
                     
                     if ( directorInfo == null ) {
                         status = "error";
                         bootstrapInfo.setDeployStatus(message.getMessage("common.deploy.status.failed", null, Locale.KOREA));
                         saveDeployStatus(bootstrapInfo);
-                        DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "error", Arrays.asList("BOOTSTRAP 디렉터 타겟 접속 테스트 실패"));
+                        DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "error", Arrays.asList("MICRO BOSH 디렉터 타겟 접속 테스트 실패 <br> 인프라 정보를 확인 하세요."));
                     } else {
-                        DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "started", Arrays.asList("BOOTSTRAP 디렉터 타겟 접속 테스트 성공"));
+                        DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "started", Arrays.asList("MICRO BOSH 디렉터 타겟 접속 테스트 성공"));
                         status = "done";
                         bootstrapInfo.setDeployStatus( message.getMessage("common.deploy.status.done", null,  Locale.KOREA ) );
                         saveDeployStatus(bootstrapInfo);
-                        DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "done", Arrays.asList("", "BOOTSTRAP 설치가 완료되었습니다."));
+                        DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "done", Arrays.asList("", "MICRO BOSH 설치가 완료되었습니다."));
                     }
                 }
             }
         }catch(RuntimeException e){
+        
             status = "error";
             DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "error", Arrays.asList("배포 중 Exception이 발생하였습니다."));
             if ( bootstrapInfo != null ) {
@@ -133,6 +135,7 @@ public class BootstrapDeployAsyncService {
             saveDeployStatus(bootstrapInfo);
         }catch ( Exception e) {    
             status = "error";
+            e.printStackTrace();
             DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, MESSAGE_ENDPOINT, "error", Arrays.asList("배포 중 Exception이 발생하였습니다."));
             if ( bootstrapInfo != null ) {
                 bootstrapInfo.setDeployLog(accumulatedLog);
@@ -146,8 +149,9 @@ public class BootstrapDeployAsyncService {
             try {
                 if(bufferedReader!=null) {
                     bufferedReader.close();
+                    
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 if( LOGGER.isErrorEnabled() ) {
                     LOGGER.error( e.getMessage() );
                 }
@@ -188,4 +192,5 @@ public class BootstrapDeployAsyncService {
     public void deployAsync(BootStrapDeployDTO.Install dto, Principal principal) {
             deployBootstrap(dto, principal);
     }
+    
 }

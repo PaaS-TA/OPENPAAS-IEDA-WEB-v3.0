@@ -15,6 +15,7 @@
              ,common_project as commonProject
              ,openstack_domain as openstackDomain
              ,google_json_key as googleJsonKeyPath
+             ,azure_subscription_id as azureSubscriptionId
              ,default_yn as defaultYn 
              ,create_user_id as createUserId
              ,update_user_id as updateUserId
@@ -41,6 +42,7 @@
              ,common_project as commonProject
              ,openstack_domain as openstackDomain
              ,google_json_key as googleJsonKey
+             ,azure_subscription_id as azureSubscriptionId
              ,default_yn as defaultYn 
              ,create_user_id as createUserId
              ,update_user_id as updateUserId

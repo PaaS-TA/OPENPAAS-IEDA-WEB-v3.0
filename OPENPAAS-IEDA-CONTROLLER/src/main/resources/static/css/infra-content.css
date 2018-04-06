@@ -10,6 +10,7 @@
 #infra_account_mgnt_wrap .openstack-icon {  width:60%; margin-top:17%; margin-bottom:10px; }
 #infra_account_mgnt_wrap .google-icon {  width:60%; margin-top:3%; margin-bottom:15px;}
 #infra_account_mgnt_wrap .vSphere-icon {  width:60%; margin-top:20%; margin-bottom:15px; }
+#infra_account_mgnt_wrap .azure-icon {  width:60%; margin-top:20%; margin-bottom:15px; }
 
 #main .well { background-color:#fff; border:1px solid #dcdcdc; border-radius:20px; }
 #main .well:hover { border:1px solid #3e80b5; }
@@ -22,23 +23,24 @@
 
 
 /*리소스 사용량 */  
-#main .iaasTotalResourceUsageDiv {background-color: #183354;width: 100%;display: block;float: left;border-radius: 10px;padding: 10px 30px;}
+#main .iaasTotalResourceUsageDiv {background-color: #296473;width: 100%;display: block;float: left;border-radius: 10px;padding: 10px 30px;}
 #main .iaasTotalResourceUsageDiv > ul:nth-of-type(1) {display: block;margin: 0 auto;width: 100%;}
-#main .iaasTotalResourceUsageDiv > ul:nth-of-type(1) > li {display: inline-block;width: 33%;margin:20px 0;} 
+#main .iaasTotalResourceUsageDiv > ul:nth-of-type(1) > li {display: inline-block;width: 30%;margin:20px 0;} 
 #main .iaasTotalResourceUsageDiv > ul > li > ul > li { display: inline-block; color: #fff;  font-weight: bolder; width:30% }
-#main .iaasTotalResourceUsageDiv .totalResourceUsage-ul-Div img {vertical-align: middle;width: 100px;margin-right:20px;}
+#main .iaasTotalResourceUsageDiv .totalResourceUsage-ul-Div img {vertical-align: middle; width: 100px;margin-right:20px;}
 #main .iaasTotalResourceUsageDiv .totalResourceUsage-ul-Div  > li:nth-of-type(1) > span{ display:inline-block; }
 #main .iaasTotalResourceUsageDiv .totalResourceUsage-ul-Div  > li:nth-of-type(2) {vertical-align: middle;font-size: 50px;width: 68%;}
 #main .iaasTotalResourceUsageDiv .totalResourceUsage-ul-Div  > li:nth-of-type(2) > span { display:inline-block; }
 #iaasResourceUsageWrap { display: block;float: left; width:100% }
-#iaasResourceUsageWrap .iaasResourceUsageDiv { background-color:#fff; width: 415px;float:left;border-radius: 10px;height: 458px;border: 2px solid;margin-right: 89px;cursor:pointer;}    
-#iaasResourceUsageWrap .iaasResourceUsageDiv > ul { text-overflow: ellipsis;overflow: hidden;height: 100%;  }
+#iaasResourceUsageWrap .iaasResourceUsageDiv { background-color:#fff; width: 405px; float:left; border-radius: 10px; height: 453px; border: 2px solid; margin-right: 70px !important;cursor:pointer;}    
+#iaasResourceUsageWrap .iaasResourceUsageDiv > ul { text-overflow: ellipsis;overflow: hidden;height: 100%; }
 #iaasResourceUsageWrap .iaasResourceUsageDiv > ul > li:nth-of-type(1) { border-bottom: 1px dashed #979797 }
-#iaasResourceUsageWrap .iaasResourceUsageDiv > ul > li > ul { margin:60px 20px 0 20px }
+#iaasResourceUsageWrap .iaasResourceUsageDiv > ul > li > ul { margin:60px 20px 10px 20px }
 #iaasResourceUsageWrap .iaasResourceUsageDiv li:nth-of-type(1) { text-align:center; margin-bottom:24px; }
-#iaasResourceUsageWrap .iaasResourceUsageDiv li:nth-of-type(1) img {  width: 293px;  text-align: center; }
+#iaasResourceUsageWrap .iaasResourceUsageDiv li:nth-of-type(1) img {  width: 250px;  text-align: center; margin-bottom:10px;}
 #iaasResourceUsageWrap .iaasResourceUsageDiv ul > li > ul > li:nth-of-type(2) { text-align:right; }
 #iaasResourceUsageWrap .iaasResourceUsageDiv li:nth-of-type(2) img {  width: 100px;  }
+#iaasResourceUsageWrap .iaasResourceUsageDiv li .azure-icon {margin-top:60px; padding-bottom:40px;}
 #iaasResourceUsageWrap .iaasResourceUsageDiv .resource-li { padding: 10px 20px;font-size: 18px;font-weight: 700; color: #666;}
 #iaasResourceUsageWrap .iaasResourceUsageDiv .network-li { padding-bottom: 0px;}
 #iaasResourceUsageWrap .iaasResourceUsageDiv .resource-li-span1 {display: inline-block;width: 30%;text-align: right; color:#183354} 
@@ -50,7 +52,7 @@
 #instanceUsageWrap .account-sp,  #networkUsageWrap .account-sp, #volumeUsageWrap .account-sp, #billingUsageWrap .account-sp { display:inline-block; width:200px; vertical-align:super; font-weight:bold; font-size:16px; }
 #instanceUsageWrap .progress,  #networkUsageWrap .progress,  #volumeUsageWrap .progress, #billingUsageWrap .progress { display:inline-block; width:60%; margin-bottom:0; height:30px }
 #instanceUsageWrap .panel-body, #networkUsageWrap .panel-body, #volumeUsageWrap .panel-body, #billingUsageWrap .panel-body { padding:0; height:150px; }
-.instanceUsage, .networkUsage, .volumeUsage, .billingUsage {  float:left; width:70%; border-right:1px solid #337ab7; padding:15px; height:100%; }
+.instanceUsage, .networkUsage, .volumeUsage, .billingUsage {  float:left; width:70%; border-right:1px solid #bababa; padding:15px; height:100%; }
 #instanceUsageWrap .summary-st, #networkUsageWrap .summary-st, #volumeUsageWrap .summary-st, #billingUsageWrap .summary-st {
 	font-size: 20px; font-weight: bold; color: #4b4b4b; 
 }
@@ -76,7 +78,7 @@
 
 /* #awsMgntWrap .securityGroup:hover { content:url("../images/awsMgnt/securityGroup_b2.png"); width:50px} */
 
-#awsMain, #openstackMain{
+#awsMain, #openstackMain, #azureMain{
     position:absolute;
     left:40px;
     float:right;
@@ -87,12 +89,12 @@
 }
 
 /*drop down css*/
-#awsMain .well, #openstack .well { background-color:f9f9f9; border:3px solid #3e80b5; border-radius:40px; }
-#awsMain .caret, #openstackMain .caret { border-top:5px dashed; }
-#awsMain .dropdown a, #openstackMain .dropdown a { font-weight:bolder;  color:#2196F3; }
-#awsMain .dropdown a.iaas-dropdown, #openstackMain .dropdown a.iaas-dropdown {width: 260px;border: 1px solid #e1e1e1;padding: 8px 10px;font-size: 15px;display: block;}
-#awsMain .dropdown li>a, #openstackMain .dropdown li>a {  font-weight: 600; font-size:15px; color: darkgray; }
-#awsMain ul.alert-dropdown, #openstackMain ul.alert-dropdown { width:0 }
+#awsMain .well, #openstackMain .well, #azureMain .well { background-color:f9f9f9; border:3px solid #3e80b5; border-radius:40px; }
+#awsMain .caret, #openstackMain .caret, #azureMain .caret { border-top:5px dashed; }
+#awsMain .dropdown a, #openstackMain .dropdown a, #azureMain .dropdown a { font-weight:bolder;  color:#2196F3; }
+#awsMain .dropdown a.iaas-dropdown, #openstackMain .dropdown a.iaas-dropdown, #azureMain .dropdown a.iaas-dropdown {width: 260px;border: 1px solid #e1e1e1;padding: 8px 10px;font-size: 15px;display: block;}
+#awsMain .dropdown li>a, #openstackMain .dropdown li>a, #azureMain .dropdown li>a {  font-weight: 600; font-size:15px; color: darkgray; }
+#awsMain ul.alert-dropdown, #openstackMain ul.alert-dropdown, #azureMain ul.alert-dropdown { width:0 }
 
 /* aws security group */
 #ingressRulesTable th{background-color:#f3f6fa; }
@@ -124,6 +126,26 @@
 #openstackMgnt > ul > li { display:inline-block; margin:0 10px; }
 #openstackMgnt .dropdown a.iaas-dropdown { width: 210px; text-align:left; border: 1px solid #e1e1e1; padding: 5px 10px; display:block;background-color:#fff; }
 #openstackMgnt ul.alert-dropdown { width:210px; }
+
+#azurekMgnt {  padding: 20px 5px; height: 80px; background-color: #ececec; border:1px dashed #d4d4d4; border-radius:3px; text-align: center;  }
+#azurekMgnt > ul > li { display:inline-block; margin:0 10px; }
+#azurekMgnt .dropdown a.iaas-dropdown { width: 210px; text-align:left; border: 1px solid #e1e1e1; padding: 5px 10px; display:block;background-color:#fff; }
+#azurekMgnt ul.alert-dropdown { width:210px; }
+
+#azureMgntWrap { display: block;float: left; width:100%; margin-top: 10px;}
+#azureMgntWrap .azureMgntDiv {width: 260px;float:left;border-radius: 10px;height: 280px;background:#fff; border: 1px solid #dcdcdc; margin: 0 130px 30px 0px; cursor:pointer;}    
+#azureMgntWrap .azureMgntDiv:hover { border: 2px solid #bc1518;border-image-outset: 30; }
+#azureMgntWrap .azureMgntDiv > ul > li:nth-of-type(1) { border-bottom: 1px dashed #F44336; }
+#azureMgntWrap .azureMgntDiv > ul > li > ul { margin:60px 20px 0 20px }
+#azureMgntWrap .azureMgntDiv li:nth-of-type(1) { text-align:center; margin-bottom:36px; }
+#azureMgntWrap .azureMgntDiv li:nth-of-type(1) img {  width: 293px;  text-align: center; }
+#azureMgntWrap .azureMgntDiv li:nth-of-type(2) img {  width: 100px;  }
+#azureMgntWrap .azureMgntDiv .resource-li { padding: 10px 20px;font-size: 22px;font-weight: 700; color: #666;}
+#azureMgntWrap .azureMgntDiv .network-li { padding-bottom: 0px;}
+#azureMgntWrap .azureMgntDiv .azure-li-span1 {display: inline-block;width: 200px;} 
+#azureMgntWrap .azureMgntDiv .resource-li-span2 {font-weight:bold;color:#000;padding-left: 20px;width: 250px;display: inline-block;}
+#azureMgntWrap .azureMgntDiv .resource-li-span3 {display: inline-block;width: 100px;font-size: 14px;color: #8b8b8b;position: relative;bottom: 10px;text-align: right;}
+#azureMgntWrap .azureMgntDiv .azure-li { padding: 15px 20px;font-size: 15px;font-weight: 700; color: #666;}
 
 
 

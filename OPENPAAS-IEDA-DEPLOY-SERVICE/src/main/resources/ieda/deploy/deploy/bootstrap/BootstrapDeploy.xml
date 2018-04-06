@@ -19,6 +19,7 @@
     <result property="directorName" column ="DIRECTOR_NAME"/>
     <result property="boshRelease" column ="BOSH_RELEASE"/>
     <result property="boshCpiRelease" column ="BOSH_CPI_RELEASE"/>
+    <result property="osConfRelease" column ="OS_CONF_RELEASE"/>
     <result property="snapshotSchedule" column ="SNAPSHOT_SCHEDULE"/>
     <result property="enableSnapshots" column ="ENABLE_SNAPSHOTS"/>
     <result property="privateStaticIp" column ="PRIVATE_STATIC_IP"/>
@@ -58,6 +59,10 @@
         <result property="vsphereVcenterPersistentDatastore" column="VSPHERE_VCENTER_PERSISTENT_DATASTORE"/>
         <result property="vsphereVcenterDiskPath" column="VSPHERE_VCENTER_DISK_PATH"/>
         <result property="vsphereVcenterCluster" column="VSPHERE_VCENTER_CLUSTER"/>
+        <result property="googlePublicKey" column="GOOGLE_PUBLIC_KEY"/>
+        <result property="azureStorageAccountName" column="AZURE_STORAGEACCOUNT_NAME"/>
+        <result property="azureSshPublicKey" column="AZURE_SSHPUBLICKEY"/>
+        <result property="azureResourceGroup" column="AZURE_RESOURCEGROUP_NAME"/>
     </collection>
     <collection property="iaasAccount"  ofType="hashMap" javaType="String">
         <id property="id" column="IAAS_ACCOUNT_ID"/>
@@ -72,6 +77,7 @@
         <result property="googleJsonKey" column="GOOGLE_JSON_KEY"/>
         <result property="openstackVersion" column="openstack_keystone_version"/>
         <result property="openstackDomain" column="openstack_domain"/>
+        <result property="azureSubscriptionId" column="AZURE_SUBSCRIPTIONID"/>
     </collection>
 </resultMap>
 
@@ -80,6 +86,7 @@
     Select  bootstrap.id as id
         ,bootstrap.iaas_type as iaas_type
         ,bootstrap.bosh_cpi_release as bosh_cpi_release
+        ,bootstrap.os_conf_release as os_conf_release
         ,bootstrap.bosh_password as bosh_password
         ,bootstrap.bosh_release as bosh_release
         ,bootstrap.cloud_instance_type as cloud_instance_type
@@ -116,6 +123,7 @@ Order by iaas_type asc, update_date asc
             ,bootstrap.iaas_config_id as config_id
             ,bootstrap.iaas_type as iaas_type
             ,bootstrap.bosh_cpi_release as bosh_cpi_release
+            ,bootstrap.os_conf_release as os_conf_release
             ,bootstrap.bosh_password as bosh_password
             ,bootstrap.bosh_release as bosh_release
             ,bootstrap.enable_snapshots as enable_snapshots
@@ -164,6 +172,10 @@ Order by iaas_type asc, update_date asc
             ,config.vsphere_vcenter_persistent_datastore as vsphere_vcenter_persistent_datastore
             ,config.vsphere_vcenter_disk_path as vsphere_vcenter_disk_path
             ,config.vsphere_vcenter_cluster as vsphere_vcenter_cluster
+            ,config.google_public_key as google_public_key
+            ,config.azure_resource_group as azure_ResourceGroup_Name 
+            ,config.azure_storage_account_name as azure_StorageAccount_Name
+            ,config.azure_ssh_public_key as azure_SshPublicKey
             ,account.id as iaas_account_id
             ,ifnull(account.common_access_endpoint, "") as common_access_endpoint
             ,ifnull(account.common_access_user, "") as common_access_user
@@ -173,6 +185,7 @@ Order by iaas_type asc, update_date asc
             ,ifnull(account.common_project, "") as common_project
             ,ifnull(account.google_json_key,"") as google_json_key
             ,ifnull(account.openstack_keystone_version, "") as openstack_keystone_version
+            ,ifnull(account.azure_subscription_id,"") as azure_SubscriptionId
         From ieda_bootstrap bootstrap
    Left Join ieda_iaas_config config
         Left Join ieda_iaas_account account
@@ -224,6 +237,7 @@ Order by iaas_type asc, update_date asc
         ,bosh_password = #{bootstrap.boshPassword}
         ,ntp= #{bootstrap.ntp}
         ,bosh_release = #{bootstrap.boshRelease}
+        ,os_conf_release = #{bootstrap.osConfRelease}
         ,snapshot_schedule = #{bootstrap.snapshotSchedule}
         ,enable_snapshots = #{bootstrap.enableSnapshots}
         ,cloud_instance_type = #{bootstrap.cloudInstanceType}

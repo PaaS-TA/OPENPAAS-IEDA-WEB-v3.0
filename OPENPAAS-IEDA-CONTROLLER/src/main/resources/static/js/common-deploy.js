@@ -11,26 +11,26 @@ function getDefaultDirector(url) {
     directorInfoDiv += '<th width="18%" >관리자 UUID</th><td ><b id="directorUuid"></b></td></tr></table>';
 
     $.ajax({
-    	type : "GET",
-    	url : url,
-    	async : false,
-    	success : function(data) {
-    		if (!checkEmpty(data)) {
-    			$("#isDefaultDirector").html(directorInfoDiv);
-    			setDefaultDirectorInfo(data);
-    			isOk = data.connect;
-    		} else {
-    			isOk = false;
-    			var message = "기본 설치관리자가 존재하지 않습니다. 플랫폼설치 -> BOOSTRAP설치 메뉴를 이용해서 BOOTSTRAP 설치 후 설치관리자를 등록하세요.";
-    			var errorDirectorDiv = '<div class="alert alert-danger" style="font-size:15px;text-align:center;"><strong>'
-    				+ message + '</strong></div>';
-    			$("#isDefaultDirector").html(errorDirectorDiv);
-    		}
-    	},error : function(request, status, error) {
-    		if (error == "Forbidden") {
-    			location.href = "/abuse";
-    		}
-    	}
+        type : "GET",
+        url : url,
+        async : false,
+        success : function(data) {
+            if (!checkEmpty(data)) {
+                $("#isDefaultDirector").html(directorInfoDiv);
+                setDefaultDirectorInfo(data);
+                isOk = data.connect;
+            } else {
+                isOk = false;
+                var message = "기본 설치관리자가 존재하지 않습니다. 플랫폼설치 -> BOOSTRAP설치 메뉴를 이용해서 BOOTSTRAP 설치 후 설치관리자를 등록하세요.";
+                var errorDirectorDiv = '<div class="alert alert-danger" style="font-size:15px;text-align:center;"><strong>'
+                    + message + '</strong></div>';
+                $("#isDefaultDirector").html(errorDirectorDiv);
+            }
+        },error : function(request, status, error) {
+            if (error == "Forbidden") {
+                location.href = "/abuse";
+            }
+        }
     });
     return isOk;
 }
@@ -258,7 +258,7 @@ function setPrivateKeyPathFileName(fileInput){
 //                                        $(this).css({"border-color" : "red"});
 //                                    }
 //                                } else if($(this).attr('name') == "releasePathVersion" || $(this).attr('name') == "releasePathUrl" || $(this).attr('name') == "releaseFileName"){
-//                                	if($(".w2ui-msg-body input[name=releaseFileName]").val() != "" ||  $(".w2ui-msg-body input[name='releasePathUrl']").val() != "" 
+//                                    if($(".w2ui-msg-body input[name=releaseFileName]").val() != "" ||  $(".w2ui-msg-body input[name='releasePathUrl']").val() != "" 
 //                                        || $(".w2ui-msg-body input[name='releasePathVersion']").val() != ""){
 //                                      checkValidation = true;
 //                                    }else{
@@ -317,7 +317,7 @@ function setPrivateKeyPathFileName(fileInput){
 //                            }
 //                            if ($(this).attr('name') != "deploymentName" &&  $(this).attr('name') != "stemcellPathVersion" && 
 //                                    $(this).attr('name') != "stemcellPathFileName" && $(this).attr('name') != "stemcellPathUrl"
-//                                    	&& $(this).attr('name') != "releasePathVersion" && $(this).attr('name') != "releasePathUrl" && $(this).attr('name') != "releaseFileName") {
+//                                        && $(this).attr('name') != "releasePathVersion" && $(this).attr('name') != "releasePathUrl" && $(this).attr('name') != "releaseFileName") {
 //                                $(this).css({"border-color" : "red"});
 //                            }
 //                        } else if (tagType.toLowerCase() == "textarea") {

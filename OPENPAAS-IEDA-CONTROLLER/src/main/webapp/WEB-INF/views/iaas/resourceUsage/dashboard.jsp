@@ -16,7 +16,6 @@
 var search_lock_msg = '<spring:message code="common.search.data.lock"/>';//데이터 조회 중 입니다.
 $(function() {
     getInfraAllResourceUsageInfo();
-
 });
 
 
@@ -62,6 +61,7 @@ function setMouseOutStyle(event){
 function settingResourceUsageData(data){
     var awsInstance=0; var awsNetwork =0; var awsVolume =0; var awsBilling=0;
     var openstackInstance=0; var openstackNetwork=0; var openstackVolume=0;
+    var azureInstance=0; var azureNetwork =0; var azureVolume =0; var azureBilling=0;
     for( var i=0; i < data.length; i++ ){
           if( (data[i].iaasType).toUpperCase() == 'AWS' ){
               awsInstance +=  data[i].instance;
@@ -79,13 +79,22 @@ function settingResourceUsageData(data){
               $("."+data[i].iaasType.toLowerCase()+"-instance").html( openstackInstance +" VM(s)" );
               $("."+data[i].iaasType.toLowerCase()+"-network").html( openstackNetwork + " 개" );
               $("."+data[i].iaasType.toLowerCase()+"-volume").html( openstackVolume + "GB" );
+          }else if( (data[i].iaasType).toUpperCase() == 'AZURE' ){
+              azureInstance +=  data[i].instance;
+              azureNetwork += data[i].network;
+              azureVolume += data[i].volume;
+              azureBilling += data[i].billing;
+              $("."+data[i].iaasType.toLowerCase()+"-instance").html( azureInstance +" VM(s)" );
+              $("."+data[i].iaasType.toLowerCase()+"-network").html( azureNetwork + " 개" );
+              $("."+data[i].iaasType.toLowerCase()+"-volume").html( bytesToSize(azureVolume) );
+              $("."+data[i].iaasType.toLowerCase()+"-billing").html( azureBilling + "USD" ); 
           }else{
               
           }
     }
-    $(".totalInstance").html( awsInstance + openstackInstance);
-    $(".totalNetwork").html( awsNetwork + openstackNetwork );
-    var totalVolume = bytesToSize(awsVolume + gbConverter(openstackVolume) );
+    $(".totalInstance").html( awsInstance + openstackInstance + azureInstance);
+    $(".totalNetwork").html( awsNetwork + openstackNetwork + azureNetwork);
+    var totalVolume = bytesToSize(awsVolume + gbConverter(openstackVolume) + azureVolume);
     var idx2 = 0;
     var bytes = "";
        if( totalVolume.indexOf("Byte") > 0 ){
@@ -169,6 +178,22 @@ $( window ).resize(function() {
                     <li class="resource-li"><span class="resource-li-span1">볼륨 : </span><span class="resource-li-span2 openstack-volume">0 Byte</span></li>
                 </ul>
             </div>
+        
+            <div class="iaasResourceUsageDiv" onclick="javascript:goPage('<c:url value="/iaasMgnt/resourceUsage/azure"/>', 'Azure 리소스 사용량 조회');">
+                <ul>
+                    <li>
+                        <ul style="margin-top:-30px">
+                            <li style="margin-bottom:-25px;"><img src='<c:url value="images/iaasMgnt/azure-icon.png"/>' class="azure-icon" alt="Azure"><span></span></li>
+                            <li>>> Azure 상세 화면 이동</li>
+                        </ul>
+                    </li>
+                    <li class="resource-li"><span class="resource-li-span1">인스턴스 : </span><span class="resource-li-span2 azure-instance">0 VM(s)</span></li>
+                    <li class="resource-li network-li"><span class="resource-li-span1">네트워크 : </span><span class="resource-li-span2 azure-network">0 개</span><span class="resource-li-span3"></span></li>
+                    <li class="resource-li"><span class="resource-li-span1">볼륨 : </span><span class="resource-li-span2 azure-volume">0 Byte</span></li>
+                    <li class="resource-li"><span class="resource-li-span1">과금 : </span><span class="resource-li-span2 azure-billing">0 USD</span></li>
+                </ul>
+            </div>
+        
         </div>
     </div>
 </div>

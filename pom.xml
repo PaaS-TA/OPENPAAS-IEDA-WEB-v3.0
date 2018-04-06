@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.openpaas.ieda</groupId>
@@ -12,16 +11,17 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.2.6.RELEASE</version>
-        <relativePath /> <!-- lookup parent from repository -->
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     
     <modules>
         <module>OPENPAAS-IEDA-CONTROLLER</module>
+        <module>OPENPAAS-IEDA-COMMON-SERVICE</module>
         <module>OPENPAAS-IEDA-DEPLOY-SERVICE</module>
         <module>OPENPAAS-IEDA-AWSMGNT-SERVICE</module>
         <module>OPENPAAS-IEDA-OPENSTACKMGNT-SERVICE</module>
         <module>OPENPAAS-IEDA-IAASDASHBOARD-SERVICE</module>
-        <module>OPENPAAS-IEDA-COMMON-SERVICE</module>
+        <module>OPENPAAS-IEDA-AZUREMGNT-SERVICE</module>
     </modules>
 
     <dependencies>
@@ -349,8 +349,16 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>14.0.1</version>
+           <!--<version>14.0.1</version> -->
+             <version>19.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>1.21.0</version>
+        </dependency>
+
+        
         
         <!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path -->
         <dependency>
@@ -481,7 +489,30 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-core</artifactId>
+        </dependency>  
+        
+        <!-- Azure -->
+       <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure</artifactId>
+            <version>1.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-client-runtime</artifactId>
+            <version>1.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.microsoft.azure</groupId>
+        <artifactId>azure-client-authentication</artifactId>
+        <version>1.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.microsoft.azure</groupId>
+        <artifactId>azure-storage</artifactId>
+        <version>4.4.0</version>
+      </dependency>
+              
     </dependencies>
 
     <build>

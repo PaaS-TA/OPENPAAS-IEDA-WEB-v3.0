@@ -793,9 +793,9 @@ properties:
         port: (( config_from_cf.uaa.tls_port ))
         ca_cert: (( config_from_cf.uaa.ca_cert ))
       host_key: (( property_overrides.ssh_proxy.host_key || "" ))
-      enable_cf_auth: (( property_overrides.ssh_proxy.enable_cf_auth || false ))
+      enable_cf_auth: (( property_overrides.ssh_proxy.enable_cf_auth || true ))
       enable_diego_auth: (( property_overrides.ssh_proxy.enable_diego_auth || false ))
-      uaa_secret: (( config_from_cf.uaa.ssh_proxy_client_secret ))
+      uaa_secret: (( config_from_cf.uaa.ssh_proxy_client_secret || "ssh-proxy-secret" ))
       diego_credentials: (( property_overrides.ssh_proxy.diego_credentials || nil ))
 
   # -- Proerties below are used by jobs from the capi-release --

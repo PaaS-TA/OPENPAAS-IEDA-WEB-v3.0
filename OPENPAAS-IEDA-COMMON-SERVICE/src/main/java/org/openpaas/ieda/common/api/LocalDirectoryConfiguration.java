@@ -18,6 +18,7 @@ public class LocalDirectoryConfiguration {
     final private static String TEMP_DIR                = BASE_DIR + SEPARATOR + "temp";
     final private static String LOCK_DIR                = BASE_DIR + SEPARATOR + "lock";
     final private static String KEY_DIR                 = BASE_DIR + SEPARATOR + "key";
+    final private static String CREDENTIAL_DIR         = BASE_DIR + SEPARATOR + "credential";
     final private static String DEPLOYMENT_MANIFEST_DIR = DEPLOYMENT_DIR + SEPARATOR + "manifest";
     
     final private static String PROJECT_STATIC_DIR      = System.getProperty("user.dir") + SEPARATOR + "src/main/resources/static";
@@ -215,5 +216,17 @@ public class LocalDirectoryConfiguration {
         return GENERATE_CERTS_DIR;
     }
     
+    /****************************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : Credential 파일 위치를 검사하고 없으면 생성하여 응답
+     * @title : getGenerateCredentialDir
+     * @return : String
+    *****************************************************************/
+    public static String getGenerateCredentialDir(){
+        if(!checkAndMakeDirectory(CREDENTIAL_DIR)) {
+            throw new CommonException("notfound.credential.local.exception", "Credential 파일 저장 위치가 존재 하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
+        return CREDENTIAL_DIR;
+    }
     
 }

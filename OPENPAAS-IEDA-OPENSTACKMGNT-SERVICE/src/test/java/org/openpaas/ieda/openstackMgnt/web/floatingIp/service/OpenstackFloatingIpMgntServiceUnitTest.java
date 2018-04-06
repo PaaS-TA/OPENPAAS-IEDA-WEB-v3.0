@@ -1,6 +1,7 @@
 package org.openpaas.ieda.openstackMgnt.web.floatingIp.service;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;

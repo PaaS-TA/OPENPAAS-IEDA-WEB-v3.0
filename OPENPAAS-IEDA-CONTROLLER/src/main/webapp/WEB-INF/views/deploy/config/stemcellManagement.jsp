@@ -4,6 +4,7 @@
  * ------------------------------------------------------------------
  * 2017.05       이동현        화면 개선 및 코드 버그 수정
  * 2017.08       지향은        인프라 환경 추가(Google)
+ * 2018.02       배병욱        인프라 환경 추가(Azure)
  * =================================================================
  */ 
 %>
@@ -176,7 +177,7 @@ function setCommonCode(url, id) {
                     stemcellArray.push(obj.codeName);
                     osVersionArray.push(obj);
                 });
-                osList="<select style='width:60%' onchange='setOsVersion(this.value);' name = 'osList'>";
+                osList="<select style='width:60%' onchange='setOsVersion(this.value);' name ='osList'>";
                  for(var i=0; i<stemcellArray.length; i++){
                     osList+="<option value="+stemcellArray[i]+">"+stemcellArray[i]+"</option>";
                  }
@@ -217,15 +218,16 @@ function setCommonCode(url, id) {
  * 설명 : IaaS 유형 값 change 이벤트
  * 기능 : setLightCheckbox
  **************************************************************/
-function setLightCheckbox(value){
-    if(value == "AWS" || value == "GOOGLE"){
+function setLightCheckbox(iaasValue){
+    if(iaasValue == "AWS" || iaasValue == "GOOGLE" || iaasValue == "AZURE"){
         if($('.w2ui-msg-body input:radio[name=fileType]:input[value=version]').is(':checked')==true){
             $('.w2ui-msg-body input:checkbox[name=light]').attr("disabled", false);
         }
-    }else {
+    }else{
         $('.w2ui-msg-body input:checkbox[name=light]').attr("disabled", true);
-        $('.w2ui-msg-body input:checkbox[name=light]').attr('checked',false)
+        $('.w2ui-msg-body input:checkbox[name=light]').attr('checked',false);
     }
+    
 }
 
 
@@ -238,6 +240,15 @@ function setOsVersion(value){
      for(var i=0;i<osVersionArray.length;i++){
         if(value == osVersionArray[i].codeName){
             subCodeValue = osVersionArray[i].codeValue;
+            if(subCodeValue == 203){
+                $('.w2ui-msg-body #lightVerChk').fadeOut(100);
+                //$(".w2ui-msg-body :checkbox[name='light']").attr("disabled", true);
+                $(".w2ui-msg-body :checkbox[name='light']").prop("checked", true);
+            }else{
+                $('.w2ui-msg-body #lightVerChk').fadeIn(100);
+                //$(".w2ui-msg-body :checkbox[name='light']").attr("disabled", false);
+                $(".w2ui-msg-body :checkbox[name='light']").prop("checked", false);
+            }
         }
     }
     setCommonCode('<c:url value="/common/deploy/codes/parent/"/>' + os_type_code + '<c:url value="/subcode/"/>' + subCodeValue, 'osVersion');
@@ -280,8 +291,10 @@ function setRegistType(value){
             $('.w2ui-msg-body input:checkbox[name=light]').attr("disabled", true);
             $('.w2ui-msg-body input:text[name=stemcellPathUrl]').val("");
             $('.w2ui-msg-body input:text[name=stemcellPathFileName]').val("");
-            if($(".w2ui-msg-body select[name='iaasList']").val()=="AWS"){
-                $('.w2ui-msg-body input:checkbox[name=light]').attr("disabled", false);
+            if($(".w2ui-msg-body select[name='iaasList']").val()=="AWS" || 
+               $(".w2ui-msg-body select[name='iaasList']").val()=="GOOGLE" || 
+               $(".w2ui-msg-body select[name='iaasList']").val()=="AZURE"){
+                    $('.w2ui-msg-body input:checkbox[name=light]').attr("disabled", false);
             }
             $(".w2ui-msg-body input[name=stemcellPathFileName]").parent().parent().find("p").remove();
             $(".w2ui-msg-body input[name=stemcellPathFileName]").css("borderColor","#777");
@@ -531,7 +544,8 @@ function deletePop(record){
         async : true,
         data : JSON.stringify(requestParameter),
         success : function(data, status) {
-            if( downloadClient != "" ){
+            if( downloadClient != ""){
+            	console.log(downloadClient);
                 downloadClient.disconnect();
                 downloadClient = "";
             }
@@ -621,12 +635,12 @@ function initView() {
                        </div>
                    </div>
                    <div class="w2ui-field" >
-                       <label style="width:30%;text-align: left;padding-left: 20px;">IaaS 유형</label>
+                       <label style="width:30%;text-align: left; padding-left: 20px;">IaaS 유형</label>
                        <div style="width: 70%" id="iaasListDiv">
                        </div>
                    </div>
                    <div class="w2ui-field">
-                       <label style="width:30%;text-align: left;padding-left: 20px;">OS 유형</label>
+                       <label style="width:30%;text-align: left; padding-left: 20px;">OS 유형</label>
                        <div style="width: 70%" id="osListDiv">
                        </div>
                    </div>
@@ -644,34 +658,36 @@ function initView() {
                <div class="panel-body" style="">
                     <div class="w2ui-field" style="margin: 8px 0px 0px 0px;" >
                         <input type="radio" id="fileTypLocal" name="fileType" value="file" style="float:left; margin-left:15px;" onchange='setRegistType(this.value);'/>
-                        <label for="fileTypLocal" style="width:25.5%;text-align: left;" >&nbsp;&nbsp;로컬에서 선택</label>
-                        <div>
+                        <label for="fileTypLocal" style="width:25%;text-align: left;" >&nbsp;&nbsp;로컬에서 선택</label>
+                        <div style="width:70%;" >
                             <span>
                             <input type="file" name="stemcellPathFile[]"  id="stemcellPathFile" onchange="setstemcellFilePath(this);" hidden="true"/>
-                            <input type="text" id="stemcellPathFileName"  name="stemcellPathFileName" style="width:53%;" readonly  onClick="openBrowse();" placeholder="업로드할 stemcell 파일을 선택하세요."/>
+                            <input type="text" style="width:60%;" id="stemcellPathFileName"  name="stemcellPathFileName" readonly  onClick="openBrowse();" placeholder="업로드할 stemcell 파일을 선택하세요."/>
                             <span class="btn btn-primary" id = "browser" onClick="openBrowse();" disabled style="height: 25px; padding: 1px 7px 7px 6px;">Browse </span>&nbsp;&nbsp;&nbsp;
                             </span>
                         </div>
                     </div>
                     <div class="w2ui-field" style="margin: 8px 0px 0px 0px;">
                          <input type="radio" name="fileType" id="fileTypeUrl" style="float:left; margin-left:15px;" value="url" onchange="setRegistType(this.value);"/>
-                         <label  for="fileTypeUrl" style="width:25.5%;text-align: left;" >
+                         <label for="fileTypeUrl" style="width:25%;text-align: left;" >
                             &nbsp;&nbsp;스템셀 Url
                             <span class="glyphicon glyphicon glyphicon-question-sign stemcell-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="click" data-html="true" title="<b>공개 스템셀 참조 사이트</b>"></span>
                          </label>
-                         <div>
-                             <input type="text" id="stemcellPathUrl" name="stemcellPathUrl" style="width:53%;" readonly placeholder="스템셀 다운로드 Url을 입력 하세요."/>
+                         <div style="width:70%;">
+                             <input type="text" style="width:60%;" id="stemcellPathUrl" name="stemcellPathUrl" readonly placeholder="스템셀 다운로드 Url을 입력 하세요."/>
                          </div>
                     </div>
                     <div class="w2ui-field" style="margin: 8px 0px 0px 0px;">
                         <input type="radio" name="fileType" id="fileTypeVersion" value="version" style="float:left; margin-left:15px;" onchange='setRegistType(this.value);' />
-                        <label for="fileTypeVersion" style="width:25.5%; text-align: left;">&nbsp;&nbsp;스템셀 Version</label>
-                        <div>
-                            <input type="text" id="stemcellPathVersion"   name="stemcellPathVersion" style="width:53%;" readonly placeholder="스템셀 다운로드 버전을 입력 하세요."/>
-                            <label style="position: absolute; margin-left: 10px; ">
-                               <input name="light" type="checkbox" value="true" disabled />&nbsp;Light 유형
-                               <span style="display: inline-block;color:gray;font-size:12px;width: 100%;">(AWS/Google)</span>
-                               </label>
+                        <label for="fileTypeVersion" style="width:25%; text-align: left;">&nbsp;&nbsp;스템셀 Version</label>
+                        <div style="width:70%;">
+                            <input type="text" id="stemcellPathVersion"   name="stemcellPathVersion" style="width:60%;" readonly placeholder="스템셀 다운로드 버전을 입력 하세요."/>
+                            <span id="lightVerChk">
+                                <label style="position: absolute; margin-left: 10px;" >
+                                   <input name="light" type="checkbox" value="true" disabled />&nbsp;Light 유형
+                                   <span style="display: inline-block;color:gray;font-size:12px;width: 100%;">(AWS/GCP/AZURE)</span>
+                                </label>
+                            </span>
                         </div>
                     </div>
                     <div class="w2ui-field" style="margin: 8px 0px 0px 0px; color:#666">

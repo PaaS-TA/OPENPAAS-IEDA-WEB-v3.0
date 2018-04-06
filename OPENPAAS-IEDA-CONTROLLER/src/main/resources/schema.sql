@@ -93,6 +93,7 @@ CREATE TABLE ieda_director_config
   create_date                       DATE          NOT NULL,
   update_user_id                    VARCHAR(255)  NOT NULL,
   update_date                       DATE          NOT NULL,
+  credential_file                   VARCHAR(255),
   PRIMARY KEY (ieda_director_config_seq)
 ) ENGINE=InnoDB ROW_FORMAT=COMPRESSED CHARSET=utf8;
 
@@ -195,6 +196,7 @@ CREATE TABLE ieda_bootstrap
   ntp                               VARCHAR(100),
   bosh_release                      VARCHAR(100),
   bosh_cpi_release                  VARCHAR(100),
+  os_conf_release                   VARCHAR(100),
   enable_snapshots                  VARCHAR(100),
   snapshot_schedule                 VARCHAR(100),
   subnet_id                         VARCHAR(100),
@@ -468,9 +470,10 @@ CREATE TABLE ieda_iaas_account
   openstack_keystone_version  VARCHAR(255) NULL,
   common_tenant               VARCHAR(255) NULL,
   common_project              VARCHAR(255) NULL,
-  common_region              VARCHAR(255) NULL,
+  common_region               VARCHAR(255) NULL,
   openstack_domain            VARCHAR(255) NULL,
   google_json_key             VARCHAR(255) NULL,
+  azure_subscription_id       VARCHAR(255) NULL,
   default_yn                  VARCHAR(100) NULL,
   create_user_id              VARCHAR(255) NOT NULL,
   create_date                 DATE         NOT NULL,
@@ -498,6 +501,10 @@ CREATE TABLE ieda_iaas_config
   vsphere_vcenter_persistent_datastore  VARCHAR(255) NULL,
   vsphere_vcenter_template_folder       VARCHAR(255) NULL,
   vsphere_vcenter_vm_folder             VARCHAR(255) NULL,
+  azure_resource_group                  VARCHAR(255) NULL,
+  azure_storage_account_name            VARCHAR(255) NULL,
+  azure_ssh_public_key                  LONGTEXT NULL,
+  azure_private_key                     VARCHAR(255) NULL,
   create_user_id                        VARCHAR(255) NOT NULL,
   create_date                           DATE         NOT NULL,
   update_user_id                        VARCHAR(255) NOT NULL,

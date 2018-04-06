@@ -49,7 +49,7 @@ public class StemcellUploadAsyncService {
             postMethod.setRequestEntity(new FileUploadRequestDTO(new File(uploadFile), "application/x-compressed", messagingTemplate, MESSAGE_ENDPOINT, userId));
             DirectorRestHelper.sendTaskOutputWithTag(userId, messagingTemplate, MESSAGE_ENDPOINT, "Started", stemcellFileName, Arrays.asList("Uploading Stemcell ...", ""));
             
-            int statusCode = httpClient.executeMethod(postMethod);
+            int statusCode = httpClient.executeMethod(postMethod);            
             if ( statusCode == HttpStatus.MOVED_PERMANENTLY.value() || statusCode == HttpStatus.MOVED_TEMPORARILY.value() ) {
                 Header location = postMethod.getResponseHeader("Location");
                 String taskId = DirectorRestHelper.getTaskId(location.getValue());

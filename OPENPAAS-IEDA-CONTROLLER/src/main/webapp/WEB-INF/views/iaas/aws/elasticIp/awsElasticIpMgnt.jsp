@@ -164,6 +164,8 @@ function doSearchElasticIpDetail(accountId, publicIp){
         }
     });
 }
+
+
 function elasticIpAllocate(){
     w2popup.lock( "할당중", true);
     var accountId =  $("select[name='accountId']").val();

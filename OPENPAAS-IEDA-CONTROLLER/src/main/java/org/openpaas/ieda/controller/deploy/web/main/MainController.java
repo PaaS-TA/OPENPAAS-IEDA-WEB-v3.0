@@ -1,6 +1,9 @@
 package org.openpaas.ieda.controller.deploy.web.main;
 
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -13,7 +16,7 @@ public class MainController {
      * @title : goLayout
      * @return : String
     ***************************************************/
-    @RequestMapping(value="/", method=RequestMethod.GET)
+    @RequestMapping(value="/platform", method=RequestMethod.GET)
     public String goLayout(){ 
         return "/deploy/main/layout";
     }
@@ -25,7 +28,8 @@ public class MainController {
      * @return : String
     ***************************************************/
     @RequestMapping(value="/top", method=RequestMethod.GET)
-    public String goTop() {
+    public String goTop(ModelMap model, Principal principal) {
+    	model.addAttribute("userId", principal.getName());
         return "/deploy/main/top";
     }
     

@@ -49,6 +49,11 @@ public class IaasResourceUsageService {
         for( IaasResourceUsageVO resource2 : openstackResources ){
             resourceList.add(resource2);
         }
+        //azure
+        List<IaasResourceUsageVO> azureResources =  getAzureResourceUsageInfoList(principal);
+        for( IaasResourceUsageVO resource3 : azureResources ){
+            resourceList.add(resource3);
+        }
         return resourceList; 
     }
     
@@ -119,6 +124,35 @@ public class IaasResourceUsageService {
         }catch(Exception e){
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
                     message.getMessage("iaas.openstack.account.exist.message.exception", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+        }
+        return resources;
+    }
+    /***************************************************
+     * @project : 인프라 관리 대시보드
+     * @description : Azure 리소스 사용량 조회
+     * @title : getAzureResourceUsageInfoList
+     * @return : List<IaasResourceUsageVO>
+    ***************************************************/
+    public List<IaasResourceUsageVO> getAzureResourceUsageInfoList( Principal principal ){
+        List<IaasResourceUsageVO> resources = new ArrayList<IaasResourceUsageVO>();
+        try{ //Azure
+            List<HashMap<String, Object>> accounts = commonDao.selectAccountInfoList("azure", principal.getName());
+            for( HashMap<String, Object> at : accounts ){
+                IaasResourceUsageVO resource = new IaasResourceUsageVO();
+                HashMap<String, Object> result = apiService.getResourceInfoFromAzure( at.get("commonAccessUser").toString(), at.get("commonTenant").toString(), at.get("commonAccessSecret").toString(), at.get("azureSubscriptionId").toString());
+                
+                resource.setAccountName( at.get("accountName").toString() );
+                resource.setInstance( Long.parseLong(result.get("instance").toString()) );
+                resource.setNetwork( Long.parseLong(result.get("network").toString()) );
+                resource.setVolume(  Long.parseLong(result.get("volume").toString()) );
+                resource.setBilling(Double.parseDouble(result.get("billing").toString()) );
+                resource.setIaasType("Azure");
+                resources.add(resource);
+            }
+        }catch(Exception e){
+            if( LOGGER.isErrorEnabled() ){
+                LOGGER.error(e.getMessage());
+            }
         }
         return resources;
     }

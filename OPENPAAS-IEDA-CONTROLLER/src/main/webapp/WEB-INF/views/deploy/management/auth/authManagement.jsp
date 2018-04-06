@@ -615,7 +615,7 @@ function clearMainPage() {
 </script> 
 
 <div id="main">
-    <div class="page_site">플랫폼 설치 자동화 관리 > <strong>권한 관리</strong></div>
+    <div class="page_site">플랫폼 관리자 관리 > <strong>권한 관리</strong></div>
     
     <!-- 권한 그룹 목록-->
     <div class="pdt20">

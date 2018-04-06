@@ -50,7 +50,7 @@ public class DirectorConfigurationController extends BaseController {
     @RequestMapping(value="/config/director/add", method=RequestMethod.POST)
     public ResponseEntity<Object> createDirector(@RequestBody @Valid DirectorConfigDTO.Create directorDto, Principal principal) {
         if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> 설치 관리자 설정 추가 요청"); }
-        String boshConfigFileName = ".bosh_config";
+        String boshConfigFileName = "config";
         service.existCheckCreateDirectorInfo(directorDto,principal,boshConfigFileName);
         
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -81,21 +81,6 @@ public class DirectorConfigurationController extends BaseController {
 
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
-     * @description : 설치관리자 설정 수정
-     * @title : updateDirector
-     * @return : ResponseEntity<Object>
-    ***************************************************/
-    @RequestMapping(value="/config/director/update", method=RequestMethod.PUT)
-    public ResponseEntity<Object> updateDirector(@RequestBody @Valid DirectorConfigDTO.Update updateDto, Principal principal) {
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("=============================> 설치 관리자 수정 요청"); }
-        String boshConfigFileName = ".bosh_config";
-        service.existCheckUpdateDirectorinfo(updateDto, principal, boshConfigFileName);
-        
-        return new ResponseEntity<> (HttpStatus.OK); 
-    }
-    
-    /***************************************************
-     * @project : Paas 플랫폼 설치 자동화
      * @description : 설치관리자 설정 삭제
      * @title : deleteDirector
      * @return : ResponseEntity<Object>
@@ -103,7 +88,7 @@ public class DirectorConfigurationController extends BaseController {
     @RequestMapping(value="/config/director/delete/{seq}", method=RequestMethod.DELETE)
     public ResponseEntity<Object> deleteDirector(@PathVariable int seq) {
         if(LOGGER.isInfoEnabled()){ LOGGER.info("================> 기본 설치 관리자 삭제 요청!!"); }
-        String boshConfigFileName = ".bosh_config";
+        String boshConfigFileName = "config";
         service.deleteDirectorConfig(seq, boshConfigFileName);
         
         return new ResponseEntity<> (HttpStatus.NO_CONTENT); 
@@ -118,7 +103,7 @@ public class DirectorConfigurationController extends BaseController {
     @RequestMapping(value="/config/director/setDefault/{seq}", method=RequestMethod.PUT)
     public ResponseEntity<DirectorConfigVO> setDefaultDirector(@PathVariable int seq, Principal principal) {
         if(LOGGER.isInfoEnabled()){ LOGGER.info("================> 기본 설치 관리자 설정 요청!!"); }
-        String boshConfigFileName = ".bosh_config";
+        String boshConfigFileName = "config";
         DirectorConfigVO directorConfig = service.existCheckSetDefaultDirectorInfo(seq,principal, boshConfigFileName);
         
         return new ResponseEntity<DirectorConfigVO>(directorConfig, HttpStatus.OK);

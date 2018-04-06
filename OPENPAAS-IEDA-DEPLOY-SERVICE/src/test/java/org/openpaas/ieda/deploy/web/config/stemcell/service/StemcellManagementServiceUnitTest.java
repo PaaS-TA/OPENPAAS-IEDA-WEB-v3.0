@@ -316,6 +316,19 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
         assertEquals(result, "https://bosh-jenkins-artifacts.s3.amazonaws.com/bosh-stemcell/aws/light-bosh-stemcell-3232.3-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
     }
     
+    /****************************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : windows 유형의 스템셀 다운로드 Url 설정 테스트
+     * @title : testSetStemcellUrlForWgetByWindowsType
+     * @return : void
+    *****************************************************************/
+    @Test
+    public void testSetStemcellUrlForWgetByWindowsType(){
+        StemcellManagementDTO.Regist dto = setStemcellVersionDownloadInfo("windows");
+        String result = mockStemcellService.setStemcellUrlForWget(dto);
+        assertEquals(result, "https://bosh-windows-stemcells-production.s3.amazonaws.com/light-bosh-stemcell-1200.15-aws-xen-hvm-windows2012R2-go_agent.tgz");
+    }
+    
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
     * @description : url 유형의 스템셀 다운로드 링크 설정 테스트
@@ -447,6 +460,19 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
         assertEquals(resultHypervisor, "google-kvm");
     }
     
+    /****************************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : Azure Hypervisor 조합
+     * @title : testSetIaasHypervisorFromAzure
+     * @return : void
+    *****************************************************************/
+    @Test
+    public void testSetIaasHypervisorFromAzure(){
+        StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
+        dto.setIaasType("AZURE");
+        String resultHypervisor = mockStemcellService.setIaasHypervisor(dto);
+        assertEquals(resultHypervisor, "azure-hyperv");
+    }
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
     * @description : AWS LITE 유형 Hypervisor 조합
@@ -521,6 +547,7 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setStemcellVersion("3261");
         dto.setIaasType("OPENSTACK");
+        dto.setOsName("UBUNTU");
         String resulBaseUrl = mockStemcellService.setStemcellDownLoadBaseUrlByVersionType(dto);
         assertEquals(resulBaseUrl, "https://bosh-jenkins-artifacts.s3.amazonaws.com/bosh-stemcell/openstack");
         
@@ -777,6 +804,7 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
        when(mockCommonService.lockFileSet(anyString())).thenReturn(false);
        mockStemcellService.checkDownloadInfoOfStemcellByURL(dto, "Y", principal);
    }
+   
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화
@@ -790,15 +818,26 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
         dto.setStemcellUrl("testurl");
         dto.setDownloadLink("link");
         dto.setStemcellName("testStemcellName");
-        dto.setStemcellFileName("light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
-        dto.setStemcellVersion("3232.3");
+        if("windows".equals(type)){
+            dto.setStemcellFileName("light-bosh-stemcell-1200.15-aws-xen-hvm-windows2012R2-go_agent.tgz");
+        }else{
+            dto.setStemcellFileName("light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
+        }
+        if("windows".equals(type)){
+            dto.setStemcellVersion("1200.15");
+        }else{
+            dto.setStemcellVersion("3232.3");
+        }
         dto.setStemcellSize("123456789");
         if("ubuntu".equals(type)){
             dto.setOsName("UBUNTU");
             dto.setOsVersion("TRUSTY");
-        }else{
+        }else if("centos".equals(type)){
             dto.setOsName("CENTOS");
             dto.setOsVersion("7.X");
+        }else{
+            dto.setOsName("WINDOWS");
+            dto.setOsVersion("2012R2");
         }
         dto.setIaasType("AWS");
         if("ifNotLite".equals(type)){

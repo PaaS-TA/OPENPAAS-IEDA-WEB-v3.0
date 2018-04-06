@@ -83,90 +83,131 @@ final public class CommonDeployUtils {
         InputStream inputStream = null;
         BufferedReader bufferedReader = null;
         ProcessBuilder builder = new ProcessBuilder();
-        try {
-            settingFile = new File(inputFile);
-            if (settingFile.exists()) {
-                List<String> cmd = new ArrayList<String>();
-                cmd.add("spiff");
-                cmd.add("merge");
-                // generic_manifest_mask.yml
-                if (!StringUtils.isEmpty(manifestTemplate.getCommonBaseTemplate())) {
-                    cmd.add(manifestTemplate.getCommonBaseTemplate());
-                }
-                // cf.yml
-                if (!StringUtils.isEmpty(manifestTemplate.getCommonJobTemplate())) {
-                    cmd.add(manifestTemplate.getCommonJobTemplate());
-                }
-                // cf_<iaas>_setting_<version>.yml
-                if (!StringUtils.isEmpty(manifestTemplate.getIaasPropertyTemplate())) {
-                    cmd.add(manifestTemplate.getIaasPropertyTemplate());
-                }
-                // paasta_option.yml
-                if ( manifestTemplate.getDeployType().equals("BOOTSTRAP")  &&
-                        !StringUtils.isEmpty(manifestTemplate.getCommonOptionTemplate())) {
-                    if (paastaMonitoringUse.equals("true")) {
-                        cmd.add(manifestTemplate.getCommonOptionTemplate());
-                    }
-                }
-                // cf_<iaas>_stub_<version>.yml
-                if (!StringUtils.isEmpty(manifestTemplate.getMetaTemplate())) {
-                    cmd.add(manifestTemplate.getMetaTemplate());
-                }
-                // cf_<iaas>_network_options.yml
-                if (!StringUtils.isEmpty(manifestTemplate.getOptionNetworkTemplate())) {
-                    cmd.add(manifestTemplate.getOptionNetworkTemplate());
-                }
-                // cf_<iaas>_resouce_options.yml
-                if (!StringUtils.isEmpty(manifestTemplate.getOptionResourceTemplate())) {
-                    cmd.add(manifestTemplate.getOptionResourceTemplate());
-                }
-                // cf_diego_option.yml
-                if (!StringUtils.isEmpty(manifestTemplate.getOptionEtc())) {
-                    cmd.add(manifestTemplate.getOptionEtc());
-                }
-                // paasta_option.yml
-                if ( !manifestTemplate.getDeployType().equals("BOOTSTRAP") && 
-                        !StringUtils.isEmpty(manifestTemplate.getCommonOptionTemplate())) {
-                    if (paastaMonitoringUse.equals("true")) {
-                        cmd.add(manifestTemplate.getCommonOptionTemplate());
-                    }
-                }
-                
-                // <iaas>_<deploy_type>_key_<id>.yml
-                if (!(keyFile.equalsIgnoreCase("")) && !StringUtils.isEmpty(keyPath)) {
-                    cmd.add(keyPath);// 생성한 key.yml파일 추가
-                }
-                cmd.add(inputFile);
-                builder.command(cmd);
-                builder.redirectErrorStream(true);
-                
-                Process process = builder.start();
-                inputStream = process.getInputStream();
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
-                String info = null;
-                StringBuffer deployBuffer = new StringBuffer("");
-                while ((info = bufferedReader.readLine()) != null) {
-                    deployBuffer.append(info).append("\n");
-                }
-                String deloymentContent = deployBuffer.toString();
-                if( !deloymentContent.equalsIgnoreCase("") ){
-                    IOUtils.write(deloymentContent, new FileOutputStream(deploymentPath), "UTF-8");
-                }
-            } else {
-                throw new CommonException("notfound.manifest.exception", "Merge할 File이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
-            }
-        } catch (FileNotFoundException e){
-            throw new CommonException("ioFileRead.manifest.exception", "Manifest 생성 중 문제가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (IOException e) {
-            throw new CommonException("ioFileRead.manifest.exception", "Manifest 생성 중 문제가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-        } finally {
+        if (manifestTemplate.getDeployType().equalsIgnoreCase("bootstrap")) {
             try {
-                if( bufferedReader != null) {
-                    bufferedReader.close();
+                settingFile = new File(inputFile);
+                if (settingFile.exists()) {
+                    List<String> cmd = new ArrayList<String>();
+                    cmd.add("cat");
+                    cmd.add(inputFile);
+                    builder.command(cmd);
+                    builder.redirectErrorStream(true);
+                    Process process = builder.start();
+                    inputStream = process.getInputStream();
+                    bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+                    String info = null;
+                    StringBuffer deployBuffer = new StringBuffer("");
+                    while ((info = bufferedReader.readLine()) != null) {
+                        deployBuffer.append(info).append("\n");
+                    }
+                    String deloymentContent = deployBuffer.toString();
+                    if( !deloymentContent.equalsIgnoreCase("") ){
+                        IOUtils.write(deloymentContent, new FileOutputStream(deploymentPath), "UTF-8");
+                    }
+                } else {
+                    throw new CommonException("notfound.manifest.exception", "Merge할 File이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
                 }
+            } catch (FileNotFoundException e) {
+                throw new CommonException("ioFileRead.manifest.exception", "Manifest 생성 중 문제가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
             } catch (IOException e) {
-                if( LOGGER.isErrorEnabled() ){
-                    LOGGER.error( e.getMessage() );
+                throw new CommonException("ioFileRead.manifest.exception", "Manifest 생성 중 문제가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            } finally {
+                try {
+                    if( bufferedReader != null) {
+                        bufferedReader.close();
+                    }
+                } catch (IOException e) {
+                    if( LOGGER.isErrorEnabled() ){
+                        LOGGER.error( e.getMessage() );
+                    }
+                }
+            }
+        } else {
+            try {
+                settingFile = new File(inputFile);
+                if (settingFile.exists()) {
+                    List<String> cmd = new ArrayList<String>();
+                    cmd.add("spiff");
+                    cmd.add("merge");
+                    // generic_manifest_mask.yml
+                    if (!StringUtils.isEmpty(manifestTemplate.getCommonBaseTemplate())) {
+                        cmd.add(manifestTemplate.getCommonBaseTemplate());
+                    }
+                    // cf.yml
+                    if (!StringUtils.isEmpty(manifestTemplate.getCommonJobTemplate())) {
+                        cmd.add(manifestTemplate.getCommonJobTemplate());
+                    }
+                    // cf_<iaas>_setting_<version>.yml
+                    if (!StringUtils.isEmpty(manifestTemplate.getIaasPropertyTemplate())) {
+                        cmd.add(manifestTemplate.getIaasPropertyTemplate());
+                    }
+                    // paasta_option.yml
+                    if ( manifestTemplate.getDeployType().equals("BOOTSTRAP")  &&
+                            !StringUtils.isEmpty(manifestTemplate.getCommonOptionTemplate())) {
+                        if (paastaMonitoringUse.equals("true")) {
+                            cmd.add(manifestTemplate.getCommonOptionTemplate());
+                        }
+                    }
+                    // cf_<iaas>_stub_<version>.yml
+                    if (!StringUtils.isEmpty(manifestTemplate.getMetaTemplate())) {
+                        cmd.add(manifestTemplate.getMetaTemplate());
+                    }
+                    // cf_<iaas>_network_options.yml
+                    if (!StringUtils.isEmpty(manifestTemplate.getOptionNetworkTemplate())) {
+                        cmd.add(manifestTemplate.getOptionNetworkTemplate());
+                    }
+                    // cf_<iaas>_resouce_options.yml
+                    if (!StringUtils.isEmpty(manifestTemplate.getOptionResourceTemplate())) {
+                        cmd.add(manifestTemplate.getOptionResourceTemplate());
+                    }
+                    // cf_diego_option.yml
+                    if (!StringUtils.isEmpty(manifestTemplate.getOptionEtc())) {
+                        cmd.add(manifestTemplate.getOptionEtc());
+                    }
+                    // paasta_option.yml
+                    if ( !manifestTemplate.getDeployType().equals("BOOTSTRAP") && 
+                            !StringUtils.isEmpty(manifestTemplate.getCommonOptionTemplate())) {
+                        if (paastaMonitoringUse.equals("true")) {
+                            cmd.add(manifestTemplate.getCommonOptionTemplate());
+                        }
+                    }
+                    
+                    // <iaas>_<deploy_type>_key_<id>.yml
+                    if (!(keyFile.equalsIgnoreCase("")) && !StringUtils.isEmpty(keyPath)) {
+                        cmd.add(keyPath);// 생성한 key.yml파일 추가
+                    }
+                    cmd.add(inputFile);
+                    builder.command(cmd);
+                    builder.redirectErrorStream(true);
+                    
+                    Process process = builder.start();
+                    inputStream = process.getInputStream();
+                    bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+                    String info = null;
+                    StringBuffer deployBuffer = new StringBuffer("");
+                    while ((info = bufferedReader.readLine()) != null) {
+                        deployBuffer.append(info).append("\n");
+                    }
+                    String deloymentContent = deployBuffer.toString();
+                    if( !deloymentContent.equalsIgnoreCase("") ){
+                        IOUtils.write(deloymentContent, new FileOutputStream(deploymentPath), "UTF-8");
+                    }
+                } else {
+                    throw new CommonException("notfound.manifest.exception", "Merge할 File이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+                }
+            } catch (FileNotFoundException e){
+                throw new CommonException("ioFileRead.manifest.exception", "Manifest 생성 중 문제가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            } catch (IOException e) {
+                throw new CommonException("ioFileRead.manifest.exception", "Manifest 생성 중 문제가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            } finally {
+                try {
+                    if( bufferedReader != null) {
+                        bufferedReader.close();
+                    }
+                } catch (IOException e) {
+                    if( LOGGER.isErrorEnabled() ){
+                        LOGGER.error( e.getMessage() );
+                    }
                 }
             }
         }

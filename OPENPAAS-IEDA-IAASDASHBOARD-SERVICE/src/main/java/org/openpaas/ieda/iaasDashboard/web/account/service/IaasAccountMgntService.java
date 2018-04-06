@@ -49,6 +49,7 @@ public class IaasAccountMgntService {
     final private static String IAAS_OPENSTACK = "OPENSTACK";
     final private static String IAAS_GOOGLE = "GOOGLE";
     final private static String IAAS_VSPHERE = "VSPHERE";
+    final private static String IAAS_AZURE = "AZURE";
     
     final private static String SEPARATOR = System.getProperty("file.separator");
     final private static String JSON_KEY_DIR=LocalDirectoryConfiguration.getKeyDir();
@@ -133,6 +134,7 @@ public class IaasAccountMgntService {
             vo.setCommonAccessSecret( commonAccessSecret );
             vo.setOpenstackKeystoneVersion(dto.getOpenstackKeystoneVersion());
             vo.setCommonTenant(dto.getCommonTenant());
+            vo.setAzureSubscriptionId(dto.getAzureSubscriptionId());
             vo.setCreateUserId(principal.getName());
             vo.setDefaultYn("N");
             vo.setTestFlag(dto.getTestFlag());
@@ -158,6 +160,7 @@ public class IaasAccountMgntService {
         vo.setUpdateUserId(principal.getName());
         vo.setCommonAccessSecret( commonAccessSecret );
         vo.setGoogleJsonKeyPath(dto.getGoogleJsonKeyPath());
+        vo.setAzureSubscriptionId(dto.getAzureSubscriptionId());
         
         //API를 통해 계정 존재 확인
         boolean flag = false;
@@ -173,6 +176,8 @@ public class IaasAccountMgntService {
             flag = api.getAccountInfoFromVsphere(vo.getCommonAccessEndpoint(), commonAccessUser, commonAccessSecret);
         }else if( iaasType.toUpperCase().trim().equalsIgnoreCase(IAAS_GOOGLE) ){
             flag = api.getAccountInfoFromGoogle(vo.getGoogleJsonKeyPath(), vo.getCommonProject());
+        }else if( iaasType.toUpperCase().trim().equalsIgnoreCase(IAAS_AZURE) ){
+            flag = api.getAccountInfoFromAzure(commonAccessUser,  vo.getCommonTenant(),commonAccessSecret, vo.getAzureSubscriptionId());
         }
        
         if( flag ){

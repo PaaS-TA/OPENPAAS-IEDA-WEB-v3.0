@@ -36,7 +36,7 @@ public class IaasMainControllerUnitTest extends BaseControllerUnitTest{
     @Mock IaasAccountMgntService mockIaasAccountMgntService;
     private Principal principal = null;
     
-    final static String LAYOUT_VIEW_URL = "/iaasMgnt";
+    final static String LAYOUT_VIEW_URL = "/";
     final static String TOP_VIEW_URL = "/iaasMgnt/top";
     final static String MENU_VIEW_URL = "/iaasMgnt/menu";
     

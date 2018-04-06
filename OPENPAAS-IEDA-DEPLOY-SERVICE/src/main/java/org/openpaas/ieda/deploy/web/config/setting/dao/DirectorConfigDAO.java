@@ -28,7 +28,7 @@ public interface DirectorConfigDAO {
     * @title :deleteDirecotr
     * @return : int
     ***************************************************/
-    int deleteDirecotr(@Param("seq")Integer seq);
+    int deleteDirector(@Param("seq")Integer seq);
     
     /***************************************************
     * @project : Paas 플랫폼 설치 자동화

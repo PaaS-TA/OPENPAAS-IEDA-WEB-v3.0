@@ -1,8 +1,11 @@
 package org.openpaas.ieda.iaasDashboard.api.resourceUsage;
 
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,6 +34,29 @@ import com.amazonaws.services.ec2.model.DescribeVolumesResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.Vpc;
+import com.microsoft.azure.PagedList;
+import com.microsoft.azure.credentials.AzureTokenCredentials;
+import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.compute.VirtualMachine;
+import com.microsoft.azure.management.storage.StorageAccount;
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.CloudBlob;
+import com.microsoft.azure.storage.blob.CloudBlobClient;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.ListBlobItem;
+import com.microsoft.rest.LogLevel;
+
+/*import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.compute.VirtualMachine;
+import com.microsoft.azure.management.network.Network;
+import com.microsoft.azure.management.storage.StorageAccount;
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.CloudBlob;
+import com.microsoft.azure.storage.blob.CloudBlobClient;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.ListBlobItem;*/
   
 @Service
 public class IaasResourceUsageApiService {
@@ -169,5 +195,103 @@ public class IaasResourceUsageApiService {
         }
         return map;
     }
+    /***************************************************
+     * @project : 인프라 관리 대시보드
+     * @description : Azure 리소스 사용량 조회
+     * @title : getResourceInfoFromAzure
+     * @return : boolean
+    ***************************************************/
+    public HashMap<String, Object> getResourceInfoFromAzure( String commonAccessUser, String commonTenant, String commonAccessSecret,  String azureSubscriptionId ){
+        HashMap<String, Object> map = new HashMap<String, Object>();
+       try {
+        long totalSize =0;
+        AzureTokenCredentials azureCredentials = new CommonApiService().getAzureCredentialsFromAzure(commonAccessUser,  commonTenant,commonAccessSecret, azureSubscriptionId);
+        Azure azure  = Azure.configure()
+                .withLogLevel(LogLevel.BASIC)
+                .authenticate(azureCredentials)
+                .withSubscription(azureSubscriptionId);
+        
+        PagedList<com.microsoft.azure.management.network.Network> networks = azure.networks().list();
+        if( networks.size() > 0 ){
+            map.put("network", networks.size());
+        }else{
+            map.put("network", 0);
+        }
+        
+        
+        PagedList<VirtualMachine> vms = azure.virtualMachines().list();
+        map.put("instance", vms.size());
+        if( azure.getCurrentSubscription().state().toString().equals("Disabled") ){
+            map.put("volume", totalSize);
+            return map;
+        }else{
+          PagedList<StorageAccount> storageAccounts = azure.storageAccounts().list();
+            long size = 0L;
+            for( int i=0; i < storageAccounts.size(); i++ ){
+                String storageConnectionString ="DefaultEndpointsProtocol=http;";
+                storageConnectionString += "AccountName="+ storageAccounts.get(i).name()+";";
+                storageConnectionString += "AccountKey="+storageAccounts.get(i).getKeys().get(0).value();
+                CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
+
+                CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
+                Iterator<CloudBlobContainer> containers=  blobClient.listContainers().iterator();
+                while( containers.hasNext()){
+                    String containerName = containers.next().getName();
+                    CloudBlobContainer container = blobClient.getContainerReference(containerName);
+                    Iterable<ListBlobItem> blobItems=  container.listBlobs();
+                    for (ListBlobItem blobItem : blobItems) {
+                        if (blobItem instanceof CloudBlob) {
+                            CloudBlob blob = (CloudBlob) blobItem;
+                            size += blob.getProperties().getLength();
+                        }
+                    }
+                }
+            }
+        	
+            map.put("volume", size);
+         }
+        
+        int totalcost = 0;
+        int vmtoatalcost = 0;
+        int netcost =0;
+        int storagetoatalcost = 0;
+        //int resourcecost = 0;
+        int vmSize = azure.virtualMachines().manager().usages().listByRegion("centralus").size();
+            for (int i=0;i<vmSize; i++){
+                
+                 vmtoatalcost =+ azure.virtualMachines().manager().usages().listByRegion("centralus").get(i).currentValue();
+            }
+        int netSize = azure.networks().manager().usages().listByRegion("centralus").size();
+            for (int i=0;i<netSize; i++){
+                Long networktoatalcost =+ azure.networks().manager().usages().listByRegion("centralus").get(i).currentValue();
+                netcost = networktoatalcost.intValue();
+            }
+        int volumeSize = azure.storageAccounts().manager().usages().list().size();
+            for (int i=0; i< volumeSize; i++){
+                storagetoatalcost  =+ azure.storageAccounts().manager().usages().list().get(i).currentValue();
+                //resourcecost =+ azure.storageUsages().list().get(i).currentValue();
+               
+            }
+        totalcost = vmtoatalcost + netcost + storagetoatalcost;
+        if( totalcost != 0 ){
+            map.put("billing", totalcost);
+        }else{
+            map.put("billing", 00.00);
+        }
+        
+        map.put("iaasType", "AZURE");   
+        
+       }
+        catch (InvalidKeyException e) {
+            if( LOGGER.isErrorEnabled() ){ LOGGER.error(e.getMessage()); }
+        } catch (URISyntaxException e) {
+            if( LOGGER.isErrorEnabled() ){ LOGGER.error(e.getMessage()); }
+        } catch (StorageException e) {
+            if( LOGGER.isErrorEnabled() ){ LOGGER.error(e.getMessage()); }
+        }
+        
+        return map;
+   }
+ 
     
 }

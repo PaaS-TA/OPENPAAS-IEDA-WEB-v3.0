@@ -16,6 +16,7 @@
              ,common_tenant as commonTenant
              ,common_project as commonProject
              ,openstack_domain as openstackDomain
+             ,azure_subscription_id as azureSubscriptionId
              ,default_yn as defaultYn 
              ,create_user_id as createUserId
              ,update_user_id as updateUserId

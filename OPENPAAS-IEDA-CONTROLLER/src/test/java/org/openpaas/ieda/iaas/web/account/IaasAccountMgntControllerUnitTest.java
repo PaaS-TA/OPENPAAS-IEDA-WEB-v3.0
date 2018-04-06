@@ -66,6 +66,7 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
     final static String VIEW_OPENSTACK_URL = "/iaasMgnt/account/openstack"; //Openstack계정 관리 화면 요청
     final static String VIEW_GOOGLE_URL = "/iaasMgnt/account/google"; //GOOGLE 계정 관리 화면 요청
     final static String VIEW_VSPHERE_URL = "/iaasMgnt/account/vSphere"; //vSphere계정 관리 화면 요청
+    final static String VIEW_AZURE_URL = "/iaasMgnt/account/azure"; //Azure 계정 관리 화면 요청
     final static String IAAS_ACCOUNT_LIST_URL = "/iaasMgnt/account/all/list"; //전체 Iaas Account 목록 정보 조회
     final static String IAAS_ACCOUNT_CNT_URL = "/iaasMgnt/account/all/cnt"; // 인프라 계정 갯수 정보 조회 
     final static String IAAS_TYPE_LIST_URL = "/iaasMgnt/account/{iaasType}/list"; //인프라 계정별 목록 정보 조회
@@ -135,7 +136,7 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
      * @return : void
     ***************************************************/
     @Test
-    public void testGoAzureAccountMgnt() throws Exception{
+    public void testGoGoogleAccountMgnt() throws Exception{
         mockMvc.perform(get(VIEW_GOOGLE_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(view().name("/iaas/account/googleAccount"));
@@ -153,6 +154,20 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
         .andExpect(status().isOk())
         .andExpect(view().name("/iaas/account/vSphereAccount"));
     }
+    
+    /***************************************************
+     * @project : 인프라 관리 대시보드
+     * @description : Azure계정 관리 화면 이동 테스트
+     * @title : testGoAzureAccountMgnt
+     * @return : void
+    ***************************************************/
+    
+    public void testGoAzureAccountMgnt() throws Exception{
+        mockMvc.perform(get(VIEW_AZURE_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
+        .andExpect(status().isOk())
+        .andExpect(view().name("/iaas/account/azureAccount"));
+    }
+    
     
     /***************************************************
      * @project : 인프라 관리 대시보드
@@ -355,7 +370,7 @@ public class IaasAccountMgntControllerUnitTest extends BaseControllerUnitTest {
           
           account.getOpenstackDomain();
           account.setOpenstackDomain("");
-          
+                    
           account.getUpdateUserId();
           account.setUpdateUserId(principal.getName());
           

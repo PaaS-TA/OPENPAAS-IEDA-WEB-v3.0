@@ -84,7 +84,18 @@ public class IaasConfigMgntController{
         if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> /info/iaasConfig/vSphere "); }
         return "/deploy/information/iaasConfig/vSphereConfigMgnt";
     }
-
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : Azure 환경 설정 관리 화면 이동
+     * @title : goAzureConfigInfo
+     * @return : String
+    ***************************************************/
+    @RequestMapping(value="/info/iaasConfig/azure", method=RequestMethod.GET)
+    public String goAzureConfigInfo(){
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> /info/iaasConfig/azure "); }
+        return "/deploy/information/iaasConfig/azureConfigMgnt";
+    }
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
      * @description : 전체 환경 설정 목록 정보 요청

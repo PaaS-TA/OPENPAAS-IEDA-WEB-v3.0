@@ -38,6 +38,7 @@ public class StemcellManagementService {
     final private static String SEPARATOR = System.getProperty("file.separator");
     final static private String PUBLIC_STEMCELLS_NEWEST_URL = "https://s3.amazonaws.com"; 
     final static private String PUBLIC_STEMCELLS_OLDEST_URL = "https://bosh-jenkins-artifacts.s3.amazonaws.com";
+    final static private String PUBLIC_STEMCELLS_WINDOWS_URL = "https://bosh-windows-stemcells-production.";
     private final static Logger LOGGER = LoggerFactory.getLogger(StemcellManagementService.class);
     
     /***************************************************
@@ -292,6 +293,8 @@ public class StemcellManagementService {
             String subUrl = setStemcellDownLoadSubUrlByVersionType(dto);
             if(("centos").equalsIgnoreCase(dto.getOsName().toLowerCase())){
                 downloadUrl = baseUrl+SEPARATOR+subUrl+"-"+dto.getStemcellVersion().toLowerCase()+"-"+iaas+"-"+dto.getOsName().toLowerCase()+"-"+dto.getOsVersion().toLowerCase().replace("7.x", "7")+"-go_agent.tgz";
+            }else if(("windows").equalsIgnoreCase(dto.getOsName().toLowerCase())){
+                downloadUrl = baseUrl+subUrl+"-"+dto.getStemcellVersion().toLowerCase()+"-"+iaas+"-"+dto.getOsName().toLowerCase()+dto.getOsVersion()+"-go_agent.tgz";
             }else{
                 downloadUrl = baseUrl+SEPARATOR+subUrl+"-"+dto.getStemcellVersion().toLowerCase()+"-"+iaas+"-"+dto.getOsName().toLowerCase()+"-"+dto.getOsVersion().toLowerCase()+"-go_agent.tgz";
             }
@@ -366,6 +369,8 @@ public class StemcellManagementService {
                     iaasHypervisor = iaas+"-xen";
                 }
             }
+        } else if(iaas.equalsIgnoreCase("azure")){
+            iaasHypervisor = iaas + "-hyperv";
         }
         return iaasHypervisor;
     }
@@ -389,6 +394,8 @@ public class StemcellManagementService {
                 }else{
                     baseUrl = PUBLIC_STEMCELLS_NEWEST_URL+SEPARATOR+"bosh-core-stemcells"+SEPARATOR+dto.getIaasType().toLowerCase();
                 }
+            }else if(dto.getOsName().equalsIgnoreCase("windows")){
+                baseUrl = PUBLIC_STEMCELLS_WINDOWS_URL+PUBLIC_STEMCELLS_NEWEST_URL.substring(8)+SEPARATOR;
             }else{
                 baseUrl = PUBLIC_STEMCELLS_OLDEST_URL+SEPARATOR+"bosh-stemcell"+SEPARATOR+dto.getIaasType().toLowerCase();
             }

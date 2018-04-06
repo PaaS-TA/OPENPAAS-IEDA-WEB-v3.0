@@ -59,6 +59,7 @@ $(function() {
         },
         onLoad:function(event){
             var jsondata = JSON.parse(event.xhr.responseText);
+            if(jsondata.records != null)
             securityGroupCount = jsondata.records.length;
             if(event.xhr.status == 403){
                 location.href = "/abuse";

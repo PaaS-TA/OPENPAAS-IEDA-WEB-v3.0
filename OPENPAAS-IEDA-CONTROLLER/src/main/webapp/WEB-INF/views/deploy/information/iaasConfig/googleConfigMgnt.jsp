@@ -7,6 +7,7 @@
  * 수정일      작성자      내용     
  * -----------------------------------------------------------------
  * 2017.12    배병욱    Google Public-Key 입력 삭제
+ 
  * =================================================================
  */ 
 %>
@@ -328,10 +329,12 @@ function setGoogleDetailInfo(id){
                  $(".w2ui-msg-body input[name='id']").val(data.id);
                  $(".w2ui-msg-body input[name='accountId']").val(data.accountId);
                  $(".w2ui-msg-body input[name='googleTagNames']").val(data.commonSecurityGroup);
+                 $(".w2ui-msg-body input[name='googlePublicKey']").val(data.googlePublicKey);
                  configInfo = { 
                          accountId : data.accountId,
                          commonKeypairPath : data.commonKeypairPath,
-                         commonAvailabilityZone : data.commonAvailabilityZone
+                         commonAvailabilityZone : data.commonAvailabilityZone,
+                         googlePublicKey : data.googlePublicKey
                  }
              }
              getGoogleAccountName();
@@ -389,6 +392,7 @@ function saveGoogleConfigInfo(){
              ,commonKeypairPath : $(".w2ui-msg-body input[name='commonKeypairPath']").val()
              ,commonAvailabilityZone : $(".w2ui-msg-body select[name='commonAvailabilityZone']").val()
              ,commonSecurityGroup : $(".w2ui-msg-body input[name='googleTagNames']").val()
+             ,googlePublicKey: $(".w2ui-msg-body input[name='googlePublicKey']").val()
      }
      $.ajax({
          type : "PUT",
@@ -500,6 +504,10 @@ $( window ).resize(function() {
                     <sec:authorize access="hasAuthority('INFO_IAASCONFIG_VSPHERE_LIST')">
                         <li><a href="javascript:goPage('<c:url value="/info/iaasConfig/vSphere"/>', 'vSphere 관리');">vSphere</a></li>
                     </sec:authorize>
+                    <sec:authorize access="hasAuthority('INFO_IAASCONFIG_AZURE_LIST')">
+                        <li><a href="javascript:goPage('<c:url value="/info/iaasConfig/azure"/>', 'vSphere 관리');">Azure</a></li>
+                    </sec:authorize>
+                    
                 </ul>
             </div>
         </div> 
@@ -543,7 +551,7 @@ $( window ).resize(function() {
                 <div class="w2ui-field">
                     <label style="width:36%;text-align: left; padding-left: 20px;">Zone</label>
                     <div>
-                        <select class='form-control select-control' name="commonAvailabilityZone" style="width:63%;">
+                        <select class='form-control select-control' name="commonAvailabilityZone" style="width:300px;">
                             <option value="">zone을 선택하세요.</option>
                         </select>
                     </div>
@@ -555,6 +563,12 @@ $( window ).resize(function() {
                     </div>
                 </div>
                 <div class="w2ui-field">
+                    <label style="width:36%; text-align: left; padding-left: 20px;">Public Key</label>
+                    <div>
+                        <input name="googlePublicKey" type="text" style="width: 300px; height: 60px;" placeholder="ex)ssh-rsa AEV...."/>
+                    </div>
+                </div>
+                <div class="w2ui-field">
                     <label style="width:36%;text-align: left; padding-left: 20px;">Private Key File</label>
                     <div>
                         <span onclick="changeKeyPathType('file');" style="width:30%;"><label><input type="radio" name="keyPathType" value="file" />&nbsp;파일업로드</label></span>
@@ -563,15 +577,15 @@ $( window ).resize(function() {
                     </div>
                 </div>
                 <div class="w2ui-field">
-                    <label style="text-align: left;width:36%;font-size:11px;" class="control-label"></label>
-                    <div id="keyPathDiv" style="margin-left:130px;position:relative;" >
+                    <label style="text-align: left;font-size:11px;" class="control-label"></label>
+                    <div id="keyPathDiv" style="position:relative; width: 65%; left:220px;">
                         <div id="keyPathFileDiv" hidden="true">
-                         <input type="text" id="keyPathFileName" name="keyPathFileName" style="width:45%;" readonly  onClick="openBrowse();" placeholder="업로드할 Key 파일을 선택하세요."/>
+                         <input type="text" id="keyPathFileName" name="keyPathFileName" style="width:55%;" readonly  onClick="openBrowse();" placeholder="업로드할 Key 파일을 선택하세요."/>
                          <a href="#" id="browse" onClick="openBrowse();"><span id="BrowseBtn">Browse</span></a>
                          <input type="file" name="keyPathFile" onchange="setPrivateKeyPathFileName(this);" style="display:none;"/>
                      </div>
                      <div id="keyPathListDiv">
-                         <select name="keyPathList"  id="commonKeypairPathList" onchange="setPrivateKeyPath(this.value);" class="form-control select-control" style="width:63%"></select>
+                         <select name="keyPathList"  id="commonKeypairPathList" onchange="setPrivateKeyPath(this.value);" class="form-control select-control" style="width:55%"></select>
                      </div>
                     </div>
                     <input name="commonKeypairPath" type="hidden"/>
@@ -611,6 +625,12 @@ $(function() {
                 }, sqlInjection :   function(){
                     return $(".w2ui-msg-body input[name='googleTagNames']").val();
                 }
+            }, googlePublicKey: {
+                required: function(){
+                    return checkEmpty( $(".w2ui-msg-body input[name='googlePublicKey']").val());
+                }, sqlInjection : function(){
+                    return $(".w2ui-msg-body input[name='googlePublicKey']").val();
+                }
             }, commonAvailabilityZone: { 
                 required: function(){
                     return checkEmpty( $(".w2ui-msg-body select[name='commonAvailabilityZone']").val() );
@@ -641,6 +661,9 @@ $(function() {
             }, googleTagNames: {
                 required:  "태그 명"+text_required_msg
                 ,sqlInjection : text_injection_msg
+            }, googlePublicKey: {
+                required:  "Public 키" + text_required_msg
+                , sqlInjection : text_injection_msg
             }, commonAvailabilityZone: {
                 required:  "영역"+select_required_msg
             }, keyPathList: { 

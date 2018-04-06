@@ -655,7 +655,7 @@ $(window).resize(function() {
     setLayoutContainerHeight();
 });
 </script>
-<div id="main2">
+<div id="main">
     <div class="page_site">플랫폼 설치 > <strong>CF 및 Diego 통합 설치</strong></div>
     <!-- 설치 관리자 -->
     <div id="isDefaultDirector"></div>

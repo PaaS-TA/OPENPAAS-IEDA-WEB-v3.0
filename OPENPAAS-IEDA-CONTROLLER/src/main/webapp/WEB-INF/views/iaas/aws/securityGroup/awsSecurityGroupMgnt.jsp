@@ -244,7 +244,6 @@ function doSearchGroupInboudRules(accountId, groupId){
                     var protocol = checkEmpty(data[i].protocol) ? "-" : data[i].protocol;
                     var source = checkEmpty(data[i].source) ? "-" : data[i].source;
                     var portRange = checkEmpty(data[i].portRange) ? "-" : data[i].portRange;
-                    
                     html +="<tr class='ingressRulesData'>";
                     html +="<td class='rules'>"+trafficType+"</td>";
                     html +="<td class='rules'>"+protocol   +"</td>";

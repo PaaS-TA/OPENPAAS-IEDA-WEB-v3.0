@@ -61,6 +61,7 @@ public class BootStrapDeployDTO{
         private String paastaMonitoringIp; //PaaS-TA 모니터링 사용시 ingrestorIP
         private String influxdbIp;
         private String paastaMonitoringRelease; //PaaS-TA 모니터링 사용시 릴리즈
+        private String osConfRelease;
         public String getId() {
             return id;
         }
@@ -138,6 +139,12 @@ public class BootStrapDeployDTO{
         }
         public void setInfluxdbIp(String influxdbIp) {
             this.influxdbIp = influxdbIp;
+        }
+        public String getOsConfRelease() {
+            return osConfRelease;
+        }
+        public void setOsConfRelease(String osConfRelease) {
+            this.osConfRelease = osConfRelease;
         }
     }
     

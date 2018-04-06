@@ -57,7 +57,7 @@ function getBootstrapData(record){
         },
         error : function(request, status, error) {
             var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message, "BOOTSTRAP 수정");
+            w2alert(errorResult.message, "MICRO BOSH 수정");
         }
     });
 }
@@ -85,6 +85,7 @@ function setBootstrapData(contents){
             ntp              : contents.ntp,
             boshRelease      : contents.boshRelease,
             boshCpiRelease   : contents.boshCpiRelease,
+            osConfRelease    : contents.osConfRelease,
             enableSnapshots  : contents.enableSnapshots,
             snapshotSchedule : contents.snapshotSchedule,
             paastaMonitoringUse : contents.paastaMonitoringUse,
@@ -120,6 +121,7 @@ function setBootstrapData(contents){
     else if( iaas == "Openstack" ) openstackPopup();
     else if( iaas == "vSphere" ) vSpherePopup();
     else if( iaas == "Google" ) googlePopup();
+    else if( iaas == "Azure" ) azurePopup();
 }
 
 
@@ -129,7 +131,7 @@ function setBootstrapData(contents){
  ***************************************************************** */
 function awsPopup(){
      w2popup.open({
-        title  : "<b>BOOTSTRAP 설치</b>",
+        title  : "<b>MICRO BOSH 설치</b>",
         width  : 730,
         height : 520,
         onClose: popupClose,
@@ -153,9 +155,9 @@ function awsPopup(){
  ***************************************************************** */
 function openstackPopup(){
      w2popup.open({
-        title   : "<b>BOOTSTRAP 설치</b>",
+        title   : "<b>MICRO BOSH 설치</b>",
         width   : 730,
-        height  : 550,
+        height  : 580,
         onClose : popupClose,
         modal   : true,
         body    : $("#OpenstackInfoDiv").html(),
@@ -177,9 +179,9 @@ function openstackPopup(){
  ***************************************************************** */
 function vSpherePopup(){
      w2popup.open({
-        title   : "<b>BOOTSTRAP 설치</b>",
+        title   : "<b>MICRO BOSH 설치</b>",
         width   : 730,
-        height  : 580,
+        height  : 600,
         onClose : popupClose,
         modal   : true,
         body    : $("#vSphereInfoDiv").html(),
@@ -201,9 +203,9 @@ function vSpherePopup(){
  ***************************************************************** */
 function googlePopup(){
      w2popup.open({
-        title   : "<b>BOOTSTRAP 설치</b>",
+        title   : "<b>MICRO BOSH 설치</b>",
         width   : 730,
-        height  : 495,
+        height  : 545,
         onClose : popupClose,
         modal   : true,
         body    : $("#GoogleInfoDiv").html(),
@@ -219,6 +221,32 @@ function googlePopup(){
     }); 
 }
 
+
+/******************************************************************
+ * 기능 : azurePopup
+ * 설명 : azure 정보 입력 팝업 화면
+ ***************************************************************** */
+function azurePopup(){
+     w2popup.open({
+        title   : "<b>MICRO BOSH 설치</b>",
+        width   : 730,
+        height  : 650,
+        onClose : popupClose,
+        modal   : true,
+        body    : $("#azureInfoDiv").html(),
+        buttons : $("#azureInfoBtnDiv").html(),
+        onOpen:function(event){
+            event.onComplete = function(){
+                $(".w2ui-msg-body input[name=iaasType]").val(iaas);
+                getIaasConfigAliasList(iaas);
+            }
+        },onClose:function(event){
+            gridReload()
+        }
+    }); 
+}
+
+
 /********************************************************
  * 설명 : 인프라 환경 설정 별칭 목록 조회
  * 기능 : getIaasConfigAliasList
@@ -232,6 +260,7 @@ function getIaasConfigAliasList(iaas){
             if( !checkEmpty(data) ){
                 var options= "";
                 for( var i=0; i<data.length; i++ ){
+                    console.log(data);
                     if( data[i].id == iaasConfigInfo.iaasConfigId ){
                         options+= "<option value='"+data[i].id+"' selected>"+data[i].iaasConfigAlias+"</option>";
                         settingIaasConfigInfo(data[i].id);
@@ -261,6 +290,7 @@ function settingIaasConfigInfo(val){
             url :"/common/deploy/list/iaasConfig/"+iaas+"/"+val, 
             contentType :"application/json",
             success :function(data, status) {
+                console.log(data);
                 if( !checkEmpty(data) ){
                     if( data.openstackKeystoneVersion == "v2" ){
                         $(".w2ui-msg-body commonProject").css("display", "block");
@@ -296,7 +326,11 @@ function settingIaasConfigInfo(val){
                     $(".w2ui-msg-body input[name=vsphereVcenterPersistentDatastore]").val(data.vsphereVcenterPersistentDatastore);
                     $(".w2ui-msg-body input[name=vsphereVcenterDiskPath]").val(data.vsphereVcenterDiskPath);
                     $(".w2ui-msg-body input[name=vsphereVcenterCluster]").val(data.vsphereVcenterCluster);
-                    
+                    $(".w2ui-msg-body input[name=azureSubscriptionId]").val(data.azureSubscriptionId);
+                    $(".w2ui-msg-body input[name=azureResourceGroupName]").val(data.azureResourceGroupName);
+                    $(".w2ui-msg-body input[name=azureStorageAccountName]").val(data.azureStorageAccountName);
+                    $(".w2ui-msg-body textarea[name=azureSshPublicKey]").val(data.azureSshPublicKey);
+                    $(".w2ui-msg-body textarea[name='googleSshPublicKey']").val(data.googlePublicKey);
                 }
             },
             error :function(request, status, error) {
@@ -344,7 +378,7 @@ function saveIaasConfigInfo(){
         },
         error : function( e, status ) {
             w2popup.unlock();
-            w2alert("BootStrap "+iaas+" 정보 등록에 실패 하였습니다.", "BOOTSTRAP 설치");
+            w2alert("MICRO BOSH "+iaas+" 정보 등록에 실패 하였습니다.", "BOOTSTRAP 설치");
         }
     });
 }
@@ -356,16 +390,19 @@ function saveIaasConfigInfo(){
 function defaultInfoPop(iaas){
      settingPopupTab("progressStep_6", iaas);
      w2popup.open({
-        title   : "<b>BOOTSTRAP 설치</b>",
+        title   : "<b>MICRO BOSH 설치</b>",
         width   : 730,
-        height  : 645,
+        height  : 730,
         onClose : popupClose,
         modal   : true,
         body    : $("#DefaultInfoDiv").html(),
         buttons : $("#DefaultInfoButtonDiv").html(),
         onOpen:function(event){
             event.onComplete = function(){
-            	$(".w2ui-msg-body select[name='paastaMonitoringRelease']").attr("disabled", true);
+                if( iaas == "Google" ){
+                    $(".w2ui-msg-body #osConfDiv").show();
+                }
+                
                 $(".w2ui-msg-body input[name='ingestorIp']").attr("disabled", true);
                 $(".w2ui-msg-body input[name='influxdbIp']").attr("disabled", true);
                 $('[data-toggle="popover"]').popover();
@@ -374,7 +411,7 @@ function defaultInfoPop(iaas){
                     $(".w2ui-msg-body input[name='deploymentName']").val(boshInfo.deploymentName);
                     $(".w2ui-msg-body input[name='directorName']").val(boshInfo.directorName);
                     $(".w2ui-msg-body input[name='ntp']").val(boshInfo.ntp);
-                    $('.w2ui-msg-body input:radio[name=enableSnapshots]:input[value="' +boshInfo.enableSnapshots + '"]').attr("checked", true);
+                    $('.w2ui-msg-body input:radio[name=enableSnapshots]:input[value="' +boshInfo.enableSnapshots + '"]').attr("checked", true);    
                     if( !checkEmpty(boshInfo.enableSnapshots) ){
                         $(".w2ui-msg-body input[name='snapshotSchedule']").val(boshInfo.snapshotSchedule);
                         enableSnapshotsFn(boshInfo.enableSnapshots);
@@ -408,6 +445,9 @@ function defaultInfoPop(iaas){
                 getLocalBoshList('bosh');
                 //BOSH CPI 릴리즈 정보 가져오기
                 getLocalBoshCpiList('bosh_cpi', iaas);
+                if( iaas == "Google" ){
+                    getLocalBoshList('os-conf');
+                }
                 $('[data-toggle="popover"]').popover();
                 getReleaseVersionList();
             }
@@ -466,6 +506,14 @@ function getLocalBoshList(type){
                     
                 }
                 $(".w2ui-msg-body select[name='boshRelease']").html(options);
+            } else if(type= 'os_conf'){
+                var options = "<option value=''>OS CONF 릴리즈를 선택하세요.</option>";
+                for( var i=0; i<data.length; i++ ){
+                    if( data[i] == boshInfo.osConfRelease ){
+                        options += "<option value='"+data[i]+"' selected>"+data[i]+"</option>";
+                    }else options += "<option value='"+data[i]+"'>"+data[i]+"</option>";
+                }
+                $(".w2ui-msg-body select[name='osConfRelease']").html(options)
             }
         },
         error : function( e, status ) {
@@ -494,7 +542,6 @@ function getLocalBoshCpiList(type, iaas){
                     if( data[i] == boshInfo.boshCpiRelease ){
                         options += "<option value='"+data[i]+"' selected>"+data[i]+"</option>";
                     }else options += "<option value='"+data[i]+"'>"+data[i]+"</option>";
-                    
                 }
                 $(".w2ui-msg-body select[name='boshCpiRelease']").html(options);
             }
@@ -596,6 +643,7 @@ function saveDefaultInfo(type){
             directorName        : $(".w2ui-msg-body input[name=directorName]").val(),
             ntp                 : $(".w2ui-msg-body input[name=ntp]").val(),
             boshRelease         : $(".w2ui-msg-body select[name=boshRelease]").val(),
+            osConfRelease     : $(".w2ui-msg-body select[name=osConfRelease]").val(),
             boshCpiRelease      : $(".w2ui-msg-body select[name=boshCpiRelease]").val(),
             enableSnapshots     : $(".w2ui-msg-body input:radio[name=enableSnapshots]:checked").val(),
             snapshotSchedule    : $(".w2ui-msg-body input[name=snapshotSchedule]").val(),
@@ -615,6 +663,8 @@ function saveDefaultInfo(type){
             vSpherePopup(); return;
         }else if(iaas.toUpperCase() == "GOOGLE" ){
             googlePopup(); return;
+        }else if(iaas.toUpperCase() == "AZURE" ){
+            azurePopup(); return;
         }
     }else{
         $.ajax({
@@ -631,7 +681,7 @@ function saveDefaultInfo(type){
             error : function( e, status ) {
                 w2popup.unlock();
                 w2popup.unlock();
-                w2alert("기본정보 등록에 실패 하였습니다.", "BOOTSTRAP 설치");
+                w2alert("기본정보 등록에 실패 하였습니다.", "MICRO BOSH 설치");
             }
         });
     }
@@ -646,7 +696,10 @@ function selectNetworkInfoPopup(iaas){
         networkInfoPopup("#VsphereNetworkInfoDiv", "#VsphereNetworkInfoBtnDiv", 680);
     }else if( iaas.toUpperCase() == "GOOGLE" ){
         networkInfoPopup("#GoogleNetworkInfoDiv", "#GoogleNetworkInfoBtnDiv", 570)   
-    }else{
+    }else if( iaas.toUpperCase() == "AZURE" ){
+        networkInfoPopup("#AzureNetworkInfoDiv", "#AzureNetworkInfoBtnDiv", 570)   
+    }
+    else{
         networkInfoPopup("#NetworkInfoDiv", "#NetworkInfoBtnDiv", 535);
     }
 }
@@ -657,7 +710,7 @@ function selectNetworkInfoPopup(iaas){
 function networkInfoPopup(div, btn, height){
     settingPopupTab("progressStep_6", iaas);
     w2popup.open({
-        title   : "<b>BOOTSTRAP 설치</b>",
+        title   : "<b>MICRO BOSH 설치</b>",
         width   : 730,
         height  : height,
         onClose : popupClose,
@@ -738,7 +791,7 @@ function saveNetworkInfo(type){
             },
             error : function( e, status ) {
                 w2popup.unlock();
-                w2alert("Network 정보 등록에 실패 하였습니다.", "BOOTSTRAP 설치");
+                w2alert("Network 정보 등록에 실패 하였습니다.", "MICRO BOSH 설치");
             }
         });
     }
@@ -752,7 +805,7 @@ function resourceInfoPopup(height){
     settingPopupTab("ResourceInfoDiv", iaas);
     
     w2popup.open({
-        title   : "<b>BOOTSTRAP 설치</b>",
+        title   : "<b>MICRO BOSH 설치</b>",
         width   : 730,
         height  : height,
         onClose : popupClose,
@@ -799,7 +852,7 @@ function getStemcellList(iaas){
             setReourceData();
         },
         error : function( e, status ) {
-            w2alert("스템셀 "+search_data_fail_msg, "BOOTSTRAP 설치");
+            w2alert("스템셀 "+search_data_fail_msg, "MICRO BOSH 설치");
         }
     });
 }
@@ -861,7 +914,7 @@ function saveResourceInfo(type){
             error :function(request, status, error) {
                 w2popup.unlock();
                 var errorResult = JSON.parse(request.responseText);
-                w2alert(errorResult.message, "Bootstrap 리소스 정보 저장");
+                w2alert(errorResult.message, "MICRO BOSH 리소스 정보 저장");
                 
             }
         });
@@ -878,6 +931,9 @@ function createSettingFile(data){
             iaasType       : data.iaasType,
             deploymentFile : data.deploymentFile
     }
+    var credentialFile = data.deploymentFile.split(".")[0]+"-creds.yml";
+    
+    w2alert("MICRO BOSH 설치 성공 후 <br> 설치 관리자 설정 Credential 파일 명은 <br><strong><font color='red'> "+credentialFile+" </strong></font>입니다.");
     
     $.ajax({
         type : "POST",
@@ -891,7 +947,7 @@ function createSettingFile(data){
         },
         error :function(request, status, error) {
             var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message, "Bootstrap 배포 파일 생성");
+            w2alert(errorResult.message, "MICRO BOSH 배포 파일 생성");
             if( iaas.toUpperCase() == "VSPHERE" ){
                 resourceInfoPopup(390);
             }else resourceInfoPopup(330);
@@ -908,7 +964,7 @@ function deployPopup(){
     settingPopupTab("DeployDiv", iaas);
     
     w2popup.open({
-        title   : "<b>BOOTSTRAP 설치</b>",
+        title   : "<b>MICRO BOSH 설치</b>",
         width   : 730,
         height  : 615,
         modal   : true,
@@ -953,8 +1009,8 @@ function getDeployInfo(){
 function confirmDeploy(type){
     if(type == 'after'){        
         w2confirm({
-            msg          : "BOOTSTRAP을 설치하시겠습니까?",
-            title        : w2utils.lang('BOOTSTRAP 설치'),
+            msg          : "MICRO BOSH를 설치하시겠습니까?",
+            title        : w2utils.lang('MICRO BOSH 설치'),
             yes_text     : "예",
             no_text      : "아니오",
             yes_callBack : installPopup
@@ -975,7 +1031,7 @@ var lockFile = false;
 function lockFileSet(deployFile){
     if(!checkEmpty(deployFile) ){
         var FileName = "bootstrap";
-        var message = "현재 다른 설치 관리자가 해당 BootStrap을 사용 중 입니다.";
+        var message = "현재 다른 설치 관리자가 해당 MICRO BOSH를 설치 중 입니다.";
         lockFile = commonLockFile("<c:url value='/common/deploy/lockFile/"+FileName+"'/>",message);
     }
     return lockFile;
@@ -1019,7 +1075,7 @@ function installPopup(){
             iaasType: iaas
     };
     w2popup.open({
-        title   : "<b>BOOTSTRAP 설치</b>",
+        title   : "<b>MICRO BOSH 설치</b>",
         width   : 800,
         height  : 620,
         modal   : true,
@@ -1049,7 +1105,7 @@ function installPopup(){
                                 $('.w2ui-msg-buttons #deployPopupBtn').prop("disabled", false);
                                     
                                 installClient.disconnect();
-                                w2alert(message, "BOOTSTRAP 설치");
+                                w2alert(message, "MICRO BOSH 설치");
                             }
                         }
                     });
@@ -1091,7 +1147,7 @@ function installPopup(){
             },
             error : function(request, status, error) {
                 var errorResult = JSON.parse(request.responseText);
-                w2alert(errorResult.message, "BOOTSTRAP 삭제");
+                w2alert(errorResult.message, "MICRO BOSH 삭제");
             }
         });
     } else {
@@ -1128,7 +1184,7 @@ function installPopup(){
                                     
                                     installStatus = response.state.toLowerCase();
                                     deleteClient.disconnect();
-                                    w2alert(message, "BOOTSTRAP 삭제");
+                                    w2alert(message, "MICRO BOSH 삭제");
                                    }
                             }
                         });
@@ -1244,7 +1300,7 @@ function popupClose() {
          <div class="panel-body" style="padding:5px 5% 10px 5%;">
              <div class="w2ui-field">
                <label style="text-align: left;width:40%;font-size:11px;">인프라 환경 별칭</label>
-               <div>
+               <div style="width: 60%">
                    <select name="iaasConfigId" onchange="settingIaasConfigInfo(this.value);" style="width:70%;">
                        <option value="">인프라 환경 별칭을 선택하세요.</option>
                    </select>
@@ -1252,43 +1308,43 @@ function popupClose() {
              </div>
              <div class="w2ui-field">
                <label style="text-align: left;width:40%;font-size:11px;">Access Key ID</label>
-               <div>
+               <div style="width: 60%">
                    <input name=commonAccessUser type="text" style="float:left;width:70%;" readonly placeholder="AWS Access Key를 입력하세요."/>
                </div>
              </div>
              <div class="w2ui-field">
                <label style="text-align: left;width:40%;font-size:11px;">Secret Access Key</label>
-               <div>
+               <div style="width: 60%">
                    <input name="commonAccessSecret" type="password" style="float:left;width:70%;" readonly placeholder="AWS Secret Access Key를 입력하세요."/>
                </div>
              </div>
              <div class="w2ui-field">
                <label style="text-align: left;width:40%;font-size:11px;">Security Group</label>
-               <div>
+               <div style="width: 60%">
                    <input name="commonSecurityGroup" type="text" style="float:left;width:70%;" readonly placeholder="보안 그룹을 입력하세요."/>
                </div>
              </div>
              <div class="w2ui-field">
                <label style="text-align: left;width:40%;font-size:11px;">Region</label>
-               <div>
+               <div style="width: 60%">
                    <input name="commonRegion" type="text" style="float:left;width:70%;" readonly placeholder="지역을 입력하세요.(예: us-east-1)"/>
                </div>
              </div>
              <div class="w2ui-field">
                <label style="text-align: left;width:40%;font-size:11px;">Availability Zone</label>
-               <div>
+               <div style="width: 60%">
                    <input name="commonAvailabilityZone" type="text" style="float:left;width:70%;" readonly placeholder="가용 영역을 입력하세요."/>
                </div>
              </div>
              <div class="w2ui-field">
                <label style="text-align: left;width:40%;font-size:11px;">Private Key Name</label>
-               <div>
+               <div style="width: 60%">
                  <input name="commonKeypairName" type="text" style="float:left;width:70%;" readonly placeholder="Key Pair 이름을 입력하세요."/>
                </div>
              </div>
              <div class="w2ui-field">
                <label style="text-align: left;width:40%;font-size:11px;">Private Key Path</label>
-               <div>
+               <div style="width: 60%">
                    <input name="commonKeypairPath" type="text" style="float:left;width:70%;" readonly placeholder="Key path를 입력하세요."/>
                 </div>
              </div>
@@ -1316,7 +1372,7 @@ function popupClose() {
             <div class="panel-body" style="padding:5px 5% 10px 5%;">
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">인프라 환경 별칭</label>
-                    <div>
+                    <div style="width:60%;">
                         <select name="iaasConfigId" onchange="settingIaasConfigInfo(this.value);" style="width:70%;">
                             <option value="">인프라 환경 별칭을 선택하세요.</option>
                         </select>
@@ -1324,67 +1380,67 @@ function popupClose() {
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">Identify API Tokens URL</label>
-                    <div>
+                    <div style="width:60%;">
                         <input name="commonAccessEndpoint" type="text" readonly style="float:left;width:70%;" placeholder="Identify API Tokens URL을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field" id="openstackKeystoneVersion">
                     <label style="text-align: left;width:40%;font-size:11px;">Keystone Version</label>
-                    <div>
+                    <div style="width:60%;">
                         <input name="openstackKeystoneVersion" type="text" readonly style="float:left;width:70%;" placeholder="키스톤 버전을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field" id="region" style="display:none;">
                     <label style="text-align: left;width:40%;font-size:11px;">Region</label>
-                    <div>
+                    <div style="width:60%;">
                         <input name="commonRegion" type="text" style="float:left;width:70%;" readonly placeholder="Region을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field" id="commonTenant">
                     <label style="text-align: left;width:40%;font-size:11px;">Tenant</label>
-                    <div>
+                    <div style="width:60%;">
                         <input name="commonTenant" type="text" readonly style="float:left;width:70%;" placeholder="테넌트 명을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field" id="commonProject" style="display:none;">
                     <label style="text-align: left;width:40%;font-size:11px;">Project</label>
-                    <div>
+                    <div style="width:60%;">
                         <input name="commonProject" type="text" readonly style="float:left;width:70%;" placeholder="프로젝트 명을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field" id="openstackDomain" hidden="true">
                     <label style="text-align: left;width:40%;font-size:11px;">Domain</label>
-                    <div>
+                    <div style="width:60%;">
                         <input name="openstackDomain" type="text" readonly style="float:left;width:70%;" placeholder="도메인 명을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">Username</label>
-                    <div>
+                    <div style="width:60%;">
                         <input name="commonAccessUser" type="text" readonly style="float:left;width:70%;" placeholder="계정명을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">Password</label>
-                    <div>
+                    <div style="width:60%;">
                         <input name="commonAccessSecret" type="password" readonly style="float:left;width:70%;" placeholder="계정 비밀번호를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">Security Group</label>
-                    <div>
+                    <div style="width:60%;">
                         <input name="commonSecurityGroup" type="text" readonly style="float:left;width:70%;" placeholder="시큐리티 그룹을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">Private Key Name</label>
-                    <div>
+                    <div style="width:60%;">
                         <input name="commonKeypairName" type="text" readonly style="loat:left;width:70%;"  placeholder="Key Pair 이름을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">Private Key Path</label>
-                    <div>
+                    <div style="width:60%;">
                         <input name="commonKeypairPath" type="text" readonly style="float:left;width:70%;"  placeholder="Key path를 입력하세요."/>
                     </div>
                 </div>
@@ -1412,7 +1468,7 @@ function popupClose() {
             <div class="panel-body" style="padding:5px 5% 10px 5%;">
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">인프라 환경 별칭</label>
-                    <div>
+                    <div style="width: 60%">
                         <select name="iaasConfigId" onchange="settingIaasConfigInfo(this.value);" style="width:70%;">
                             <option value="">인프라 환경 별칭을 선택하세요.</option>
                         </select>
@@ -1420,61 +1476,61 @@ function popupClose() {
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">vCenter IP</label>
-                    <div>
+                    <div style="width: 60%">
                         <input name="commonAccessEndpoint" type="text" readonly style="float:left;width:70%;" placeholder="vCenter IP를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">vCenter ID</label>
-                    <div>
+                    <div style="width: 60%">
                         <input name="commonAccessUser" type="text" readonly style="float:left;width:70%;" placeholder="vCenter 로그인 ID를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">vCenter Password</label>
-                    <div>
+                    <div style="width: 60%">
                         <input name="commonAccessSecret" type="password" readonly style="float:left;width:70%;" placeholder="vCenter 로그인 비밀번호를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">vCenter DataCenter</label>
-                    <div>
+                    <div style="width: 60%">
                         <input name="vsphereVcentDataCenterName" type="text" readonly style="float:left;width:70%;" placeholder="vCenter DataCenter명을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">DataCenter VM Folder Name</label>
-                    <div>
+                    <div style="width: 60%">
                         <input name="vsphereVcenterVmFolder" type="text" readonly style="float:left;width:70%;" placeholder="DataCenter VM 폴더명을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">DataCenter VM Stemcell Folder Name</label>
-                    <div>
+                    <div style="width: 60%">
                         <input name="vsphereVcenterTemplateFolder" type="text" readonly style="float:left;width:70%;" placeholder="DataCenter VM 스템셀 폴더명을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">DataCenter DataStore</label>
-                    <div>
+                    <div style="width: 60%">
                         <input name="vsphereVcenterDatastore" type="text" readonly style="float:left;width:70%;" placeholder="DataCenter 데이터 스토어를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">vCenter Persistent Datastore</label>
-                    <div>
+                    <div style="width: 60%">
                         <input name="vsphereVcenterPersistentDatastore" type="text" readonly style="float:left;width:70%;" placeholder="DataCenter 영구 데이터 스토어를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">vCenter Disk Path</label>
-                    <div>
-                        <input name="vsphereVcenterDiskPath" type="text" readonly style="float:left;width:70%;" placeholder="DDataCenter 디스크 경로를 입력하세요."/>
+                    <div style="width: 60%">
+                        <input name="vsphereVcenterDiskPath" type="text" readonly style="float:left;width:70%;" placeholder="DataCenter 디스크 경로를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">vCenter Cluster</label>
-                    <div>
+                    <div style="width: 60%">
                         <input name="vsphereVcenterCluster" type="text" readonly style="float:left;width:70%;" placeholder="DataCenter 클러스터명을 입력하세요."/>
                     </div>
                 </div>
@@ -1502,40 +1558,46 @@ function popupClose() {
             <div class="panel-body" style="padding:5px 5% 10px 5%;">
                 <div class="w2ui-field">
                   <label style="text-align: left;width:40%;font-size:11px;">인프라 환경 별칭</label>
-                  <div>
-                      <select name="iaasConfigId" onchange="settingIaasConfigInfo(this.value);" style="width:70%;">
+                  <div style="width: 60%">
+                      <select name="iaasConfigId" onchange="settingIaasConfigInfo(this.value);" style="width:80%;">
                           <option value="">인프라 환경 별칭을 선택하세요.</option>
                       </select>
                   </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">Project Id</label>
-                    <div>
-                        <input name="commonProject" type="text" readonly style="float:left;width:70%;" placeholder="프로젝트 아이디를 입력하세요."/>
+                    <div style="width: 60%">
+                        <input name="commonProject" type="text" readonly style="float:left;width:80%;" placeholder="프로젝트 아이디를 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">서비스 계정 Json 파일</label>
-                    <div>
-                        <input name="googleJsonKey" type="text" readonly style="float:left;width:70%;" placeholder="서비스 계정 Json 파일을 입력하세요."/>
+                    <div style="width: 60%">
+                        <input name="googleJsonKey" type="text" readonly style="float:left;width:80%;" placeholder="서비스 계정 Json 파일을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">Zone</label>
-                    <div>
-                        <input name="commonAvailabilityZone" type="text" readonly style="float:left;width:70%;" placeholder="google zone을 입력하세요."/>
+                    <div style="width: 60%">
+                        <input name="commonAvailabilityZone" type="text" readonly style="float:left;width:80%;" placeholder="google zone을 입력하세요."/>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">네트워크 태그 명</label>
-                    <div>
-                        <input name="commonSecurityGroup" type="text" readonly style="float:left;width:70%;" placeholder="네트워크 태그 명을 입력하세요."/>
+                    <div style="width: 60%">
+                        <input name="commonSecurityGroup" type="text" readonly style="float:left;width:80%;" placeholder="네트워크 태그 명을 입력하세요."/>
+                    </div>
+                </div>
+                <div class="w2ui-field">
+                    <label style="text-align: left;width:40%;font-size:11px;">Public Key</label>
+                    <div style="width: 60%">
+                        <textarea name="googleSshPublicKey" readonly style="float:left;width:80%; height:85px;resize:none;"rows=10; placeholder="SSH 공개 키를 입력하세요."></textarea>
                     </div>
                 </div>
                 <div class="w2ui-field">
                     <label style="text-align: left;width:40%;font-size:11px;">Private Key File</label>
-                    <div>
-                        <input name="commonKeypairPath" type="text" readonly style="float:left;width:70%;" placeholder="Private Key File을 입력하세요."/>
+                    <div style="width: 60%">
+                        <input name="commonKeypairPath" type="text" readonly style="float:left;width:80%;" placeholder="Private Key File을 입력하세요."/>
                     </div>
                 </div>
             </div>
@@ -1545,6 +1607,95 @@ function popupClose() {
         <button class="btn" style="float: right; padding-right: 15%" onclick="saveIaasConfigInfo();">다음>></button>
     </div>
 </div>
+
+<div id="azureInfoDiv" style="width:100%;height:100%;" hidden="true">
+    <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
+        <ul class="progressStep_6" >
+            <li class="active">Azure 정보</li>
+            <li class="before">기본 정보</li>
+            <li class="before">네트워크 정보</li>
+            <li class="before">리소스 정보</li>
+            <li class="before">배포 파일 정보</li>
+            <li class="before">설치</li>
+        </ul>
+    </div>
+    <div class="w2ui-page page-0" style="margin-top:15px;padding:0 3%;">
+        <div class="panel panel-info"> 
+            <div class="panel-heading"><b>Azure 정보</b></div>
+            <div class="panel-body" style="padding:5px 5% 10px 5%;">
+                <div class="w2ui-field">
+                  <label style="text-align: left;width:40%;font-size:11px;">인프라 환경 별칭</label>
+                  <div style="width: 60%">
+                      <select name="iaasConfigId" onchange="settingIaasConfigInfo(this.value);" style="width:80%;">
+                          <option value="">인프라 환경 별칭을 선택하세요.</option>
+                      </select>
+                  </div>
+                </div>
+                <div class="w2ui-field">
+                    <label style="text-align: left;width:40%;font-size:11px;">Subscription Id</label>
+                    <div style="width: 60%">
+                        <input name="azureSubscriptionId" type="text" readonly style="float:left;width:80%;" placeholder="구독 아이디를 입력하세요."/>
+                    </div>
+                </div>
+                <div class="w2ui-field">
+                    <label style="text-align: left;width:40%;font-size:11px;">Tenant</label>
+                    <div style="width: 60%">
+                        <input name="commonTenant" type="text" readonly style="float:left;width:80%;" placeholder="테넌트를 입력하세요."/>
+                    </div>
+                </div>
+                <div class="w2ui-field">
+                    <label style="text-align: left;width:40%;font-size:11px;">Application Id</label>
+                    <div style="width: 60%">
+                        <input name="commonAccessUser" type="text" readonly style="float:left;width:80%;" placeholder="어플리케이션 아이디(Client Id)를 입력하세요."/>
+                    </div>
+                </div>
+                <div class="w2ui-field">
+                    <label style="text-align: left;width:40%;font-size:11px;">Application Key</label>
+                    <div style="width: 60%">
+                        <input name="commonAccessSecret" type="password" readonly style="float:left;width:80%;" placeholder="어플리케이션 키(Client Key)를 입력하세요."/>
+                    </div>
+                </div>
+                <div class="w2ui-field">
+                    <label style="text-align: left;width:40%;font-size:11px;">Security Group</label>
+                    <div style="width: 60%">
+                        <input name="commonSecurityGroup" type="text" readonly style="float:left;width:80%;" placeholder="보안 그룹을 입력하세요."/>
+                    </div>
+                </div>
+                <div class="w2ui-field">
+                    <label style="text-align: left;width:40%;font-size:11px;">Resource Group</label>
+                    <div style="width: 60%">
+                        <input name="azureResourceGroupName" type="text" readonly style="float:left;width:80%;" placeholder="리소스 그룹을 입력하세요."/>
+                    </div>
+                </div>
+                <div class="w2ui-field">
+                    <label style="text-align: left;width:40%;font-size:11px;">Storage Account</label>
+                    <div style="width: 60%">
+                        <input name="azureStorageAccountName" type="text" readonly style="float:left;width:80%;" placeholder="저장소 계정 입력하세요."/>
+                    </div>
+                </div>
+                <div class="w2ui-field">
+                    <label style="text-align: left;width:40%;font-size:11px;">Private key File</label>
+                    <div style="width: 60%">
+                        <input name="commonKeypairPath" type="text" readonly style="float:left;width:80%;" placeholder="개인 키 파일을 입력하세요."/>
+                    </div>
+                </div>
+                <div class="w2ui-field">
+                    <label style="text-align: left;width:40%;font-size:11px;">SSH Public Key</label>
+                    <div style="width: 60%">
+                        <textarea name="azureSshPublicKey" readonly style="float:left;width:80%; height:85px;resize:none;"rows=10; placeholder="SSH 공개 키를 입력하세요."></textarea>
+                        <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="w2ui-buttons" id="azureInfoBtnDiv" hidden="true">
+        <button class="btn" style="float: right; padding-right: 15%" onclick="saveIaasConfigInfo();">다음>></button>
+    </div>
+</div>
+
+
+
 <!-- 기본 설정 정보 -->
 <div id="DefaultInfoDiv" style="width:100%;height:100%;" hidden="true">
     <form id="defaultInfoForm" >
@@ -1564,19 +1715,19 @@ function popupClose() {
                 <div class="panel-body" style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">배포명</label>
-                        <div>
+                        <div style="width: 60%">
                             <input name="deploymentName" type="text" style="display:inline-block;width:70%;" placeholder="배포명을 입력하세요."/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">디렉터 명</label>
-                        <div>
+                        <div style="width: 60%">
                             <input name="directorName" type="text" style="display:inline-block;width:70%;" placeholder="디렉터 명을 입력하세요."/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">NTP</label>
-                        <div>
+                        <div style="width: 60%">
                             <input name="ntp" type="text" style="display:inline-block;width:70%;" placeholder="예) 10.0.0.2"/>
                         </div>
                     </div>
@@ -1584,7 +1735,7 @@ function popupClose() {
                         <label style="text-align: left;width:36%;font-size:11px;">BOSH 릴리즈
                             <span class="glyphicon glyphicon glyphicon-question-sign boshRelase-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="hover" data-html="true" title="설치 지원 버전 목록"></span>
                         </label>
-                        <div>
+                        <div style="width: 60%">
                             <select name="boshRelease"  class="form-control select-control">
                                 <option value="">BOSH 릴리즈를 선택하세요.</option>
                             </select>
@@ -1592,15 +1743,25 @@ function popupClose() {
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align:left; width:36%; font-size:11px;">BOSH CPI 릴리즈</label>
-                        <div>
+                        <div style="width: 60%">
                             <select name="boshCpiRelease" class="form-control select-control">
                                 <option value="">BOSH CPI 릴리즈를 선택하세요.</option>
                             </select>
                         </div>
                     </div>
+ 
+                    <div class="w2ui-field" id="osConfDiv" hidden="true"> 
+                        <label style="text-align:left; width:36%; font-size:11px;">OS-CONF 릴리즈</label>
+                        <div style="width: 60%">
+                            <select name="osConfRelease" class="form-control select-control">
+                                <option value="">OS-CONF 릴리즈를 선택하세요.</option>
+                            </select>
+                        </div>
+                    </div>
+                    
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">스냅샷기능 사용여부</label>
-                        <div>
+                        <div style="width: 60%">
                               <span onclick="enableSnapshotsFn('true');" style="width:30%;"><label><input type="radio" name="enableSnapshots" value="true" />&nbsp;사용</label></span>
                             &nbsp;&nbsp;
                             <span onclick="enableSnapshotsFn('false');" style="width:30%;"><label><input type="radio" name="enableSnapshots" value="false" />&nbsp;미사용</label></span>
@@ -1608,7 +1769,7 @@ function popupClose() {
                     </div>
                     <div class="w2ui-field snapshotScheduleDiv" id="snapshotScheduleDiv">
                        <label style="text-align: left;width:36%;font-size:11px;">스냅샷 스케쥴</label>
-                        <div>
+                        <div style="width: 60%">
                             <input name="snapshotSchedule" id="snapshotSchedule" type="text"  style="display:inline-block;width:70%;" required placeholder="예) 0 0 7 * * * UTC"/>
                         </div>
                     </div>
@@ -1617,7 +1778,7 @@ function popupClose() {
                         <label style="text-align:left; width:36%; font-size:11px;">PaaS-TA 모니터링
                         <span class="glyphicon glyphicon glyphicon-question-sign paastaMonitoring-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="click" data-html="true"></span>
                         </label>
-                        <div>
+                        <div style="width: 60%">
                             <input name="paastaMonitoring" type="checkbox" id="paastaMonitoring" onclick="checkPaasTAMonitoringUseYn()"/>사용
                         </div>
                     </div>
@@ -1629,20 +1790,20 @@ function popupClose() {
                 <div class="panel-body">
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 Ingestor 서버 IP</label>
-                        <div>
+                        <div style="width: 60%">
                             <input name="ingestorIp" type="text" style="display:inline-block; width: 70%;" placeholder="예)10.0.0.0" />
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 Influxdb 서버 IP</label>
-                        <div>
+                        <div style="width: 60%">
                             <input name="influxdbIp" type="text" style="display:inline-block; width: 70%;" placeholder="예)10.0.0.0" />
                         </div>
                     </div>
                     
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 릴리즈</label>
-                        <div>
+                        <div style="width: 60%">
                             <select name="paastaMonitoringRelease" class="form-control select-control">
                                 <option value="">PaaS-TA 모니터링 릴리즈를 선택하세요.</option>
                             </select>
@@ -1677,7 +1838,7 @@ function popupClose() {
                  <div class="panel-body">
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">설치관리자 IPs</label> 
-                         <div>
+                         <div style="width: 60%">
                              <input name="publicStaticIp" type="text" style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
                      </div>
@@ -1688,31 +1849,31 @@ function popupClose() {
                  <div class="panel-body">
                      <div class="w2ui-field" >
                          <label style="text-align: left;width:36%;font-size:11px;">설치관리자 내부망 IPs</label> 
-                         <div>
+                         <div style="width: 60%">
                              <input name="privateStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label class="subnetId" style="text-align: left;width:36%;font-size:11px;">서브넷 아이디</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetId" type="text"  style="display:inline-block;width:70%;" placeholder="서브넷 아이디를 입력하세요."/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">서브넷 범위</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetRange" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.0/24"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">게이트웨이</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetGateway" type="text" style="display:inline-block;width:70%;" placeholder="예) 10.0.0.1"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">DNS</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetDns" type="text" style="display:inline-block;width:70%;" placeholder="예) 8.8.8.8"/>
                          </div>
                      </div>
@@ -1745,7 +1906,7 @@ function popupClose() {
                  <div class="panel-body">
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">설치관리자 IPs</label> 
-                         <div>
+                         <div style="width: 60%">
                              <input name="publicStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
                      </div>
@@ -1756,37 +1917,37 @@ function popupClose() {
                  <div class="panel-body">
                      <div class="w2ui-field" >
                          <label style="text-align: left;width:36%;font-size:11px;">설치관리자 내부망 IPs</label> 
-                         <div>
+                         <div style="width: 60%">
                              <input name="privateStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">네트워크 명</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="networkName" type="text"  style="display:inline-block;width:70%;" placeholder="네트워크 명을 입력하세요."/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label class="subnetId" style="text-align: left;width:36%;font-size:11px;">서브넷 명</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetId" type="text"  style="display:inline-block;width:70%;" placeholder="서브넷 명을 입력하세요."/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">서브넷 범위</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetRange" type="text"  style="display:inline-block;width:70%;"  placeholder="예) 10.0.0.0/24"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">게이트웨이</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetGateway" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.1"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">DNS</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetDns" type="text"  style="display:inline-block;width:70%;" placeholder="예) 8.8.8.8"/>
                          </div>
                      </div>
@@ -1799,6 +1960,81 @@ function popupClose() {
         <button class="btn" style="float: right; padding-right: 15%" onclick="setNetworkValidate('#GoogleNetworkInfoForm');" >다음>></button>
     </div>
 </div>
+
+<!-- Azure 네트워크 div -->
+<div id="AzureNetworkInfoDiv" style="width:100%;height:100%;" hidden="true">
+    <form id="azureNetworkInfoForm">
+        <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
+            <ul class="progressStep_6" >
+                <li class="pass">Azure 정보</li>
+                <li class="pass">기본 정보</li>
+                <li class="active">네트워크 정보</li>
+                <li class="before">리소스 정보</li>
+                <li class="before">배포 파일 정보</li>
+                <li class="before">설치</li>
+            </ul>
+        </div>
+        <div class="w2ui-page page-0" style="margin-top:15px;padding:0 3%;">
+             <div class="panel panel-info"  style="margin-bottom:20px;">
+                 <div  class="panel-heading" style="padding:5px 5% 10px 5%;"><b>네트워크 External</b></div>
+                 <div class="panel-body">
+                     <div class="w2ui-field">
+                         <label style="text-align: left;width:36%;font-size:11px;">설치관리자 IPs</label> 
+                         <div style="width: 60%">
+                             <input name="publicStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="panel panel-info" style="margin-bottom:20px;">    
+                 <div  class="panel-heading" style="padding:5px 5% 10px 5%;"><b>네트워크 Internal</b></div>
+                 <div class="panel-body">
+                     <div class="w2ui-field" >
+                         <label style="text-align: left;width:36%;font-size:11px;">설치관리자 내부망 IPs</label> 
+                         <div style="width: 60%">
+                             <input name="privateStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
+                         </div>
+                     </div>
+                     <div class="w2ui-field">
+                         <label style="text-align: left;width:36%;font-size:11px;">네트워크 명</label>
+                         <div style="width: 60%">
+                             <input name="networkName" type="text"  style="display:inline-block;width:70%;" placeholder="네트워크 명을 입력하세요."/>
+                         </div>
+                     </div>
+                     <div class="w2ui-field">
+                         <label class="subnetId" style="text-align: left;width:36%;font-size:11px;">서브넷 명</label>
+                         <div style="width: 60%">
+                             <input name="subnetId" type="text"  style="display:inline-block;width:70%;" placeholder="서브넷 명을 입력하세요."/>
+                         </div>
+                     </div>
+                     <div class="w2ui-field">
+                         <label style="text-align: left;width:36%;font-size:11px;">서브넷 범위</label>
+                         <div style="width: 60%">
+                             <input name="subnetRange" type="text"  style="display:inline-block;width:70%;"  placeholder="예) 10.0.0.0/24"/>
+                         </div>
+                     </div>
+                     <div class="w2ui-field">
+                         <label style="text-align: left;width:36%;font-size:11px;">게이트웨이</label>
+                         <div style="width: 60%">
+                             <input name="subnetGateway" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.1"/>
+                         </div>
+                     </div>
+                     <div class="w2ui-field">
+                         <label style="text-align: left;width:36%;font-size:11px;">DNS</label>
+                         <div style="width: 60%">
+                             <input name="subnetDns" type="text"  style="display:inline-block;width:70%;" placeholder="예) 8.8.8.8"/>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+    </form>
+    <div class="w2ui-buttons" id="AzureNetworkInfoBtnDiv" hidden="true">
+        <button class="btn" style="float: left;" onclick="saveNetworkInfo('before');" >이전</button>
+        <button class="btn" style="float: right; padding-right: 15%" onclick="setNetworkValidate('#azureNetworkInfoForm');" >다음>></button>
+    </div>
+</div>
+
 
 <!-- vSphere 네트워크 div -->
 <div id="VsphereNetworkInfoDiv" style="width:100%;height:100%;" hidden="true">
@@ -1819,31 +2055,31 @@ function popupClose() {
                  <div class="panel-body">
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;"> IPs</label> 
-                         <div>
+                         <div style="width: 60%">
                              <input name="publicStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label class="publicSubnetId" style="text-align: left;width:36%;font-size:11px;">포트 그룹명</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="publicSubnetId" type="text"  style="display:inline-block;width:70%;" placeholder="포트 그룹명을 입력하세요."/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">서브넷 범위</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="publicSubnetRange" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.0/24"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">게이트웨이</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="publicSubnetGateway" type="text" style="display:inline-block;width:70%;" placeholder="예) 10.0.0.1"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">DNS</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="publicSubnetDns" type="text"  style="display:inline-block;width:70%;" placeholder="예) 8.8.8.8"/>
                          </div>
                      </div>
@@ -1855,31 +2091,31 @@ function popupClose() {
                  <div class="panel-body">
                      <div class="w2ui-field" >
                          <label style="text-align: left;width:36%;font-size:11px;">설치관리자 내부망 IPs</label> 
-                         <div>
+                         <div style="width: 60%">
                              <input name="privateStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label class="subnetId" style="text-align: left;width:36%;font-size:11px;">포트그룹 명</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetId" type="text" style="display:inline-block;width:70%;" placeholder="포트그룹 명을 입력하세요."/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">서브넷 범위</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetRange" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.0/24"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">게이트웨이</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetGateway" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.1"/>
                          </div>
                      </div>
                      <div class="w2ui-field">
                          <label style="text-align: left;width:36%;font-size:11px;">DNS</label>
-                         <div>
+                         <div style="width: 60%">
                              <input name="subnetDns" type="text"  style="display:inline-block;width:70%;" placeholder="예) 8.8.8.8"/>
                              <div class="isMessage"></div>
                          </div>
@@ -1913,7 +2149,7 @@ function popupClose() {
                 <div class="panel-body" style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">스템셀</label>
-                        <div>
+                        <div style="width: 60%">
                             <div>
                                <select name="stemcell" id="stemcell" style="width:70%;">
                                    <option value="">스템셀을 선택하세요.</option>
@@ -1924,33 +2160,33 @@ function popupClose() {
                     </div>
                     <div class="w2ui-field cloudInstanceTypeDiv">
                         <label style="text-align: left;width:36%;font-size:11px;">인스턴스 유형</label>
-                        <div>
+                        <div style="width: 60%">
                             <input name="cloudInstanceType" type="text"  style="display:inline-block;width:70%;" placeholder="인스턴스 유형을 입력하세요."/>
                         </div>
                     </div>
                     
                     <div class="w2ui-field vsphereResourceDiv">
                         <label style="text-align: left;width:36%;font-size:11px;">리소스 풀 CPU</label>
-                        <div>
-                            <input name="resourcePoolCpu" type="text"  style="display:inline-block;width:70%;" placeholder="리소스 풀 CPU 수를 입력하세요. 예) 2" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;'  />
+                        <div style="width: 60%">
+                            <input name="resourcePoolCpu" type="text"  style="display:inline-block;width:70%;" placeholder="리소스 풀 CPU 예) 2" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;'  />
                         </div>
                     </div>
                     <div class="w2ui-field vsphereResourceDiv">
                         <label style="text-align: left;width:36%;font-size:11px;">리소스 풀 RAM</label>
-                        <div>
-                            <input name="resourcePoolRam" type="text"  style="display:inline-block;width:70%;" placeholder="리소스 풀 RAM(MB)을 입력하세요. 예) 4096" onkeydown="return onlyNumber(event);" onkeyup='removeChar(event)' style='ime-mode:disabled;'  />
+                        <div style="width: 60%">
+                            <input name="resourcePoolRam" type="text"  style="display:inline-block;width:70%;" placeholder="리소스 풀 RAM 예) 4096" onkeydown="return onlyNumber(event);" onkeyup='removeChar(event)' style='ime-mode:disabled;'  />
                         </div>
                     </div>
                     <div class="w2ui-field vsphereResourceDiv">
                         <label style="text-align: left;width:36%;font-size:11px;">리소스 풀 DISK</label>
-                        <div>
-                            <input name="resourcePoolDisk" type="text"  style="display:inline-block;width:70%;" placeholder="리소스 풀 DISK(MB)를 입력하세요. 예) 20000" onkeydown="return onlyNumber(event);"  onkeyup='removeChar(event)' style='ime-mode:disabled;'  />
+                        <div style="width: 60%">
+                            <input name="resourcePoolDisk" type="text"  style="display:inline-block;width:70%;" placeholder="리소스 풀 DISK 예) 20000" onkeydown="return onlyNumber(event);"  onkeyup='removeChar(event)' style='ime-mode:disabled;'  />
                         </div>
                     </div>
                     
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">VM 비밀번호</label>
-                        <div>
+                        <div style="width: 60%">
                             <input name="boshPassword" type="text"  style="display:inline-block;width:70%;" placeholder="VM 비밀번호를 입력하세요."/>
                         </div>
                     </div>

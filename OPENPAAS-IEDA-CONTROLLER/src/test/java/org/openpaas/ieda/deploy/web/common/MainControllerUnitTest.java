@@ -4,6 +4,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.security.Principal;
+
 import javax.ws.rs.core.Application;
 
 import org.junit.Before;
@@ -30,10 +32,11 @@ private MockMvc mockMvc;
     
     @InjectMocks MainController mockMainController;
     
-    final static String MAIN_VIEW_URL = "/";
+    final static String MAIN_VIEW_URL = "/platform";
     final static String TOP_VIEW_URL = "/top";
     final static String MENU_VIEW_URL = "/menu";
     
+    Principal principal = null;
     /****************************************************************
     * @project : Paas 플랫폼 설치 자동화
     * @description : 하나의 메소드가 실행되기전 호출
@@ -44,7 +47,7 @@ private MockMvc mockMvc;
    public void setUp() throws Exception {
        MockitoAnnotations.initMocks(this);
        mockMvc = MockMvcBuilders.standaloneSetup(mockMainController).build();
-       getLoggined();
+       principal = getLoggined();
    }
    
    /***************************************************
@@ -68,7 +71,7 @@ private MockMvc mockMvc;
     ***************************************************/
    @Test
    public void testGoTop() throws Exception{
-       mockMvc.perform(get(TOP_VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
+	   mockMvc.perform(get(TOP_VIEW_URL).principal(principal).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
        .andExpect(status().isOk())
        .andExpect(view().name("/deploy/main/top"));
    }

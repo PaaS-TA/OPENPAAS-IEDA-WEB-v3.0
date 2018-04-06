@@ -23,8 +23,12 @@ public class IaasConfigMgntDTO {
     private String vsphereVcenterPersistentDatastore; // vCenter 영구 데이터 스토어 
     private String vsphereVcenterDiskPath; //vCenter 디스크 경로
     private String vsphereVcenterCluster; //vCenter 클러스터
+    private String azureResourceGroup;
+    private String azureStorageAccountName;
+    private String azureSshPublicKey;
+    private String azurePrivateKey;
     private String testFlag;
-    
+    private String googlePublicKey; //구글 Public Key
     
     public String getId() {
         return id;
@@ -116,6 +120,30 @@ public class IaasConfigMgntDTO {
     public void setVsphereVcenterCluster(String vsphereVcenterCluster) {
         this.vsphereVcenterCluster = vsphereVcenterCluster;
     }
+    public String getAzureResourceGroup() {
+        return azureResourceGroup;
+    }
+    public void setAzureResourceGroup(String azureResourceGroup) {
+        this.azureResourceGroup = azureResourceGroup;
+    }
+    public String getAzureStorageAccountName() {
+        return azureStorageAccountName;
+    }
+    public void setAzureStorageAccountName(String azureStorageAccountName) {
+        this.azureStorageAccountName = azureStorageAccountName;
+    }
+    public String getAzureSshPublicKey() {
+        return azureSshPublicKey;
+    }
+    public void setAzureSshPublicKey(String azureSshPublicKey) {
+        this.azureSshPublicKey = azureSshPublicKey;
+    }
+    public String getAzurePrivateKey() {
+        return azurePrivateKey;
+    }
+    public void setAzurePrivateKey(String azurePrivateKey) {
+        this.azurePrivateKey = azurePrivateKey;
+    }
     public String getTestFlag() {
         return testFlag;
     }
@@ -127,6 +155,12 @@ public class IaasConfigMgntDTO {
     }
     public void setCommonAvailabilityZone(String commonAvailabilityZone) {
         this.commonAvailabilityZone = commonAvailabilityZone;
+    }
+    public String getGooglePublicKey() {
+        return googlePublicKey;
+    }
+    public void setGooglePublicKey(String googlePublicKey) {
+        this.googlePublicKey = googlePublicKey;
     }
 
 }

@@ -13,7 +13,7 @@ public class SecuritySessionListener implements HttpSessionListener {
     @Override
     public void sessionCreated(HttpSessionEvent event) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("==== Session is created ==== : ");
+            LOGGER.debug("==== Session is created ==== ");
         }
             event.getSession().setMaxInactiveInterval(10 * 60);
     }

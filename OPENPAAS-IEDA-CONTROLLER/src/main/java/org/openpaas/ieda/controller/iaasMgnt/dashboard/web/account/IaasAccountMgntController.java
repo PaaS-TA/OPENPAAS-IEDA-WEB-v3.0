@@ -96,6 +96,20 @@ public class IaasAccountMgntController{
         }
         return "/iaas/account/vSphereAccount";
     }
+    
+    /***************************************************
+     * @project : 인프라 관리 대시보드
+     * @description : Azure 계정 관리 화면 이동
+     * @title : goAzureAccountMgnt
+     * @return : String
+     ***************************************************/
+    @RequestMapping(value = "/iaasMgnt/account/azure", method = RequestMethod.GET)
+    public String goAzureAccountMgnt() {
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("=====================> /iaasMgnt/account/azure ");
+        }
+        return "/iaas/account/azureAccount";
+    }
 
     /***************************************************
      * @project : 인프라 관리 대시보드
@@ -136,7 +150,7 @@ public class IaasAccountMgntController{
 
     /***************************************************
      * @project : 인프라 관리 대시보드
-     * @description : 인프라 계정 목록 조회(AWS/Openstack/google/vSphere)
+     * @description : 인프라 계정 목록 조회(AWS/Openstack/google/vSphere/Azure)
      * @title : getIaasAccountInfoList
      * @return : ResponseEntity<HashMap<String,Object>>
      ***************************************************/
@@ -145,15 +159,18 @@ public class IaasAccountMgntController{
             @PathVariable("iaasType") String iaasType, Principal principal) {
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("=====================> /iaasMgnt/account/" + iaasType + "/list ");
+           
         }
         List<IaasAccountMgntVO> list = service.getIaasAccountInfoList(iaasType, principal);
         CommonIaasService common = new CommonIaasService();
+        LOGGER.info("=====================> test" + iaasType + "");
         HashMap<String, Object> map = common.getPublicKey(request);
 
         HashMap<String, Object> result = new HashMap<String, Object>();
         int size = 0;
         if (list != null) {
             size = list.size();
+            LOGGER.info("=====================> test" + size + "");
         }
        
         result.put("total", size);

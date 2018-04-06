@@ -610,51 +610,51 @@ function defaultNetworkPopup(div, height){
         html+= body_div;
         if( iaas.toLowerCase() == "google" ){
             html+= field_div_label + "네트워크 명" + "</label>";
-            html+= "<div>"+"<input name='networkName_"+index+"'" + text_style +" placeholder='네트워크 명을 입력하세요.'/>"+"</div></div>";
+            html+= "<div style=' width: 60%;'>"+"<input name='networkName_"+index+"'" + text_style +" placeholder='네트워크 명을 입력하세요.'/>"+"</div></div>";
             
             html+= field_div_label + "서브넷 명" + "</label>"; 
-            html+= "<div>"+"<input name='subnetId_"+index+"'" + text_style +" placeholder='서브넷 명을 입력하세요.'/>"+"</div></div>";
+            html+= "<div style=' width: 60%;'>"+"<input name='subnetId_"+index+"'" + text_style +" placeholder='서브넷 명을 입력하세요.'/>"+"</div></div>";
             
             html+= field_div_label + "방화벽 규칙" + "</label>"; 
-            html+= "<div>"+"<input name='cloudSecurityGroups_"+index+"'" + text_style +" placeholder='예) internet, cf-security'/>"+"</div></div>";
+            html+= "<div style=' width: 60%;'>"+"<input name='cloudSecurityGroups_"+index+"'" + text_style +" placeholder='예) internet, cf-security'/>"+"</div></div>";
             
             html+= field_div_label + "영역" + "</label>"; 
-            html+= "<div>"+"<input name='availabilityZone_"+index+"'" + text_style +" placeholder='예) asia-northeast1-a'/>"+"</div></div>";
+            html+= "<div style=' width: 60%;'>"+"<input name='availabilityZone_"+index+"'" + text_style +" placeholder='예) asia-northeast1-a'/>"+"</div></div>";
             
         }else if(iaas.toLowerCase() == "vsphere"){
             html+= field_div_label + "포트 그룹명" + "</label>"; 
-            html+= "<div>"+"<input name='subnetId_"+index+"'" + text_style +" placeholder='포트 그룹명을 입력하세요.'/>"+"</div></div>";
+            html+= "<div style=' width: 60%;'>"+"<input name='subnetId_"+index+"'" + text_style +" placeholder='포트 그룹명을 입력하세요.'/>"+"</div></div>";
         }else{
             html+= field_div_label + "서브넷 아이디" + "</label>"; 
-            html+="<div>"+"<input name='subnetId_"+index+"'" + text_style +" placeholder='서브넷 아이디를 입력하세요.'/>"+"</div></div>";
+            html+="<div style=' width: 60%;'>"+"<input name='subnetId_"+index+"'" + text_style +" placeholder='서브넷 아이디를 입력하세요.'/>"+"</div></div>";
             
             html+= field_div_label + "보안 그룹" + "</label>"; 
-            html+= "<div>"+"<input name='cloudSecurityGroups_"+index+"'" + text_style +" placeholder='예) bosh-security, cf-security'/>"+"</div></div>";
+            html+= "<div style=' width: 60%;'>"+"<input name='cloudSecurityGroups_"+index+"'" + text_style +" placeholder='예) bosh-security, cf-security'/>"+"</div></div>";
             
             
             if( iaas.toLowerCase() == "aws" ){
                 html+= field_div_label + "가용 영역" + "</label>"; 
-                html+= "<div>"+"<input name='availabilityZone_"+index+"'" + text_style +" placeholder='예) us-west-2'/>"+"</div></div>";
+                html+= "<div style=' width: 60%;'>"+"<input name='availabilityZone_"+index+"'" + text_style +" placeholder='예) us-west-2'/>"+"</div></div>";
             }
         }
         html+= field_div_label + "서브넷 범위" + "</label>"; 
-        html+= "<div>"+"<input name='subnetRange_"+index+"'" + text_style +" placeholder='예) 10.0.0.0/24'/>" + "</div></div>";
+        html+= "<div style=' width: 60%;'>"+"<input name='subnetRange_"+index+"'" + text_style +" placeholder='예) 10.0.0.0/24'/>" + "</div></div>";
         
         html+= field_div_label + "게이트웨이" + "</label>"; 
-        html+= "<div>"+ "<input name='subnetGateway_"+index+"'" + text_style +" placeholder='예) 10.0.0.1'/>" + "</div></div>";
+        html+= "<div style=' width: 60%;'>"+ "<input name='subnetGateway_"+index+"'" + text_style +" placeholder='예) 10.0.0.1'/>" + "</div></div>";
         
         html+= field_div_label + "DNS" + "</label>"; 
-        html+= "<div>"+ "<input name='subnetDns_"+index+"'" + text_style +" placeholder='예) 8.8.8.8'/>" + "</div></div>";
+        html+= "<div style=' width: 60%;'>"+ "<input name='subnetDns_"+index+"'" + text_style +" placeholder='예) 8.8.8.8'/>" + "</div></div>";
        
         html+= field_div_label + "IP할당 제외 대역" + "</label>"; 
-        html+=     "<div>";
+        html+=     "<div style=' width: 60%;'>";
         html+=         "<input name='subnetReservedFrom_"+index+"' type='text' style='display:inline-block; width:32%;' placeholder='예) 10.0.0.10' />";
         html+=         "<span style='width: 4%; text-align: center;'>&nbsp;&ndash; &nbsp;</span>";
         html+=         "<input name='subnetReservedTo_"+index+"' type='text' style='display:inline-block; width:32%;' placeholder='예) 10.0.0.20' />";
         html+=     "</div></div>";
         
         html+= field_div_label + "IP할당 대역(최소 20개)" + "</label>"; 
-        html+=     "<div>"+"<input name='subnetStaticFrom_"+index+"' type='text' style='display:inline-block; width:32%;' placeholder='예) 10.0.0.10' />";
+        html+=     "<div style=' width: 60%;'>"+"<input name='subnetStaticFrom_"+index+"' type='text' style='display:inline-block; width:32%;' placeholder='예) 10.0.0.10' />";
         html+=         "<span style='width: 4%; text-align: center;'>&nbsp;&ndash; &nbsp;</span>";
         html+=         "<input name='subnetStaticTo_"+index+"' type='text' style='display:inline-block; width:32%;' placeholder='예) 10.0.0.20'/>";
         html+=     "</div>";
@@ -1829,30 +1829,30 @@ function gridReload() {
                 <div class="panel-body">
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">설치관리자 UUID</label>
-                        <div>
-                            <input name="directorUuid" type="text" style="display:inline-block;width:70%;" readonly  placeholder="설치관리자 UUID를 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="directorUuid" type="text" style="display:inline-block;width:80%;" readonly  placeholder="설치관리자 UUID를 입력하세요." />
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">배포 명</label>
-                        <div>
-                            <input name="deploymentName" type="text" style="display:inline-block;width:70%;" onkeydown="return fn_press_han(event, this);" onblur="return fn_press_han(event, this);"  style='ime-mode:inactive;' placeholder="배포 명을 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="deploymentName" type="text" style="display:inline-block;width:80%;" onkeydown="return fn_press_han(event, this);" onblur="return fn_press_han(event, this);"  style='ime-mode:inactive;' placeholder="배포 명을 입력하세요." />
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">CF 릴리즈
                         <span class="glyphicon glyphicon glyphicon-question-sign cf-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="click" data-html="true" title="<b>설치 지원 버전 목록</b>"></span>
                         </label>
-                        <div>
-                            <select name="releases" onchange='setDisabledMonitoring(this.value); setInputDisplay(this.value);' style="display:inline-block; width: 70%;">
+                        <div style=" width: 60%;">
+                            <select name="releases" onchange='setDisabledMonitoring(this.value); setInputDisplay(this.value);' style="display:inline-block; width: 80%;">
                                 <option value="">CF 릴리즈를 선택하세요.</option>
                             </select>
                         </div>
                     </div>
                     <div class="w2ui-field" id="loggregator" style="display:none;">
                         <label style="text-align: left; width: 36%; font-size: 11px;">LOGGREGATOR 릴리즈</label>
-                        <div>
-                            <select name="loggregatorReleases" style="display:inline-block; width: 70%;">
+                        <div style=" width: 60%;">
+                            <select name="loggregatorReleases" style="display:inline-block; width: 80%;">
                                 <option value="">LOGGREGATOR 릴리즈를 선택하세요.</option>
                             </select>
                         </div>
@@ -1860,33 +1860,33 @@ function gridReload() {
                     <div class="w2ui-field" id="fingerprint">
                         <label style="text-align: left; width: 36%; font-size: 11px;">SSH 핑거프린트
                         </label>
-                        <div>
-                            <input name="appSshFingerprint" type="text" style="display:inline-block;width:70%;" placeholder="Diego 키 생성 후 SSH 핑거프린트를 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="appSshFingerprint" type="text" style="display:inline-block;width:80%;" placeholder="Diego 키 생성 후 SSH 핑거프린트를 입력하세요." />
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">기본 조직명</label>
-                        <div>
-                            <input name="domainOrganization" type="text" style="display:inline-block;width:70%;" placeholder="기본 조직명을 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="domainOrganization" type="text" style="display:inline-block;width:80%;" placeholder="기본 조직명을 입력하세요." />
                         </div>
                     </div>
                     <div class="w2ui-field" id="deaDiskmbDiv">
                         <label style="text-align: left; width: 36%; font-size: 11px;">DEA DISK 사이즈</label>
-                        <div>
-                            <input name="deaDiskMB" type="text" style="display:inline-block;width:70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="예) 32768" />
+                        <div style=" width: 60%;">
+                            <input name="deaDiskMB" type="text" style="display:inline-block;width:80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="예) 32768" />
                         </div>
                     </div>
                     <div class="w2ui-field" id="deaMemorymbDiv">
                         <label style="text-align: left; width: 36%; font-size: 11px;">DEA MEMORY 사이즈</label>
-                        <div>
-                            <input name="deaMemoryMB" type="text" style="display:inline-block;width:70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="예) 8192" />
+                        <div style=" width: 60%;">
+                            <input name="deaMemoryMB" type="text" style="display:inline-block;width:80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="예) 8192" />
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align:left; width:36%; font-size:11px;">PaaS-TA 모니터링
                         <span class="glyphicon glyphicon glyphicon-question-sign paastaMonitoring-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="click" data-html="true"></span>
                         </label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="paastaMonitoring" type="checkbox" id="paastaMonitoring" onchange="checkPaasTAMonitoringUseYn(this);" disabled />사용
                         </div>
                     </div>
@@ -1897,22 +1897,22 @@ function gridReload() {
                 <div class="panel-body" >
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">도메인</label>
-                        <div>
-                            <input name="domain" type="text" style="isplay:inline-blcok; width: 70%;" required placeholder="도메인을 입력하세요. 예)cfdoamin.com" />
+                        <div style=" width: 60%;">
+                            <input name="domain" type="text" style="isplay:inline-blcok; width: 80%;" required placeholder="도메인을 입력하세요. 예)cfdoamin.com" />
                             <div class="isMessage"></div>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">도메인 설명</label>
-                        <div>
-                            <input name="description" type="text" style="isplay:inline-blcok; width: 70%;" required placeholder="도메인에 대한 설명을 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="description" type="text" style="isplay:inline-blcok; width: 80%;" required placeholder="도메인에 대한 설명을 입력하세요." />
                             <div class="isMessage"></div>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">로그인 비밀번호</label>
-                        <div>
-                            <input name="loginSecret" type="text" style="display:inline-blcok; width: 70%;" required placeholder="로그인 비밀번호룰 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="loginSecret" type="text" style="display:inline-blcok; width: 80%;" required placeholder="로그인 비밀번호룰 입력하세요." />
                             <div class="isMessage"></div>
                         </div>
                     </div>
@@ -1923,8 +1923,8 @@ function gridReload() {
                 <div class="panel-body">
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 Ingestor 서버 IP</label>
-                        <div>
-                            <input name="ingestorIp" type="text" style="display:inline-blcok; width: 70%;" disabled placeholder="예)10.0.0.0" />
+                        <div style=" width: 60%;">
+                            <input name="ingestorIp" type="text" style="display:inline-blcok; width: 80%;" disabled placeholder="예)10.0.0.0" />
                         </div>
                     </div>
                 </div>
@@ -1955,7 +1955,7 @@ function gridReload() {
                 <div class="panel-body">
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">CF API TARGET IP</label> 
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="publicStaticIp" type="text" style="display:inline-blcok; width:70%;" placeholder="예) 10.0.0.20"/>
                         </div>
                     </div>
@@ -1971,43 +1971,43 @@ function gridReload() {
                 <div class="panel-body">
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">서브넷 아이디</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetId_1" type="text"  style="display:inline-blcok; width:70%;" placeholder="서브넷 아이디를 입력하세요."/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">보안 그룹</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="cloudSecurityGroups_1" type="text"  style="display:inline-blcok; width:70%;" placeholder="예) bosh-security, cf-security"/>
                         </div>
                     </div>
                     <div class="w2ui-field" hidden="true" id="availabilityZoneDiv">
                         <label style="text-align: left;width:36%;font-size:11px;">가용 영역</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="availabilityZone_1" type="text"  style="display:inline-blcok; width:70%;" placeholder="예) us-west-2"/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">서브넷 범위</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetRange_1" type="text"  style="display:inline-blcok; width:70%;" placeholder="예) 10.0.0.0/24"/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">게이트웨이</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetGateway_1" type="text"  style="display:inline-blcok; width:70%;" placeholder="예) 10.0.0.1"/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">DNS</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetDns_1" type="text"  style="display:inline-blcok; width:70%;" placeholder="예) 8.8.8.8"/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">IP할당 제외 대역</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetReservedFrom_1" type="text" style="display:inline-block; width:32%;" placeholder="예) 10.0.0.100" />
                             <span style="width: 4%; text-align: center;">&nbsp;&ndash; &nbsp;</span>
                             <input name="subnetReservedTo_1"  type="text" style="display:inline-block; width:32%;" placeholder="예) 10.0.0.106" />
@@ -2015,7 +2015,7 @@ function gridReload() {
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">IP할당 대역(최소 20개)</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetStaticFrom_1"  type="text" style="display:inline-block; width:32%;" placeholder="예) 10.0.0.100" />
                             <span style="width: 4%; text-align: center;">&nbsp;&ndash; &nbsp;</span>
                             <input name="subnetStaticTo_1" type="text" style="display:iinline-block; width:32%;" placeholder="예) 10.0.0.106" />
@@ -2052,7 +2052,7 @@ function gridReload() {
                 <div class="panel-body">
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">CF API TARGET IP</label> 
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="publicStaticIp" type="text" style="display:inline-blcok; width:70%;" placeholder="예) 10.0.0.20"/>
                         </div>
                     </div>
@@ -2156,31 +2156,31 @@ function gridReload() {
                 <div class="panel-body">
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">포트 그룹명</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="publicSubnetId" type="text"  style="diplay:inline-block;width:70%;" placeholder="포트 그룹명을 입력하세요."/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">서브넷 범위</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="publicSubnetRange" type="text"  style="diplay:inline-block;width:70%;" placeholder="예) 10.0.0.0/24"/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">게이트웨이</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="publicSubnetGateway" type="text" style="diplay:inline-block;width:70%;" placeholder="예) 10.0.0.1"/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">DNS</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="publicSubnetDns" type="text" style="diplay:inline-block;width:70%;" placeholder="예) 8.8.8.8"/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">IP할당 대역</label> 
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="publicStaticFrom" type="text" style="display:inline-block;width:32%;" placeholder="예) 10.0.0.100" />
                             <span style="width: 4%; text-align: center;">&nbsp;&ndash; &nbsp;</span>
                             <input name="publicStaticTo" type="text" style="display:inline-block;width:32%;" placeholder="예) 10.0.0.106" />
@@ -2199,31 +2199,31 @@ function gridReload() {
                 <div class="panel-body">
                     <div class="w2ui-field">
                         <label class="subnetId" style="text-align: left;width:36%;font-size:11px;">포트 그룹명</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetId_1" type="text" style="display:inline-block;width:70%;" placeholder="포트 그룹명을 입력하세요."/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">서브넷 범위</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetRange_1" type="text" style="display:inline-block;width:70%;" placeholder="예) 10.0.0.0/24"/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">게이트웨이</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetGateway_1" type="text" style="display:inline-block;width:70%;" placeholder="예) 10.0.0.1"/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">DNS</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetDns_1" type="text" style="display:inline-block;width:70%;" placeholder="예) 8.8.8.8"/>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">IP할당 제외 대역</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetReservedFrom_1" type="text" style="display:inline-block;width:32%;" placeholder="예) 10.0.0.100" />
                             <span style="width: 4%; text-align: center;">&nbsp;&ndash; &nbsp;</span>
                             <input name="subnetReservedTo_1" type="text" style="display:inline-block;width:32%;" placeholder="예) 10.0.0.106" />
@@ -2231,7 +2231,7 @@ function gridReload() {
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">IP할당 대역(최소 20개)</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <input name="subnetStaticFrom_1" type="text" style="display:inline-block;width:32%;" placeholder="예) 10.0.0.100" />
                             <span style="width: 4%; text-align: center;">&nbsp;&ndash; &nbsp;</span>
                             <input name="subnetStaticTo_1" type="text" style="display:inline-block;width:32%;" placeholder="예) 10.0.0.106" />
@@ -2268,44 +2268,44 @@ function gridReload() {
                 <div class="panel-body" style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 40%; font-size: 11px;">도메인</label>
-                        <div>
-                            <input name="cfDomain" type="text" id="cfDomain" style="display:inline-block; width: 55%;" readonly placeholder="도메인을 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="cfDomain" type="text" id="cfDomain" style="display:inline-block; width: 75%;" readonly placeholder="도메인을 입력하세요." />
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 40%; font-size: 11px;">국가 코드</label>
-                        <div>
-                            <select name="countryCode" id="countryCode" style="display:inline-block; width:55%;"></select>
+                        <div style=" width: 60%;">
+                            <select name="countryCode" id="countryCode" style="display:inline-block; width:75%;"></select>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 40%; font-size: 11px;">시/도</label>
-                        <div>
-                            <input name="stateName" type="text" id="stateName" style="display:inline-block; width: 55%;" placeholder="시/도를 선택하세요." />
+                        <div style=" width: 60%;">
+                            <input name="stateName" type="text" id="stateName" style="display:inline-block; width: 75%;" placeholder="시/도를 선택하세요." />
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 40%; font-size: 11px;">시/구/군</label>
-                        <div>
-                            <input name="localityName" type="text" id="localityName" style="display:inline-block; width: 55%;" placeholder="시/구/군을 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="localityName" type="text" id="localityName" style="display:inline-block; width: 75%;" placeholder="시/구/군을 입력하세요." />
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 40%; font-size: 11px;">회사명</label>
-                        <div>
-                            <input name="organizationName" type="text" id="organizationName" style="display:inline-block; width: 55%;" placeholder="회사명을 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="organizationName" type="text" id="organizationName" style="display:inline-block; width: 75%;" placeholder="회사명을 입력하세요." />
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 40%; font-size: 11px;">부서명</label>
-                        <div>
-                            <input name="unitName" type="text" id="unitName" style="display:inline-block; width: 55%;" placeholder="부서명을 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="unitName" type="text" id="unitName" style="display:inline-block; width: 75%;" placeholder="부서명을 입력하세요." />
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 40%; font-size: 11px;">Email</label>
-                        <div>
-                            <input name="email" type="text" id="email" style="float: left; width: 55%;"  placeholder="Email을 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="email" type="text" id="email" style="float: left; width: 75%;"  placeholder="Email을 입력하세요." />
                         </div>
                     </div>
                 </div>
@@ -2343,16 +2343,16 @@ function gridReload() {
                 <div class="panel-body" style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 30%; font-size: 11px;">Stemcell</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <div>
-                                <select name="stemcells" style="display:inline-block; width: 70%;"></select>
+                                <select name="stemcells" style="display:inline-block; width: 80%;"></select>
                             </div>
                         </div>
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 30%; font-size: 11px;">VM 비밀번호</label>
-                        <div>
-                            <input name="boshPassword"  type="text" style="display:inline-block; width: 70%;" placeholder="VM 비밀번호를 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="boshPassword"  type="text" style="display:inline-block; width: 80%;" placeholder="VM 비밀번호를 입력하세요." />
                         </div>
                     </div>
                 </div>
@@ -2362,8 +2362,8 @@ function gridReload() {
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 30%; font-size: 11px;">Flavor</label>
-                        <div>
-                            <input name="smallFlavor" type="text" style="display:inline-block; width: 70%;" placeholder="Small Flavor Type을 입력하세요."  />
+                        <div style=" width: 60%;">
+                            <input name="smallFlavor" type="text" style="display:inline-block; width: 80%;" placeholder="Small Flavor Type을 입력하세요."  />
                         </div>
                     </div>
                 </div>
@@ -2373,8 +2373,8 @@ function gridReload() {
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;" >
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 30%; font-size: 11px;">Flavor</label>
-                        <div>
-                            <input name="mediumFlavor" type="text" style="display:inline-block; width: 70%;" placeholder="Medium Flavor Type을 입력하세요."  />
+                        <div style=" width: 60%;">
+                            <input name="mediumFlavor" type="text" style="display:inline-block; width: 80%;" placeholder="Medium Flavor Type을 입력하세요."  />
                         </div>
                     </div>
                 </div>
@@ -2384,8 +2384,8 @@ function gridReload() {
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 30%; font-size: 11px;">Flavor</label>
-                        <div>
-                            <input name="largeFlavor" type="text" style="display:inline-block; width: 70%;" placeholder="Large Flavor Type을 입력하세요."  />
+                        <div style=" width: 60%;">
+                            <input name="largeFlavor" type="text" style="display:inline-block; width: 80%;" placeholder="Large Flavor Type을 입력하세요."  />
                         </div>
                     </div>
                 </div>
@@ -2395,8 +2395,8 @@ function gridReload() {
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 30%; font-size: 11px;">Flavor</label>
-                        <div>
-                            <input name="runnerFlavor" type="text" style="display:inline-block; width: 70%;" placeholder="Runner Flavor Type을 입력하세요."  />
+                        <div style=" width: 60%;">
+                            <input name="runnerFlavor" type="text" style="display:inline-block; width: 80%;" placeholder="Runner Flavor Type을 입력하세요."  />
                         </div>
                     </div>
                 </div>
@@ -2432,7 +2432,7 @@ function gridReload() {
                 <div class="panel-body" style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">Stemcell</label>
-                        <div>
+                        <div style=" width: 60%;">
                             <div>
                                 <select name="stemcells" style="width: 70%;display: inline-block;"></select>
                             </div>
@@ -2440,8 +2440,8 @@ function gridReload() {
                     </div>
                     <div class="w2ui-field">
                         <label style="text-align: left; width: 36%; font-size: 11px;">VM 비밀번호</label>
-                        <div>
-                            <input name="boshPassword" type="text" style="display:inline-block; width: 70%;" placeholder="VM 비밀번호를 입력하세요." />
+                        <div style=" width: 60%;">
+                            <input name="boshPassword" type="text" style="display:inline-block; width: 80%;" placeholder="VM 비밀번호를 입력하세요." />
                         </div>
                     </div>
                 </div>
@@ -2451,16 +2451,16 @@ function gridReload() {
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left;  width: 36%;">Small Type Ram</label>
-                        <div>
-                            <input name="smallFlavorRam" type="text" style="display:inline-block; width: 70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;'   placeholder="Ram을 입력하세요. 예) 1024"  />
+                        <div style=" width: 60%;">
+                            <input name="smallFlavorRam" type="text" style="display:inline-block; width: 80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;'   placeholder="Ram을 입력하세요. 예) 1024"  />
                         </div>
                         <label style="text-align: left;  width: 36%; ">Small Type Disk</label>
-                        <div>
-                            <input name="smallFlavorDisk" type="text" style="display:inline-block; width: 70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;'  placeholder="Disk를 입력하세요. 예) 4096"  />
+                        <div style=" width: 60%;">
+                            <input name="smallFlavorDisk" type="text" style="display:inline-block; width: 80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;'  placeholder="Disk를 입력하세요. 예) 4096"  />
                         </div>
                         <label style="text-align: left;  width: 36%;">Small Type Cpu</label>
-                        <div>
-                            <input name="smallFlavorCpu" type="text" style="display:inline-block; width: 70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Cpu를 입력하세요. 예) 1"  />
+                        <div style=" width: 60%;">
+                            <input name="smallFlavorCpu" type="text" style="display:inline-block; width: 80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Cpu를 입력하세요. 예) 1"  />
                         </div>
                     </div>
                 </div>
@@ -2470,16 +2470,16 @@ function gridReload() {
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;" >
                     <div class="w2ui-field">
                         <label style="text-align: left;  width: 36%;">Medium Ram</label>
-                        <div>
-                            <input name="mediumFlavorRam" type="text" style="display:inline-block; width: 70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Ram을 입력하세요. 예) 1024"  />
+                        <div style=" width: 60%;">
+                            <input name="mediumFlavorRam" type="text" style="display:inline-block; width: 80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Ram을 입력하세요. 예) 1024"  />
                         </div>
                         <label style="text-align: left;  width: 36%;">Medium Disk</label>
-                        <div>
-                            <input name="mediumFlavorDisk" type="text" style="display:inline-block; width: 70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Disk를 입력하세요. 예) 4096"  />
+                        <div style=" width: 60%;">
+                            <input name="mediumFlavorDisk" type="text" style="display:inline-block; width: 80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Disk를 입력하세요. 예) 4096"  />
                         </div>
                         <label style="text-align: left;  width: 36%;">Medium Cpu</label>
-                        <div>
-                            <input name="mediumFlavorCpu" type="text" style="display:inline-block; width: 70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Cpu를 입력하세요. 예) 1"  />
+                        <div style=" width: 60%;">
+                            <input name="mediumFlavorCpu" type="text" style="display:inline-block; width: 80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Cpu를 입력하세요. 예) 1"  />
                         </div>
                     </div>
                 </div>
@@ -2489,16 +2489,16 @@ function gridReload() {
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left;  width: 36%;">Large Ram</label>
-                        <div>
-                            <input name="largeFlavorRam" type="text" style="display:inline-block; width: 70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Ram을 입력하세요. 예) 1024"  />
+                        <div style=" width: 60%;">
+                            <input name="largeFlavorRam" type="text" style="display:inline-block; width: 80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Ram을 입력하세요. 예) 1024"  />
                         </div>
                         <label style="text-align: left;  width: 36%;">Large Disk</label>
-                        <div>
-                            <input name="largeFlavorDisk" type="text" style="display:inline-block; width: 70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Disk를 입력하세요. 예) 10240 "  />
+                        <div style=" width: 60%;">
+                            <input name="largeFlavorDisk" type="text" style="display:inline-block; width: 80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Disk를 입력하세요. 예) 10240 "  />
                         </div>
                         <label style="text-align: left;  width: 36%;">Large Cpu</label>
-                        <div>
-                            <input name="largeFlavorCpu" type="text" style="display:inline-block; width: 70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Cpu를 입력하세요. 예) 1"  />
+                        <div style=" width: 60%;">
+                            <input name="largeFlavorCpu" type="text" style="display:inline-block; width: 80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Cpu를 입력하세요. 예) 1"  />
                         </div>
                     </div>
                 </div>
@@ -2508,16 +2508,16 @@ function gridReload() {
                 <div class="panel-body"  style="padding:5px 5% 10px 5%;">
                     <div class="w2ui-field">
                         <label style="text-align: left;  width: 36%;">Runner Ram</label>
-                        <div>
-                            <input name="runnerFlavorRam" type="text" style="display:inline-block; width: 70%;"  onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Ram을 입력하세요. 예) 16384"  />
+                        <div style=" width: 60%;">
+                            <input name="runnerFlavorRam" type="text" style="display:inline-block; width: 80%;"  onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Ram을 입력하세요. 예) 16384"  />
                         </div>
                         <label style="text-align: left;  width: 36%;">Runner Disk</label>
-                        <div>
-                            <input name="runnerFlavorDisk" type="text" style="display:inline-block; width: 70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Disk를 입력하세요. 예) 32768"  />
+                        <div style=" width: 60%;">
+                            <input name="runnerFlavorDisk" type="text" style="display:inline-block; width: 80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Disk를 입력하세요. 예) 32768"  />
                         </div>
                         <label style="text-align: left;  width: 36%;">Runner Cpu</label>
-                        <div>
-                            <input name="runnerFlavorCpu" type="text" style="display:inline-block; width: 70%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Cpu를 입력하세요. 예) 2"  />
+                        <div style=" width: 60%;">
+                            <input name="runnerFlavorCpu" type="text" style="display:inline-block; width: 80%;" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' style='ime-mode:disabled;' placeholder="Cpu를 입력하세요. 예) 2"  />
                         </div>
                     </div>
                 </div>

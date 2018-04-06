@@ -66,6 +66,7 @@ function setIaasAccountCountInfo(){
             $("#infra_account_mgnt_wrap .openstack-cnt").append(data.openstack_cnt + "(개)");
             $("#infra_account_mgnt_wrap .google-cnt").append(data.google_cnt + "(개)");
             $("#infra_account_mgnt_wrap .vsphere-cnt").append(data.vsphere_cnt + "(개)");
+            $("#infra_account_mgnt_wrap .azure-cnt").append(data.azure_cnt + "(개)");
         },
         error : function(request, status, error) {
             var errorResult = JSON.parse(request.responseText);
@@ -153,6 +154,17 @@ $( window ).resize(function() {
 	                   <li class="vsphere-cnt"><span style="color:#000;">계정: </span></li>
 	                </ul>
 	            </li>
+            </sec:authorize>
+            </ul>
+            <ul>
+                <sec:authorize access="hasAuthority('IAAS_ACCOUNT_VSPHERE_MENU')">
+                <li>
+                    <ul class="vSphere-box col-md-3 well" onmouseover="hover(this);" onmouseout="unhover(this);" onclick="javascript:goPage('<c:url value="/iaasMgnt/account/azure"/>', 'Azure 조회');">
+                       <li class="aws-go">| Azure 계정 관리 화면 이동</li>
+                       <li><img src='<c:url value="images/iaasMgnt/azure-icon.png"/>' class="google-icon" alt="Azure 조회"></li>
+                       <li class="azure-cnt"><span style="color:#000;">계정: </span></li>
+                    </ul>
+                </li>
             </sec:authorize>
             </ul>
         </div>

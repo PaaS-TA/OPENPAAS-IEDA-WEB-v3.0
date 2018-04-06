@@ -67,4 +67,5 @@ public class CommonController extends BaseController{
         List<String> zones = commonservice.getGoogleZoneList(principal, accountId);
         return new ResponseEntity<List<String>>(zones, HttpStatus.OK);
     }
+    
 }

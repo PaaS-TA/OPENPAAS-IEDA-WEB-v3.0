@@ -56,6 +56,17 @@ public String goAwsResourceUsage(){
 
 /***************************************************
  * @project : 인프라 관리 대시보드
+ * @description : Azure 리소스 사용량 조회 화면 호출
+ * @title : goAzureResourceUsage
+ * @return : String
+***************************************************/
+@RequestMapping(value="/iaasMgnt/resourceUsage/azure", method=RequestMethod.GET)
+    public String goAzureResourceUsage(){
+        return "/iaas/resourceUsage/azureResourceUsage";
+    }
+
+/***************************************************
+ * @project : 인프라 관리 대시보드
  * @description : 인프라 전체 리소스 사용량 조회
  * @title : getIaasResourceUsageTotalInfo
  * @return : ResponseEntity<List<IaasResourceUsageVO>>
@@ -90,6 +101,19 @@ public ResponseEntity<List<IaasResourceUsageVO>>  getAwsResourceUsageInfoList(@P
     public ResponseEntity<List<IaasResourceUsageVO>>  getOpenstackResourceUsageInfoList(Principal principal){
         if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> /iaasMgnt/resourceUsage/openstack/list"); }
         List<IaasResourceUsageVO> list =  service.getOpenstackResourceUsageInfoList(principal);
+        return new ResponseEntity<List<IaasResourceUsageVO>>(list, HttpStatus.OK);
+    }
+
+/***************************************************
+ * @project : 인프라 관리 대시보드
+ * @description : Azure 리소스 사용량 조회
+ * @title : getAzureResourceUsageInfoList
+ * @return : ResponseEntity<List<IaasResourceUsageVO>>
+***************************************************/
+@RequestMapping(value="/iaasMgnt/resourceUsage/azure/list", method=RequestMethod.GET)
+public ResponseEntity<List<IaasResourceUsageVO>>  getAzureResourceUsageInfoList(Principal principal){
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("=====================> /iaasMgnt/resourceUsage/azure/list"); }
+        List<IaasResourceUsageVO> list =  service.getAzureResourceUsageInfoList(principal);
         return new ResponseEntity<List<IaasResourceUsageVO>>(list, HttpStatus.OK);
     }
     

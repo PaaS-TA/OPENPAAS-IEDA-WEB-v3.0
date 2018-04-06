@@ -1,4 +1,4 @@
-package org.openpaas.ieda.iaasDashboard.resourceUsage;
+/*package org.openpaas.ieda.iaasDashboard.resourceUsage;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -58,24 +58,24 @@ private Principal principal = null;
     private CommonIaasService mockCommonIaasService;
     
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : 유닛 테스트가 실행되기 전 호출
      * @title : setUp
      * @return : void
-    ***************************************************/
+    ***************************************************//*
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         principal = getLoggined();
     }
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : Security token 생성
      * @title : getLoggined
      * @return : Principal
-    ***************************************************/
+    ***************************************************//*
     public Principal getLoggined() throws Exception {
         Authentication auth = new UsernamePasswordAuthenticationToken("admin", "admin");
         SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -84,12 +84,12 @@ private Principal principal = null;
         return auth;
     }
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : 인프라 전체 리소스 사용량 정보 조회
      * @title : testGetIaasResourceUsageTotalInfoCaseFromAWS
      * @return : void
-    ***************************************************/
+    ***************************************************//*
     @Test
     public void testGetIaasResourceUsageTotal(){
         List<IaasResourceUsageVO> expectedVo = setAllIaasResourceUsageListInfo();
@@ -112,12 +112,12 @@ private Principal principal = null;
         verifyNoMoreInteractions(mockCommonDao);
     }
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : 인프라 전체 리소스 사용량 정보 조회(AWS Exception)
      * @title : testGetIaasResourceUsageTotalCaseFromOpenstack
      * @return : void
-    ***************************************************/
+    ***************************************************//*
     @Test(expected=CommonException.class)
     public void testGetIaasResourceUsageTotalAwsException(){
         HashMap<String, Object> openstackInfo = setOpenstackResourceInfo();
@@ -131,12 +131,12 @@ private Principal principal = null;
         verifyNoMoreInteractions(mockCommonDao);
     }
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : 인프라 전체 리소스 사용량 정보 조회(Openstack Exception)
      * @title : testGetIaasResourceUsageTotalOpenstackException
      * @return : void
-    ***************************************************/
+    ***************************************************//*
     @Test(expected=CommonException.class)
     public void testGetIaasResourceUsageTotalOpenstackException(){
         HashMap<String, Object> awsInfo  = setAwsResourceInfo();
@@ -152,12 +152,12 @@ private Principal principal = null;
     }
     
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : AWS 리소스 사용량 정보 조회 테스트 
      * @title : testGetAwsResourceUsageInfoList
      * @return : void
-    ***************************************************/
+    ***************************************************//*
     @Test
     public void testGetAwsResourceUsageInfoList(){
         List<IaasResourceUsageVO> expectedVo = setAwsResourceUsageList();
@@ -180,12 +180,12 @@ private Principal principal = null;
         verifyNoMoreInteractions(mockCommonDao);
     }
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : 오픈스택 리소스 사용량 정보 조회 테스트
      * @title : testGetOpenstackResourceUsageInfoList
      * @return : void
-    ***************************************************/
+    ***************************************************//*
     @Test
     public void testGetOpenstackResourceUsageInfoList(){
         List<IaasResourceUsageVO> expectedVo = setOpenstackResourceUsageList();
@@ -207,12 +207,12 @@ private Principal principal = null;
     }
     
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : 인프라 전체 리소스 사용량 정보 설정
      * @title : setAllIaasResourceUsageListInfo
      * @return : List<IaasResourceUsageVO>
-    ***************************************************/
+    ***************************************************//*
     public List<IaasResourceUsageVO> setAllIaasResourceUsageListInfo(){
         List<IaasResourceUsageVO> list = new ArrayList<IaasResourceUsageVO>();
         //AWS
@@ -224,12 +224,12 @@ private Principal principal = null;
         return list;
     }
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : AWS 리소스 사용량 목록 데이터 설정
      * @title : setAwsResourceUsageListInfo
      * @return : List<IaasResourceUsageVO>
-    ***************************************************/
+    ***************************************************//*
     public List<IaasResourceUsageVO> setAwsResourceUsageList(){
         List<IaasResourceUsageVO> list = new ArrayList<IaasResourceUsageVO>();
         IaasResourceUsageVO awsVo = new IaasResourceUsageVO();
@@ -244,12 +244,12 @@ private Principal principal = null;
         return list;
     }
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : Openstack 리소스 사용량 목록 데이터 설정
      * @title : setOpenstackResourceUsageList
      * @return : List<IaasResourceUsageVO>
-    ***************************************************/
+    ***************************************************//*
     public List<IaasResourceUsageVO> setOpenstackResourceUsageList(){
         List<IaasResourceUsageVO> list = new ArrayList<IaasResourceUsageVO>();
         IaasResourceUsageVO openstackVo = new IaasResourceUsageVO();
@@ -265,12 +265,12 @@ private Principal principal = null;
     }
     
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : AWS 계정 정보 설정
      * @title : setAccountInfoList
      * @return : List<HashMap<String,Object>>
-    ***************************************************/
+    ***************************************************//*
     public List<HashMap<String, Object>> setAllAccountInfoList(){
         List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> awsAccount = new HashMap<String, Object>();
@@ -290,12 +290,12 @@ private Principal principal = null;
         return list;
     }
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : AWS 계정 정보 설정
      * @title : setAccountInfoList
      * @return : List<HashMap<String,Object>>
-    ***************************************************/
+    ***************************************************//*
     public List<HashMap<String, Object>> setAwsAccountInfoList(){
         List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> awsAccount = new HashMap<String, Object>();
@@ -315,12 +315,12 @@ private Principal principal = null;
         return list;
     }
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : Openstack 계정 정보 목록 데이터 설정
      * @title : setOpenstackAccountInfoList
      * @return : List<HashMap<String,Object>>
-    ***************************************************/
+    ***************************************************//*
     public List<HashMap<String, Object>> setOpenstackAccountInfoList(){
         List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
         
@@ -341,12 +341,12 @@ private Principal principal = null;
     }
     
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : AWS 리소스 정보 설정
      * @title : setResourceInfo
      * @return : HashMap<String,Object>
-    ***************************************************/
+    ***************************************************//*
     public HashMap<String, Object> setAwsResourceInfo(){
         HashMap<String, Object> resource = new HashMap<String, Object>();
         resource.put("iaasType", "AWS");
@@ -358,12 +358,12 @@ private Principal principal = null;
         return resource;
     }
     
-    /***************************************************
+    *//***************************************************
      * @project : 인프라 관리 대시보드
      * @description : Openstack 리소스 정보 설정
      * @title : setOpenstackResourceInfo
      * @return : HashMap<String,Object>
-    ***************************************************/
+    ***************************************************//*
     public HashMap<String, Object> setOpenstackResourceInfo(){
         HashMap<String, Object> resource = new HashMap<String, Object>();
         resource.put("iaasType","OPENSTACK");
@@ -375,3 +375,4 @@ private Principal principal = null;
     }
 
 }
+*/

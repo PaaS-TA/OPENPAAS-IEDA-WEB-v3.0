@@ -27,12 +27,13 @@
 
 <!-- Custom Fonts -->
 <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/default.css?ver=5'/>"/>
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/guide.css?ver=5'/>"/>
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/default.css?ver=1'/>"/>
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/guide.css?ver=1'/>"/>
 <link rel="stylesheet" type="text/css" href="<c:url value='/css/deploy-common.css?ver=5'/>"/>
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/deploy-content.css?ver=5'/>"/>
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/progress-step.css'/>"/> <!-- progress-step css -->
-
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/deploy-content.css?ver=6'/>"/>
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/progress-step.css?ver=2'/>"/> <!-- progress-step css -->
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/infra-guide.css?ver=3'/>"/>
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/infra-init.css?ver=4'/>"/>
 <!-- JAVA SCRIPT -->
 <!-- JQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -55,8 +56,8 @@
 <script type="text/javascript" src="<c:url value='/js/stomp.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/yaml.js'/>"></script>
 <!-- Common -->
-<script type="text/javascript" src="<c:url value='/js/common.js?ver=2'/>"></script>
-<script type="text/javascript" src="<c:url value='/js/common-deploy.js?ver=1'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/common.js?ver=7'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/common-deploy.js?ver=5'/>"></script>
 
 <script type="text/javascript">
 (function($) {
@@ -70,16 +71,17 @@
 })(jQuery);
 
 $(function() {
-    var pstyle = 'background-color: white; overflow-y: hidden;';
-    var tstyle = 'background-color: #297cbe; overflow-y: hidden;';
+	var pstyle = 'background-color: #edf0ef; overflow-y: hidden;';
     $('#layout').w2layout({
         name: 'layout',
         panels: [
-             { type: 'top', style: tstyle, size: 71}
-            ,{ type: 'left', style: pstyle, size:235}
-            ,{ type: 'main', style: pstyle}
+             { type: 'top', style: pstyle, size: 71}
+            ,{ type: 'left', style: pstyle, size:256}
+            ,{ type: 'main', style: pstyle, size:1599}
         ],  onError: function(event) {
-        }        
+        }        , onResize : function(event) {
+            $(".w2ui-panel-content").css("overflow-y", "auto");
+        }
     });
     
     setLayoutContainerHeight();
@@ -89,7 +91,7 @@ $(function() {
 });
 
 function setLayoutContainerHeight(login){
-    var layoutHeight = $(window).height();
+	var layoutHeight = $(window).height()-60;
     var layoutWidth = $(window).width();
     
     $('#wrap1').height(layoutHeight);
@@ -109,8 +111,7 @@ function setLayoutContainerHeight(login){
 <body>
 
 <div id="wrap1">
-    <div id="layout" class='fullBox'></div>
+    <div id="layout" class="fullBox navbar navbar-inverse navbar-fixed-top"></div>
 </div>
-
 </body>
 </html>

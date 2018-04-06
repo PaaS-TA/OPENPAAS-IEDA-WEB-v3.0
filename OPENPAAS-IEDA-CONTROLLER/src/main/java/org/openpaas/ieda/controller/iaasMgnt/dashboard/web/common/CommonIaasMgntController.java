@@ -28,4 +28,14 @@ public class CommonIaasMgntController {
         return "iaas/openstack/openstackManagement";
     }
     
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : Azure 관리 화면 이동
+     * @title : goAzureMgnt
+     ***************************************************/
+     @RequestMapping(value="/iaasMgnt/azure", method=RequestMethod.GET)
+     public String goAzureMgnt(){
+         return "iaas/azure/azureManagement";
+     }
+    
 }

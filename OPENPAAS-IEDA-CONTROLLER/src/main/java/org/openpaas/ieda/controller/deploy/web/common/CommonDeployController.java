@@ -127,6 +127,18 @@ public class CommonDeployController {
         
         return new ResponseEntity<List<String>>(keyPathFileList, HttpStatus.OK);
     }
+    /****************************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description :  Credential File 목록 조회(공통)
+     * @title : getCredentialKeyPathFileList
+     * @return : ResponseEntity<List<String>>
+    *****************************************************************/
+    @RequestMapping(value="/common/deploy/creds/list", method=RequestMethod.GET)
+    public ResponseEntity<List<String>> getCredentialKeyPathFileList(){
+        if(LOGGER.isInfoEnabled()){ LOGGER.debug("====================================> Credential Key 파일  정보 목록 조회 요청"); }
+        List<String> credsKeyPathFileList = commonService.getCredentialName();
+        return new ResponseEntity<List<String>>(credsKeyPathFileList, HttpStatus.OK);
+    }
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화

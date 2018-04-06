@@ -275,7 +275,7 @@ function gbConverter(value){
           if( $element.parent().find("p").length == 0  || 
         		  ( $element.parent().find("input:text").length ==2 && $element.parent().find("p").length == 1) ){
               if( tag == 'textarea' || tag == 'select' ){
-                  $element.parent().append("<p style='color:red;padding-left:82px;'>"+validator.errorList[i].message+"</p>");
+                  $element.parent().append("<p style='color:red;'>"+validator.errorList[i].message+"</p>");
               }else{ //input
                   if( tag == "input" && $element.parent().find("p").length == 0){
                 	  if( $element.parent().find("input:text").length == 2 ){
@@ -289,7 +289,7 @@ function gbConverter(value){
               
           }else{
               if( tag == 'textarea' || tag == 'select' ){
-                  $element.parent().find("p").replaceWith("<p style='color:red;padding-left:82px;'>"+validator.errorList[i].message+"</p>");
+                  $element.parent().find("p").replaceWith("<p style='color:red;'>"+validator.errorList[i].message+"</p>");
               }else{
                   $element.parent().find("p").replaceWith("<p style='color:red;'>"+validator.errorList[i].message+"</p>");
               }
@@ -340,7 +340,9 @@ function gbConverter(value){
                          }
                      }
                  }
+                 if(iaas == "aws"){
                  setDefaultAwsRegion();
+                 }
              }
              $('#setAccountList').html(result);
          },
@@ -408,9 +410,9 @@ function setAccountInfo(val, iaas){
         return;
     }
     $('#doSearch').attr('disabled', false);
-    if(iaas == "aws"){
+    if(iaas == "aws")
     	setDefaultAwsRegion();
-    }
+    
     setDefaultIaasAccount("noPopup", iaas);
 }
  

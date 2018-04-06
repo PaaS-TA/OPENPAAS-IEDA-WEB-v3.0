@@ -67,7 +67,7 @@ $(function(){
     $("#addBtn").click(function(){
         w2popup.open({
             title     : "<b>사용자 등록</b>",
-            width     : 555,
+            width     : 500,
             height    : 560,
             modal    : true,
             body    : $("#regPopupDiv").html(),
@@ -172,7 +172,7 @@ function getRoleListAjax(type,record){
             for(var i=0;i<data.records.length;i++){
                 result +='<tr style="margin: 0 auto;"><label><td style="width:12%;">';
                 result +='<input type="radio" name="roleRadio" value="'+data.records[i].roleId+'" id="'+data.records[i].roleId+'i"></td>';
-                result +='<td style="width:42%"; class="active">';
+                result +='<td style="width:42%"; >';
                 result += data.records[i].roleName +'</label></td><td>'+ data.records[i].roleDescription +'</td></tr>';
             }
             result += '</table>'
@@ -255,7 +255,7 @@ function updatePopup() {
     updateroleArray = [];
     w2popup.open({
         title     : "<b>사용자 수정</b>",
-        width     : 555,
+        width     : 500,
         height    : 560,
         modal     : true,
         body     : $("#regPopupDiv").html(),
@@ -415,7 +415,7 @@ function deleteUser(userId){
 	                            </tr>
 	                        </table>
 	                    </div>
-	                    <div class= "writeWarrper" style="width:84%;float:left;overflow-y: auto;overflow-x:hidden;height:200px;margin: -25px 0 0 15px;" ></div>
+	                    <div class= "writeWarrper" style="width:84%;float:left;overflow-y: auto;overflow-x:hidden;height:200px;margin: -14px 0 0 15px;" ></div>
 	                </div>
 	            </div>
 	        </div>

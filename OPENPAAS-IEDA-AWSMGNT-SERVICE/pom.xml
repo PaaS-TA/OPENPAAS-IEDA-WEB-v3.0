@@ -26,17 +26,17 @@
         <version>0.0.1-COMMON-SERVICE-SNAPSHOT</version>
     </dependency>
   	
-  	
-  	
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
+  	<dependency>
     	<groupId>org.openpaas.ieda.iaasDashboard</groupId>
     	<artifactId>OPENPAAS-IEDA-IAASDASHBOARD-SERVICE</artifactId>
     	<version>0.0.1-IAASDASHBOARD-SERVICE-SNAPSHOT</version>
     </dependency>
+  	
+   <!--  <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    
     <dependency>
     	<groupId>org.scala-lang</groupId>
     	<artifactId>scala-library</artifactId>
@@ -46,6 +46,6 @@
     	<groupId>org.neo4j</groupId>
     	<artifactId>neo4j-cypher-compiler-2.1</artifactId>
     	<version>2.1.5</version>
-    </dependency>
+    </dependency> -->
   </dependencies>
 </project>

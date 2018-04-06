@@ -22,7 +22,7 @@ public interface BootstrapDAO {
      * @return : BootstrapVO
     *****************************************************************/
     BootstrapVO selectBootstrapInfo(@Param("id")int id);
-
+    
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
      * @description : BootStrap 정보 저장

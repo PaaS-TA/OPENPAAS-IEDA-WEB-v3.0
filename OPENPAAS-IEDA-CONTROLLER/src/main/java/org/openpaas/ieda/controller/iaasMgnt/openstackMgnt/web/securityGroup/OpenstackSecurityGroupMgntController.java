@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class OpenstackSecurityGroupMgntController {
     
-    @Autowired OpenstackSecurityGroupMgntService openstackSecurityGroupMgntService;
+	private @Autowired OpenstackSecurityGroupMgntService openstackSecurityGroupMgntService;
     
     private final static Logger LOG = LoggerFactory.getLogger(OpenstackSecurityGroupMgntController.class);
     
