@@ -19,12 +19,6 @@ function setNetworkValidate(iaas){
                 },ipv4 : function(){
                     return $(".w2ui-msg-body input[name='privateStaticIp']").val()
                 }
-            }, publicStaticIp: { 
-                required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='publicStaticIp']").val() );
-                },ipv4 : function(){
-                    return $(".w2ui-msg-body input[name='publicStaticIp']").val()
-                }
             }, subnetRange: { 
                 required: function(){
                     return checkEmpty( $(".w2ui-msg-body input[name='subnetRange']").val() );
@@ -98,8 +92,6 @@ function setNetworkValidate(iaas){
                 required:  "네트워크 명"+text_required_msg
             }, privateStaticIp: { 
                 required:  "설치관리자 내부망 IPs"+text_required_msg,
-            }, publicStaticIp: { 
-                required:  "설치관리자 IPs" + text_required_msg,
             }, subnetRange: { 
                 required:  "서브넷 범위"+select_required_msg,
             }, subnetGateway: { 

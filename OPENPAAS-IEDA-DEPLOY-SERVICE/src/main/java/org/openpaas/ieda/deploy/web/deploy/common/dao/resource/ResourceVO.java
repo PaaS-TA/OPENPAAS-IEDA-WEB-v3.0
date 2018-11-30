@@ -22,14 +22,15 @@ public class ResourceVO {
     private Integer largeCpu;
     private Integer largeRam;
     private Integer largeDisk;
-    private Integer runnerCpu;
-    private Integer runnerRam;
-    private Integer runnerDisk;
     private String createUserId;
     private String updateUserId;
     private Date createDate; // 생성일자
     private Date updateDate; // 수정일자
 
+    private String enableWindowsStemcell; // windows stemcell use
+    private String windowsStemcellName; // Azure IaaS Windows 스템셀 명
+    private String windowsStemcellVersion; // Azure IaaS windows 스템셀 버전
+    private String windowsCellInstance; //windows Cell Instance 수
     
     public Integer getId() {
         return id;
@@ -139,24 +140,6 @@ public class ResourceVO {
     public void setLargeDisk(Integer largeDisk) {
         this.largeDisk = largeDisk;
     }
-    public Integer getRunnerCpu() {
-        return runnerCpu;
-    }
-    public void setRunnerCpu(Integer runnerCpu) {
-        this.runnerCpu = runnerCpu;
-    }
-    public Integer getRunnerRam() {
-        return runnerRam;
-    }
-    public void setRunnerRam(Integer runnerRam) {
-        this.runnerRam = runnerRam;
-    }
-    public Integer getRunnerDisk() {
-        return runnerDisk;
-    }
-    public void setRunnerDisk(Integer runnerDisk) {
-        this.runnerDisk = runnerDisk;
-    }
     public String getCreateUserId() {
         return createUserId;
     }
@@ -200,4 +183,30 @@ public class ResourceVO {
             this.createDate = new Date(createDate.getTime());
         }
     }
+    
+    public String getEnableWindowsStemcell() {
+        return enableWindowsStemcell;
+    }
+    public void setEnableWindowsStemcell(String enableWindowsStemcell) {
+        this.enableWindowsStemcell = enableWindowsStemcell;
+    }
+    public String getWindowsStemcellName() {
+        return windowsStemcellName;
+    }
+    public void setWindowsStemcellName(String windowsStemcellName) {
+        this.windowsStemcellName = windowsStemcellName;
+    }
+    public String getWindowsStemcellVersion() {
+        return windowsStemcellVersion;
+    }
+    public void setWindowsStemcellVersion(String windowsStemcellVersion) {
+        this.windowsStemcellVersion = windowsStemcellVersion;
+    }
+    public String getWindowsCellInstance() {
+        return windowsCellInstance;
+    }
+    public void setWindowsCellInstance(String windowsCellInstance) {
+        this.windowsCellInstance = windowsCellInstance;
+    }
+    
 }

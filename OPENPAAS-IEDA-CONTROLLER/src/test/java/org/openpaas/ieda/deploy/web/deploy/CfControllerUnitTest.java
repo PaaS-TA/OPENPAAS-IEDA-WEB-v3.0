@@ -156,18 +156,15 @@ public class CfControllerUnitTest extends BaseControllerUnitTest{
         mockMvc.perform(get(CF_DETAIL_INFO_URL, 1).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.content.iaasType").value("openstack"))
-        .andExpect(jsonPath("$.content.diegoYn").value("N"))
         .andExpect(jsonPath("$.content.deploymentName").value("cf"))
         .andExpect(jsonPath("$.content.releaseName").value("cf"))
         .andExpect(jsonPath("$.content.releaseVersion").value("222"))
-        .andExpect(jsonPath("$.content.appSshFingerprint").value("fingerprint"))
-        .andExpect(jsonPath("$.content.deaMemoryMB").value(31728))
-        .andExpect(jsonPath("$.content.deaDiskMB").value(8192))
         .andExpect(jsonPath("$.content.domain").value("test.domain"))
         .andExpect(jsonPath("$.content.paastaMonitoringUse").value("yes"))
-        .andExpect(jsonPath("$.content.ingestorIp").value("172.16.100.100"))
         .andExpect(jsonPath("$.content.countryCode").value("kor"))
-        .andExpect(jsonPath("$.content.stateName").value("seoul"));
+        .andExpect(jsonPath("$.content.stateName").value("seoul"))
+        .andExpect(jsonPath("$.content.cfAdminPassword").value("admin"))
+        .andExpect(jsonPath("$.content.inceptionOsUserName").value("ubuntu"));
     }
     
     /***************************************************
@@ -185,16 +182,13 @@ public class CfControllerUnitTest extends BaseControllerUnitTest{
         .content(mapper.writeValueAsBytes(dto)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.content.iaasType").value("openstack"))
-        .andExpect(jsonPath("$.content.diegoYn").value("N"))
         .andExpect(jsonPath("$.content.deploymentName").value("cf"))
         .andExpect(jsonPath("$.content.releaseName").value("cf"))
         .andExpect(jsonPath("$.content.releaseVersion").value("222"))
-        .andExpect(jsonPath("$.content.appSshFingerprint").value("fingerprint"))
-        .andExpect(jsonPath("$.content.deaMemoryMB").value(31728))
-        .andExpect(jsonPath("$.content.deaDiskMB").value(8192))
         .andExpect(jsonPath("$.content.domain").value("test.domain"))
         .andExpect(jsonPath("$.content.paastaMonitoringUse").value("yes"))
-        .andExpect(jsonPath("$.content.ingestorIp").value("172.16.100.100"))
+        .andExpect(jsonPath("$.content.cfAdminPassword").value("admin"))
+        .andExpect(jsonPath("$.content.inceptionOsUserName").value("ubuntu"))
         .andExpect(jsonPath("$.content.countryCode").value("kor"))
         .andExpect(jsonPath("$.content.stateName").value("seoul"));
     }
@@ -205,7 +199,6 @@ public class CfControllerUnitTest extends BaseControllerUnitTest{
     * @title : testSaveNetworkCfInfo
     * @return : void
     ***************************************************/
-    @Test
     public void testGetNetowrkListInfo() throws Exception{
         List<NetworkVO> expectNetworkList = setResultNetworkInfo();
         when(mockCfService.getNetowrkListInfo(anyInt(), anyString())).thenReturn(expectNetworkList);
@@ -273,7 +266,6 @@ public class CfControllerUnitTest extends BaseControllerUnitTest{
     * @title : makeDeploymentFile
     * @return : void
     ***************************************************/
-    @Test
     public void testMakeDeploymentFile() throws JsonProcessingException, Exception{
         CfParamDTO.Install dto = setCfIntallParam();
         mockMvc.perform(post(CF_MAKE_MANIFEST_FILE_URL).contentType(MediaType.APPLICATION_JSON)
@@ -449,9 +441,6 @@ public class CfControllerUnitTest extends BaseControllerUnitTest{
         dto.setMediumDisk("8192");
         dto.setMediumFlavor("m1.medium");
         dto.setMediumRam("111");
-        dto.setRunnerCpu("4");
-        dto.setRunnerDisk("1");
-        dto.setRunnerRam("2313");
         dto.setSmallCpu("1");
         dto.setSmallDisk("123");
         dto.setSmallRam("8192");
@@ -495,14 +484,11 @@ public class CfControllerUnitTest extends BaseControllerUnitTest{
         dto.setDeployType("cf");
         dto.setNet("cf-net");
         dto.setSeq("1");
-        dto.setPublicStaticIP("172.16.100.1");
         dto.setSubnetRange("/24");
         dto.setSubnetGateway("1");
         dto.setSubnetDns("8.8.8.8");
         dto.setSubnetReservedFrom("1");
         dto.setSubnetReservedTo("255");
-        dto.setSubnetStaticFrom("1");
-        dto.setSubnetStaticTo("255");
         dto.setSubnetId("1");
         dto.setCloudSecurityGroups("seg");
         dto.setNetworkName("cf-net");
@@ -523,7 +509,6 @@ public class CfControllerUnitTest extends BaseControllerUnitTest{
         vo.setId(1);
         vo.setCreateUserId("admin");
         vo.setUpdateUserId("admin");
-        vo.setPublicStaticIP("1.1.1.1");
         vo.setDeployType("cf");
         vo.setNet("network");
         vo.setSeq(1);
@@ -550,22 +535,17 @@ public class CfControllerUnitTest extends BaseControllerUnitTest{
     ***************************************************/
     public CfParamDTO.Default setCfDefaultParamInfo() {
         CfParamDTO.Default dto = new CfParamDTO.Default();
-        dto.setAppSshFingerprint("fingerPrint");
-        dto.setDeaDiskMB("32718");
-        dto.setDeaMemoryMB("8192");
         dto.setDeploymentName("cf");
-        dto.setDescription("cf");
-        dto.setDiegoYn("N");
         dto.setDirectorUuid("uuid");
         dto.setDomain("domain");
         dto.setIaas("openstack");
         dto.setId("1");
-        dto.setIngestorIp("172.16.100.1");
-        dto.setLoginSecret("login");
         dto.setDomainOrganization("paas-ta");
         dto.setPaastaMonitoringUse("yes");
         dto.setReleaseName("cf");
         dto.setReleaseVersion("222");
+        dto.setCfAdminPassword("admin");
+        dto.setInceptionOsUserName("ubuntu");
         return dto;
     }
 
@@ -579,17 +559,12 @@ public class CfControllerUnitTest extends BaseControllerUnitTest{
         CfVO vo = new CfVO();
         vo.setId(1);
         vo.setIaasType("openstack");
-        vo.setDeaMemoryMB(31728);
-        vo.setDeaDiskMB(8192);
         vo.setReleaseName("cf");
         vo.setReleaseVersion("222");
-        vo.setAppSshFingerprint("fingerprint");
-        vo.setDiegoYn("N");
         vo.setDeploymentName("cf");
         vo.setDeploymentFile("cf-yml");
         vo.setDomain("test.domain");
         vo.setPaastaMonitoringUse("yes");
-        vo.setIngestorIp("172.16.100.100");
         vo.setCountryCode("kor");
         vo.setStateName("seoul");
         vo.setLocalityName("mapo");
@@ -598,6 +573,8 @@ public class CfControllerUnitTest extends BaseControllerUnitTest{
         vo.setKeyFile("keyFile");
         vo.setOrganizationName("paasta");
         vo.setDeployStatus("deploying");
+        vo.setCfAdminPassword("admin");
+        vo.setInceptionOsUserName("ubuntu");
         return vo;
     }
 

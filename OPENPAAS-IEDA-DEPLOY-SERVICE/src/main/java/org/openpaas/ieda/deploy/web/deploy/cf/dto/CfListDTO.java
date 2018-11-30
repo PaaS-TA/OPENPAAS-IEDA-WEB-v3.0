@@ -21,6 +21,9 @@ public class CfListDTO {
     private String domain; //도메인
     private String description; //도메인 설명
     private String domainOrganization; //도메인 그룹
+    private String userAddSsh; // os-conf ssh public-key
+    private String osConfReleaseName;//os-conf Release Name
+    private String osConfReleaseVersion;//os-conf Release Version
 
     // 1.3 HA프록시 정보
     private String proxyStaticIps; //HAProxy 공인 IP 
@@ -39,6 +42,8 @@ public class CfListDTO {
     private String stemcellVersion; //스템셀 버전
     private String boshPassword; //VM 비밀번호
     private String keyFile;
+    private String windowsStemcellName; // Azure IaaS Windows Stemcell 명
+    private String windwosStemcellVersion; // Azure Iaas Windows Stemcell 버전
     // Deploy 정보
     private String deploymentFile; //배포파일명
     private String deployStatus; //배포상태
@@ -254,4 +259,35 @@ public class CfListDTO {
     public void setKeyFile(String keyFile) {
         this.keyFile = keyFile;
     }
+    public String getUserAddSsh() {
+        return userAddSsh;
+    }
+    public void setUserAddSsh(String userAddSsh) {
+        this.userAddSsh = userAddSsh;
+    }
+    public String getOsConfReleaseName() {
+        return osConfReleaseName;
+    }
+    public void setOsConfReleaseName(String osConfReleaseName) {
+        this.osConfReleaseName = osConfReleaseName;
+    }
+    public String getOsConfReleaseVersion() {
+        return osConfReleaseVersion;
+    }
+    public void setOsConfReleaseVersion(String osConfReleaseVersion) {
+        this.osConfReleaseVersion = osConfReleaseVersion;
+    }
+    public String getWindowsStemcellName() {
+        return windowsStemcellName;
+    }
+    public void setWindowsStemcellName(String windowsStemcellName) {
+        this.windowsStemcellName = windowsStemcellName;
+    }
+    public String getWindwosStemcellVersion() {
+        return windwosStemcellVersion;
+    }
+    public void setWindwosStemcellVersion(String windwosStemcellVersion) {
+        this.windwosStemcellVersion = windwosStemcellVersion;
+    }
+    
 }

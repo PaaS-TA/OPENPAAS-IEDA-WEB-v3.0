@@ -10,11 +10,8 @@ public class ResourceDTO {
     @NotNull
     private String platform; //플랫폼 구분
     // 5. 리소스 정보
-    @NotNull
     private String stemcellName; //스템셀명
-    @NotNull
     private String stemcellVersion; //스템셀버전
-    @NotNull
     private String boshPassword; //VM 비밀번호
     private String smallFlavor;//small 인스턴스 유형
     private String mediumFlavor;//medium 인스턴스 유형
@@ -29,11 +26,12 @@ public class ResourceDTO {
     private String largeCpu;//large 인스턴스 유형 Cpu
     private String largeRam;//large 인스턴스 유형 Ram
     private String largeDisk;//large 인스턴스 유형 Disk
-    private String runnerCpu;//runner 인스턴스 유형 Cpu
-    private String runnerRam;//runner 인스턴스 유형 Ram
-    private String runnerDisk;//runner 인스턴스 유형 Disk
     
     private String keyFile;//key파일명
+    private String enableWindowsStemcell; //windows stemcell use
+    private String windowsStemcellName; // Azure IaaS Windows 스템셀 명
+    private String windowsStemcellVersion; // Azure IaaS windows 스템셀 버전
+    private String windowsCellInstance; //windows Cell Instance 수
     
     public String getId() {
         return id;
@@ -155,29 +153,36 @@ public class ResourceDTO {
     public void setLargeDisk(String largeDisk) {
         this.largeDisk = largeDisk;
     }
-    public String getRunnerCpu() {
-        return runnerCpu;
-    }
-    public void setRunnerCpu(String runnerCpu) {
-        this.runnerCpu = runnerCpu;
-    }
-    public String getRunnerRam() {
-        return runnerRam;
-    }
-    public void setRunnerRam(String runnerRam) {
-        this.runnerRam = runnerRam;
-    }
-    public String getRunnerDisk() {
-        return runnerDisk;
-    }
-    public void setRunnerDisk(String runnerDisk) {
-        this.runnerDisk = runnerDisk;
-    }
     public String getKeyFile() {
         return keyFile;
     }
     public void setKeyFile(String keyFile) {
         this.keyFile = keyFile;
+    }
+    
+    public String getEnableWindowsStemcell() {
+        return enableWindowsStemcell;
+    }
+    public void setEnableWindowsStemcell(String enableWindowsStemcell) {
+        this.enableWindowsStemcell = enableWindowsStemcell;
+    }
+    public String getWindowsStemcellName() {
+        return windowsStemcellName;
+    }
+    public void setWindowsStemcellName(String windowsStemcellName) {
+        this.windowsStemcellName = windowsStemcellName;
+    }
+    public String getWindowsStemcellVersion() {
+        return windowsStemcellVersion;
+    }
+    public void setWindowsStemcellVersion(String windowsStemcellVersion) {
+        this.windowsStemcellVersion = windowsStemcellVersion;
+    }
+    public String getWindowsCellInstance() {
+        return windowsCellInstance;
+    }
+    public void setWindowsCellInstance(String windowsCellInstance) {
+        this.windowsCellInstance = windowsCellInstance;
     }
     
 }

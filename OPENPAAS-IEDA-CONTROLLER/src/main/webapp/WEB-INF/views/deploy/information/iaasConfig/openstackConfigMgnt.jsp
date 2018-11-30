@@ -398,11 +398,11 @@ function saveOpenstackConfigInfo(){
     w2popup.lock(save_lock_msg, true);
     //Openstack 환경 설정 정보 등록
     configInfo = {
-            iaasType : "Openstack",
+            iaasType : "OPENSTACK",
             id : $(".w2ui-msg-body input[name='configId']").val(),
             iaasConfigAlias : $(".w2ui-msg-body input[name='iaasConfigAlias']").val(),
             accountId : $(".w2ui-msg-body select[name='accountName']").val(),
-            commonSecurityGroup : $(".w2ui-msg-body input[name='commonSecurityGroup']").val(),        
+            commonSecurityGroup : $(".w2ui-msg-body input[name='commonSecurityGroup']").val(),
             commonRegion : $(".w2ui-msg-body input[name='commonRegion']").val(),
             commonKeypairName : $(".w2ui-msg-body input[name='commonKeypairName']").val(),
             commonKeypairPath : $(".w2ui-msg-body input[name='commonKeypairPath']").val()
@@ -475,7 +475,13 @@ function initsetting() {
 function clearMainPage() {
     $().w2destroy('openstack_configGrid');
 }
-
+/******************************************************************
+ * Function : openBrowse
+ * 설명 : 공통 File upload Browse Button
+ ***************************************************************** */
+function openBrowse(){
+    $(".w2ui-msg-body input[name='keyPathFile']").click();
+}
 /********************************************************
  * 기능 : resize
  * 설명 : 화면 리사이즈시 호출
@@ -589,11 +595,13 @@ $(window).resize(function() {
               </div>
               <div class="w2ui-field">
                   <label style="text-align: left;font-size:11px;" class="control-label"></label>
-                  <div id="keyPathDiv" style="position:relative; width: 65%; left:220px;">
+                  <div id="keyPathDiv" style="position:relative; width: 65%; left:230px;">
                       <div id="keyPathFileDiv" hidden="true">
+                          <span>
                           <input type="text" id="keyPathFileName" name="keyPathFileName" style="width:55%;" readonly  onClick="openBrowse();" placeholder="업로드할 Key 파일을 선택하세요."/>
-                          <a href="#" id="browse" onClick="openBrowse();"><span id="BrowseBtn">Browse</span></a>
                           <input type="file" name="keyPathFile" onchange="setPrivateKeyPathFileName(this);" style="display:none;"/>
+                          <span id="BrowseBtn"><a href="#" id="browse" onClick="openBrowse();">Browse</a></span>
+                          </span>
                       </div>
                       <div id="keyPathListDiv">
                           <select name="keyPathList"  id="commonKeypairPathList" onchange="setPrivateKeyPath(this.value);" class="form-control select-control" style="width:55%"></select>
@@ -650,7 +658,7 @@ $(function() {
                         return false;
                     }
                 }, sqlInjection : function() {
-                	if($(".w2ui-msg-body input[name='openstackVersion']").val() == "V3"){
+                    if($(".w2ui-msg-body input[name='openstackVersion']").val() == "V3"){
                         return $(".w2ui-msg-body input[name='commonRegion']").val();
                     }
                 }

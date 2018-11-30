@@ -1,0 +1,174 @@
+- type: replace
+  path: /releases/-
+  value:
+    name: postgres
+    sha1: 24d2e2887a45258b71bc40577c0f406180e47701
+    url: file:///home/((inception_os_user_name))/workspace/paasta-3.5/release/paasta/postgres-release-29.tgz
+    version: "29"
+- type: remove
+  path: /instance_groups/name=database/jobs/name=mysql
+- type: remove
+  path: /instance_groups/name=database/jobs/name=proxy
+- type: replace
+  path: /instance_groups/name=database/migrated_from?
+  value:
+  - name: postgres
+  - name: singleton-database
+- type: replace
+  path: /instance_groups/name=database/jobs/-
+  value:
+    name: postgres
+    properties:
+      databases:
+        databases:
+        - citext: true
+          name: cloud_controller
+          tag: cc
+        - citext: true
+          name: uaa
+          tag: uaa
+        - citext: true
+          name: diego
+          tag: diego
+        - citext: true
+          name: routing-api
+          tag: routing-api
+        - citext: false
+          name: network_policy
+          tag: networkpolicy
+        - citext: false
+          name: network_connectivity
+          tag: networkconnectivity
+        - citext: true
+          name: locket
+          tag: locket
+        db_scheme: postgres
+        port: 5524
+        roles:
+        - name: cloud_controller
+          password: ((cc_database_password))
+          tag: admin
+        - name: uaa
+          password: ((uaa_database_password))
+          tag: admin
+        - name: diego
+          password: ((diego_database_password))
+          tag: admin
+        - name: routing-api
+          password: ((routing_api_database_password))
+          tag: admin
+        - name: network_policy
+          password: ((network_policy_database_password))
+          tag: admin
+        - name: network_connectivity
+          password: ((network_connectivity_database_password))
+          tag: admin
+        - name: locket
+          password: ((locket_database_password))
+          tag: locket
+    release: postgres
+- type: replace
+  path: /instance_groups/name=database/jobs/name=consul_agent/properties?/consul/agent/services?
+  value:
+    sql_db:
+      check: {}
+- type: replace
+  path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/ccdb
+  value:
+    databases:
+    - name: cloud_controller
+      tag: cc
+    db_scheme: postgres
+    port: 5524
+    roles:
+    - name: cloud_controller
+      password: ((cc_database_password))
+      tag: admin
+- type: replace
+  path: /instance_groups/name=cc-worker/jobs/name=cloud_controller_worker/properties/ccdb
+  value:
+    databases:
+    - name: cloud_controller
+      tag: cc
+    db_scheme: postgres
+    port: 5524
+    roles:
+    - name: cloud_controller
+      password: ((cc_database_password))
+      tag: admin
+- type: replace
+  path: /instance_groups/name=scheduler/jobs/name=cloud_controller_clock/properties/ccdb
+  value:
+    databases:
+    - name: cloud_controller
+      tag: cc
+    db_scheme: postgres
+    port: 5524
+    roles:
+    - name: cloud_controller
+      password: ((cc_database_password))
+      tag: admin
+- type: replace
+  path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaadb
+  value:
+    databases:
+    - name: uaa
+      tag: uaa
+    db_scheme: postgresql
+    port: 5524
+    roles:
+    - name: uaa
+      password: ((uaa_database_password))
+      tag: admin
+- type: replace
+  path: /instance_groups/name=diego-api/jobs/name=bbs/properties/diego/bbs/sql
+  value:
+    db_driver: postgres
+    db_host: sql-db.service.cf.internal
+    db_password: ((diego_database_password))
+    db_port: 5524
+    db_schema: diego
+    db_username: diego
+- type: replace
+  path: /instance_groups/name=api/jobs/name=policy-server/properties/database
+  value:
+    host: sql-db.service.cf.internal
+    name: network_policy
+    password: ((network_policy_database_password))
+    port: 5524
+    type: postgres
+    username: network_policy
+- type: replace
+  path: /instance_groups/name=diego-api/jobs/name=silk-controller/properties/database
+  value:
+    host: sql-db.service.cf.internal
+    name: network_connectivity
+    password: ((network_connectivity_database_password))
+    port: 5524
+    type: postgres
+    username: network_connectivity
+- type: replace
+  path: /instance_groups/name=diego-api/jobs/name=locket/properties/diego/locket/sql
+  value:
+    db_driver: postgres
+    db_host: sql-db.service.cf.internal
+    db_password: ((locket_database_password))
+    db_port: 5524
+    db_schema: locket
+    db_username: locket
+- type: replace
+  path: /instance_groups/name=api/jobs/name=routing-api/properties/routing_api/sqldb/type
+  value: postgres
+- type: replace
+  path: /instance_groups/name=api/jobs/name=routing-api/properties/routing_api/sqldb/port
+  value: 5524
+- type: remove
+  path: /releases/name=cf-mysql?
+- type: remove
+  path: /variables/name=cf_mysql_mysql_admin_password?
+- type: remove
+  path: /variables/name=cf_mysql_mysql_cluster_health_password?
+- type: remove
+  path: /variables/name=cf_mysql_mysql_galera_healthcheck_endpoint_password?
+- type: remove
+  path: /variables/name=cf_mysql_mysql_galera_healthcheck_password?

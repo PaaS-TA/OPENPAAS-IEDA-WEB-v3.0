@@ -30,7 +30,7 @@ function doSearch(){ }
  * 설명 : mouse hover event
  *********************************************************/
 function hover(event, val){
-    var src = "<c:url value='images/awsMgnt/"+val+".png'/>";
+    var src = "<c:url value='images/azureMgnt/"+val+".png'/>";
     $($(event).find("img")).attr("src",src);
 }
 
@@ -39,7 +39,7 @@ function hover(event, val){
  * 설명 : mouse unhover event
  *********************************************************/
 function unhover(event, val){
-    var src = "<c:url value='images/awsMgnt/"+val+".png'/>";
+    var src = "<c:url value='images/azureMgnt/"+val+".png'/>";
     $($(event).find("img")).attr("src",src);
 }
 </script>
@@ -59,38 +59,38 @@ function unhover(event, val){
         </div>
         <div id="azureMgntWrap" >
             <ul>
-               <%--  <sec:authorize access="hasAuthority('AZURE_RESOURCE_GROUP_MENU')"> --%>
-                    <li class="azureMgntDiv" onmouseover="hover(this,'securityGroup_a2');" onmouseout="unhover(this,'securityGroup_a1');" onclick="javascript:goPage('<c:url value="/azureMgnt/resourceGroup"/>', 'Resource Group');">
+                <sec:authorize access="hasAuthority('AZURE_RESOURCE_GROUP_MENU')"> 
+                    <li class="azureMgntDiv" onmouseover="hover(this,'az_resourceGroup_2');" onmouseout="unhover(this,'az_resourceGroup_1');" onclick="javascript:goPage('<c:url value="/azureMgnt/resourceGroup"/>', 'Resource Group');">
                         <ul>
                              <li class="azure-li"><span class="azure-li-span1">Resource Group</span></li>
                              <li>
                                  <ul style="margin-top:59px">
                                      <li style="margin-bottom:22px;">
-                                         <img src='<c:url value="images/awsMgnt/securityGroup_a1.png"/>' class="azure-icon" alt="azure"><span></span>
+                                         <img src='<c:url value="images/azureMgnt/az_resourceGroup_1.png"/>' class="azure-icon" alt="azure"><span></span>
                                      </li>
                                  </ul>
                              </li>
                          </ul>
                     </li>
-                <%-- </sec:authorize> --%>
-                <%--  <sec:authorize access="hasAuthority('AZURE_NETWORK_MENU')"> --%>
-                    <li class="azureMgntDiv" onmouseover="hover(this,'subnet_a2');" onmouseout="unhover(this,'subnet_a1');" onclick="javascript:goPage('<c:url value="/azureMgnt/network"/>', 'Virtual Network');">
+                 </sec:authorize> 
+                 <sec:authorize access="hasAuthority('AZURE_NETWORK_MENU')"> 
+                    <li class="azureMgntDiv" onmouseover="hover(this,'az_network_2');" onmouseout="unhover(this,'az_network_1');" onclick="javascript:goPage('<c:url value="/azureMgnt/network"/>', 'Virtual Network');">
                         <ul>
-                             <li class="azure-li"><span class="azure-li-span1">Virtual Network</span></li>
+                             <li class="azure-li"><span class="azure-li-span1">Virtual Network & Subnets </span></li>
                              <li>
                                  <ul style="margin-top:59px">
                                      <li style="margin-bottom:22px;">
-                                         <img src='<c:url value="images/awsMgnt/subnet_a1.png"/>' class="azure-icon" alt="azure"><span></span>
+                                         <img src='<c:url value="images/azureMgnt/az_network_1.png"/>' class="azure-icon" alt="azure"><span></span>
                                      </li>
                                  </ul>
                              </li>
                          </ul>
                     </li>
-                <%-- </sec:authorize> --%>
-                <sec:authorize access="hasAuthority('AZURE_NETWORK_MENU')">
+                 </sec:authorize> 
+                <%-- <sec:authorize access="hasAuthority('AZURE_SUBNET_MENU')">
                 <li class="azureMgntDiv"  onmouseover="hover(this,'subnet_a2');" onmouseout="unhover(this,'subnet_a1');" onclick="javascript:goPage('<c:url value="/azureMgnt/subnet"/>', 'Subnet');">
                     <ul>
-                         <li class="azure-li"><span class="azure-li-span1">Network</span></li>
+                         <li class="azure-li"><span class="azure-li-span1">Subnet</span></li>
                          <li>
                              <ul style="margin-top:59px">
                                  <li style="margin-bottom:22px;">
@@ -100,44 +100,68 @@ function unhover(event, val){
                          </li>
                      </ul>
                 </li>
-                </sec:authorize>
-                <sec:authorize access="hasAuthority('AZURE_SUBNET_MENU')">
-                    <li class="azureMgntDiv" onmouseover="hover(this,'subnet_a2');" onmouseout="unhover(this,'vpc_b1');" onclick="javascript:goPage('<c:url value="/azureMgnt/vpc"/>', 'VPC');">
+                </sec:authorize> --%>
+                <sec:authorize access="hasAuthority('AZURE_STORAGE_ACCOUNT_MENU')">
+                    <li class="azureMgntDiv" onmouseover="hover(this,'az_storageAccount_2');" onmouseout="unhover(this,'az_storageAccount_1');" onclick="javascript:goPage('<c:url value="/azureMgnt/storageAccount"/>', 'Storage Account');">
                         <ul>
-                            <li class="azure-li"><span class="azure-li-span1">Subnet</span></li>
+                            <li class="azure-li"><span class="azure-li-span1">Storage Account</span></li>
                             <li>
                                 <ul style="margin-top:59px">
-                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/azureMgnt/subnet_a1.png"/>' class="azure-icon" alt="azure"><span></span></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </sec:authorize>
-                <sec:authorize access="hasAuthority('AZURE_SECURITY_GROUP_MENU')">
-                    <li class="azureMgntDiv" onmouseover="hover(this,'gateway_b2');" onmouseout="unhover(this,'gateway_b1');" onclick="javascript:goPage('<c:url value="/azureMgnt/internetGateway"/>', 'Internet Gateway');">
-                        <ul>
-                            <li class="azure-li"><span class="azure-li-span1">Security Group</span></li>
-                            <li>
-                                <ul style="margin-top:59px">
-                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/azureMgnt/gateway_b1.png"/>' class="azure-icon" alt="azure"><span></span></li>
+                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/azureMgnt/az_storageAccount_1.png"/>'  class="azure-icon" alt="azure"><span></span></li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
                 </sec:authorize>
                 <sec:authorize access="hasAuthority('AZURE_PUBLIC_IP_MENU')">
-                    <li class="azureMgntDiv" onmouseover="hover(this,'elasticIP_c2');" onmouseout="unhover(this,'elasticIP_c1');" onclick="javascript:goPage('<c:url value="/azureMgnt/elasticIp"/>', 'Elastic IPs');">
+                    <li class="azureMgntDiv" onmouseover="hover(this,'az_pIp_2');" onmouseout="unhover(this,'az_pIp_1');" onclick="javascript:goPage('<c:url value="/azureMgnt/publicIp"/>', 'Public IP');">
                         <ul>
-                            <li class="azure-li"><span class="azure-li-span1">Public IPs</span></li>
+                            <li class="azure-li"><span class="azure-li-span1">Public IP</span></li>
                             <li>
                                 <ul style="margin-top:59px">
-                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/azureMgnt/elasticIP_c1.png"/>'  class="azure-icon" alt="azure"><span></span></li>
+                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/azureMgnt/az_pIp_1.png"/>' class="azure-icon" alt="azure"><span></span></li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
                 </sec:authorize>
-            </ul>
+                <sec:authorize access="hasAuthority('AZURE_STORAGE_ACCESS_KEY_MENU')">
+                    <li class="azureMgntDiv" onmouseover="hover(this,'az_keypair_2');" onmouseout="unhover(this,'az_keypair_1');" onclick="javascript:goPage('<c:url value="/azureMgnt/storageAccessKey"/>', 'Key Pair');">
+                        <ul>
+                            <li class="azure-li"><span class="azure-li-span1">Key Pair </span></li>
+                            <li>
+                                <ul style="margin-top:59px">
+                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/azureMgnt/az_keypair_1.png"/>'  class="azure-icon" alt="azure"><span></span></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </sec:authorize>
+                <sec:authorize access="hasAuthority('AZURE_SECURITY_GROUP_MENU')">
+                    <li class="azureMgntDiv" onmouseover="hover(this,'az_securityGroup_2');" onmouseout="unhover(this,'az_securityGroup_1');" onclick="javascript:goPage('<c:url value="/azureMgnt/securityGroup"/>', 'Security Group');">
+                        <ul>
+                            <li class="azure-li"><span class="azure-li-span1">Security Group</span></li>
+                            <li>
+                                <ul style="margin-top:59px">
+                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/azureMgnt/az_securityGroup_1.png"/>' class="azure-icon" alt="azure"><span></span></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </sec:authorize>
+                <sec:authorize access="hasAuthority('AZURE_ROUTE_TABLE_MENU')">
+                    <li class="azureMgntDiv" onmouseover="hover(this,'az_routeTable_2');" onmouseout="unhover(this,'az_routeTable_1');" onclick="javascript:goPage('<c:url value="/azureMgnt/routeTable"/>', 'Route Table');">
+                        <ul>
+                            <li class="azure-li"><span class="azure-li-span1">Route Table</span></li>
+                            <li>
+                                <ul style="margin-top:59px">
+                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/azureMgnt/az_routeTable_1.png"/>'  class="azure-icon" alt="azure"><span></span></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </sec:authorize>
+             </ul>
         </div>
     </div>
 </div>
@@ -153,7 +177,7 @@ function unhover(event, val){
 <div id="registAccountPopupDiv"  hidden="true">
     <input name="codeIdx" type="hidden"/>
     <div class="panel panel-info" style="margin-top:5px;" >    
-        <div class="panel-heading"><b>azure 계정 별칭 목록</b></div>
+        <div class="panel-heading"><b>Azure 계정 별칭 목록</b></div>
         <div class="panel-body" style="padding:5px 5% 10px 5%;height:65px;">
             <div class="w2ui-field">
                 <label style="width:30%;text-align: left;padding-left: 20px; margin-top: 20px;">azure 계정 별칭</label>

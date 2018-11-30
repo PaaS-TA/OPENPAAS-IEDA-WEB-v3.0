@@ -6,8 +6,7 @@ $(function() {
         ignore : "",
         rules:{
         	publicStaticIp_1 : {
-                required : function(){ return checkEmpty( $(".w2ui-msg-body input[name='publicStaticIp_1']").val() ); } 
-               ,ipv4     : function(){ return $(".w2ui-msg-body input[name='publicStaticIp_1']").val(); }
+                ipv4     : function(){ return $(".w2ui-msg-body input[name='publicStaticIp_1']").val(); }
             },networkName_1 : {
 	            required : function(){ return checkEmpty( $(".w2ui-msg-body input[name='networkName_1']").val() ); }
 	        },subnetId_1 : {

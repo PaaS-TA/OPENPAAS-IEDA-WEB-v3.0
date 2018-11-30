@@ -1,14 +1,18 @@
 package org.openpaas.ieda.deploy.web.config.setting.service;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File
 ;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.security.Principal;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +34,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.yaml.snakeyaml.Yaml;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -123,13 +129,11 @@ public class DirectorConfigService  {
         return flag;
     }
 
-
-
     /***************************************************
      * @param boshConfigFileName 
      * @project : OpenPaas 플랫폼 설치 자동
      * @description : 설치관리자 추가 정보 확인
-     * @title :  existcreateDirectorInfo
+     * @title :  existCheckCreateDirectorInfo
      * @return : void
      ***************************************************/
     public void existCheckCreateDirectorInfo(DirectorConfigDTO.Create createDto, Principal principal, String boshConfigFileName) {
@@ -179,22 +183,14 @@ public class DirectorConfigService  {
         director.setCreateUserId(sessionInfo.getUserId());
         director.setUpdateUserId(sessionInfo.getUserId());
         
-        //입력된 설치관리자 정보를 데이터베이스에 저장한다.
-        if(!director.equals(null)){
-            dao.insertDirector(director);
-            List<DirectorConfigVO> resultList = dao.selectDirectorConfigByDirectorUrl(createDto.getDirectorUrl());
-            try {
-                director.setIedaDirectorConfigSeq(resultList.get(0).getIedaDirectorConfigSeq());
-            } catch (IndexOutOfBoundsException e) {
-                e.printStackTrace();
-                throw new CommonException("outbound.directorFile.exception", "설치관리자가 제대로 설정되지 않았습니다.", HttpStatus.BAD_REQUEST);
-            }
-        }
+
         //기존에 기본 설치관리자가 존재한다면 N/ 존재하지않는다면 기본 설치관리자로 설정
         DirectorConfigVO directorConfig = dao.selectDirectorConfigByDefaultYn("Y");
         director.setDefaultYn((directorConfig == null ) ? "Y":"N");
         if( director.getDefaultYn().equalsIgnoreCase("Y") ) {
             boshEnvAliasSequence(director);
+        }else{        
+            dao.insertDirector(director);
         }
     }
     
@@ -204,9 +200,43 @@ public class DirectorConfigService  {
      * @title : boshEnvAliasSequence
      * @return : void
     *****************************************************************/
-    @SuppressWarnings("unchecked")
     public void boshEnvAliasSequence(DirectorConfigVO directorConfig){
         try{
+            // bosh-env에 로그인
+            boshEnvAliasLoginSequence(directorConfig);
+             // 로그인 판별
+            int statusResult = isExistBoshEnvLogin(directorConfig.getDirectorUrl(), 
+                    directorConfig.getDirectorPort(), 
+                    directorConfig.getUserId(), 
+                    directorConfig.getUserPassword());
+            String httpStatus = String.valueOf(statusResult);
+            // stemcell 조회 > httpStatus > 조건 200 이 아닐경우 Exception >> database update
+            if(httpStatus.equals("200")){
+                dao.insertDirector(directorConfig);
+            }else{
+                throw new CommonException("unAuthorized.director.exception",
+                        "실행 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
+            }
+        } catch (NullPointerException e){
+            e.printStackTrace();
+            throw new CommonException("notfound.directorFile.exception",
+                    "설치관리자 입력 정보를 확인해 주세요.", HttpStatus.NOT_FOUND);
+        } catch (ClassCastException e){
+            e.printStackTrace();
+            throw new CommonException("classCastException.directorFile.exception",
+                    "설치관리자 입력 정보를 확인해 주세요.", HttpStatus.NOT_FOUND);
+        }
+    }
+    /****************************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description :  기본 설치관리자 로그인
+     * @title : boshEnvAliasLoginSequence
+     * @return : void
+    *****************************************************************/
+    @SuppressWarnings("unchecked")
+    public void boshEnvAliasLoginSequence(DirectorConfigVO directorConfig){
+        OutputStreamWriter fileWriter = null;
+        try {
             String boshCredentialFile = CREDENTIAL_DIR+directorConfig.getCredentialFile();
             InputStream input = new FileInputStream(new File( boshCredentialFile));
             Yaml yaml = new Yaml();
@@ -215,53 +245,32 @@ public class DirectorConfigService  {
             Map<String, String> certMap = (Map<String,String>)object.get("director_ssl");
             // bosh alias-env를 실행한다.
             ProcessBuilder builder = new ProcessBuilder("bosh", "alias-env", directorConfig.getDirectorName(),
-                                                         "-e", directorConfig.getDirectorUrl(), "--ca-cert="+certMap.get("ca"));
-            builder.start();
-            Thread.sleep(1000);
-            // bosh-env에 로그인
-            boshAliasLoginSequence(directorConfig);
-            // 로그인 판별
-            int statusResult = isExistBoshEnvLogin(directorConfig.getDirectorUrl(), 
-                    directorConfig.getDirectorPort(), 
-                    directorConfig.getUserId(), 
-                    directorConfig.getUserPassword());
-            String httpStatus = String.valueOf(statusResult);
-            // stemcell 조회 > httpStatus > 조건 200 이 아닐경우 Exception >> database update
-            if(httpStatus.equals("200")){
-                dao.updateDirector(directorConfig);
-            }else{
-                throw new CommonException("unAuthorized.director.exception",
-                        "실행 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
+                                                         "-e", directorConfig.getDirectorUrl(), "--ca-cert="+certMap.get("ca"), "--tty");
+            Process process = builder.start();
+            BufferedReader bufferedReader = null;
+            InputStream inputStream = process.getInputStream();
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+            String info = null;
+            
+            String accumulatedLog= null;
+            
+            StringBuffer accumulatedBuffer = new StringBuffer();
+            
+            while ((info = bufferedReader.readLine()) != null){
+                accumulatedBuffer.append(info).append("\n");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new CommonException("taretDirector.director.exception",
-                    "설치관리자 타겟 설정 중 오류 발생하였습니다.", HttpStatus.NOT_FOUND);
-        } catch (NullPointerException e){
-            e.printStackTrace();
-            throw new CommonException("notfound.directorFile.exception",
-                    "설치관리자 관리 파일을 읽어오는 중 오류가 발생했습니다.", HttpStatus.NOT_FOUND);
-        } catch (ClassCastException e){
-            e.printStackTrace();
-            throw new CommonException("classCastException.directorFile.exception",
-                    "설치관리자 관리 파일을 읽어오는 중 오류가 발생했습니다.", HttpStatus.NOT_FOUND);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-    /****************************************************************
-     * @project : Paas 플랫폼 설치 자동화
-     * @description :  기본 설치관리자 로그인
-     * @title : boshAliasLoginSequence
-     * @return : void
-    *****************************************************************/
-    @SuppressWarnings("unchecked")
-    public void boshAliasLoginSequence(DirectorConfigVO directorConfig){
-        OutputStreamWriter fileWriter = null;
-        try {
+            if( accumulatedBuffer != null ) {
+                accumulatedLog = accumulatedBuffer.toString();
+            }
+            if(!accumulatedLog.contains("Succeeded")){
+                throw new CommonException("notfound.directorFile.exception",
+                        "기본 디렉터로 설정 중 에러가 발생 했습니다. 정보를 확인 해주세요.", HttpStatus.NOT_FOUND);
+            }
+            Thread.sleep(10000);
+            
             String boshConfigFile = BASE_DIR+SEPARATOR+".bosh"+SEPARATOR+"config";
-            InputStream input = new FileInputStream(new File(boshConfigFile));
-            Yaml yaml = new Yaml();
+            input = new FileInputStream(new File(boshConfigFile));
+            yaml = new Yaml();
             Map<String, Object> boshEnv = (Map<String, Object>)yaml.load(input);
             List<Map<String, Object>> envMap = (List<Map<String, Object>>) boshEnv.get("environments");
             for(int i=0;i<envMap.size();i++){
@@ -277,14 +286,15 @@ public class DirectorConfigService  {
             yaml.dump(boshEnv, stringWriter);
             fileWriter.write(stringWriter.toString());
         } catch (IOException e) {
-            e.printStackTrace();
             throw new CommonException("taretDirector.director.exception",
-                    "설치관리자 타겟 설정 중 오류 발생하였습니다.", HttpStatus.NOT_FOUND);
+                    "입력 정보를 확인해 주세요.", HttpStatus.NOT_FOUND);
         } catch (NullPointerException e){
-            e.printStackTrace();
             throw new CommonException("notfound.directorFile.exception",
-                    "설치관리자 관리 파일을 읽어오는 중 오류가 발생했습니다.", HttpStatus.NOT_FOUND);
-        } finally {
+                    "입력 정보를 확인해 주세요.", HttpStatus.NOT_FOUND);
+        } catch (InterruptedException e) {
+            throw new CommonException("notfound.directorFile.exception",
+                    "입력 정보를 확인해 주세요.", HttpStatus.NOT_FOUND);
+		} finally {
             try {
                 if(fileWriter != null) {
                     fileWriter.close();
@@ -307,7 +317,7 @@ public class DirectorConfigService  {
         
         if (directorConfig == null) {
             throw new CommonException("notfonud.director.exception",
-                    "해당하는 디렉터가 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+                    "해당하는 설치관리자는 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         }
         
         return directorConfig;
@@ -325,7 +335,7 @@ public class DirectorConfigService  {
         DirectorConfigVO directorConfig = dao.selectDirectorConfigBySeq(seq);
         if (directorConfig == null) {
             throw new CommonException("notfound.director.exception",
-                    "해당하는 디렉터가 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+                    "해당하는 설치관리자는 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         }
         dao.deleteDirector(seq);
     }
@@ -343,14 +353,14 @@ public class DirectorConfigService  {
         DirectorConfigVO directorConfig = dao.selectDirectorConfigBySeq(seq);
         if (directorConfig == null) {
             throw new CommonException("notfound.director.exception",
-                    "해당하는 설치관리자 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+                    "해당하는 설치관리자는 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         }
         
         //2.    설치관리자 정보를 확인한다
         DirectorInfoDTO info = getDirectorInfo(directorConfig.getDirectorUrl(), directorConfig.getDirectorPort(), directorConfig.getUserId(), directorConfig.getUserPassword());
         if ( info == null || StringUtils.isEmpty(info.getUser()) ) {
             throw new CommonException("unauthenticated.director.exception",
-                    "해당 디렉터에 로그인 실패하였습니다.", HttpStatus.BAD_REQUEST);
+                    "해당 설치 관리자 로그인 실패하였습니다.", HttpStatus.BAD_REQUEST);
         }
         return setDefaultDirectorInfo(directorConfig, info, principal, boshConfigFileName);
     }
@@ -365,15 +375,15 @@ public class DirectorConfigService  {
     ***************************************************/
     @SuppressWarnings("unchecked")
     public DirectorConfigVO setDefaultDirectorInfo(DirectorConfigVO directorConfig, DirectorInfoDTO info, Principal principal, String boshConfigFileName){
-        //3. 기존 기본관리자의 정보를 불러온다.
+        // 기존 기본관리자의 정보를 불러온다.
         DirectorConfigVO oldDefaultDiretor = dao.selectDirectorConfigByDefaultYn("Y");
-        //4. 세션 정보를 가져온다.
+        // 세션 정보를 가져온다.
         SessionInfoDTO sessionInfo = new SessionInfoDTO(principal);
         if (oldDefaultDiretor != null) {
             oldDefaultDiretor.setDefaultYn("N");
             oldDefaultDiretor.setUpdateUserId(sessionInfo.getUserId());
         }
-        //5. 새로운 기본관리자의 정보를 셋팅한다.
+        // 새로운 기본관리자의 정보를 셋팅한다.
         directorConfig.setDefaultYn("Y");
         directorConfig.setDirectorName(info.getName());
         directorConfig.setDirectorUuid(info.getUuid());
@@ -383,21 +393,10 @@ public class DirectorConfigService  {
         directorConfig.setDirectorCpi(info.getCpi());
         directorConfig.setDirectorVersion(info.getVersion());
         directorConfig.setUpdateUserId(sessionInfo.getUserId());
-        //6. bosh-env 환경설정 정보를 업데이트
+        // bosh-env 환경설정 정보를 업데이트
         OutputStreamWriter fileWriter = null;
         try{
-            String boshCredentialFile = CREDENTIAL_DIR+directorConfig.getCredentialFile();
-            InputStream input = new FileInputStream(new File( boshCredentialFile));
-            Yaml yaml = new Yaml();
-            //7. 파일을 로드하여 Map<String, Object>에 parse한다.
-            Map<String, Object> object = (Map<String, Object>)yaml.load(input);
-            Map<String, String> certMap = (Map<String,String>)object.get("director_ssl");
-            //8. bosh alias-env를 실행한다.
-            ProcessBuilder builder = new ProcessBuilder("bosh", "alias-env", directorConfig.getDirectorName(),
-                                                         "-e", directorConfig.getDirectorUrl(), "--ca-cert="+certMap.get("ca"));
-            builder.start();
-            Thread.sleep(1000);
-            boshAliasLoginSequence(directorConfig);
+            boshEnvAliasLoginSequence(directorConfig);
             int statusResult = isExistBoshEnvLogin(directorConfig.getDirectorUrl(), 
                                                    directorConfig.getDirectorPort(), 
                                                    directorConfig.getUserId(), 
@@ -414,10 +413,6 @@ public class DirectorConfigService  {
                 throw new CommonException("unAuthorized.director.exception",
                         "로그인 되지 않아 실행 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new CommonException("taretDirector.director.exception",
-                    "설치관리자 타겟 설정 중 오류 발생하였습니다.", HttpStatus.NOT_FOUND);
         } catch (NullPointerException e){
             e.printStackTrace();
             throw new CommonException("notfound.directorFile.exception",
@@ -430,10 +425,6 @@ public class DirectorConfigService  {
             e.printStackTrace();
             throw new CommonException("unAuthorized.director.exception",
                     "실행 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new CommonException(".execute.interrupte.exception",
-                    "설치관리자 관리 파일을 읽어오는 중 오류가 발생했습니다.", HttpStatus.NOT_FOUND);
         } finally {
             try {
                 if(fileWriter != null) {
@@ -466,4 +457,43 @@ public class DirectorConfigService  {
         return statusResult;
     }
     
-}
+    /****************************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : 
+     * @title : uploadCredentialKeyFile
+     * @return : void
+    *****************************************************************/
+    public void uploadCredentialKeyFile(MultipartHttpServletRequest request) {
+        Iterator<String> itr =  request.getFileNames();
+        File keyPathFile = new File(CREDENTIAL_DIR);
+        if (!keyPathFile.isDirectory()){
+            boolean result = keyPathFile.mkdir();
+            LOGGER.debug("Credential key path file directory create :: " + result);
+        }        
+        if(itr.hasNext()) {
+            BufferedOutputStream stream = null;
+            MultipartFile mpf = request.getFile(itr.next());
+            try { 
+                String keyFilePath = CREDENTIAL_DIR + mpf.getOriginalFilename();
+                byte[] bytes = mpf.getBytes();
+                File isKeyFile = new File(keyFilePath);
+                stream = new BufferedOutputStream(new FileOutputStream(isKeyFile));
+                stream.write(bytes); 
+                        
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new CommonException("notfound.keyFile.exception",
+                        "Key 입력 정보를 확인해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
+            } finally {
+                try {
+                    if( stream != null ) {
+                        stream.close();
+                    }
+                } catch (IOException e) {
+                    throw new CommonException("notfound.keyFile.exception",
+                            "Key 입력 정보를 확인해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        }
+    }
+ }

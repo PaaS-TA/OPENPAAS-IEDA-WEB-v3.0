@@ -79,7 +79,7 @@ $(function(){
          w2popup.open({
              title: "<b>Router 생성</b>",
              width: 700,
-             height: 225,
+             height: 220,
              modal: true,
              body: $("#registPopupDiv").html(),
              buttons: $("#registPopupBtnDiv").html(),
@@ -709,7 +709,7 @@ $( window ).resize(function() {
     <!-- 라우터 생성 팝업 -->
 <div id="registPopupDiv" hidden="true">
     <form id="openstackRouterForm" action="POST">
-        <div class="panel panel-info" style="height: 125px; margin-top: 7px">
+        <div class="panel panel-info" style="height: 100px; margin-top: 7px">
             <div class="panel-heading"><b>Router 정보</b></div>
             <div class="panel-body" style="padding: 10px 10px; height: 100px; overflow-y:auto;">
                 <input type="hidden" name="accountId"/>

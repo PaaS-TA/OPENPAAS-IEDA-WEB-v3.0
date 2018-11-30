@@ -39,7 +39,13 @@ public class SecurityPath  {
             try {
                 http.authorizeRequests().antMatchers(path).access("hasAuthority('" + roleDetail + "')");
             } catch (Exception e) {
+            	String detailMessage = e.getMessage();
+                if(!detailMessage.equals("") && detailMessage != null){
+                    throw new CommonException(
+                      detailMessage, detailMessage, HttpStatus.BAD_REQUEST);
+                }else{
                 throw new CommonException("notfound.security.exception", " getSecurityPathMapList is NULL", HttpStatus.NOT_FOUND);
+                }
             }
         }
         return http;

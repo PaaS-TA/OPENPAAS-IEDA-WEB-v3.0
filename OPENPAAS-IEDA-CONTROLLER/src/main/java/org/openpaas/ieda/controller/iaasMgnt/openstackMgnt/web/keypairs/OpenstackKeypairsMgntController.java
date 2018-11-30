@@ -7,7 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openpaas.ieda.controller.iaasMgnt.openstackMgnt.web.network.OpenstackNetworkMgntController;
-import org.openpaas.ieda.openstackMgnt.web.keypairs.service.OpenstackKeypairsMgntService;
+import org.openpaas.ieda.iaasDashboard.openstackMgnt.web.keypairs.service.OpenstackKeypairsMgntService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

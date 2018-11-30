@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 
 @Controller
@@ -107,6 +108,19 @@ public class DirectorConfigurationController extends BaseController {
         DirectorConfigVO directorConfig = service.existCheckSetDefaultDirectorInfo(seq,principal, boshConfigFileName);
         
         return new ResponseEntity<DirectorConfigVO>(directorConfig, HttpStatus.OK);
+    }
+    
+    /****************************************************************		
+     * @project : Paas 플랫폼 설치 자동화		
+     * @description :  Credential Key File 업로드		
+     * @title : doDirectorCredentialKeyFileUpload		
+     * @return : ResponseEntity<?>		
+    *****************************************************************/		
+    @RequestMapping(value="/config/director/credskey/upload", method=RequestMethod.POST)		
+    public ResponseEntity<?> doDirectorCredentialKeyFileUpload(MultipartHttpServletRequest request){		
+        if(LOGGER.isInfoEnabled()){ LOGGER.debug("====================================> credential 파일 업로드 조회 요청"); }		
+        service.uploadCredentialKeyFile(request);		
+        return new ResponseEntity<>(HttpStatus.OK);		
     }
     
 }

@@ -34,7 +34,7 @@ $(function() {
         header: '<b>Resource Group 목록</b>',
         multiSelect: false,
         show: {    
-                selectColumn: true,
+                selectColumn: false,
                 footer: true},
         style: 'text-align: center',
         columns    : [
@@ -90,7 +90,7 @@ $(function() {
         columns    : [
                      {field: 'recid',     caption: 'recid', hidden: true}
                    , {field: 'accountId',     caption: 'accountId', hidden: true}
-                   , {field: 'resourceName', caption: 'Resource Name', size: '50%', style: 'text-align:center'}
+                   , {field: 'resourceName', caption: 'Resource Name', size: '50%', style: 'text-align:center', info: true }
                    , {field: 'resourceType', caption: 'Resource Type', size: '50%', style: 'text-align:center'}
                    , {field: 'resourceLocation', caption: 'Location', size: '50%', style: 'text-align:center'}
                    ],
@@ -420,30 +420,23 @@ td {
                         &nbsp;&nbsp;Resource Group 관리<b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu alert-dropdown">
-                        
                         <sec:authorize access="hasAuthority('AZURE_NETWORK_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/azureMgnt/network"/>', 'Azure Network');">Virtual Network 관리</a></li>
-                        </sec:authorize>
-                        <sec:authorize access="hasAuthority('AZURE_SUBNET_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/azureMgnt/subnet"/>', 'Azure SUBNET');">Subnet 관리</a></li>
-                        </sec:authorize>
-                        <sec:authorize access="hasAuthority('AZURE_GATEWAY_SUBNET_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/azureMgnt/gatewaySubnet"/>', 'Azure Gateway Subnet');"> Gateway Subnet 관리</a></li>
-                        </sec:authorize>
-                        <sec:authorize access="hasAuthority('AWS_SECURITY_GROUP_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/azureMgnt/securityGroup"/>', 'Azure SECURITY GROUP');">Security Group 관리</a></li>
-                        </sec:authorize>
-                        <sec:authorize access="hasAuthority('AZURE_SECURITY_RULE_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/azureMgnt/securityRule"/>', 'Azure SECURITY RULE');">Security Rule 관리</a></li>
-                        </sec:authorize>
-                        <sec:authorize access="hasAuthority('AZURE_PUBILIC_IP_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/azureMgnt/publicIp"/>', 'Azure Public Ip');">Public Ip 관리</a></li>
                         </sec:authorize>
                         <sec:authorize access="hasAuthority('AZURE_STORAGE_ACCOUNT_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/azureMgnt/storageAccount"/>', 'Azure Storage Account');"> Storage Account 관리</a></li>
                         </sec:authorize>
-                        <sec:authorize access="hasAuthority('AZURE_STORAGE_CONTAINER_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/azureMgnt/storageContainer"/>', 'Azure Storage Container');">Storage Container 관리</a></li>
+                        <sec:authorize access="hasAuthority('AZURE_PUBLIC_IP_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/azureMgnt/publicIp"/>', 'Azure Public IP');">Public IP 관리</a></li>
+                        </sec:authorize>
+                         <sec:authorize access="hasAuthority('AZURE_STORAGE_ACCESS_KEY_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/azureMgnt/storageAccessKey"/>', 'Azure Key Pair');">Key Pair 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AZURE_SECURITY_GROUP_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/azureMgnt/securityGroup"/>', 'Azure Security Group');">Security Group 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AZURE_ROUTE_TABLE_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/azureMgnt/routeTable"/>', 'Azure Route Tablee');">Route Table 관리</a></li>
                         </sec:authorize>
                     </ul>
                 </div>
@@ -461,9 +454,11 @@ td {
     <div class="pdt20">
         <div class="title fl">Azure Resource Group 목록</div>
         <div class="fr"> 
+        <%-- <sec:authorize access="hasAuthority('AZURE_RESOURCE_GROUP_CREATE')"> --%>
             <sec:authorize access="hasAuthority('AWS_VPC_CREATE')">
             <span id="addBtn" class="btn btn-primary" style="width:120px">생성</span>
             </sec:authorize>
+            <%-- <sec:authorize access="hasAuthority('AZURE_RESOURCE_GROUP_DELETE')"> --%>
             <sec:authorize access="hasAuthority('AWS_VPC_DELETE')">
             <span id="deleteBtn" class="btn btn-danger" style="width:120px">삭제</span>
             </sec:authorize>
@@ -505,7 +500,7 @@ td {
      <button class="btn" id="popClose"  onclick="w2popup.close();">취소</button>
 </div>
     <div class="pdt20" >
-        <div class="title fl">azure Resource Group 상세 목록</div>
+        <div class="title fl">Azure Resource Group 상세 목록</div>
     </div>
     <div id="azure_rgDetailGrid" style="width:100%; height:128px; margin-top:50px; border-top: 2px solid #c5c5c5; ">
     <table id= "rgDetailTable" class="table table-condensed table-hover">

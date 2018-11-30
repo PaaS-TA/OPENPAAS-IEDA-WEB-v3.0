@@ -1,15 +1,25 @@
 package org.openpaas.ieda.iaasDashboard.api.resourceUsage;
 
+
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.lang3.StringUtils;
 import org.openpaas.ieda.common.web.common.service.CommonApiService;
+import org.openpaas.ieda.deploy.api.director.utility.DirectorRestHelper;
 import org.openstack4j.api.OSClient.OSClientV2;
 import org.openstack4j.api.OSClient.OSClientV3;
 import org.openstack4j.model.compute.Server;
@@ -34,6 +44,10 @@ import com.amazonaws.services.ec2.model.DescribeVolumesResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.Vpc;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.aad.adal4j.AuthenticationContext;
+import com.microsoft.aad.adal4j.AuthenticationResult;
+import com.microsoft.aad.adal4j.ClientCredential;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.credentials.AzureTokenCredentials;
 import com.microsoft.azure.management.Azure;
@@ -279,7 +293,7 @@ public class IaasResourceUsageApiService {
             map.put("billing", 00.00);
         }
         
-        map.put("iaasType", "AZURE");   
+        map.put("iaasType", "AZURE");
         
        }
         catch (InvalidKeyException e) {
@@ -292,6 +306,68 @@ public class IaasResourceUsageApiService {
         
         return map;
    }
+
+    final private static String AZURE_TOKEN_URL = "https://login.microsoftonline.com/";
+    final private static String AZURE_ACQUIRE_TOKEN_URL = "https://management.azure.com/";
+    /***************************************************
+     * @return 
+     * @project : 인프라 관리 대시보드
+     * @description : Azure 과금 조회
+     * @title : getResourceInfoFromAzure
+     * @return : boolean
+    ***************************************************/
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public Double setAzureBillingInfo(String commonAccessUser, String commonTenant, String commonAccessSecret,  String azureSubscriptionId) {
+        AuthenticationContext authContext = null;
+        AuthenticationResult authResult = null;
+        ExecutorService service = null;
+        Double costSum = 0.0;
+        try {
+            service = Executors.newFixedThreadPool(1);
+            String url = AZURE_TOKEN_URL + commonTenant + "/oauth2/token";
+            authContext = new AuthenticationContext(url, false, service);
+            ClientCredential clientCred = new ClientCredential(commonAccessUser, commonAccessSecret);
+            Future<AuthenticationResult> future = authContext.acquireToken(AZURE_ACQUIRE_TOKEN_URL, clientCred, null);
+            authResult = future.get();
+            if( !StringUtils.isEmpty(authResult.getAccessToken())){
+                String accessToken = authResult.getAccessToken();
+                Calendar cal = Calendar.getInstance();
+                int year = cal.get ( cal.YEAR );
+                int month = cal.get ( cal.MONTH );
+                String sMonth = "";
+                if(month < 10){
+                    sMonth = "0"+String.valueOf(month);
+                } else {
+                    sMonth = String.valueOf(month);
+                }
+                String setDateInfo = String.valueOf(year) + sMonth + "-1";
+                HttpClient httpClient = DirectorRestHelper.getHttpClient(443);
+                GetMethod get = new GetMethod(DirectorRestHelper.getAzureBillingInfoUri("management.azure.com","443", azureSubscriptionId, setDateInfo));
+                get = (GetMethod)DirectorRestHelper.setAuthorization(accessToken, (HttpMethodBase)get);
+                get.setRequestHeader("Authorization", "Bearer " + accessToken);
+                httpClient.executeMethod(get);
+                if ( !StringUtils.isEmpty(get.getResponseBodyAsString()) ) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    HashMap<String, Object> usageMaps = mapper.readValue(get.getResponseBodyAsString(), HashMap.class);
+                    if(usageMaps != null && usageMaps.size() != 0) {
+                        List<LinkedHashMap> usageList =  (List<LinkedHashMap>) usageMaps.get("value");
+                        if(usageList != null && usageList.size() != 0){
+                            for(int i=0; i<usageList.size(); i++){
+                                HashMap<String, Object> costs = (HashMap<String, Object>) usageList.get(i).get("properties");
+                                if(costs != null && costs.size()!=0 && !"0".equalsIgnoreCase(costs.get("pretaxCost").toString()))
+                                costSum += (Double)costs.get("pretaxCost");
+                            }
+                        }
+                    }
+                }
+                
+            }
+        } catch (Exception e) {
+            if( LOGGER.isErrorEnabled() ){ LOGGER.error(e.getMessage()); }
+            e.printStackTrace();
+        }
+        return costSum;
+    }
  
     
 }

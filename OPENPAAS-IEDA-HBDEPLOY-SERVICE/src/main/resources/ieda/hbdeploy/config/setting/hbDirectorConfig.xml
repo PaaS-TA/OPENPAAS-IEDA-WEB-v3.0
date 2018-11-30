@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.config.setting.dao.HbDirectorConfigDAO">
+    <resultMap id="hbDirectorConfigVo" type="org.openpaas.ieda.hbdeploy.web.config.setting.dao.HbDirectorConfigVO">
+        <id property="iedaDirectorConfigSeq" column="ieda_director_config_seq" />
+        <result property="userId" column ="user_id"/>
+        <result property="userPassword" column ="user_password"/>
+        <result property="directorName" column ="director_name"/>
+        <result property="directorVersion" column ="director_version"/>
+        <result property="directorUrl" column ="director_url"/>
+        <result property="directorPort" column ="director_port"/>
+        <result property="directorUuid" column ="director_uuid"/>
+        <result property="directorCpi" column ="director_cpi"/>
+        <result property="currentDeployment" column ="current_deployment"/>
+        <result property="directorType" column ="director_type"/>
+        <result property="createDate" column ="create_date"/>
+        <result property="updateDate" column ="update_date"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="updateUserId" column="update_user_id"/>
+        <result property="credentialFile" column="credential_file"/>
+    </resultMap>
+
+    <select id="selectHbDirectorConfig" resultMap="hbDirectorConfigVo">
+      /**ieda.deploy.config.setting.selectDirectorConfig**/
+        Select 
+            ieda_director_config_seq, 
+            create_date, 
+            current_deployment, 
+            director_type, 
+            director_cpi, 
+            director_name, 
+            director_port, 
+            director_url, 
+            director_uuid, 
+            director_version, 
+            update_date, 
+            user_id, 
+            user_password,
+            credential_file
+        From 
+            ieda_hybrid_director_config 
+            <if test="directorType == 'public'">
+                where director_cpi = 'aws_cpi'
+                or director_cpi = 'google_cpi'
+                or director_cpi = 'azure_cpi'
+            </if>
+            <if test="directorType == 'private'">
+                where director_cpi = 'openstack_cpi'
+                or director_cpi = 'vsphere_cpi'
+            </if>
+    </select>
+    <select id="selectHbDirectorConfigBySeq" resultMap="hbDirectorConfigVo">
+      /**ieda.deploy.config.setting.selectDirectorConfigBySeq**/
+        select 
+            ieda_director_config_seq, 
+            ieda_hybrid_director_config.create_date, 
+            current_deployment, 
+            director_type, 
+            director_cpi, 
+            ieda_hybrid_director_config.director_name, 
+            director_port, 
+            director_url, 
+            director_uuid, 
+            director_version, 
+            ieda_hybrid_director_config.update_date, 
+            user_id, 
+            user_password,
+            credential_file
+        From 
+            ieda_hybrid_director_config
+        where
+            ieda_director_config_seq=#{seq}
+    </select>
+    
+    <select id="selectHbDirectorConfigByDirectorUrl" resultMap="hbDirectorConfigVo">
+      /**ieda.deploy.config.setting.selectDirectorConfigByDirectorUrl**/
+        select 
+            ieda_director_config_seq, 
+            create_date, 
+            current_deployment, 
+            director_type, 
+            director_cpi, 
+            director_name, 
+            director_port, 
+            director_url, 
+            director_uuid, 
+            director_version, 
+            update_date, 
+            user_id, 
+            user_password,
+            credential_file
+        From 
+            ieda_hybrid_director_config 
+        Where 
+            director_url=#{directorUrl}
+    </select>
+    
+    
+    <insert id="insertHbDirector">
+      /**ieda.deploy.config.setting.insertDirector**/
+        insert into ieda_hybrid_director_config (
+            ieda_director_config_seq,
+            create_date, 
+            create_user_id,
+            current_deployment, 
+            director_type, 
+            director_cpi, 
+            director_name, 
+            director_port, 
+            director_url, 
+            director_uuid, 
+            director_version, 
+            update_date, 
+            update_user_id,
+            user_id, 
+            user_password,
+            credential_file) 
+        Values (
+            #{director.iedaDirectorConfigSeq},
+            now(),
+            #{director.createUserId},
+            #{director.currentDeployment},
+            #{director.directorType},
+            #{director.directorCpi},
+            #{director.directorName},
+            #{director.directorPort},
+            #{director.directorUrl},
+            #{director.directorUuid},
+            #{director.directorVersion},
+            now(),
+            #{director.updateUserId},
+            #{director.userId},
+            #{director.userPassword},
+            #{director.credentialFile})    
+    </insert>
+    
+    
+    <delete id="deleteHbDirector">
+        Delete from 
+            ieda_hybrid_director_config 
+        Where 
+            ieda_director_config_seq=#{seq}
+    </delete>
+    
+    <select id="selectHbDirectorConfigInfoByDirectorNameAndCPI" resultMap="hbDirectorConfigVo">
+      /**ieda.deploy.config.setting.selectDirectorConfigInfoByDirectorNameAndCPI**/
+        Select
+           ieda_director_config_seq
+           ,create_date
+           ,current_deployment 
+           ,director_type
+           ,director_cpi 
+           ,director_name 
+           ,director_port 
+           ,director_url 
+           ,director_uuid 
+           ,director_version 
+           ,update_date
+           ,user_id
+           ,user_password
+           ,credential_file
+          From ieda_hybrid_director_config
+         Where director_cpi  = #{director_cpi}
+           And director_name = #{director_name}
+    </select>
+    
+    <select id="selectHbDirectorConfigByIaas" resultMap="hbDirectorConfigVo">
+         Select 
+            ieda_director_config_seq, 
+            create_date, 
+            current_deployment, 
+            director_type, 
+            director_cpi, 
+            director_name, 
+            director_port, 
+            director_url, 
+            director_uuid, 
+            director_version, 
+            update_date, 
+            user_id, 
+            user_password,
+            credential_file
+        From 
+            ieda_hybrid_director_config 
+            <if test="iaasType == 'aws'">
+                where director_cpi = 'aws_cpi'
+            </if>
+            <if test="iaasType == 'openstack'">
+                where director_cpi = 'openstack_cpi'
+            </if>
+    </select>
+</mapper>

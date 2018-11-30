@@ -121,8 +121,6 @@
     Select count(*)
       From ieda_iaas_config
     Where iaas_type=#{config.iaasType}
-    
-    
     <choose>
          <when test="config.iaasType == 'AWS'">
             And common_region = #{config.commonRegion}
@@ -147,7 +145,7 @@
             And vsphere_vcenter_disk_path = #{config.vsphereVcenterDiskPath} 
             And vsphere_vcenter_cluster = #{config.vsphereVcenterCluster}  
         </when>
-         <when test="config.iaasType == 'azure'">
+         <when test="config.iaasType == 'AZURE'">
             And common_security_group = #{config.commonSecurityGroup}
             And azure_resource_group = #{config.azureResourceGroup}
             And azure_storage_account_name = #{config.azureStorageAccountName}
@@ -162,7 +160,6 @@
       From ieda_iaas_config
     Where iaas_type = #{config.iaasType}
        And iaas_config_alias = #{config.iaasConfigAlias}
-       And id != #{config.id}
 </select>
 
 <insert id="insertIaasConfigInfo">

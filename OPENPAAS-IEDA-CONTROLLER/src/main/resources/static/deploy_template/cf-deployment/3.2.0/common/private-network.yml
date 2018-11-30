@@ -1,0 +1,7 @@
+- type: remove
+  path: /instance_groups/name=diego-cell/networks/name=default
+
+- type: replace
+  path: /instance_groups/name=diego-cell/networks/-
+  value: 
+    name: default2

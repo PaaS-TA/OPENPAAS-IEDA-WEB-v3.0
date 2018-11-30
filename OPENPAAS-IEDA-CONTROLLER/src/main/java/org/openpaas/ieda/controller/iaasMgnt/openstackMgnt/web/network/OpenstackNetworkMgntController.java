@@ -4,9 +4,9 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openpaas.ieda.openstackMgnt.web.network.dao.OpenstackNetworkMgntVO;
-import org.openpaas.ieda.openstackMgnt.web.network.dto.OpenstackNetworkMgntDTO;
-import org.openpaas.ieda.openstackMgnt.web.network.service.OpenstackNetworkMgntService;
+import org.openpaas.ieda.iaasDashboard.openstackMgnt.web.network.dao.OpenstackNetworkMgntVO;
+import org.openpaas.ieda.iaasDashboard.openstackMgnt.web.network.dto.OpenstackNetworkMgntDTO;
+import org.openpaas.ieda.iaasDashboard.openstackMgnt.web.network.service.OpenstackNetworkMgntService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -341,7 +341,7 @@ $(function() {
   * 기능 : deleteOpenstackNetworkInfo
  *********************************************************/
  function deleteOpenstackNetworkInfo(record){
-      w2popup.lock(delete_lock_msg, true);
+      w2utils.lock($("#layout_layout_panel_main"), delete_lock_msg, true);
       var networkInfo = {
               accountId : record.accountId,
               networkId : record.networkId
@@ -353,14 +353,13 @@ $(function() {
           async : true,
           data : JSON.stringify(networkInfo),
           success : function(status) {
-              w2popup.unlock();
-              w2popup.close();
+              w2utils.unlock($("#layout_layout_panel_main"));
               accountId = networkInfo.accountId;
               w2ui['openstack_networkGrid'].clear();
               $("#networkDetailTable td").html("");
               doSearch();
           }, error : function(request, status, error) {
-              w2popup.unlock();
+              w2utils.unlock($("#layout_layout_panel_main"));
               $("#networkDetailTable td").html("");
               w2ui['openstack_networkGrid'].clear();
               accountId = networkInfo.accountId;
@@ -415,7 +414,6 @@ $(function() {
      if($("#w2ui-popup #deleteSubnetBtn").attr('disabled') == "disabled") return;
      var selected = w2ui['openstackSubnet_grid'].getSelection();
      var record = w2ui['openstackSubnet_grid'].get(selected);
-     
      var subnetInfo = {
              accountId : record.accountId,
              networkId : record.networkId,
@@ -709,9 +707,9 @@ td { width: 280px; }
             </div>
         </form>
         <div style="text-align: center; padding-top:10px;">
-	        <span id="addSubnetBtn" onclick="$('#settingForm').submit();" class="btn btn-primary" style="width:55px" >생성</span>
-	        <span id="deleteSubnetBtn" onclick="deleteOpenstackSubnetInfo();" class="btn btn-danger" style="width:55px" >삭제</span>
-	        <span id="cancle" onclick="w2popup.close();" class="btn btn-info" style="width:55px" >취소</span>
+            <span id="addSubnetBtn" onclick="$('#settingForm').submit();" class="btn btn-primary" style="width:55px" >생성</span>
+            <span id="deleteSubnetBtn" onclick="deleteOpenstackSubnetInfo();" class="btn btn-danger" style="width:55px" >삭제</span>
+            <span id="cancle" onclick="w2popup.close();" class="btn btn-info" style="width:55px" >취소</span>
         </div>
     </div>
 </div>

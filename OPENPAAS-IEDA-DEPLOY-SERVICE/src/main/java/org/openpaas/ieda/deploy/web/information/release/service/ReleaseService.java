@@ -167,6 +167,9 @@ public class ReleaseService {
                 if("cflinuxfs2".equalsIgnoreCase(releaseName)){
                     releaseName= "cflinuxfs2-rootfs";
                 }
+                if("os-conf".equalsIgnoreCase(releaseName)){
+                    releaseName="os-conf";
+                }
                 if( type.equalsIgnoreCase(releaseName)){
                     List<ReleaseVersionDTO> versionList = release.getReleaseVersions();
                     for (ReleaseVersionDTO releaseVersion : versionList) {

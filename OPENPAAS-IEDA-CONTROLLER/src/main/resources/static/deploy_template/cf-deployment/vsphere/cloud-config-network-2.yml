@@ -1,0 +1,77 @@
+compilation:
+  network: default
+  reuse_compilation_vms: true
+  vm_type: small
+  workers: 5
+
+disk_types:
+- disk_size: 5000
+  name: 5GB
+- disk_size: 10000
+  name: 10GB
+- disk_size: 100000
+  name: 100GB
+  
+networks:
+- name: default
+  type: manual
+  subnets:
+  - gateway: [private_gateway]
+    dns: [[private_dns]]
+    range: [private_range]
+    reserved: [[private_reserved]]
+    static: [[private_static]]
+    cloud_properties:
+      name: [private_network_name]
+      
+  - gateway: [private_gateway2]
+    dns: [[private_dns2]]
+    range: [private_range2]
+    reserved: [[private_reserved2]]
+    static: [[private_static2]]
+    cloud_properties:
+      name: [private_network_name2]
+      
+
+- name: vip
+  type: manual
+  subnets:
+  - gateway: [public_gateway]
+    dns: [[public_dns]]
+    range: [public_range]
+    reserved: [[public_reserved]]
+    cloud_properties:
+      name: [public_network_name]
+
+vm_extensions:
+- name: cf-router-network-properties
+- name: cf-tcp-router-network-properties
+- name: diego-ssh-proxy-network-properties
+- name: cf-haproxy-network-properties 
+- cloud_properties:
+    ephemeral_disk:
+      size: 51200
+  name: 50GB_ephemeral_disk
+- cloud_properties:
+    ephemeral_disk:
+      size: 102400
+  name: 100GB_ephemeral_disk
+  
+vm_types:
+- name: minimal
+  cloud_properties:
+    cpu: [small_cpu]
+    ram: [small_ram]
+    disk: [small_disk]
+    
+- name: small
+  cloud_properties:
+    cpu: [medium_cpu]
+    ram: [medium_ram]
+    disk: [medium_disk]
+    
+- name: small-highmem
+  cloud_properties:
+    cpu: [large_cpu]
+    ram: [large_ram]
+    disk: [large_disk]

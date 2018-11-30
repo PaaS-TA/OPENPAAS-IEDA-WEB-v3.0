@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class DirectorRestHelper {
     
     final private static String LOCK_DIR = LocalDirectoryConfiguration.getLockDir();
-    final private static int THREAD_SLEEP_TIME = 4 * 1000;
+    final private static int THREAD_SLEEP_TIME = 2 * 1000;
     final private static String HTTPS = "https";
     final private static String CANCELLED = "cancelled";
     final private static String STARTED = "started";
@@ -71,7 +71,17 @@ public class DirectorRestHelper {
         methodBase.setRequestHeader("Authorization", authHeader);
         return methodBase;
     }
-
+    
+    /***************************************************
+     * @project : Paas 플랫폼 설치 자동화
+     * @description : 계정과 비밀번호를 인코딩하여 Header를 정의하고 응답
+     * @title : setAuthorization
+     * @return : HttpMethodBase
+    ***************************************************/
+    public static HttpMethodBase setAuthorization(String accessToken, HttpMethodBase methodBase) {
+        methodBase.setRequestHeader("Authorization", accessToken);
+        return methodBase;
+    }
     
     /***************************************************
      * @project : Paas 플랫폼 설치 자동화
@@ -533,7 +543,7 @@ public class DirectorRestHelper {
                     status = ERROR;                    
                 } 
                 else if (taskInfo.getState().equalsIgnoreCase("cancelled")) {
-                    sendTaskOutput(userId, messageTemplate, messageEndpoint, DONE, Arrays.asList("", "Task " + taskId + ""));
+                    sendTaskOutput(userId, messageTemplate, messageEndpoint, CANCELLED, Arrays.asList("", "Task " + taskId + ""));
                     status = DONE;
                 }
 
@@ -702,7 +712,7 @@ public class DirectorRestHelper {
                             sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, STARTED, tag, Arrays.asList(output));
                         }
                     } else {
-                        
+                        Thread.sleep(THREAD_SLEEP_TIME);
                         String outputs1 = getTaskOutput.getResponseBodyAsString();
                         String outputs2 = outputs1.substring(0, outputs1.length() - 1).replace("\n", ",");
                         String outputs = "[" + outputs2 + "]";
@@ -741,8 +751,8 @@ public class DirectorRestHelper {
                         sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, STARTED, tag, responseMessage);
                     }
                 }
-
-                if (taskInfo.getState().equalsIgnoreCase("done") || lastState.equalsIgnoreCase("finished")) {
+                // || lastState.equalsIgnoreCase("finished") 삭제
+                if (taskInfo.getState().equalsIgnoreCase("done")) {
                     LOGGER.debug("done && taskInfo "+ taskInfo.getState());
                     sendTaskOutputWithTag(userId, messageTemplate, messageEndpoint, DONE, tag, Arrays.asList("", "Task " + taskId + " done"));
                     status = DONE;
@@ -799,5 +809,10 @@ public class DirectorRestHelper {
         messageTemplate.convertAndSendToUser(userId, messageEndpoint, response);
     }
 
+
+    public static String getAzureBillingInfoUri(String azureAcquireTokenUrl, String port, String azureSubscriptionId, String setDateInfo) {
+        return UriComponentsBuilder.newInstance().scheme(HTTPS).host(azureAcquireTokenUrl).port(port).path("subscriptions/{azureSubscriptionId}/providers/Microsoft.Billing/billingPeriods/{setDateInfo}/providers/Microsoft.Consumption/usageDetails")
+                .query("api-version={apiVersion}").build().expand(azureSubscriptionId, setDateInfo, "2018-08-31").toUri().toString();
+    }
     
 }

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentDefaultConfigDAO">
+
+    <resultMap id="hbCfDeploymentDefaultConfig" type="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentDefaultConfigVO">
+        <id property="id" column="ID" />
+        <result property="recid" column="id"/>
+        <result property="iaasType" column="IAAS_TYPE"/>
+        <result property="defaultConfigName" column="DEFAULT_CONFIG_NAME" />
+        <result property="cfDeploymentVersion" column="CF_DEPLOYMENT_VERSION" />
+        <result property="domain" column="DOMAIN" />
+        <result property="domainOrganization" column="DOMAIN_ORGANIZATION" />
+        <result property="cfDbType" column="CF_DB_TYPE" />
+        <result property="inceptionOsUserName" column="INCEPTION_OS_USER_NAME"/>
+        <result property="cfAdminPassword" column="CF_ADMIN_PASSWORD"/>
+        <result property="portalDomain" column="PORTAL_DOMAIN"/>
+        <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE"/>
+        <result property="metricUrl" column="METRIC_URL"/>
+        <result property="syslogAddress" column="SYSLOG_ADDRESS"/>
+        <result property="syslogPort" column="SYSLOG_PORT"/>
+        <result property="syslogCustomRule" column="SYSLOG_CUSTOM_RULE"/>
+        <result property="syslogFallbackServers" column="SYSLOG_FALLBACK_SERVERS"/>
+        <result property="createUserId" column="CREATE_USER_ID"/>
+        <result property="createDate" column="CREATE_DATE" />
+        <result property="updateUserId" column="UPDATE_USER_ID"/>
+        <result property="updateDate" column="UPDATE_DATE" />
+    </resultMap>
+
+    <select id = "selectHbCfDeploymentDefaultConfigInfoList" resultMap="hbCfDeploymentDefaultConfig">
+        select 
+            id as id
+            ,iaas_type as iaas_Type
+            ,default_config_name as default_config_name
+            ,cf_deployment_version as cf_deployment_version
+            ,domain as domain
+            ,domain_organization as domain_organization
+            ,cf_db_type as cf_db_type
+            ,inception_os_user_name as inception_os_user_name
+            ,cf_admin_password as cf_admin_password
+            ,portal_domain as portal_domain
+            ,paasta_monitoring_use as paasta_monitoring_use
+            ,metric_url as metric_url
+            ,syslog_address as syslog_address
+            ,syslog_port as syslog_port
+            ,syslog_custom_rule as syslog_custom_rule
+            ,syslog_fallback_servers as syslog_fallback_servers
+            ,create_user_id as create_user_id
+            ,create_date as create_date
+            ,update_user_id as update_user_id
+            ,update_date as update_date
+        from ieda_hb_cfDeployment_default_config
+        ORDER BY id;
+    </select>
+
+    <insert id="insertHbCfDeploymentDefaultConfigInfo">
+        INSERT INTO ieda_hb_cfDeployment_default_config(
+             iaas_type
+            ,default_config_name
+            ,cf_deployment_version
+            ,domain
+            ,domain_organization
+            ,cf_db_type
+            ,inception_os_user_name
+            ,cf_admin_password
+            ,portal_domain
+            ,paasta_monitoring_use 
+            ,metric_url
+            ,syslog_address
+            ,syslog_port
+            ,syslog_custom_rule
+            ,syslog_fallback_servers
+            ,create_user_id
+            ,create_date
+            ,update_user_id
+            ,update_date
+            ) VALUES (
+            #{default.iaasType}
+            ,#{default.defaultConfigName}
+            ,#{default.cfDeploymentVersion}
+            ,#{default.domain}
+            ,#{default.domainOrganization}
+            ,#{default.cfDbType}
+            ,#{default.inceptionOsUserName}
+            ,#{default.cfAdminPassword}
+            ,#{default.portalDomain}
+            ,#{default.paastaMonitoringUse}
+            ,#{default.metricUrl}
+            ,#{default.syslogAddress}
+            ,#{default.syslogPort}
+            ,#{default.syslogCustomRule}
+            ,#{default.syslogFallbackServers}
+            ,#{default.createUserId}
+            ,now()
+            ,#{default.updateUserId}
+            ,now()
+            )
+    </insert>
+
+    <update id="updateHbCfDeploymentDefaultConfigInfo">
+        UPDATE ieda_hb_cfDeployment_default_config set
+            iaas_type = #{default.iaasType}
+            ,default_config_name = #{default.defaultConfigName}
+            ,cf_deployment_version = #{default.cfDeploymentVersion}
+            ,domain = #{default.domain}
+            ,domain_organization = #{default.domainOrganization}
+            ,cf_db_type = #{default.cfDbType}
+            ,inception_os_user_name = #{default.inceptionOsUserName}
+            ,cf_admin_password = #{default.cfAdminPassword}
+            ,portal_domain = #{default.portalDomain}
+            ,metric_url = #{default.metricUrl}
+            ,syslog_address = #{default.syslogAddress}
+            ,syslog_port = #{default.syslogPort}
+            ,syslog_custom_rule = #{default.syslogCustomRule}
+            ,syslog_fallback_servers  = #{default.syslogFallbackServers}
+            ,paasta_monitoring_use = #{default.paastaMonitoringUse}
+            ,update_user_id = #{default.updateUserId}
+            ,update_date = now()
+        WHERE id = #{default.id}
+    </update>
+
+    <select id="selectHbCfDeploymentDefaultConfigInfo" resultMap="hbCfDeploymentDefaultConfig">
+        select 
+            id as id
+            ,iaas_type as iaas_type
+            ,default_config_name as default_config_name
+            ,cf_deployment_version as cf_deployment_version
+            ,domain as domain
+            ,domain_organization as domain_organization
+            ,cf_db_type as cf_db_type
+            ,inception_os_user_name as inception_os_user_name
+            ,cf_admin_password as cf_admin_password
+            ,paasta_monitoring_use as paasta_monitoring_use
+            ,metric_url as metric_url
+            ,syslog_address as syslog_address
+            ,syslog_port as syslog_port
+            ,syslog_custom_rule as syslog_custom_rule
+            ,syslog_fallback_servers as syslog_fallback_servers
+            ,portal_domain as portal_domain
+            ,create_user_id as create_user_id
+            ,create_date as create_date
+            ,update_user_id as update_user_id
+            ,update_date as update_date
+        from ieda_hb_cfDeployment_default_config
+        where id = #{id}
+    </select> 
+
+    <delete id = "deleteHbCfDeploymentDefaultConfigInfo">
+        delete from 
+            ieda_hb_cfDeployment_default_config
+        where
+            id = #{default.id}
+        and
+            default_config_name = #{default.defaultConfigName}
+    </delete>
+    
+    <select id = "selectHbCfDeploymentDefaultConfigByName" resultType="int">
+        select
+            count(*)
+        from
+            ieda_hb_cfDeployment_default_config
+        where
+            default_config_name = #{defaultConfigName}
+    </select>
+</mapper>

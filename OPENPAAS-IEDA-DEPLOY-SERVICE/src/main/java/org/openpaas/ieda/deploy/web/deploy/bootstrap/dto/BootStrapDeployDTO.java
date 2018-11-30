@@ -48,6 +48,8 @@ public class BootStrapDeployDTO{
         @NotNull
         private String directorName; //디렉터 명
         @NotNull
+        private String credentialKeyName;
+        @NotNull
         private String boshRelease; //bosh 릴리즈
         @NotNull
         private String ntp; //내부 NTP
@@ -58,10 +60,17 @@ public class BootStrapDeployDTO{
         @NotNull
         private String snapshotSchedule;//스냅샷 스케줄
         private String paastaMonitoringUse;// PaaS-TA 모니터링 사용 유무
-        private String paastaMonitoringIp; //PaaS-TA 모니터링 사용시 ingrestorIP
-        private String influxdbIp;
-        private String paastaMonitoringRelease; //PaaS-TA 모니터링 사용시 릴리즈
         private String osConfRelease;
+        private String boshBpmRelease; //BOSH BPM 릴리즈
+        private String boshUaaRelease; //BOSH uaa 릴리즈
+        private String boshCredhubRelease; //BOSH Credhub 릴리즈
+        private String paastaMonitoringAgentRelease; //PaaS-TA 모니터링 사용시 Agent 릴리즈
+        private String paastaMonitoringSyslogRelease; //PaaS-TA 모니터링 사용시 Syslog 릴리즈
+        private String metricUrl; //PaaS-TA 모니터링
+        private String syslogAddress; //PaaS-TA 모니터링
+        private String syslogPort; //PaaS-TA 모니터링
+        private String syslogTransport; //PaaS-TA 모니터링
+        
         public String getId() {
             return id;
         }
@@ -73,6 +82,12 @@ public class BootStrapDeployDTO{
         }
         public String getDirectorName() {
             return directorName;
+        }
+        public String getCredentialKeyName() {
+            return credentialKeyName;
+        }
+        public void setCredentialKeyName(String credentialKeyName) {
+            this.credentialKeyName = credentialKeyName;
         }
         public String getBoshRelease() {
             return boshRelease;
@@ -122,30 +137,67 @@ public class BootStrapDeployDTO{
         public void setPaastaMonitoringUse(String paastaMonitoringUse) {
             this.paastaMonitoringUse = paastaMonitoringUse;
         }
-        public String getPaastaMonitoringIp() {
-            return paastaMonitoringIp;
-        }
-        public void setPaastaMonitoringIp(String paastaMonitoringIp) {
-            this.paastaMonitoringIp = paastaMonitoringIp;
-        }
-        public String getPaastaMonitoringRelease() {
-            return paastaMonitoringRelease;
-        }
-        public void setPaastaMonitoringRelease(String paastaMonitoringRelease) {
-            this.paastaMonitoringRelease = paastaMonitoringRelease;
-        }
-        public String getInfluxdbIp() {
-            return influxdbIp;
-        }
-        public void setInfluxdbIp(String influxdbIp) {
-            this.influxdbIp = influxdbIp;
-        }
         public String getOsConfRelease() {
             return osConfRelease;
         }
         public void setOsConfRelease(String osConfRelease) {
             this.osConfRelease = osConfRelease;
         }
+        public String getBoshBpmRelease() {
+            return boshBpmRelease;
+        }
+        public void setBoshBpmRelease(String boshBpmRelease) {
+            this.boshBpmRelease = boshBpmRelease;
+        }
+        public String getBoshUaaRelease() {
+            return boshUaaRelease;
+        }
+        public void setBoshUaaRelease(String boshUaaRelease) {
+            this.boshUaaRelease = boshUaaRelease;
+        }
+        public String getBoshCredhubRelease() {
+            return boshCredhubRelease;
+        }
+        public void setBoshCredhubRelease(String boshCredhubRelease) {
+            this.boshCredhubRelease = boshCredhubRelease;
+        }
+        public String getPaastaMonitoringAgentRelease() {
+            return paastaMonitoringAgentRelease;
+        }
+        public void setPaastaMonitoringAgentRelease(String paastaMonitoringAgentRelease) {
+            this.paastaMonitoringAgentRelease = paastaMonitoringAgentRelease;
+        }
+        public String getPaastaMonitoringSyslogRelease() {
+            return paastaMonitoringSyslogRelease;
+        }
+        public void setPaastaMonitoringSyslogRelease(String paastaMonitoringSyslogRelease) {
+            this.paastaMonitoringSyslogRelease = paastaMonitoringSyslogRelease;
+        }
+        public String getMetricUrl() {
+            return metricUrl;
+        }
+        public void setMetricUrl(String metricUrl) {
+            this.metricUrl = metricUrl;
+        }
+        public String getSyslogAddress() {
+            return syslogAddress;
+        }
+        public void setSyslogAddress(String syslogAddress) {
+            this.syslogAddress = syslogAddress;
+        }
+        public String getSyslogPort() {
+            return syslogPort;
+        }
+        public void setSyslogPort(String syslogPort) {
+            this.syslogPort = syslogPort;
+        }
+        public String getSyslogTransport() {
+            return syslogTransport;
+        }
+        public void setSyslogTransport(String syslogTransport) {
+            this.syslogTransport = syslogTransport;
+        }
+        
     }
     
     public static class Network{
@@ -249,7 +301,6 @@ public class BootStrapDeployDTO{
         @NotNull
         private String stemcell; //스템셀
         private String cloudInstanceType; //인스턴스유형
-        @NotNull
         private String boshPassword; //VM 비밀번호
         private String resourcePoolCpu;//리소스 풀 CPU
         private String resourcePoolRam;//리소스 풀 RAM

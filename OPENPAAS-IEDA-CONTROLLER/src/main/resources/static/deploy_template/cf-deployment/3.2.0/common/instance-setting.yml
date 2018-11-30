@@ -1,0 +1,64 @@
+---
+- type: replace
+  path: /instance_groups/name=adapter/instances
+  value: ((adapter_instance))
+  
+- type: replace
+  path: /instance_groups/name=api/instances
+  value: ((api_instance))
+  
+- type: replace
+  path: /instance_groups/name=cc-worker/instances
+  value: ((cc-worker_instance))
+  
+- type: replace
+  path: /instance_groups/name=consul/instances
+  value: ((consul_instance))
+  
+- type: replace
+  path: /instance_groups/name=diego-api/instances
+  value: ((diego-api_instance))
+  
+- type: replace
+  path: /instance_groups/name=database/instances
+  value: ((database_instance))
+  
+- type: replace
+  path: /instance_groups/name=diego-cell/instances
+  value: ((diego-cell_instance))
+  
+- type: replace
+  path: /instance_groups/name=doppler/instances
+  value: ((doppler_instance))
+  
+- type: replace
+  path: /instance_groups/name=haproxy/instances
+  value: ((haproxy_instance))
+  
+- type: replace
+  path: /instance_groups/name=log-api/instances
+  value: ((log-api_instance))
+  
+- type: replace
+  path: /instance_groups/name=nats/instances
+  value: ((nats_instance))
+  
+- type: replace
+  path: /instance_groups/name=router/instances
+  value: ((router_instance))
+  
+- type: replace
+  path: /instance_groups/name=scheduler/instances
+  value: ((scheduler_instance))
+  
+- type: replace
+  path: /instance_groups/name=singleton-blobstore/instances
+  value: ((singleton-blobstore_instance))
+  
+- type: replace
+  path: /instance_groups/name=tcp-router/instances
+  value: ((tcp-router_instance))
+  
+- type: replace
+  path: /instance_groups/name=uaa/instances
+  value: ((uaa_instance))

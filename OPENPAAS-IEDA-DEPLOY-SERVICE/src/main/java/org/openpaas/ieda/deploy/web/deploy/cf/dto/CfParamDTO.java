@@ -11,9 +11,6 @@ public class CfParamDTO {
         private String id; //id
         @NotNull
         private String iaas; //IaaS
-        @NotNull
-        private String diegoYn;//diego 사용 유무
-        
         // 1.1 Deployment 정보
         @NotNull
         private String deploymentName; //배포명
@@ -24,27 +21,27 @@ public class CfParamDTO {
         @NotNull
         private String releaseVersion; //릴리즈 버전
         
-        private String loggregatorReleaseName;
-        private String loggregatorReleaseVersion;
-        
-        private String appSshFingerprint; //SSH 핑거프린트
-        @NotNull
-        private String deaMemoryMB; //deaMemoryMB
-        @NotNull
-        private String deaDiskMB; //deaDiskMB
+        private String cfDbType;
         
         // 1.2 기본정보
         @NotNull
         private String domain; //도메인
         @NotNull
-        private String description; //도메인 설명
-        @NotNull
         private String domainOrganization; //도메인 그룹
-        @NotNull
-        private String loginSecret; //로그인 비밀번호
-        @NotNull
         private String paastaMonitoringUse;//PaaS-TA 모니터링 사용 유무
-        private String ingestorIp;//PaaS-TA 모니터링 DB 서버 IP
+        private String userAddSsh;//os-conf ssh public-key
+        private String osConfReleaseName;//os-conf Release Name
+        private String osConfReleaseVersion;//os-conf Release Version
+        private String inceptionOsUserName; // Inception User Name
+        private String cfAdminPassword; // cf admin password
+        private String portalDomain; // paasta portal url
+        
+        private String metricUrl;
+        private String syslogAddress;
+        private String syslogPort;
+        private String syslogCustomRule;
+        private String syslogFallbackServers;
+        
         
         
         public String getId() {
@@ -58,12 +55,6 @@ public class CfParamDTO {
         }
         public void setIaas(String iaas) {
             this.iaas = iaas;
-        }
-        public String getDiegoYn() {
-            return diegoYn;
-        }
-        public void setDiegoYn(String diegoYn) {
-            this.diegoYn = diegoYn;
         }
         public String getDeploymentName() {
             return deploymentName;
@@ -89,35 +80,11 @@ public class CfParamDTO {
         public void setReleaseVersion(String releaseVersion) {
             this.releaseVersion = releaseVersion;
         }
-        public String getLoggregatorReleaseName() {
-            return loggregatorReleaseName;
+        public String getCfDbType() {
+            return cfDbType;
         }
-        public void setLoggregatorReleaseName(String loggregatorReleaseName) {
-            this.loggregatorReleaseName = loggregatorReleaseName;
-        }
-        public String getLoggregatorReleaseVersion() {
-            return loggregatorReleaseVersion;
-        }
-        public void setLoggregatorReleaseVersion(String loggregatorReleaseVersion) {
-            this.loggregatorReleaseVersion = loggregatorReleaseVersion;
-        }
-        public String getAppSshFingerprint() {
-            return appSshFingerprint;
-        }
-        public void setAppSshFingerprint(String appSshFingerprint) {
-            this.appSshFingerprint = appSshFingerprint;
-        }
-        public String getDeaMemoryMB() {
-            return deaMemoryMB;
-        }
-        public void setDeaMemoryMB(String deaMemoryMB) {
-            this.deaMemoryMB = deaMemoryMB;
-        }
-        public String getDeaDiskMB() {
-            return deaDiskMB;
-        }
-        public void setDeaDiskMB(String deaDiskMB) {
-            this.deaDiskMB = deaDiskMB;
+        public void setCfDbType(String cfDbType) {
+            this.cfDbType = cfDbType;
         }
         public String getDomain() {
             return domain;
@@ -125,23 +92,11 @@ public class CfParamDTO {
         public void setDomain(String domain) {
             this.domain = domain;
         }
-        public String getDescription() {
-            return description;
-        }
-        public void setDescription(String description) {
-            this.description = description;
-        }
         public String getDomainOrganization() {
             return domainOrganization;
         }
         public void setDomainOrganization(String domainOrganization) {
             this.domainOrganization = domainOrganization;
-        }
-        public String getLoginSecret() {
-            return loginSecret;
-        }
-        public void setLoginSecret(String loginSecret) {
-            this.loginSecret = loginSecret;
         }
         public String getPaastaMonitoringUse() {
             return paastaMonitoringUse;
@@ -149,12 +104,73 @@ public class CfParamDTO {
         public void setPaastaMonitoringUse(String paastaMonitoringUse) {
             this.paastaMonitoringUse = paastaMonitoringUse;
         }
-        public String getIngestorIp() {
-            return ingestorIp;
+        public String getMetricUrl() {
+            return metricUrl;
         }
-        public void setIngestorIp(String ingestorIp) {
-            this.ingestorIp = ingestorIp;
+        public void setMetricUrl(String metricUrl) {
+            this.metricUrl = metricUrl;
         }
+        public String getSyslogAddress() {
+            return syslogAddress;
+        }
+        public void setSyslogAddress(String syslogAddress) {
+            this.syslogAddress = syslogAddress;
+        }
+        public String getSyslogPort() {
+            return syslogPort;
+        }
+        public void setSyslogPort(String syslogPort) {
+            this.syslogPort = syslogPort;
+        }
+        public String getSyslogCustomRule() {
+            return syslogCustomRule;
+        }
+        public void setSyslogCustomRule(String syslogCustomRule) {
+            this.syslogCustomRule = syslogCustomRule;
+        }
+        public String getSyslogFallbackServers() {
+            return syslogFallbackServers;
+        }
+        public void setSyslogFallbackServers(String syslogFallbackServers) {
+            this.syslogFallbackServers = syslogFallbackServers;
+        }
+        public String getUserAddSsh() {
+            return userAddSsh;
+        }
+        public void setUserAddSsh(String userAddSsh) {
+            this.userAddSsh = userAddSsh;
+        }
+        public String getOsConfReleaseName() {
+            return osConfReleaseName;
+        }
+        public void setOsConfReleaseName(String osConfReleaseName) {
+            this.osConfReleaseName = osConfReleaseName;
+        }
+        public String getOsConfReleaseVersion() {
+            return osConfReleaseVersion;
+        }
+        public void setOsConfReleaseVersion(String osConfReleaseVersion) {
+            this.osConfReleaseVersion = osConfReleaseVersion;
+        }
+        public String getInceptionOsUserName() {
+            return inceptionOsUserName;
+        }
+        public void setInceptionOsUserName(String inceptionOsUserName) {
+            this.inceptionOsUserName = inceptionOsUserName;
+        }
+        public String getCfAdminPassword() {
+            return cfAdminPassword;
+        }
+        public void setCfAdminPassword(String cfAdminPassword) {
+            this.cfAdminPassword = cfAdminPassword;
+        }
+        public String getPortalDomain() {
+            return portalDomain;
+        }
+        public void setPortalDomain(String portalDomain) {
+            this.portalDomain = portalDomain;
+        }
+
     }
     
     public static class Delete{

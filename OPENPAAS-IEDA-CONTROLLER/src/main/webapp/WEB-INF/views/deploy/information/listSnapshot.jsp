@@ -222,8 +222,8 @@ $( window ).resize(function() {
     <div id="isDefaultDirector"></div>
     
     <div class="pdt20"> 
-        <div class="search_box" align="left" style="padding-left:10px;">
-            <label  style="font-size:11px">배포명</label>
+        <div class="search_box" align="left" style="padding-left:10px; width:100%;">
+            <label  style="font-size:11px; color:white;">배포명</label>
             &nbsp;&nbsp;&nbsp;
             <select name="select" id="deployments"  class="select" style="width:300px">
             </select>

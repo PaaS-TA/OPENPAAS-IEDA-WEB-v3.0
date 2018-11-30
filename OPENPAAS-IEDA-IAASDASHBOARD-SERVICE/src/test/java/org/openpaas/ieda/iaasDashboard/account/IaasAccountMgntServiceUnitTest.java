@@ -42,6 +42,7 @@ import org.openpaas.ieda.iaasDashboard.web.account.dto.IaasAccountMgntDTO;
 import org.openpaas.ieda.iaasDashboard.web.account.service.IaasAccountMgntService;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -779,7 +780,13 @@ public class IaasAccountMgntServiceUnitTest {
             dto.setCommonAccessSecret(Base64.encodeBase64URLSafeString(commonAccessSecretCipherData));
             
         } catch (Exception e) {
+        	String detailMessage = e.getMessage();
+            if(!detailMessage.equals("") && detailMessage != null){
+                throw new CommonException(
+                  detailMessage, detailMessage, HttpStatus.BAD_REQUEST);
+            }else{
             e.printStackTrace();
+            }
         }
         return dto;
     }

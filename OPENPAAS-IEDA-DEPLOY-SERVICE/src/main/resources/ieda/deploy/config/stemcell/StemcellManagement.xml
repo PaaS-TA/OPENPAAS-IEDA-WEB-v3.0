@@ -169,7 +169,9 @@
             stemcell_filename,
             stemcell_version,
             os_version,
-            download_status
+            download_status,
+            size,
+            stemcell_name
         from ieda_public_stemcells 
         where download_status is not null
         and lower(download_status) = 'downloaded'

@@ -358,10 +358,10 @@ function updateManifestContnet(){
     //1.2
     var manifest = {
             id       : record.id,
+            iaas     : record.iaas,
             content  : $(".w2ui-msg-body #manifestContent").val(),
             fileName : record.fileName
     }
-    
     if( manifest.content != "" ) {
         $.ajax({
             type : "PUT",

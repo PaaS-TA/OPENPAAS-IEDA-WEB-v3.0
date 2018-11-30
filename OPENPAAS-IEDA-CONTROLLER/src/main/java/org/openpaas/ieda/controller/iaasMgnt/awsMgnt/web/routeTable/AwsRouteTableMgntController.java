@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openpaas.ieda.awsMgnt.web.routeTable.dao.AwsRouteTableMgntVO;
-import org.openpaas.ieda.awsMgnt.web.routeTable.dto.AwsRouteTableMgntDTO;
-import org.openpaas.ieda.awsMgnt.web.routeTable.service.AwsRouteTableMgntService;
 import org.openpaas.ieda.controller.iaasMgnt.awsMgnt.web.vpc.AwsVpcMgntController;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.routeTable.dao.AwsRouteTableMgntVO;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.routeTable.dto.AwsRouteTableMgntDTO;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.routeTable.service.AwsRouteTableMgntService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

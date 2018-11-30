@@ -18,7 +18,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Open PaaS 플랫폼 설치 자동화</title>
+<title>플랫폼 설치 자동화</title>
 
 <!-- CSS  -->
 <link rel="stylesheet" type="text/css" href="<c:url value='/webjars/bootstrap/3.3.5/css/bootstrap.min.css'/>"/>
@@ -29,11 +29,11 @@
 <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="<c:url value='/css/default.css?ver=1'/>"/>
 <link rel="stylesheet" type="text/css" href="<c:url value='/css/guide.css?ver=1'/>"/>
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/deploy-common.css?ver=5'/>"/>
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/deploy-content.css?ver=6'/>"/>
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/progress-step.css?ver=2'/>"/> <!-- progress-step css -->
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/infra-guide.css?ver=3'/>"/>
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/infra-init.css?ver=4'/>"/>
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/deploy-common.css?ver=11'/>"/>
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/deploy-content.css?ver=12'/>"/>
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/progress-step.css?ver=11'/>"/> <!-- progress-step css -->
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/infra-guide.css?ver=12'/>"/>
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/infra-init.css?ver=11'/>"/>
 <!-- JAVA SCRIPT -->
 <!-- JQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -57,7 +57,7 @@
 <script type="text/javascript" src="<c:url value='/js/yaml.js'/>"></script>
 <!-- Common -->
 <script type="text/javascript" src="<c:url value='/js/common.js?ver=7'/>"></script>
-<script type="text/javascript" src="<c:url value='/js/common-deploy.js?ver=5'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/common-deploy.js?ver=1'/>"></script>
 
 <script type="text/javascript">
 (function($) {
@@ -76,7 +76,7 @@ $(function() {
         name: 'layout',
         panels: [
              { type: 'top', style: pstyle, size: 71}
-            ,{ type: 'left', style: pstyle, size:256}
+             ,{ type: 'left', style: pstyle, size:256}
             ,{ type: 'main', style: pstyle, size:1599}
         ],  onError: function(event) {
         }        , onResize : function(event) {

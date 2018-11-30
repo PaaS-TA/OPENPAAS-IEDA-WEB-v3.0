@@ -70,7 +70,6 @@ var deleteClient = "";
                        , {field: 'createDate', caption: '최초 배포 일자', size: '180px', style: 'text-align:center'}
                        ,{field: 'updateDate', caption: '배포 수정 일자', size: '180px', style: 'text-align:center'}
                        ,{field: 'deploymentFile', caption: '배포 파일 명', size: '170px', style: 'text-align:center'}
-
                        ],
                onSelect: function(event) {
                 event.onComplete = function() {
@@ -106,6 +105,8 @@ var deleteClient = "";
                     selectIaas = "OPENSTACk";
                 } else if (directorName.indexOf("VSPHERE") > 0)  {
                     selectIaas = "VSPHERE";
+                } else if (directorName.indexOf("GOOGLE") > 0){
+                	selectIaas = "GOOGLE";
                 }
             var selected = w2ui['w2ui_servicePackGrid'].getSelection();
             var record = w2ui['w2ui_servicePackGrid'].get(selected);
@@ -195,6 +196,7 @@ var deleteClient = "";
             contentType : "application/json",
             async : true,
             success : function(data, status) {
+            	console.log(data);
                 deploymentFiles = new Array();
                 var result = "";
                 deploymentFiles.push(data);
@@ -301,8 +303,8 @@ var deleteClient = "";
      *********************************************************/
     function deployPopup(deploymentFile) {
         $("#deployDiv").w2popup({
-            width : 720,
-            height : 490,
+            width   : 730,
+            height  : 615,
             modal    : true,
             showMax : true,
             onClose :initSetting,
@@ -345,8 +347,8 @@ var deleteClient = "";
         };
         
         $("#installDiv").w2popup({
-            width : 720,
-            height : 490,
+            width   : 730,
+            height  : 615,
             modal    : true,
             showMax : true,
             onOpen :function(event){
@@ -428,8 +430,8 @@ var deleteClient = "";
             var body = '<textarea id="deleteLogs" style="width:95%;height:90%;overflow-y:visible;resize:none;background-color:#FFF; margin:2%" readonly="readonly"></textarea>';
             
             w2popup.open({
-                width :700,
-                height :500,
+                width   : 730,
+                height  : 615,
                 title :"<b>서비스팩 삭제</b>",
                 body  :body,
                 buttons :'<button class="btn" onclick="popupComplete();">닫기</button>',

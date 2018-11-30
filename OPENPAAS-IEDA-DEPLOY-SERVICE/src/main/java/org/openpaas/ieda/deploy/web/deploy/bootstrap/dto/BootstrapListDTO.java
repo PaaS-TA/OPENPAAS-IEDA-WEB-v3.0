@@ -14,6 +14,7 @@ public class BootstrapListDTO {
     private String iaas; //IaaS
     private String boshRelease; //BOSH 릴리즈
     private String boshCpiRelease; //BOSH CPI 릴리즈
+    private String boshBpmRelease; //BOSH BPM 릴리즈
     private String subnetId; //서브넷 ID(NET ID)
     private String subnetRange; //서브넷 범위
     private String publicStaticIp; //디렉터 공인 IP
@@ -228,6 +229,14 @@ public class BootstrapListDTO {
         } else {
             this.createDate = new Date(createDate.getTime());
         }
+    }
+
+    public String getBoshBpmRelease() {
+        return boshBpmRelease;
+    }
+
+    public void setBoshBpmRelease(String boshBpmRelease) {
+        this.boshBpmRelease = boshBpmRelease;
     }
     
     

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapDefaultConfigDAO">
+
+<resultMap id="bootstrapDefault" type="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapDefaultConfigVO">
+    <id property="id" column="id" />
+    <result property="recid" column="id"/>
+    <result property="iaasType" column="IAAS_TYPE"/>
+    <result property="defaultConfigName" column="DEFAULT_CONFIG_NAME"/>
+    <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE" />
+    <result property="syslogAddress" column="SYSLOG_ADDRESS" />
+    <result property="syslogRelease" column="SYSLOG_RELEASE" />
+    
+    <result property="syslogPort" column="SYSLOG_PORT" />
+    <result property="syslogTransport" column="SYSLOG_TRANSPORT" />
+    <result property="metricUrl" column="METRIC_URL" />
+    
+    <result property="paastaMonitoringRelease" column="PAASTA_MONITORING_RELEASE" />
+    <result property="deploymentName" column ="DEPLOYMENT_NAME"/>
+    <result property="directorName" column ="DIRECTOR_NAME"/>
+    <result property="credentialKeyName" column ="CREDENTIAL_KEY_NAME"/>
+    <result property="boshRelease" column ="BOSH_RELEASE"/>
+    <result property="boshCpiRelease" column ="BOSH_CPI_RELEASE"/>
+    <result property="boshBpmRelease" column = "BOSH_BPM_RELEASE"/>
+    <result property="osConfRelease" column ="OS_CONF_RELEASE"/>
+    <result property="uaaRelease" column ="UAA_RELEASE"/>
+    <result property="credhubRelease" column ="CRED_HUB_RELEASE"/>
+    <result property="snapshotSchedule" column ="SNAPSHOT_SCHEDULE"/>
+    <result property="enableSnapshots" column ="ENABLE_SNAPSHOTS"/>
+    <result property="createUserId" column ="CREATE_USER_ID"/>
+    <result property="createDate" column ="CREATE_DATE"/>
+    <result property="updateUserId" column ="UPDATE_USER_ID"/>
+    <result property="updateDate" column ="UDATE_DATE"/>
+</resultMap>
+
+<select id = "selectBootstrapDefaultConfigInfoList" resultMap="bootstrapDefault">
+    select 
+        id
+        ,iaas_type
+        ,default_config_name
+        ,deployment_name
+        ,director_name
+        ,ntp
+        ,credential_key_name
+        ,boshRelease
+        ,bosh_cpi_release
+        ,bosh_bpm_release
+        ,os_conf_release
+        ,uaa_release
+        ,cred_hub_release
+        ,enable_snapshots
+        ,snapshot_schedule
+        ,paasta_monitoring_use
+        ,syslog_release
+        ,syslog_address
+        ,syslog_port
+        ,syslog_transport
+        ,metric_url
+        ,paasta_monitoring_release
+    from ieda_bootstrap_default_config
+    ORDER BY id;
+</select>
+
+<insert id="insertBootstrapDefaultConfigInfo">
+    INSERT INTO ieda_bootstrap_default_config(
+         iaas_type
+        ,default_config_name
+        ,deployment_name
+        ,director_name
+        ,ntp
+        ,credential_key_name
+        ,boshRelease
+        ,bosh_cpi_release
+        ,bosh_bpm_release
+        ,uaa_release
+        ,os_conf_release
+        ,cred_hub_release
+        ,enable_snapshots
+        ,snapshot_schedule
+        ,paasta_monitoring_use
+        ,syslog_release
+        ,syslog_address
+        ,syslog_port
+        ,syslog_transport
+        ,metric_url
+        ,paasta_monitoring_release
+        ,create_user_id
+        ,create_date
+        ,update_user_id
+        ,update_date
+        ) VALUES (
+        #{default.iaasType}
+        ,#{default.defaultConfigName}
+        ,#{default.deploymentName}
+        ,#{default.directorName}
+        ,#{default.ntp}
+        ,#{default.credentialKeyName}
+        ,#{default.boshRelease}
+        ,#{default.boshCpiRelease}
+        ,#{default.boshBpmRelease}
+        ,#{default.uaaRelease}
+        ,#{default.osConfRelease}
+        ,#{default.credhubRelease}
+        ,#{default.enableSnapshots}
+        ,#{default.snapshotSchedule}
+        ,#{default.paastaMonitoringUse}
+        ,#{default.syslogRelease}
+        ,#{default.syslogAddress}
+        ,#{default.syslogPort}
+        ,#{default.syslogTransport}
+        ,#{default.metricUrl}
+        ,#{default.paastaMonitoringRelease}
+        ,#{default.createUserId}
+        ,now()
+        ,#{default.updateUserId}
+        ,now()
+        )
+</insert>
+
+<update id="updateBootstrapDefaultConfigInfo">
+    UPDATE ieda_bootstrap_default_config set
+        iaas_type = #{default.iaasType}
+        ,default_config_name = #{default.defaultConfigName}
+        ,deployment_name = #{default.deploymentName}
+        ,director_name = #{default.directorName}
+        ,credential_key_name = #{default.credentialKeyName}
+        ,boshRelease = #{default.boshRelease}
+        ,ntp = #{default.ntp}
+        ,bosh_cpi_release = #{default.boshCpiRelease}
+        ,bosh_bpm_release = #{default.boshBpmRelease}
+        ,uaa_release = #{default.uaaRelease}
+        ,cred_hub_release = #{default.credhubRelease}
+        ,os_conf_release = #{default.osConfRelease}
+        ,enable_snapshots = #{default.enableSnapshots}
+        ,snapshot_schedule = #{default.snapshotSchedule}
+        ,paasta_monitoring_use = #{default.paastaMonitoringUse}
+        ,syslog_release = #{default.syslogRelease}
+        ,syslog_address = #{default.syslogAddress}
+        ,syslog_port = #{default.syslogPort}
+        ,syslog_transport = #{default.syslogTransport}
+        ,metric_url = #{default.metricUrl}
+        ,paasta_monitoring_release = #{default.paastaMonitoringRelease}
+        ,iaas_type = #{default.iaasType}
+        ,update_user_id = #{default.updateUserId}
+        ,update_date = now()
+    WHERE id = #{default.id}
+</update>
+
+<select id="selectBootstrapDefaultConfigInfo" resultMap="bootstrapDefault">
+    select 
+        id
+        ,iaas_type
+        ,default_config_name
+        ,deployment_name
+        ,director_name
+        ,ntp
+        ,credential_key_name
+        ,boshRelease
+        ,bosh_cpi_release
+        ,bosh_bpm_release
+        ,os_conf_release
+        ,uaa_release
+        ,cred_hub_release
+        ,enable_snapshots
+        ,snapshot_schedule
+        ,paasta_monitoring_use
+        ,syslog_release
+        ,syslog_address
+        ,syslog_port
+        ,syslog_transport
+        ,metric_url
+        ,paasta_monitoring_release
+        ,create_user_id 
+        ,create_date 
+        ,update_user_id
+        ,update_date
+    from ieda_bootstrap_default_config
+    where id = #{id}
+</select> 
+
+<delete id = "deleteBootstrapDefaultConfigInfo">
+    delete from 
+        ieda_bootstrap_default_config
+    where
+        id = #{default.id}
+    and
+        default_config_name = #{default.defaultConfigName}
+</delete>
+
+<select id = "selectBootstrapDefaultConfigByName" resultType="int">
+    select
+        count(*)
+    from
+        ieda_bootstrap_default_config
+    where
+        default_config_name = #{defaultConfigName}
+</select>
+
+</mapper>

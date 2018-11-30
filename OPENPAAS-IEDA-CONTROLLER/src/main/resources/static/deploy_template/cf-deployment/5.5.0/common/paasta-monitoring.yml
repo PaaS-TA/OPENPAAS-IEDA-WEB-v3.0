@@ -1,0 +1,41 @@
+- type: replace
+  path: /addons?/-
+  value:
+    include:
+      stemcell:
+      - os: ubuntu-trusty
+      - os: ubuntu-xenial
+    jobs:
+    - name: metrics_agent
+      properties:
+        metrics_agent:
+          influxdb:
+            database: cf_metric_db
+            measurement: cf_metrics
+            processMeasurement: cf_process_metrics
+            url: ((metric_url)):8089
+      release: paasta-monitoring-agent
+    name: paasta_metrics_agent
+- type: replace
+  path: /instance_groups/name=diego-cell/jobs/-
+  value:
+    name: cadvisor
+    release: paasta-monitoring-agent
+    properties:
+      cadvisor:
+        storage_driver: influxdb
+        storage_driver_db: container_metric_db
+        storage_driver_ip: ((metric_url))
+        storage_driver_port: 8069
+        rep:
+          require_tls: true
+          ca_cert: "((service_cf_internal_ca.certificate))"
+          client_cert: "((diego_rep_client.certificate))"
+          client_key: "((diego_rep_client.private_key))"
+- type: replace
+  path: /releases/-
+  value:
+    name: paasta-monitoring-agent
+    sha1: 2e66b93860d09d93b01d1eab87fa936d4c41f426 
+    url: file:///home/((inception_os_user_name))/workspace/paasta-4.0/release/monitoring/paasta-monitoring-agent.tgz
+    version: "4.0"

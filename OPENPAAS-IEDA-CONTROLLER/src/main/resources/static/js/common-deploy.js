@@ -1,27 +1,36 @@
 /*******************************************************************************
  * 설명 : 기본설치관리자 정보 조회
  ******************************************************************************/
-function getDefaultDirector(url) {
+function getDefaultDirector(url, type) {
     var isOk = true;
-    var directorInfoDiv = '<div class="title">설치 관리자</div>';
+    var directorInfoDiv = '<div class="title">디렉터 정보</div>';
     directorInfoDiv += '<table class="tbl1" border="1" cellspacing="0">';
-    directorInfoDiv += '<tr><th width="18%" class="th_fb">관리자 이름</th><td class="td_fb"><b id="directorName"></b></td>';
-    directorInfoDiv += '<th width="18%" class="th_fb">관리자 계정</th><td class="td_fb"><b id="userId"></b></td></tr>';
-    directorInfoDiv += '<tr><th width="18%" >관리자 URL</th><td><b id="directorUrl"></b></td>';
-    directorInfoDiv += '<th width="18%" >관리자 UUID</th><td ><b id="directorUuid"></b></td></tr></table>';
-
+    directorInfoDiv += '<tr><th width="18%" class="th_fb">디렉터 이름</th><td class="td_fb"><b id="directorName"></b></td>';
+    directorInfoDiv += '<th width="18%" class="th_fb">디렉터 계정</th><td class="td_fb"><b id="userId"></b></td></tr>';
+    directorInfoDiv += '<tr><th width="18%" >디렉터 URL</th><td><b id="directorUrl"></b></td>';
+    directorInfoDiv += '<th width="18%" >디렉터 UUID</th><td ><b id="directorUuid"></b></td></tr></table>';
     $.ajax({
         type : "GET",
         url : url,
         async : false,
         success : function(data) {
             if (!checkEmpty(data)) {
-                $("#isDefaultDirector").html(directorInfoDiv);
-                setDefaultDirectorInfo(data);
+                if(type!="hybrid"){
+                    $("#isDefaultDirector").html(directorInfoDiv);
+                    setDefaultDirectorInfo(data);
+                } else{
+                    $("#isDefaultDirector").html("");
+                }
                 isOk = data.connect;
             } else {
                 isOk = false;
-                var message = "기본 설치관리자가 존재하지 않습니다. 플랫폼설치 -> BOOSTRAP설치 메뉴를 이용해서 BOOTSTRAP 설치 후 설치관리자를 등록하세요.";
+                var message = "";
+                if(type!="hybrid"){
+                    var message = "기본 디렉터가 존재하지 않습니다. 플랫폼설치 -> BOOSTRAP설치 메뉴를 이용해서 BOOTSTRAP 설치 후 디렉터를 등록하세요.";
+                } else{
+                    var message = "디렉터가 존재하지 않습니다. 이기종 플랫폼설치 -> BOOSTRAP설치 메뉴를 이용해서 BOOTSTRAP 설치 후 디렉터를 등록하세요.";
+                }
+                
                 var errorDirectorDiv = '<div class="alert alert-danger" style="font-size:15px;text-align:center;"><strong>'
                     + message + '</strong></div>';
                 $("#isDefaultDirector").html(errorDirectorDiv);
@@ -194,13 +203,6 @@ function setPrivateKeyPath(value){
     $(".w2ui-msg-body input[name=commonKeypairPath]").val(value);
 }
 
-/******************************************************************
- * Function : openBrowse
- * 설명 : 공통 File upload Browse Button
- ***************************************************************** */
-function openBrowse(){
-    $(".w2ui-msg-body input[name='keyPathFile']").click();
-}
 
 /******************************************************************
  * Function : setPrivateKeyPathFileName
@@ -548,3 +550,42 @@ function popupNetworkValidation() {
     }
     return checkValidation;
 }
+
+
+/********************************************************
+ * 설명 : 디렉터 리스트 조회
+ * 기능 : directorList
+ *********************************************************/
+function getDirectorList(){
+    var directorArray = []
+    $.ajax({
+        type : "GET",
+        url : "/common/use/hbDirector",
+        async : true,
+        success : function(data){
+            var $object = jQuery("#directors");
+            var directorList = "";
+            if(data != null){
+                data.map(function(obj){
+                    directorArray.push(obj);
+            });
+                directorList = "<select name='select' id='directors' class='select' style='width:300px' onchange='doSearch(this.value);'>";
+                directorList += "<option selected='selected' disabled='disabled' value='' style='color:gray'>디렉터를 선택하세요.</option>";
+                for(var i=0; i<directorArray.length; i++){
+                    directorList += "<option value='"+directorArray[i].iedaDirectorConfigSeq+"/"+directorArray[i].directorCpi+"'>"+directorArray[i].directorName+"("+directorArray[i].directorUrl+")"+"</option>\n";
+                }
+            }else{
+                directorList = "<option selected='selected' disabled='disabled' value='' style='color:red'>디렉터가 존재하지 않습니다.</option>";
+            }
+            directorList += "</select>"
+            $object.html(directorList);
+        },error : function(xhr, status) {
+               if(xhr.status==403){
+                   location.href = "/abuse";
+               }else{
+                   var errorResult = JSON.parse(request.responseText);
+                   w2alert(errorResult, "디렉터 조회");
+               }
+           }
+    });
+ }

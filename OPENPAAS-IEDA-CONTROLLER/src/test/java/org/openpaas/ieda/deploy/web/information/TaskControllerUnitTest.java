@@ -25,6 +25,7 @@ import org.openpaas.ieda.deploy.api.task.TaskListDTO;
 import org.openpaas.ieda.deploy.web.information.task.dto.TaskDTO;
 import org.openpaas.ieda.deploy.web.information.task.service.TaskAsyncService;
 import org.openpaas.ieda.deploy.web.information.task.service.TaskService;
+import org.openpaas.ieda.hbdeploy.api.task.HbTaskListDTO;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -126,7 +127,8 @@ public class TaskControllerUnitTest  extends BaseControllerUnitTest {
    *****************************************************************/
     @Test
     public void testDoGetTaskLog() throws Exception {
-        doNothing().when(mockTaskAsyncService).doGetTaskLogAsync("event", "1", "", principal);
+    	TaskDTO.GetLog dto = setTaskLogInfo();
+        doNothing().when(mockTaskAsyncService).doGetTaskLogAsync(dto, principal);
         mockTaskController.doGetTaskLog(setTaskLogInfo(), principal);
     }
     

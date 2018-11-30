@@ -64,17 +64,15 @@ $(function() {
                 }
             }
             , {field: 'directorUuid', caption: '설치관리자 UUID', size: '280px'}
-            , {field: 'release', caption: 'CF 릴리즈', size: '100px'
+            , {field: 'release', caption: 'CF Deployment', size: '200px'
                 , render:function(record){
                         if( record.releaseName && record.releaseVersion ){
                             return record.releaseName +"/"+ record.releaseVersion;
                         }
                     }
                 }
-            , {field: 'appSshFingerprint', caption: 'SSH 핑거프린트', size: '240px'}
             // 1.2 기본정보
             , {field: 'domain', caption: '도메인', size: '180px'}
-            , {field: 'description', caption: '도메인 설명', size: '220px'}
             , {field: 'domainOrganization', caption: '도메인 그룹', size: '120px'}
             // 1.3 HA프록시 정보
             , {field: 'proxyStaticIps', caption: 'HAProxy 공인 IP', size: '120px'}
@@ -82,8 +80,8 @@ $(function() {
             , {field: 'subnetRange', caption: '서브넷 범위', size: '180px'}
             , {field: 'subnetGateway', caption: '게이트웨이', size: '100px'}
             , {field: 'subnetDns', caption: 'DNS', size: '100px'}
-            , {field: 'subnetReservedIp', caption: '할당된 IP 대역', size: '240px' }
-            , {field: 'subnetStaticIp', caption: 'VM 할당 IP대역', size: '240px'    }
+            , {field: 'subnetReservedIp', caption: '할당 제외 IP 대역', size: '240px' }
+            , {field: 'subnetStaticIp', caption: '할당 IP 대역', size: '240px' }
             , {field: 'subnetId', caption: '네트워크 ID(포트 그룹명)', size: '140px'}
             , {field: 'cloudSecurityGroups', caption: '시큐리티 그룹명', size: '100px'}
             
@@ -135,31 +133,11 @@ $(function() {
      *********************************************************/
     $("#installBtn").click(function() {
         if($("#installBtn").attr('disabled') == "disabled") return;
-        w2confirm({
-            width        : 550,
-            height       : 180,
-            title        : '<b>DIEGO 사용여부</b>',
-            msg          : $("#diegoSelectDiv").html(),
-            modal        : true,
-            yes_text     : "확인",
-            no_text      : "취소",
-            yes_callBack : function(){
-                 //DIego 사용 여부
-                diegoUse = $(".w2ui-msg-body input:radio[name='diegoSelect']:checked").val();
-                if( iaas == "") {
-                    selectIaas(); return;
-                }
-                //cf Popup load
-                $("#cfPopupDiv").load("/deploy/cf/install/cfPopup",function(event){
-                     installStep = 8;
-                     menu = "cf";
-                     defaultInfoPopup();
-                     return;
-                });
-            },
-            no_callBack : function(event){
-                gridReload();
-            }
+        $("#cfPopupDiv").load("/deploy/cf/install/cfPopup",function(event){
+             installStep = 8;
+             menu = "cf";
+             defaultInfoPopup();
+             return;
         });
     });
     
@@ -294,7 +272,7 @@ function selectIaas() {
  *********************************************************/
 function doButtonStyle() {
     if ( !bDefaultDirector ) {
-        $('#installBtn').attr('disabled', true);
+        $('#installBtn').attr('disabled', false);
         $('#modifyBtn').attr('disabled', true);
         $('#deleteBtn').attr('disabled', true);
     } 
@@ -387,6 +365,11 @@ $(window).resize(function() {
                 <input type="radio" name="structureType" id="type4" value="GOOGLE" tabindex="3" />
                  &nbsp;GOOGLE
             </label>
+            <label style="width: 130px; margin-left: 40px;">
+                <input type="radio" name="structureType" id="type4" value="Azure" tabindex="3" />
+                 &nbsp;Azure
+            </label>
+            
         </div>
     </div>
 </div>

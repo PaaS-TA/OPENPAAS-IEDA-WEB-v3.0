@@ -4,8 +4,8 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openpaas.ieda.awsMgnt.web.elasticIp.dao.AwsElasticIpMgntVO;
-import org.openpaas.ieda.awsMgnt.web.elasticIp.service.AwsElasticIpMgntService;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.elasticIp.dao.AwsElasticIpMgntVO;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.elasticIp.service.AwsElasticIpMgntService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

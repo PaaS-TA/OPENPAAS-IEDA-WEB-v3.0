@@ -59,6 +59,44 @@ function unhover(event, val){
         </div>
         <div id="awsMgntWrap" >
             <ul>
+              <sec:authorize access="hasAuthority('AWS_VPC_MENU')">
+                    <li class="awsMgntDiv" onmouseover="hover(this,'vpc_b2');" onmouseout="unhover(this,'vpc_b1');" onclick="javascript:goPage('<c:url value="/awsMgnt/vpc"/>', 'VPC');">
+                        <ul>
+                            <li class="aws-li"><span class="aws-li-span1">VPC</span></li>
+                            <li>
+                                <ul style="margin-top:59px">
+                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/awsMgnt/vpc_b1.png"/>' class="aws-icon" alt="AWS"><span></span></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </sec:authorize>
+                 <sec:authorize access="hasAuthority('AWS_SUBNET_MENU')">
+                <li class="awsMgntDiv"  onmouseover="hover(this,'subnet_a2');" onmouseout="unhover(this,'subnet_a1');" onclick="javascript:goPage('<c:url value="/awsMgnt/subnet"/>', 'Subnet');">
+                    <ul>
+                         <li class="aws-li"><span class="aws-li-span1">Subnet</span></li>
+                         <li>
+                             <ul style="margin-top:59px">
+                                 <li style="margin-bottom:22px;">
+                                     <img src='<c:url value="images/awsMgnt/subnet_a1.png"/>'  class="aws-icon" alt="AWS"><span></span>
+                                 </li>
+                             </ul>
+                         </li>
+                     </ul>
+                </li>
+                </sec:authorize>
+                <sec:authorize access="hasAuthority('AWS_INTERNET_GATEWAY_MENU')">
+                    <li class="awsMgntDiv" onmouseover="hover(this,'gateway_b2');" onmouseout="unhover(this,'gateway_b1');" onclick="javascript:goPage('<c:url value="/awsMgnt/internetGateway"/>', 'Internet Gateway');">
+                        <ul>
+                            <li class="aws-li"><span class="aws-li-span1">Internet Gateway</span></li>
+                            <li>
+                                <ul style="margin-top:59px">
+                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/awsMgnt/gateway_b1.png"/>' class="aws-icon" alt="AWS"><span></span></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </sec:authorize>
                 <sec:authorize access="hasAuthority('AWS_SECURITY_GROUP_MENU')">
                     <li class="awsMgntDiv securityGroup" onmouseover="hover(this,'securityGroup_a2');" onmouseout="unhover(this,'securityGroup_a1');"  onclick="javascript:goPage('<c:url value="/awsMgnt/securityGroup"/>', 'Security Group');">
                         <ul >
@@ -71,6 +109,18 @@ function unhover(event, val){
                                  </ul>
                              </li>
                          </ul>
+                    </li>
+                </sec:authorize>
+                 <sec:authorize access="hasAuthority('AWS_ELASTIC_IP_MENU')">
+                    <li class="awsMgntDiv" onmouseover="hover(this,'elasticIP_c2');" onmouseout="unhover(this,'elasticIP_c1');" onclick="javascript:goPage('<c:url value="/awsMgnt/elasticIp"/>', 'Elastic IPs');">
+                        <ul>
+                            <li class="aws-li"><span class="aws-li-span1">Elastic IPs</span></li>
+                            <li>
+                                <ul style="margin-top:59px">
+                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/awsMgnt/elasticIP_c1.png"/>'  class="aws-icon" alt="AWS"><span></span></li>
+                                </ul>
+                            </li>
+                        </ul>
                     </li>
                 </sec:authorize>
                 <sec:authorize access="hasAuthority('AWS_KEYPAIR_MENU')">
@@ -87,75 +137,25 @@ function unhover(event, val){
                          </ul>
                     </li>
                 </sec:authorize>
-                <sec:authorize access="hasAuthority('AWS_SUBNET_MENU')">
-                <li class="awsMgntDiv"  onmouseover="hover(this,'subnet_a2');" onmouseout="unhover(this,'subnet_a1');" onclick="javascript:goPage('<c:url value="/awsMgnt/subnet"/>', 'Subnet');">
-                    <ul>
-                         <li class="aws-li"><span class="aws-li-span1">Subnet</span></li>
-                         <li>
-                             <ul style="margin-top:59px">
-                                 <li style="margin-bottom:22px;">
-                                     <img src='<c:url value="images/awsMgnt/subnet_a1.png"/>'  class="aws-icon" alt="AWS"><span></span>
-                                 </li>
-                             </ul>
-                         </li>
-                     </ul>
-                </li>
-                </sec:authorize>
-                <sec:authorize access="hasAuthority('AWS_VPC_MENU')">
-                    <li class="awsMgntDiv" onmouseover="hover(this,'vpc_b2');" onmouseout="unhover(this,'vpc_b1');" onclick="javascript:goPage('<c:url value="/awsMgnt/vpc"/>', 'VPC');">
-                        <ul>
-                            <li class="aws-li"><span class="aws-li-span1">VPC</span></li>
-                            <li>
-                                <ul style="margin-top:59px">
-                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/awsMgnt/vpc_b1.png"/>' class="aws-icon" alt="AWS"><span></span></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </sec:authorize>
-                <sec:authorize access="hasAuthority('AWS_INTERNET_GATEWAY_MENU')">
-                    <li class="awsMgntDiv" onmouseover="hover(this,'gateway_b2');" onmouseout="unhover(this,'gateway_b1');" onclick="javascript:goPage('<c:url value="/awsMgnt/internetGateway"/>', 'Internet Gateway');">
-                        <ul>
-                            <li class="aws-li"><span class="aws-li-span1">Internet Gateway</span></li>
-                            <li>
-                                <ul style="margin-top:59px">
-                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/awsMgnt/gateway_b1.png"/>' class="aws-icon" alt="AWS"><span></span></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </sec:authorize>
-                <sec:authorize access="hasAuthority('AWS_ELASTIC_IP_MENU')">
-                    <li class="awsMgntDiv" onmouseover="hover(this,'elasticIP_c2');" onmouseout="unhover(this,'elasticIP_c1');" onclick="javascript:goPage('<c:url value="/awsMgnt/elasticIp"/>', 'Elastic IPs');">
-                        <ul>
-                            <li class="aws-li"><span class="aws-li-span1">Elastic IPs</span></li>
-                            <li>
-                                <ul style="margin-top:59px">
-                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/awsMgnt/elasticIP_c1.png"/>'  class="aws-icon" alt="AWS"><span></span></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </sec:authorize>
                 <sec:authorize access="hasAuthority('AWS_NAT_GATEWAY_MENU')">
-                    <li class="awsMgntDiv" onmouseover="hover(this,'elasticIP_c2');" onmouseout="unhover(this,'elasticIP_c1');" onclick="javascript:goPage('<c:url value="/awsMgnt/natGateway"/>', 'NAT Gateway');">
+                    <li class="awsMgntDiv" onmouseover="hover(this,'aws_nat_2');" onmouseout="unhover(this,'aws_nat_1');" onclick="javascript:goPage('<c:url value="/awsMgnt/natGateway"/>', 'NAT Gateway');">
                         <ul>
                             <li class="aws-li"><span class="aws-li-span1">NAT Gateway</span></li>
                             <li>
                                 <ul style="margin-top:59px">
-                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/awsMgnt/elasticIP_c1.png"/>'  class="aws-icon" alt="AWS"><span></span></li>
+                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/awsMgnt/aws_nat_1.png"/>'  class="aws-icon" alt="AWS"><span></span></li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
                 </sec:authorize>
                  <sec:authorize access="hasAuthority('AWS_ROUTE_TABLE_MENU')">
-                    <li class="awsMgntDiv" onmouseover="hover(this,'elasticIP_c2');" onmouseout="unhover(this,'elasticIP_c1');" onclick="javascript:goPage('<c:url value="/awsMgnt/routeTable"/>', 'Route Tables');">
+                    <li class="awsMgntDiv" onmouseover="hover(this,'aws_rTable_2');" onmouseout="unhover(this,'aws_rTable_1');" onclick="javascript:goPage('<c:url value="/awsMgnt/routeTable"/>', 'Route Tables');">
                         <ul>
                             <li class="aws-li"><span class="aws-li-span1">Route Tables</span></li>
                             <li>
                                 <ul style="margin-top:59px">
-                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/awsMgnt/elasticIP_c1.png"/>'  class="aws-icon" alt="AWS"><span></span></li>
+                                    <li style="margin-bottom:22px;"><img src='<c:url value="images/awsMgnt/aws_rTable_1.png"/>'  class="aws-icon" alt="AWS"><span></span></li>
                                 </ul>
                             </li>
                         </ul>

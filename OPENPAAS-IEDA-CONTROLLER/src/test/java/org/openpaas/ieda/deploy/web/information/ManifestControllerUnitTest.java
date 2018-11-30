@@ -87,7 +87,7 @@ public class ManifestControllerUnitTest extends BaseControllerUnitTest {
     public void testGoListManifest() throws Exception{
        mockMvc.perform(get(VIEW_URL).contentType(MediaType.APPLICATION_JSON)).andDo(MockMvcResultHandlers.print())
        .andExpect(status().isOk())
-       .andExpect(view().name("/deploy/information/listManifest"));    
+       .andExpect(view().name("/deploy/information/listManifest"));
     }
     
     /***************************************************
@@ -214,6 +214,8 @@ public class ManifestControllerUnitTest extends BaseControllerUnitTest {
         dto.setContent("content");
         dto.setFileName("mysql-manifest-1.yml");
         dto.setId("1");
+        dto.setIaas("aws");
+        dto.getIaas();
         dto.getContent();
         dto.getFileName();
         dto.getId();

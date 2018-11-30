@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.config.stemcell.dao.HbStemcellManagementDAO">
+    <resultMap id="stemcellManagement" type="org.openpaas.ieda.hbdeploy.web.config.stemcell.dao.HbStemcellManagementVO">
+        <id property="id" column="id" />
+        <result property="recid" column="id"/>
+        <result property="stemcellName" column ="stemcell_name"/>
+        <result property="lastModified" column ="last_modified"/>
+        <result property="etag" column ="etag"/>
+        <result property="size" column ="size"/>
+        <result property="storageClass" column ="storage_class"/>
+        <result property="os" column ="os"/>
+        <result property="osVersion" column ="os_version"/>
+        <result property="iaas" column ="iaas"/>
+        <result property="stemcellFileName" column ="stemcell_filename"/>
+        <result property="stemcellVersion" column ="stemcell_version"/>
+        <result property="downloadLink" column="download_link"></result>
+        <result property="isExisted" column ="is_existed"/>
+        <result property="isDose" column ="is_dose"/>
+        <result property="downloadStatus" column ="download_status"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="updateUserId" column="update_user_id"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateDate" column="update_date"/>
+    </resultMap>
+    
+    <select id="selectHybridStemcellList" resultMap="stemcellManagement">
+        Select 
+            id,
+            download_status, 
+            stemcell_name,
+            iaas, 
+            os, 
+            os_version, 
+            size, 
+            stemcell_filename, 
+            stemcell_version 
+        From
+            ieda_public_stemcells
+        where
+            iaas = #{iaas}
+        Order by 
+            os_version desc
+    </select>
+    
+    <select id="selectHybridStemcellInfoByFileName" resultMap="stemcellManagement">
+        Select 
+            id,
+            id as recid,  
+            stemcell_name, 
+            os, 
+            iaas,
+            download_status, 
+            os_version,
+            size,
+            stemcell_filename, 
+            stemcell_version,
+            create_user_id,
+            create_date,
+            update_user_id,
+            update_date 
+        From ieda_public_stemcells 
+        where stemcell_filename = #{fileName}
+    </select>
+    
+    <insert id="insertHybridStemcell">
+        INSERT INTO ieda_public_stemcells(
+            <if test="dto.id != null">
+                id,
+            </if>
+            stemcell_name
+            ,os
+            ,os_version
+            ,iaas
+            ,size
+            ,stemcell_filename
+            ,stemcell_version
+            ,download_status
+            ,download_link
+            ,create_user_id
+            ,create_date
+            ,update_user_id
+            ,update_date)
+        VALUES(
+            <if test="dto.id != null">
+            #{dto.id},
+            </if>
+             #{dto.stemcellName},
+             #{dto.osName},
+             #{dto.osVersion},
+             #{dto.iaasType},
+             #{dto.stemcellSize},
+             #{dto.stemcellFileName},
+             #{dto.stemcellVersion},
+             #{dto.downloadStatus},
+             #{dto.downloadLink},
+             #{dto.createUserId},
+             now(),
+             #{dto.updateUserId},
+             now()
+        )
+        <selectKey keyProperty="dto.id" resultType="int" order="AFTER">
+            <if test="dto.id != null"> SELECT 1 AS id from dual; </if>
+            <if test="dto.id == null"> SELECT LAST_INSERT_ID(); </if>
+        </selectKey>
+    </insert>
+    
+    <update id="updateHybridStemcell">
+        update ieda_public_stemcells set
+        stemcell_name = #{dto.stemcellName},
+        os = #{dto.osName},
+        os_version = #{dto.osVersion},
+        size = #{dto.stemcellSize},
+        iaas = #{dto.iaasType},
+        stemcell_filename = #{dto.stemcellFileName},
+        stemcell_version = #{dto.stemcellVersion},
+        download_status=#{dto.downloadStatus},
+        download_link=#{dto.downloadLink},
+        update_user_id = #{dto.updateUserId},
+        update_date = now()
+        where 
+        id = #{dto.id}
+    </update>
+    
+    <select id="selectHybridStemcellById" resultMap="stemcellManagement">
+        Select 
+            id,
+            id as recid,  
+            stemcell_name, 
+            os,
+            iaas,
+            os_version,
+            download_status, 
+            download_link,
+            size,
+            stemcell_filename, 
+            stemcell_version,
+            create_user_id,
+            create_date,
+            update_user_id,
+            update_date 
+        From ieda_public_stemcells 
+        where id = #{id}
+    </select>
+    
+    <update id="updateHybridStemcellById">
+        update ieda_public_stemcells set
+            <if test="dto.stemcellSize != null">
+                size = #{dto.stemcellSize},
+            </if>
+            download_status = #{dto.downloadStatus},
+            <if test="dto.stemcellFileName != null">
+                stemcell_filename = #{dto.stemcellFileName},
+            </if>
+            update_user_id = #{dto.updateUserId},
+            update_date = now()
+        where id = #{dto.id}
+    </update>
+    
+    <delete id="deleteHybridStemcell">
+        delete from ieda_public_stemcells where id = #{dto.id}
+    </delete>
+    
+    <select id="selectLocalStemcellListByIaas" resultMap="stemcellManagement">
+        select 
+            id,
+            id as recid,
+            os,
+            iaas,
+            stemcell_filename,
+            stemcell_version,
+            os_version,
+            download_status,
+            size,
+            stemcell_name
+        from ieda_public_stemcells 
+        where download_status is not null
+        and lower(download_status) = 'downloaded'
+        <if test="iaas != '' and iaas != null">
+            and iaas = #{iaas}
+        </if>
+        order by iaas desc
+    </select>
+</mapper>

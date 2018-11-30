@@ -45,10 +45,18 @@ $(function() {
         columns    : [
                     {field: 'recid',     caption: 'recid', hidden: true}
                    ,{field: 'accountId',     caption: 'accountId', hidden: true}
-                   ,{field: 'nameTag', caption: 'Name', size: '20%', style: 'text-align:center'}
+                   ,{field: 'nameTag', caption: 'Name', size: '20%', style: 'text-align:center', info: true}
                    ,{field: 'routeTableId', caption: 'Route Table ID', size: '20%', style: 'text-align:center'}
                    ,{field: 'associationCnt', caption: 'Explicitly Associated With', size: '20%', style: 'text-align:center'}
-                   ,{field: 'mainYN', caption: 'Main', size: '30%', style: 'text-align:center'} 
+                   ,{field: 'mainYN', caption: 'Main', size: '30%', style: 'text-align:center',
+                        render: function(record) {
+                            if(record.mainYN == false) {
+                                return "N";
+                            }else {
+                                return "Y";
+                            }
+                        }
+                   }
                    ,{field: 'vpcId', caption: 'VPC', size: '30%', style: 'text-align:center'}
                    ],
         onSelect: function(event) {
@@ -98,7 +106,8 @@ $(function() {
                      {field: 'recid',     caption: 'recid', hidden: true}
                    , {field: 'accountId',     caption: 'accountId', hidden: true}
                    , {field: 'routeTableId',     caption: 'routeTableId', hidden: true}
-                   , {field: 'destinationIpv4CidrBlock', caption: 'Destination', size: '50%', style: 'text-align:center'}
+                   , {field: 'destinationIpv4CidrBlock', caption: 'IPv4Destination', size: '50%', style: 'text-align:center'}
+                   , {field: 'ipv6CidrBlock', caption: 'IPv6Destination', size: '50%', style: 'text-align:center'}
                    , {field: 'targetId', caption: 'Target', size: '50%', style: 'text-align:center'}
                    , {field: 'status', caption: 'Status', size: '50%', style: 'text-align:center'}
                    , {field: 'propagatedYN', caption: 'Propagated', size: '50%', style: 'text-align:center'}
@@ -295,20 +304,18 @@ function setAssociateSubnetId(accountId){
         contentType : "application/json",
         async : true,
         success : function(data, status) {
+            console.log(data);
             subnetInfoArray = data;
             if( data!=null && data.length!=0 ){
                 var subnetInfo = "";
                 subnetInfo += "<select style='width:400px;' name='selectSubnetId' onchange='onchangesubnetInfo(this.value)';>";
+                subnetInfo += "<option seleted value=''>서브넷을 선택하세요.</option>";
                 for( var i=0; i<data.length; i++ ){
                     if(data[i].check != true && data[i].associationId == null){
                         subnetInfo += "<option value="+data[i].subnetId+">"+data[i].subnetId+"</option>"
-                        subnetInfo += "<option seleted value=''>서브넷을 선택하세요.</option>";
                     }
                 }
-                if($(".w2ui-msg-body select[name='selectSubnetId']").val()==""){
-                    subnetInfo += "<option value=''>사용 가능한 서브넷이 없습니다.</option>";
-                }
-                subnetInfo += "<select>";
+                subnetInfo += "</select>";
                 $(".w2ui-msg-body #subnetId").html(subnetInfo);
                 
             }else {
@@ -354,8 +361,8 @@ function onchangesubnetInfo(subnetId){
 function doSearch() {
     region = $("select[name='region']").val();
     if(region == null) region = "us-west-2";
-    if(accountId != "")
-    w2ui['aws_routeTableGrid'].load("<c:url value='/awsMgnt/routeTable/list/"+accountId+"/"+region+"'/>","",function(event){});
+    if(accountId != null)
+    w2ui['aws_routeTableGrid'].load("<c:url value='/awsMgnt/routeTable/list/'/>"+accountId+"/"+region);
     doButtonStyle();
  }
 
@@ -572,7 +579,9 @@ function setAwsTargetList(){
                var result = "";
                if(data != null && data.length != 0){
                    for(var i=0; i<data.length; i++){
-                       result += "<option value='" + data[i] + "' >";
+                       
+                       var splited =  data[i].split(" |");
+                       result += "<option value='"+ splited[0] +"' >";
                        result += data[i];
                        result += "</option>"; 
                    }
@@ -674,7 +683,7 @@ function disassociateSubnetFromRouteTable(){
 function routeTableDelete(){
      w2popup.lock("삭제 중", true);
      var selected = w2ui['aws_routeTableGrid'].getSelection();
-        if( selected == 0 ){
+        if( selected == null ){
             w2alert("선택된 정보가 없습니다.", "");
             return;
         }else{
@@ -794,20 +803,23 @@ td {
                         &nbsp;&nbsp;Route Table 관리<b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu alert-dropdown">
-                        <sec:authorize access="hasAuthority('AWS_SECURITY_GROUP_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/securityGroup"/>', 'AWS SECURITY GROUP');">Security Group 관리</a></li>
-                        </sec:authorize>
-                        <sec:authorize access="hasAuthority('AWS_KEYPAIR_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/keypair"/>', 'AWS KEYPAIR');">KeyPair 관리</a></li>
+                        <sec:authorize access="hasAuthority('AWS_VPC_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/vpc"/>', 'AWS VPC');">VPC 관리</a></li>
                         </sec:authorize>
                         <sec:authorize access="hasAuthority('AWS_SUBNET_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/awsMgnt/subnet"/>', 'AWS SUBNET');">Subnet 관리</a></li>
                         </sec:authorize>
-                        <sec:authorize access="hasAuthority('AWS_VPC_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/vpc"/>', 'AWS VPC');">VPC 관리</a></li>
-                        </sec:authorize>
                         <sec:authorize access="hasAuthority('AWS_INTERNET_GATEWAY_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/awsMgnt/internetGateway"/>', 'AWS Internet GateWay');">Internet Gateway 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_SECURITY_GROUP_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/securityGroup"/>', 'AWS SECURITY GROUP');">Security Group 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_ELASTIC_IP_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/elasticIp"/>', 'AWS Elastic Ip');">Elastic Ip 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_KEYPAIR_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/keypair"/>', 'AWS KEYPAIR');">KeyPair 관리</a></li>
                         </sec:authorize>
                         <sec:authorize access="hasAuthority('AWS_NAT_GATEWAY_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/awsMgnt/natGateway"/>', 'AWS NAT GateWay');">NAT Gateway 관리</a></li>

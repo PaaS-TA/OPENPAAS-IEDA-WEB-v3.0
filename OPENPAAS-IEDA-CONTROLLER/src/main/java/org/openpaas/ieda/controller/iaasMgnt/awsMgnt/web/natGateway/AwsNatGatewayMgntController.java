@@ -4,9 +4,9 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openpaas.ieda.awsMgnt.web.natGateway.dao.AwsNatGatewayMgntVO;
-import org.openpaas.ieda.awsMgnt.web.natGateway.dto.AwsNatGatewayMgntDTO;
-import org.openpaas.ieda.awsMgnt.web.natGateway.service.AwsNatGatewayMgntService;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.natGateway.dao.AwsNatGatewayMgntVO;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.natGateway.dto.AwsNatGatewayMgntDTO;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.natGateway.service.AwsNatGatewayMgntService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

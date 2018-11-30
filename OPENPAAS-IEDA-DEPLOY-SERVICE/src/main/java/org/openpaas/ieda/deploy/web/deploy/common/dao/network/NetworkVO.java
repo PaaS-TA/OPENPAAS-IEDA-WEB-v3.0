@@ -6,7 +6,7 @@ public class NetworkVO {
         private Integer id;//id
         private String createUserId;//생성자
         private String updateUserId;//수정자
-        private String publicStaticIP;
+        private String publicStaticIp;
         private String deployType;//배포 유형
         private String net; //net 구분
         private Integer seq; //시퀀스
@@ -14,12 +14,14 @@ public class NetworkVO {
         private String subnetStaticTo;//VM 할당 IP대역 To
         private String subnetReservedFrom;//할당된 IP대역 From
         private String subnetReservedTo;//할당된 IP대역 To
+        private String subnetReservedFrom2;//할당된 IP대역 From
+        private String subnetReservedTo2;//할당된 IP대역 To
         private String subnetRange;//서브넷 범위
         private String subnetGateway;//게이트웨이
         private String subnetDns;//DNS
         private String subnetId; //네트워크 ID
         private String availabilityZone;
-        private String networkName;//google network 명
+        private String networkName;//google network 명 //azure network 명
         private String cloudSecurityGroups;//시큐리티 그룹
         private Date createDate; // 생성일자
         private Date updateDate; // 수정일자
@@ -62,11 +64,11 @@ public class NetworkVO {
             this.seq = seq;
         }
         
-        public String getPublicStaticIP() {
-            return publicStaticIP;
+        public String getPublicStaticIp() {
+            return publicStaticIp;
         }
-        public void setPublicStaticIP(String publicStaticIP) {
-            this.publicStaticIP = publicStaticIP;
+        public void setPublicStaticIp(String publicStaticIP) {
+            this.publicStaticIp = publicStaticIP;
         }
         public String getSubnetStaticFrom() {
             return subnetStaticFrom;
@@ -91,6 +93,18 @@ public class NetworkVO {
         }
         public void setSubnetReservedTo(String subnetReservedTo) {
             this.subnetReservedTo = subnetReservedTo;
+        }
+        public String getSubnetReservedFrom2() {
+            return subnetReservedFrom2;
+        }
+        public void setSubnetReservedFrom2(String subnetReservedFrom2) {
+            this.subnetReservedFrom2 = subnetReservedFrom2;
+        }
+        public String getSubnetReservedTo2() {
+            return subnetReservedTo2;
+        }
+        public void setSubnetReservedTo2(String subnetReservedTo2) {
+            this.subnetReservedTo2 = subnetReservedTo2;
         }
         public String getSubnetRange() {
             return subnetRange;

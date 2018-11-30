@@ -26,7 +26,7 @@ $(function() {
      *********************************************************/
      $('#config_bootstrapGrid').w2grid({
         name: 'config_bootstrapGrid',
-        header: '<b>MICRO BOSH 목록</b>',
+        header: '<b>BOOTSTRAP 목록</b>',
         method: 'GET',
          multiSelect: false,
         show: {    
@@ -75,6 +75,7 @@ $(function() {
             }
             , {field: 'boshRelease', caption: 'BOSH 릴리즈', size: '100px'}
             , {field: 'boshCpiRelease', caption: 'BOSH CPI 릴리즈', size: '200px'}
+            , {field: 'boshBpmRelease', caption: 'BOSH BPM 릴리즈', size: '200px'}
             , {field: 'subnetId', caption: '네트워크 ID', size: '200px'}
             , {field: 'subnetRange', caption: '서브넷 범위', size: '100px'}
             , {field: 'publicStaticIp', caption: '디렉터 공인 IP', size: '100px'}
@@ -140,7 +141,7 @@ $(function() {
         
         var selected = w2ui['config_bootstrapGrid'].getSelection();
         if( selected.length == 0 ){
-            w2alert("선택된 정보가 없습니다.", "MICRO BOSH 수정");
+            w2alert("선택된 정보가 없습니다.", "BOOTSTRAP 수정");
             return;
         }
         var record = w2ui['config_bootstrapGrid'].get(selected);
@@ -162,11 +163,11 @@ $(function() {
         var message = "";
         
         if ( record.deploymentName ){
-            message = "MICRO BOSH (배포명 : " + record.deploymentName + ")를 삭제하시겠습니까?";
-        }else message = "선택된 MICRO BOSH을 삭제하시겠습니까?";
+            message = "BOOTSTRAP (배포명 : " + record.deploymentName + ")를 삭제하시겠습니까?";
+        }else message = "선택된 BOOTSTRAP을 삭제하시겠습니까?";
         
         w2confirm({
-            title        : "MICRO BOSH 삭제",
+            title        : "BOOTSTRAP 삭제",
             msg          : message,
             yes_text     : "확인",
             yes_callBack : function(event){
@@ -204,7 +205,7 @@ function iaasSelectPopup() {
     w2confirm({
         width : 550, 
         height : 180,
-        title : '<b>MICRO BOSH 설치</b>',
+        title : '<b>BOOTSTRAP 설치</b>',
         msg : $("#bootSelectBody").html(),
         modal : true,
         yes_text : "확인",
@@ -220,7 +221,7 @@ function iaasSelectPopup() {
                     else if( iaas == "Azure") azurePopup();
                  });       
              }else{
-                 w2alert("MICRO BOSH을 설치할 클라우드 환경을 선택하세요");
+                 w2alert("BOOTSTRAP을 설치할 클라우드 환경을 선택하세요");
              }
          },no_callBack : function(event){
              w2ui['config_bootstrapGrid'].clear();
@@ -252,12 +253,12 @@ function getDeployLogMsg(id){
             if(!checkEmpty(data)){
                 deployLogMsgPopup(data);
             }else{
-                w2alert("배포 로그가 존재 하지 않습니다.",  "MICRO BOSH 배포로그");
+                w2alert("배포 로그가 존재 하지 않습니다.",  "BOOTSTRAP 배포로그");
             }
         },
         error : function(request, status, error) {
             var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message, "MICRO BOSH 배포로그");
+            w2alert(errorResult.message, "BOOTSTRAP 배포로그");
         }
     });    
 }
@@ -272,7 +273,7 @@ function deployLogMsgPopup(msg){
     w2popup.open({
         width   : 800,
         height  : 700,
-        title   : "<b>MICRO BOSH 배포로그"+"</b>",
+        title   : "<b>BOOTSTRAP 배포로그"+"</b>",
         body    : body,
         buttons : '<button class="btn" style="float: right; padding-right: 15%;" onclick="w2popup.close();">닫기</button>',
         showMax : true,
@@ -302,10 +303,10 @@ $( window ).resize(function() {
 </script>
 
 <div id="main">
-    <div class="page_site">플랫폼 설치 > <strong>MICRO BOSH 설치</strong></div>
+    <div class="page_site">플랫폼 설치 > <strong>BOOTSTRAP 설치</strong></div>
     <!-- BOOTSTRAP 목록-->
     <div class="pdt20"> 
-        <div class="title fl">MICRO BOSH 목록</div>
+        <div class="title fl">BOOTSTRAP 목록</div>
         <div class="fr"> 
             <sec:authorize access="hasAuthority('DEPLOY_BOOTSTRAP_INSTALL')">
             <span id="installBtn" class="btn btn-primary"  style="width:120px">설&nbsp;&nbsp;치</span>
@@ -325,7 +326,7 @@ $( window ).resize(function() {
 
 <div id="bootSelectBody" style="width:100%; height: 80px;" hidden="true">
     <div class="w2ui-lefted" style="text-align: center;">
-        MICRO BOSH를 설치할 <b>클라우드 환경</b>을 선택하세요<br />
+        BOOTSTRAP를 설치할 <b>클라우드 환경</b>을 선택하세요<br />
         <br />
     </div>
     <div style="width:40%;margin: 0 auto;">

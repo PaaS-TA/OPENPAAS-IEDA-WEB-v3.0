@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapNetworkConfigDAO">
+
+<resultMap id="bootstrapNetwork" type="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapNetworkConfigVO">
+    <id property="id" column="id" />
+    <result property="recid" column="id"/>
+    <result property="iaasType" column="iaas_type"/>
+    <result property="networkConfigName" column="network_config_name"/>
+    <result property="subnetId" column="subnet_id"/>
+    <result property="privateStaticIp" column="private_static_ip"/>
+    <result property="subnetRange" column="subnet_range"/>
+    <result property="subnetGateway" column="subnet_gateway"/>
+    <result property="subnetDns" column="subnet_dns"/>
+    <result property="publicStaticIp" column="public_static_ip"/>
+    <result property="createUserId" column="create_user_id"/>
+    <result property="updateUserId" column="update_user_id"/>
+    <result property="createDate" column="create_date"/>
+    <result property="updateDate" column="update_date"/>
+</resultMap>
+
+<select id = "selectBootstrapNetworkConfigInfoList" resultMap="bootstrapNetwork">
+    select 
+        id as id
+        ,network_config_name as network_config_name
+        ,subnet_id as subnet_id
+        ,iaas_type as iaasType
+        ,private_static_ip as private_static_ip
+        ,subnet_range as subnet_range
+        ,subnet_gateway as subnet_gateway
+        ,subnet_dns as subnet_dns
+        ,public_static_ip as public_static_ip
+        ,create_user_id as create_user_id
+        ,create_date as create_date
+        ,update_user_id as update_user_id
+        ,update_date as update_date
+    from ieda_bootstrap_network_config
+    ORDER BY id;
+</select>
+
+<insert id="insertBootStrapNetworkConfigInfo">
+    INSERT INTO ieda_bootstrap_network_config(
+         iaas_type
+        ,network_config_name
+        ,subnet_id
+        ,private_static_ip
+        ,subnet_range
+        ,subnet_gateway
+        ,subnet_dns
+        ,public_static_ip
+        ,create_user_id
+        ,create_date
+        ,update_user_id
+        ,update_date
+        ) VALUES (
+        #{network.iaasType}
+        ,#{network.networkConfigName}
+        ,#{network.subnetId}
+        ,#{network.privateStaticIp}
+        ,#{network.subnetRange}
+        ,#{network.subnetGateway}
+        ,#{network.subnetDns}
+        ,#{network.publicStaticIp}
+        ,#{network.createUserId}
+        ,now()
+        ,#{network.updateUserId}
+        ,now()
+        )
+</insert>
+
+<update id="updateBootStrapNetworkConfigInfo">
+    UPDATE ieda_bootstrap_network_config set
+        iaas_type = #{network.iaasType}
+        ,network_config_name = #{network.networkConfigName}
+        ,iaas_type = #{network.iaasType}
+        ,subnet_id = #{network.subnetId}
+        ,private_static_ip = #{network.privateStaticIp}
+        ,subnet_range = #{network.subnetRange}
+        ,subnet_gateway = #{network.subnetGateway}
+        ,subnet_dns = #{network.subnetDns}
+        ,public_static_ip = #{network.publicStaticIp}
+        ,update_user_id = #{network.updateUserId}
+        ,update_date = now()
+    WHERE id = #{network.id}
+</update>
+
+<select id="selectBootstrapNetworkConfigInfo" resultMap="bootstrapNetwork">
+    select 
+        id as id
+        ,network_config_name as network_config_name
+        ,subnet_id as subnet_id
+        ,private_static_ip as private_static_ip
+        ,subnet_range as subnet_range
+        ,subnet_gateway as subnet_gateway
+        ,subnet_dns as subnet_dns
+        ,public_static_ip as public_static_ip
+        ,create_user_id as create_user_id
+        ,create_date as create_date
+        ,update_user_id as update_user_id
+        ,update_date as update_date
+    from ieda_bootstrap_network_config
+    where id = #{id}
+</select> 
+
+<delete id = "deleteBootStrapNetworkConfigInfo">
+    delete from 
+        ieda_bootstrap_network_config
+    where
+        id = #{network.id}
+    and
+        network_config_name = #{network.networkConfigName}
+</delete>
+
+<select id = "selectBootstrapNetworkConfigByName" resultType="int">
+    select
+        count(*)
+    from
+        ieda_bootstrap_network_config
+    where
+        network_config_name = #{networkConfigName}
+</select>
+
+<select id = "selectBootstrapNetworkConfigInfoListByIaasType" resultMap="bootstrapNetwork">
+    select 
+        id as id
+        ,network_config_name as network_config_name
+        ,iaas_type as iaas_type
+        ,subnet_id as subnet_id
+        ,private_static_ip as private_static_ip
+        ,subnet_range as subnet_range
+        ,subnet_gateway as subnet_gateway
+        ,subnet_dns as subnet_dns
+        ,public_static_ip as public_static_ip
+        ,create_user_id as create_user_id
+        ,create_date as create_date
+        ,update_user_id as update_user_id
+        ,update_date as update_date
+    from ieda_bootstrap_network_config
+    where UPPER(iaas_type) = #{iaasType}
+</select>
+
+</mapper>

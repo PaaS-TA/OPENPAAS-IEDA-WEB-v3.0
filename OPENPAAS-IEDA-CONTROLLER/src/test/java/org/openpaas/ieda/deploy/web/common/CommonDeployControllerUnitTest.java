@@ -1,5 +1,6 @@
 package org.openpaas.ieda.deploy.web.common;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -8,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,7 +32,7 @@ import org.openpaas.ieda.deploy.web.config.setting.service.DirectorConfigService
 import org.openpaas.ieda.deploy.web.config.stemcell.dao.StemcellManagementVO;
 import org.openpaas.ieda.deploy.web.config.stemcell.service.StemcellManagementService;
 import org.openpaas.ieda.deploy.web.config.systemRelease.service.ReleaseManagementService;
-import org.openpaas.ieda.deploy.web.information.deploy.service.DeploymentService;
+import org.openpaas.ieda.deploy.web.information.deployment.service.DeploymentService;
 import org.openpaas.ieda.deploy.web.information.iassConfig.dao.IaasConfigMgntVO;
 import org.openpaas.ieda.deploy.web.information.iassConfig.service.IaasConfigMgntService;
 import org.openpaas.ieda.deploy.web.information.release.service.ReleaseService;
@@ -50,6 +50,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 @SpringApplicationConfiguration(classes = {Application.class})
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -299,10 +300,8 @@ public class CommonDeployControllerUnitTest extends BaseControllerUnitTest {
     public List<StemcellManagementVO> setStemellListFromBootstrapInfo(){
         List<StemcellManagementVO> list = new ArrayList<StemcellManagementVO>();
         StemcellManagementVO vo = new StemcellManagementVO();
-        vo.setCreateDate(new Date());
         vo.setCreateUserId(principal.getName());
         vo.setUpdateUserId(principal.getName());
-        vo.setUpdateDate(new Date());
         vo.setRecid(1);
         vo.setId(1);
         vo.setStemcellUrl("https://bosh-jenkins-artifacts.s3.amazonaws.com/bosh-stemcell/aws/light-bosh-stemcell-2820-aws-xen-hvm-ubuntu-trusty-go_agent.tgz");
@@ -346,10 +345,8 @@ public class CommonDeployControllerUnitTest extends BaseControllerUnitTest {
     public List<StemcellManagementVO> setStemellListFromCFInfo(){
         List<StemcellManagementVO> list = new ArrayList<StemcellManagementVO>();
         StemcellManagementVO vo = new StemcellManagementVO();
-        vo.setCreateDate(new Date());
         vo.setCreateUserId(principal.getName());
         vo.setUpdateUserId(principal.getName());
-        vo.setUpdateDate(new Date());
         vo.setRecid(1);
         vo.setId(1);
         vo.setStemcellUrl("https://s3.amazonaws.com/bosh-gce-light-stemcells/light-bosh-stemcell-3445.7-google-kvm-ubuntu-trusty-go_agent.tgz");
@@ -397,8 +394,6 @@ public class CommonDeployControllerUnitTest extends BaseControllerUnitTest {
         vo.setCodeName("ROLE");
         vo.setCodeNameKR("메뉴 별 권한");
         vo.setCodeValue("100000");
-        vo.setCreateDate(new Date());
-        vo.setUpdateDate(new Date());
         vo.setCreateUserId("SYSTEM");
         vo.setUpdateUserId("SYSTEM");
         vo.setSortOrder(0);
@@ -471,8 +466,6 @@ public class CommonDeployControllerUnitTest extends BaseControllerUnitTest {
         vo.setCodeName("COUNTRY_CODE");
         vo.setCodeNameKR("국가코드");
         vo.setCodeValue("20000");
-        vo.setCreateDate(new Date());
-        vo.setUpdateDate(new Date());
         vo.setCreateUserId("SYSTEM");
         vo.setUpdateUserId("SYSTEM");
         vo.setSortOrder(0);
@@ -506,15 +499,18 @@ public class CommonDeployControllerUnitTest extends BaseControllerUnitTest {
      * @title : testGetReleaseInfoByPlatform
      * @return : void
     ***************************************************/
-    @Test
-    public void testGetReleaseInfoByPlatform() throws Exception{
-        String deployType = "CF";
+    public void testGetReleaseInfoByPlatform() {
+        String deployType = "CFDEPLOYMENT";
         String iaasType = "openstack";
         List<ManifestTemplateVO> templates = setReleaseInfoByPlatform();
-        when(mockCommonDeployService.getReleaseInfoByPlatform(deployType, iaasType)).thenReturn(templates);
-        mockMvc.perform(get(RELEASE_INFO_BY_PLATFORM_URL,deployType, iaasType).contentType(MediaType.APPLICATION_JSON))
-        .andDo(MockMvcResultHandlers.print())
-        .andExpect(status().isOk());
+        try{
+            when(mockCommonDeployService.getReleaseInfoByPlatform(anyString(), anyString())).thenReturn(templates);
+            mockMvc.perform(get(RELEASE_INFO_BY_PLATFORM_URL, deployType, iaasType).contentType(MediaType.APPLICATION_JSON))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk());
+        }catch (Exception e) {
+        	e.printStackTrace();
+        }
     }
     
     /***************************************************
@@ -529,9 +525,8 @@ public class CommonDeployControllerUnitTest extends BaseControllerUnitTest {
         vo.setCfTempleate("cf-google-1.yml");
         vo.setCommonBaseTemplate("generic_manifest_mask.yml");
         vo.setCommonJobTemplate("cf.yml");
-        vo.setCommonOptionTemplate(null);
-        vo.setCreateDate(new Date());
         vo.setCreateUserId(principal.getName());
+        vo.setReleaseType("cf");
         vo.setDeployType("cf");
         vo.setIaasPropertyTemplate("cf_google_settings.yml");
         vo.setIaasType("google");
@@ -543,16 +538,11 @@ public class CommonDeployControllerUnitTest extends BaseControllerUnitTest {
         vo.setOptionNetworkTemplate("cf_google_network_options.yml");
         vo.setOptionResourceTemplate("cf_google_resouce_options.yml");
         vo.setReleaseType("cf");
-        vo.setShellScript(null);
         vo.setTemplateVersion("273");
-        vo.setUpdateDate(new Date());
-        vo.setUpdateUserId(principal.getName());
         vo.getCfTempleate();
         vo.getCommonBaseTemplate();
         vo.getCommonJobTemplate();
         vo.getCommonOptionTemplate();
-        vo.getCreateDate();
-        vo.getCreateUserId();
         vo.getDeployType();
         vo.getIaasPropertyTemplate();
         vo.getIaasType();
@@ -566,7 +556,6 @@ public class CommonDeployControllerUnitTest extends BaseControllerUnitTest {
         vo.getReleaseType();
         vo.getShellScript();
         vo.getTemplateVersion();
-        vo.getUpdateDate();
         vo.getUpdateUserId();
         list.add(vo);
         return list;

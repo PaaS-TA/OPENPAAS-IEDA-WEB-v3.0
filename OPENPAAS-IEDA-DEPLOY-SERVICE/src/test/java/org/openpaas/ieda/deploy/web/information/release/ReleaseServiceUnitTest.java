@@ -70,7 +70,6 @@ public class ReleaseServiceUnitTest extends BaseDeployControllerUnitTest{
     @Test
     public void testSetUploadedReleaseList(){
         mockReleaseService.setUploadedReleaseList(setUploadReleaseList());
-      
     }
     
     /****************************************************************

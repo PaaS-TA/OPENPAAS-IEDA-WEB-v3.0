@@ -7,6 +7,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.openpaas.ieda.deploy.api.director.utility.DirectorRestHelper;
 import org.openpaas.ieda.deploy.web.config.setting.dao.DirectorConfigVO;
 import org.openpaas.ieda.deploy.web.config.setting.service.DirectorConfigService;
+import org.openpaas.ieda.deploy.web.information.task.dto.TaskDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -27,7 +28,11 @@ public class TaskAsyncService {
      * @title : doGetTaskLog
      * @return : void
     ***************************************************/
-    private void doGetTaskLog(String logType, String taskId, String lineOneYn, Principal principal) {
+    private void doGetTaskLog(TaskDTO.GetLog dto, Principal principal) {
+        
+        String logType = dto.getLogType();
+        String taskId = dto.getTaskId();
+        String lineOneYn = dto.getLineOneYn();
         
         DirectorConfigVO defaultDirector = directorConfigService.getDefaultDirector();
         try {
@@ -51,7 +56,7 @@ public class TaskAsyncService {
      * @return : void
     ***************************************************/
     @Async
-    public void doGetTaskLogAsync(String logType, String taskId, String lineOneYn, Principal principal) {
-        doGetTaskLog(logType, taskId, lineOneYn, principal);
+    public void doGetTaskLogAsync(TaskDTO.GetLog dto,  Principal principal) {
+        doGetTaskLog(dto, principal);
     }
 }

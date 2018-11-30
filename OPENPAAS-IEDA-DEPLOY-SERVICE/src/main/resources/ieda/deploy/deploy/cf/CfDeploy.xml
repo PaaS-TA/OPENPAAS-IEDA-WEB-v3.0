@@ -6,26 +6,17 @@
     <resultMap id="cf" type="org.openpaas.ieda.deploy.web.deploy.cf.dao.CfVO">
         <id property="id" column="ID" />
         <result property="iaasType" column="IAAS_TYPE"/>
-        <result property="diegoYn" column="DIEGO_YN"/>
         <result property="createUserId" column="CREATE_USER_ID"/>
         <result property="createDate" column="CREATE_DATE" />
         <result property="updateUserId" column="UPDATE_USER_ID"/>
         <result property="updateDate" column="UPDATE_DATE" />
         <result property="deploymentName" column="DEPLOYMENT_NAME" />
+        <result property="cfDbType" column="CF_DB_TYPE" />
         <result property="directorUuid" column="DIRECTOR_UUID" />
         <result property="releaseName" column="RELEASE_NAME" />
         <result property="releaseVersion" column="RELEASE_VERSION" />
-        <result property="loggregatorReleaseName" column="LOGGREGATOR_RELEASE_NAME" />
-        <result property="loggregatorReleaseVersion" column="LOGGREGATOR_RELEASE_VERSION" />
-        <result property="appSshFingerprint" column="APP_SSH_FINGERPRINT" />
         <result property="domain" column="DOMAIN" />
-        <result property="description" column="DESCRIPTION" />
         <result property="domainOrganization" column="DOMAIN_ORGANIZATION" />
-        <result property="deaMemoryMB" column="DEA_MEMORY_MB" />
-        <result property="deaDiskMB" column="DEA_DISK_MB" />
-        <result property="loginSecret" column="LOGIN_SECRET" />
-        <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE" />
-        <result property="ingestorIp" column="INGESTOR_IP" />
         <result property="countryCode" column="COUNTRY_CODE" />
         <result property="stateName" column="STATE_NAME" />
         <result property="localityName" column="LOCALITY_NAME" />
@@ -36,6 +27,17 @@
         <result property="deploymentFile" column="DEPLOYMENT_FILE" />
         <result property="deployStatus" column="DEPLOY_STATUS" />
         <result property="taskId" column="TASK_ID" />
+        <result property="userAddSsh" column="USER_ADD_SSH" />
+        <result property="inceptionOsUserName" column="INCEPTION_OS_USER_NAME"/>
+        <result property="cfAdminPassword" column="CF_ADMIN_PASSWORD"/>
+        <result property="portalDomain" column="PORTAL_DOMAIN"/>
+        <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE"/>
+        <result property="metricUrl" column="METRIC_URL"/>
+        <result property="syslogAddress" column="SYSLOG_ADDRESS"/>
+        <result property="syslogPort" column="SYSLOG_PORT"/>
+        <result property="syslogCustomRule" column="SYSLOG_CUSTOM_RULE"/>
+        <result property="syslogFallbackServers" column="SYSLOG_FALLBACK_SERVERS"/>
+        
         <collection property="resource" ofType="org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceVO"  javaType="org.openpaas.ieda.deploy.web.deploy.common.dao.resource.ResourceVO">
             <result property="id" column="RESOURCE_ID" />
             <result property="deployType" column="RESOURCE_DEPLOY_TYPE"/>
@@ -62,6 +64,10 @@
             <result property="createDate" column="CREATE_DATE" />
             <result property="updateUserId" column="UPDATE_USER_ID"/>
             <result property="updateDate" column="UPDATE_DATE" />
+            <result property="windowsStemcellName" column="WINDOWS_STEMCELL_NAME" />
+            <result property="windowsStemcellVersion" column="WINDOWS_STEMCELL_VERSION" />
+            <result property="enableWindowsStemcell" column="ENABLE_WINDOWS_STEMCELL" />
+            <result property="windowsCellInstance" column="WINDOWS_CELL_INSTANCE" />
         </collection>
     </resultMap>
 
@@ -70,31 +76,31 @@
         Select 
              c.id as id 
             ,c.iaas_type as iaas_type
-            ,app_ssh_fingerprint
-            ,diego_yn
             ,deploy_status
             ,deployment_file
             ,deployment_name
-            ,description
             ,director_uuid
+            ,cf_db_type
             ,domain
             ,domain_organization
-            ,login_secret
-            ,paasta_monitoring_use
-            ,ingestor_ip
             ,key_file
             ,release_name
             ,release_version
             ,task_id
+            ,paasta_monitoring_use
+            ,metric_url 
+            ,syslog_address
+            ,syslog_port
+            ,syslog_custom_rule
+            ,syslog_fallback_servers
             ,c.create_date as create_date
             ,c.update_date as update_date
+            ,c.user_add_ssh
+            ,c.inception_os_user_name
+            ,c.cf_admin_password
+            ,c.portal_domain
         From ieda_cf c 
-        LEFT JOIN ieda_cf_diego a
-        ON c.id = a.cf_id
          Where LOWER(c.iaas_type) = #{iaas}
-        <if test="platform == 'cf'">
-             And (a.cf_id is null || c.deploy_status = 'error')
-        </if>
     </select>
     
     <select id="selectCfInfoById" resultMap="cf">
@@ -102,24 +108,15 @@
         Select 
              id
             ,iaas_type
-            ,dea_memory_mb
-            ,dea_disk_mb
-            ,diego_yn
-            ,app_ssh_fingerprint
             ,deploy_status
             ,deployment_file
             ,deployment_name
-            ,description
             ,director_uuid
             ,domain
             ,domain_organization
-            ,login_secret
+            ,cf_db_type
             ,release_name
             ,release_version
-            ,loggregator_release_name
-            ,loggregator_release_version
-            ,paasta_monitoring_use
-            ,ingestor_ip
             ,country_code
             ,state_name
             ,locality_name
@@ -128,6 +125,16 @@
             ,email
             ,key_file
             ,task_id
+            ,user_add_ssh
+            ,inception_os_user_name
+            ,cf_admin_password
+            ,portal_domain
+            ,paasta_monitoring_use
+            ,metric_url 
+            ,syslog_address
+            ,syslog_port
+            ,syslog_custom_rule
+            ,syslog_fallback_servers
         From ieda_cf
         where id = #{id}
     </select>
@@ -150,24 +157,15 @@
              cf.id as id 
             ,resource.id as resource_id
             ,iaas_type
-            ,dea_memory_mb
-            ,dea_disk_mb
-            ,diego_yn
-            ,app_ssh_fingerprint
             ,deploy_status
             ,deployment_file
             ,deployment_name
-            ,description
             ,director_uuid
             ,domain
+            ,cf_db_type
             ,domain_organization
-            ,login_secret
-            ,paasta_monitoring_use
-            ,ingestor_ip
             ,release_name
             ,release_version
-            ,loggregator_release_name
-            ,loggregator_release_version
             ,country_code
             ,state_name
             ,locality_name
@@ -196,6 +194,21 @@
             ,runner_type_ram
             ,runner_type_disk
             ,task_id
+            ,user_add_ssh
+            ,inception_os_user_name
+            ,enable_windows_stemcell
+            ,cf_admin_password
+            ,portal_domain
+            ,windows_stemcell_name
+            ,windows_stemcell_version
+            ,enable_windows_stemcell
+            ,windows_cell_instance
+            ,paasta_monitoring_use
+            ,metric_url 
+            ,syslog_address
+            ,syslog_port
+            ,syslog_custom_rule
+            ,syslog_fallback_servers
         From (select * from ieda_cf where id = #{id} ) as cf
          Left Join ieda_resource as resource
               On cf.id = resource.id
@@ -208,22 +221,13 @@
         Insert Into ieda_cf (
              id
             ,iaas_type 
-            ,diego_yn
             ,deployment_name
             ,director_uuid
             ,release_name
             ,release_version
-            ,loggregator_release_name
-            ,loggregator_release_version
-            ,app_ssh_fingerprint
             ,domain
-            ,description
+            ,cf_db_type
             ,domain_organization
-            ,login_secret
-            ,dea_memory_mb
-            ,dea_disk_mb
-            ,paasta_monitoring_use
-            ,ingestor_ip
             ,country_code
             ,state_name
             ,locality_name
@@ -236,26 +240,27 @@
             ,create_user_id
             ,update_date
             ,update_user_id
+            ,user_add_ssh
+            ,inception_os_user_name
+            ,cf_admin_password
+            ,portal_domain
+            ,paasta_monitoring_use
+            ,metric_url 
+            ,syslog_address
+            ,syslog_port
+            ,syslog_custom_rule
+            ,syslog_fallback_servers
         ) 
         Values(
              #{cf.id}
             ,#{cf.iaasType}
-            ,#{cf.diegoYn}
             ,#{cf.deploymentName}
             ,#{cf.directorUuid}
             ,#{cf.releaseName}
             ,#{cf.releaseVersion}
-            ,#{cf.loggregatorReleaseName}
-            ,#{cf.loggregatorReleaseVersion}
-            ,#{cf.appSshFingerprint}
             ,#{cf.domain}
-            ,#{cf.description}
+            ,#{cf.cfDbType}
             ,#{cf.domainOrganization}
-            ,#{cf.loginSecret}
-            ,#{cf.deaMemoryMB}
-            ,#{cf.deaDiskMB}
-            ,#{cf.paastaMonitoringUse}
-            ,#{cf.ingestorIp}
             ,#{cf.countryCode}
             ,#{cf.stateName}
             ,#{cf.localityName}
@@ -268,6 +273,16 @@
             ,#{cf.createUserId}
             ,now()
             ,#{cf.updateUserId}
+            ,#{cf.userAddSsh}
+            ,#{cf.inceptionOsUserName}
+            ,#{cf.cfAdminPassword}
+            ,#{cf.portalDomain}
+            ,#{cf.paastaMonitoringUse}
+            ,#{cf.metricUrl}
+            ,#{cf.syslogAddress}
+            ,#{cf.syslogPort}
+            ,#{cf.syslogCustomRule}
+            ,#{cf.syslogFallbackServers}
         )
         <selectKey keyProperty="cf.id" resultType="int" order="AFTER">
             <if test="cf.id != 1"> SELECT LAST_INSERT_ID(); </if>
@@ -282,17 +297,9 @@
             ,director_uuid=#{cf.directorUuid}
             ,release_name=#{cf.releaseName}
             ,release_version=#{cf.releaseVersion}
-            ,loggregator_release_name=#{cf.loggregatorReleaseName}
-            ,loggregator_release_version=#{cf.loggregatorReleaseVersion}
-            ,app_ssh_fingerprint=#{cf.appSshFingerprint}
-            ,dea_memory_mb=#{cf.deaMemoryMB}
-            ,dea_disk_mb=#{cf.deaDiskMB}
             ,domain=#{cf.domain}
-            ,description=#{cf.description}
             ,domain_organization=#{cf.domainOrganization}
-            ,login_secret=#{cf.loginSecret}
-            ,paasta_monitoring_use=#{cf.paastaMonitoringUse}
-            ,ingestor_ip=#{cf.ingestorIp}
+            ,cf_db_type=#{cf.cfDbType}
             ,country_code = #{cf.countryCode}
             ,state_name=#{cf.stateName}
             ,locality_name=#{cf.localityName}
@@ -305,6 +312,16 @@
             ,task_id=#{cf.taskId}
             ,update_user_id = #{cf.updateUserId}
             ,update_date = now()
+            ,user_add_ssh = #{cf.userAddSsh}
+            ,inception_os_user_name = #{cf.inceptionOsUserName}
+            ,cf_admin_password = #{cf.cfAdminPassword}
+            ,portal_domain = #{cf.portalDomain}
+            ,paasta_monitoring_use = #{cf.paastaMonitoringUse}
+            ,metric_url = #{cf.metricUrl}
+            ,syslog_address = #{cf.syslogAddress}
+            ,syslog_port = #{cf.syslogPort}
+            ,syslog_custom_rule = #{cf.syslogCustomRule}
+            ,syslog_fallback_servers = #{cf.syslogFallbackServers}
         Where id=#{cf.id}
     </update>
     
@@ -331,7 +348,7 @@
               ,zone_z1
               ,zone_z2
               ,zone_z3
-         From ieda_job_template
+         From ieda_cf_job_template
         Where deploy_type = #{map.deployType}
           And 
             min_release_version <= #{map.releaseVersion}
@@ -385,7 +402,7 @@
                ,job.update_user_id as update_user_id
                ,job.update_date as update_date
                ,template.job_name as job_name
-          From ieda_job_setting job, ieda_job_template template
+          From ieda_job_setting job, ieda_cf_job_template template
          Where job.job_id = template.id
            And job.id =#{cfId}
            And job.deploy_type = #{deployType}
@@ -412,24 +429,16 @@
         Select 
              id
             ,iaas_type
-            ,dea_memory_mb
-            ,dea_disk_mb
-            ,diego_yn
-            ,app_ssh_fingerprint
             ,deploy_status
             ,deployment_file
             ,deployment_name
             ,description
             ,director_uuid
+            ,cf_db_type
             ,domain
             ,domain_organization
-            ,login_secret
             ,release_name
             ,release_version
-            ,loggregator_release_name
-            ,loggregator_release_version
-            ,paasta_monitoring_use
-            ,ingestor_ip
             ,country_code
             ,state_name
             ,locality_name
@@ -438,6 +447,16 @@
             ,email
             ,key_file
             ,task_id
+            ,user_add_ssh
+            ,inception_os_user_name
+            ,cf_admin_password
+            ,portal_domain
+            ,paasta_monitoring_use
+            ,metric_url 
+            ,syslog_address
+            ,syslog_port
+            ,syslog_custom_rule
+            ,syslog_fallback_servers
         From ieda_cf
        Where iaas_type = #{iaasType}
          And deployment_file = #{deploymentFile}

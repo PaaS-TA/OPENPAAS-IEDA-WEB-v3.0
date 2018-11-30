@@ -1,0 +1,19 @@
+- type: replace
+  path: /releases/-
+  value:
+    name: paasta-monitoring-agent
+    url: file://((paastaMoniteringRelease))
+
+- type: replace
+  path: /instance_groups/name=bosh/jobs/-
+  value:
+    name: metrics_agent
+    release: paasta-monitoring-agent
+    properties:
+      metrics_agent:
+        influxdb:
+          url: ((metric_url))
+          database: bosh_metric_db
+          measurement: bosh_metrics
+          processMeasurement: bosh_process_metrics
+        origin: micro-bosh 

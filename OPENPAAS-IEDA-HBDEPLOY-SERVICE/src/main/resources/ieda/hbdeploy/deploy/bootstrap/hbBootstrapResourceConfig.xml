@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapResourceConfigDAO">
+
+<resultMap id="bootstrapResource" type="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapResourceConfigVO">
+    <id property="id" column="id" />
+    <result property="recid" column="id"/>
+    <result property="iaasType" column="iaas_type"/>
+    <result property="resourceConfigName" column="resource_config_name"/>
+    <result property="stemcellName" column="stemcell_name"/>
+    <result property="instanceType" column="instance_type"/>
+    <result property="vmPassword" column="vm_password"/>
+    <result property="createUserId" column="create_user_id"/>
+    <result property="updateUserId" column="update_user_id"/>
+    <result property="createDate" column="create_date"/>
+    <result property="updateDate" column="update_date"/>
+</resultMap>
+
+<select id = "selectBootstrapResourceConfigInfoList" resultMap="bootstrapResource">
+    select 
+        id as id
+        ,resource_config_name as resource_config_name
+        ,iaas_type as iaas_Type
+        ,stemcell_name as stemcell_name
+        ,instance_type as instance_type 
+        ,vm_password as vm_password
+        ,create_user_id as create_user_id
+        ,create_date as create_date
+        ,update_user_id as update_user_id
+        ,update_date as update_date
+    from ieda_bootstrap_resource_config
+    ORDER BY id;
+</select>
+
+<insert id="insertBootStrapResourceConfigInfo">
+    INSERT INTO ieda_bootstrap_resource_config(
+         iaas_type
+        ,resource_config_name
+        ,stemcell_name
+        ,instance_type
+        ,vm_password
+        ,create_user_id
+        ,create_date
+        ,update_user_id
+        ,update_date
+        ) VALUES (
+        #{resource.iaasType}
+        ,#{resource.resourceConfigName}
+        ,#{resource.stemcellName}
+        ,#{resource.instanceType}
+        ,#{resource.vmPassword}
+        ,#{resource.createUserId}
+        ,now()
+        ,#{resource.updateUserId}
+        ,now()
+        )
+</insert>
+
+<update id="updateBootStrapResourceConfigInfo">
+    UPDATE ieda_bootstrap_resource_config set
+        iaas_type = #{resource.iaasType}
+        ,resource_config_name = #{resource.resourceConfigName}
+        ,stemcell_name = #{resource.stemcellName}
+        ,instance_type = #{resource.instanceType}
+        ,vm_password = #{resource.vmPassword}
+        ,update_user_id = #{resource.updateUserId}
+        ,update_date = now()
+    WHERE id = #{resource.id}
+</update>
+
+<select id="selectBootstrapResourceConfigInfo" resultMap="bootstrapResource">
+    select 
+        id as id
+        ,resource_config_name as resource_config_name
+        ,iaas_type as iaas_type
+        ,stemcell_name as stemcell_name
+        ,instance_type as instance_type
+        ,vm_password as vm_password
+        ,create_user_id as create_user_id
+        ,create_date as create_date
+        ,update_user_id as update_user_id
+        ,update_date as update_date
+    from ieda_bootstrap_resource_config
+    where id = #{id}
+</select> 
+
+<delete id = "deleteBootStrapResourceConfigInfo">
+    delete from 
+        ieda_bootstrap_resource_config
+    where
+        id = #{resource.id}
+    and
+        resource_config_name = #{resource.resourceConfigName}
+</delete>
+
+<select id = "selectBootstrapResourceConfigByName" resultType="int">
+    select
+        count(*)
+    from
+        ieda_bootstrap_resource_config
+    where
+        resource_config_name = #{resourceConfigName}
+</select>
+
+</mapper>

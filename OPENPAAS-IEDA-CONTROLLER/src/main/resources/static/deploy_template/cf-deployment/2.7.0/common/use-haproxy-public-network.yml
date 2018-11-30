@@ -1,0 +1,10 @@
+---
+- type: replace
+  path: /instance_groups/name=haproxy/networks/name=default/default?
+  value: [dns, gateway]
+
+- type: replace
+  path: /instance_groups/name=haproxy/networks/-
+  value:
+    name: "vip"
+    static_ips: [((haproxy_public_ip))]

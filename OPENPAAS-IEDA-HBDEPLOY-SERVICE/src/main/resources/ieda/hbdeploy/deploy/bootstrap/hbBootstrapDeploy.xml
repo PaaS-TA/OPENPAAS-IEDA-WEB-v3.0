@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapDAO">
+
+<resultMap id="bootstrap" type="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapVO">
+    <id property="id" column="id"/>
+    <result property="recid" column="id"/>
+    <result property="bootstrapConfigName" column="bootstrap_config_name"/>
+    <result property="iaasType" column="iaas_type"/>
+    <result property="networkConfigInfo" column="network_config_name"/>
+    <result property="cpiConfigInfo" column="cpi_config_name"/>
+    <result property="defaultConfigInfo" column="default_config_name"/>
+    <result property="resourceConfigInfo" column="resource_config_name"/>
+    <result property="deploymentFile" column="deployment_file"/>
+    <result property="deployStatus" column="deploy_status"/>
+    <result property="deployLog" column="deploy_log"/>
+    <collection property="cpiConfigVo" ofType="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapCpiConfigVO"  javaType="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapCpiConfigVO">
+        <result property="iaasConfigId" column="iaas_config_id"/>
+    </collection>
+    <collection property="resourceConfigVo" ofType="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapResourceConfigVO"  javaType="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapResourceConfigVO">
+        <result property="stemcellName" column="stemcell_name"/>
+        <result property="instanceType" column="instance_type"/>
+        <result property="vmPassword" column="vm_password"/>
+    </collection>
+    <collection property="networkConfigVo" ofType="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapNetworkConfigVO"  javaType="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapNetworkConfigVO">
+        <result property="subnetId" column="subnet_id"/>
+        <result property="privateStaticIp" column="private_static_ip"/>
+        <result property="subnetRange" column="subnet_range"/>
+        <result property="subnetGateway" column="subnet_gateway"/>
+        <result property="subnetDns" column="subnet_dns"/>
+        <result property="publicStaticIp" column="public_static_ip"/>
+    </collection>
+    <collection property="defaultConfigVo" ofType="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapDefaultConfigVO"  javaType="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapDefaultConfigVO">
+        <result property="deploymentName" column="deployment_name"/>
+        <result property="directorName" column="director_name"/>
+        <result property="credentialKeyName" column="credential_key_name"/>
+        <result property="boshRelease" column="boshRelease"/>
+        <result property="boshCpiRelease" column="bosh_cpi_release"/>
+        <result property="boshBpmRelease" column="bosh_bpm_release"/>
+        <result property="uaaRelease" column="uaa_release"/>
+        <result property="osConfRelease" column="os_conf_release"/>
+        <result property="credhubRelease" column="cred_hub_release"/>
+        <result property="snapshotSchedule" column="snapshot_schedule"/>
+        <result property="enableSnapshots" column="enable_snapshots"/>
+        <result property="ntp" column="ntp"/>
+        <result property="paastaMonitoringUse" column="paasta_monitoring_use"/>
+        <result property="syslogRelease" column="syslog_release"/>
+        <result property="syslogAddress" column="syslog_address"/>
+        <result property="syslogPort" column="syslog_port"/>
+        <result property="syslogTransport" column="syslog_transport"/>
+        <result property="metricUrl" column="metric_url"/>
+        <result property="paastaMonitoringRelease" column="paasta_monitoring_release"/>
+    </collection>
+    <collection property="iaasConfig"  ofType="org.openpaas.ieda.deploy.web.information.iassConfig.dao.IaasConfigMgntVO" javaType="String" >
+        <result property="accountId" column="ACCOUNT_ID"/>
+        <result property="commonSecurityGroup" column ="COMMON_SECURITY_GROUP"/>
+        <result property="commonRegion" column="COMMON_REGION"/>
+        <result property="commonKeypairName" column ="COMMON_KEYPAIR_NAME"/>
+        <result property="commonKeypairPath" column ="COMMON_KEYPAIR_PATH"/>
+        <result property="commonAvailabilityZone" column="COMMON_AVAILABILITY_ZONE"/>
+
+    </collection>
+    <collection property="iaasAccount"  ofType="hashMap" javaType="String">
+        <result property="accountName" column="ACCOUNT_NAME"/>
+        <result property="commonAccessEndpoint" column="COMMON_ACCESS_ENDPOINT"/>
+        <result property="commonAccessUser" column="COMMON_ACCESS_USER"/>
+        <result property="commonAccessSecret" column="COMMON_ACCESS_SECRET"/>
+        <result property="commonTenant" column="COMMON_TENANT"/>
+        <result property="commonProject" column="COMMON_PROJECT"/>
+        <result property="commonRegion" column="COMMON_REGION"/>
+        <result property="openstackVersion" column="OPENSTACK_KEYSTONE_VERSION"/>
+        <result property="openstackDomain" column="OPENSTACK_DOMAIN"/>
+    </collection>
+</resultMap>
+
+<select id="selectBootstrapList" resultMap="bootstrap">
+    select
+        bootstrap.id 
+        ,bootstrap.iaas_type
+        ,bootstrap.bootstrap_config_name
+        ,bootstrap.network_config_name
+        ,bootstrap.cpi_config_name
+        ,bootstrap.default_config_name
+        ,bootstrap.resource_config_name
+        ,bootstrap.deployment_file
+        ,bootstrap.deploy_status
+        ,bootstrap.deploy_log
+        ,cpi.iaas_config_id
+        ,resource.stemcell_name
+        ,resource.instance_type
+        ,resource.vm_password
+        ,bootstrap.create_user_id
+        ,bootstrap.create_date
+        ,bootstrap.update_user_id
+        ,bootstrap.update_date
+        ,network.subnet_id
+        ,network.private_static_ip
+        ,network.subnet_range
+        ,network.subnet_gateway
+        ,network.subnet_dns
+        ,network.public_static_ip
+        ,defaultInfo.deployment_name
+        ,defaultInfo.director_name
+        ,defaultInfo.ntp
+        ,defaultInfo.credential_key_name
+        ,defaultInfo.boshRelease
+        ,defaultInfo.bosh_cpi_release
+        ,defaultInfo.bosh_bpm_release
+        ,defaultInfo.uaa_release
+        ,defaultInfo.os_conf_release
+        ,defaultInfo.cred_hub_release
+        ,defaultInfo.enable_snapshots
+        ,defaultInfo.snapshot_schedule
+        ,defaultInfo.paasta_monitoring_use
+        ,defaultInfo.syslog_release
+        ,defaultInfo.syslog_address
+        ,defaultInfo.syslog_port
+        ,defaultInfo.syslog_transport
+        ,defaultInfo.metric_url
+        ,defaultInfo.paasta_monitoring_release
+        ,config.iaas_config_alias as iaas_config_alias
+        ,config.id as iaas_config_id
+        ,config.account_id as account_id
+        ,config.common_security_group as common_security_group
+        ,config.common_region as common_region
+        ,config.common_keypair_name as common_keypair_name
+        ,config.common_keypair_path as common_keypair_path
+        ,config.common_availability_zone as common_availability_zone
+        ,account.id as iaas_account_id
+        ,ifnull(account.common_access_endpoint, "") as common_access_endpoint
+        ,ifnull(account.common_access_user, "") as common_access_user
+        ,ifnull(account.common_access_secret, "") as common_access_secret
+        ,ifnull(account.common_tenant, "") as common_tenant
+        ,ifnull(account.common_project, "") as common_project
+        ,ifnull(account.openstack_keystone_version, "") as openstack_keystone_version
+        ,ifnull(account.openstack_domain, "") as openstack_domain
+    from ieda_bootstrap_config as bootstrap
+    Left join ieda_bootstrap_cpi_config as cpi
+    on bootstrap.cpi_config_name = cpi.cpi_name
+    Left join ieda_bootstrap_network_config as network
+    on bootstrap.network_config_name = network.network_config_name
+    Left join ieda_bootstrap_resource_config as resource
+    on bootstrap.resource_config_name = resource.resource_config_name
+    Left join ieda_bootstrap_default_config as defaultInfo
+    on bootstrap.default_config_name = defaultInfo.default_config_name
+    Left join ieda_iaas_config as config
+    on cpi.iaas_config_id = config.id
+    Left join ieda_iaas_account as account
+    on config.account_id = account.id
+    <if test="installStatus == 'installAble'">
+    where deploy_status is null
+    or deploy_status = '';
+    </if>
+    <if test="installStatus != 'installAble'">
+    where deploy_status is not null
+    or deploy_status != '';
+    </if>
+</select>
+    
+<select id="selectBootstrapConfigInfo" resultMap="bootstrap">
+    select
+        bootstrap.id 
+        ,bootstrap.iaas_type
+        ,bootstrap.bootstrap_config_name
+        ,bootstrap.network_config_name
+        ,bootstrap.cpi_config_name
+        ,bootstrap.default_config_name
+        ,bootstrap.resource_config_name
+        ,bootstrap.deployment_file
+        ,bootstrap.deploy_status
+        ,bootstrap.deploy_log
+        ,cpi.iaas_config_id
+        ,resource.stemcell_name
+        ,resource.instance_type
+        ,resource.vm_password
+        ,bootstrap.create_user_id
+        ,bootstrap.create_date
+        ,bootstrap.update_user_id
+        ,bootstrap.update_date
+        ,network.subnet_id
+        ,network.private_static_ip
+        ,network.subnet_range
+        ,network.subnet_gateway
+        ,network.subnet_dns
+        ,network.public_static_ip
+        ,defaultInfo.deployment_name
+        ,defaultInfo.director_name
+        ,defaultInfo.ntp
+        ,defaultInfo.credential_key_name
+        ,defaultInfo.boshRelease
+        ,defaultInfo.bosh_cpi_release
+        ,defaultInfo.bosh_bpm_release
+        ,defaultInfo.uaa_release
+        ,defaultInfo.os_conf_release
+        ,defaultInfo.cred_hub_release
+        ,defaultInfo.enable_snapshots
+        ,defaultInfo.snapshot_schedule
+        ,defaultInfo.paasta_monitoring_use
+        ,defaultInfo.syslog_release
+        ,defaultInfo.syslog_address
+        ,defaultInfo.syslog_port
+        ,defaultInfo.syslog_transport
+        ,defaultInfo.metric_url
+        ,defaultInfo.paasta_monitoring_release
+        ,config.iaas_config_alias as iaas_config_alias
+        ,config.id as iaas_config_id
+        ,config.account_id as account_id
+        ,config.common_security_group as common_security_group
+        ,config.common_region as common_region
+        ,config.common_keypair_name as common_keypair_name
+        ,config.common_keypair_path as common_keypair_path
+        ,config.common_availability_zone as common_availability_zone
+        ,account.id as iaas_account_id
+        ,ifnull(account.common_access_endpoint, "") as common_access_endpoint
+        ,ifnull(account.common_access_user, "") as common_access_user
+        ,ifnull(account.common_access_secret, "") as common_access_secret
+        ,ifnull(account.common_tenant, "") as common_tenant
+        ,ifnull(account.common_project, "") as common_project
+        ,ifnull(account.openstack_keystone_version, "") as openstack_keystone_version
+        ,ifnull(account.openstack_domain, "") as openstack_domain
+    from ieda_bootstrap_config as bootstrap
+    Left join ieda_bootstrap_cpi_config as cpi
+    on bootstrap.cpi_config_name = cpi.cpi_name
+    Left join ieda_bootstrap_network_config as network
+    on bootstrap.network_config_name = network.network_config_name
+    Left join ieda_bootstrap_resource_config as resource
+    on bootstrap.resource_config_name = resource.resource_config_name
+    Left join ieda_bootstrap_default_config as defaultInfo
+    on bootstrap.default_config_name = defaultInfo.default_config_name
+    Left join ieda_iaas_config as config
+    on cpi.iaas_config_id = config.id
+    Left join ieda_iaas_account as account
+    on config.account_id = account.id
+    where bootstrap.id = #{id}
+</select>
+    
+<insert id="insertBootStrapConfigInfo">
+    INSERT INTO ieda_bootstrap_config (
+        iaas_type
+        ,bootstrap_config_name
+        ,network_config_name
+        ,cpi_config_name
+        ,deployment_file
+        ,default_config_name
+        ,resource_config_name
+        ,create_user_id
+        ,create_date
+        ,update_user_id
+        ,update_date
+     )VALUE (
+        #{vo.iaasType}
+        ,#{vo.bootstrapConfigName}
+        ,#{vo.networkConfigInfo}
+        ,#{vo.cpiConfigInfo}
+        ,#{vo.deploymentFile}
+        ,#{vo.defaultConfigInfo}
+        ,#{vo.resourceConfigInfo}
+        ,#{vo.createUserId}
+        ,now()
+        ,#{vo.updateUserId}
+        ,now()
+      )
+</insert>
+    
+<update id="updateBootStrapConfigInfo">
+    Update ieda_bootstrap_config set
+        iaas_type = #{vo.iaasType}
+        ,bootstrap_config_name = #{vo.bootstrapConfigName}
+        ,network_config_name = #{vo.networkConfigInfo}
+        ,cpi_config_name = #{vo.cpiConfigInfo}
+        ,default_config_name = #{vo.defaultConfigInfo}
+        ,resource_config_name = #{vo.resourceConfigInfo}
+        ,deploy_log = #{vo.deployLog}
+        ,deploy_status = #{vo.deployStatus}
+        ,deployment_file = #{vo.deploymentFile}
+        ,update_user_id = #{vo.updateUserId}
+        ,update_date = now()
+    WHERE
+    id=#{vo.id}
+</update>
+
+<select id = "selectBootstrapConfigByName" resultType="int">
+    select 
+         count(*)
+    from ieda_bootstrap_config
+    where bootstrap_config_name = #{bootstrapConfigName}
+</select>
+    
+<delete id="deleteBootstrapInfo">
+    Delete 
+    From ieda_bootstrap_config
+    Where id=#{dto.id}
+</delete>
+    
+<select id="selectSnapshotInfo" resultType="int">
+     Select count(if(snapshot_schedule='',null,snapshot_schedule)) as count   
+       From ieda_hybrid_bootstrap 
+     Where public_static_ip = #{director.directorUrl}
+        And director_name = (
+            Select director_name 
+              From ieda_director_config 
+             Where director_name = #{director.directorName} 
+               And director_cpi = #{director.directorCpi}
+               And director_url = #{director.directorUrl}
+        )
+</select>
+
+
+<select id="selectInstallBootstrapInfo" resultMap="bootstrap">
+    select
+        private.iaas_type as  hypri_iaas_type
+        ,private.id as hypri_id
+        ,private.bootstrap_type as hypri_bootstrap_type
+        ,private.deployment_file as hypri_deployment_File
+        ,public.iaas_type as hypub_iaas_type
+        ,public.id as id
+        ,public.bootstrap_type as bootstrap_type
+        ,public.deployment_file as deployment_File
+    from ieda_public_bootstrap public, ieda_private_bootstrap private
+    where public.id = #{publicBootStrapId}
+    and private.id = #{privateBootstrapId}
+</select>
+</mapper>

@@ -23,7 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openpaas.ieda.controller.iaasMgnt.openstackMgnt.web.keypairs.OpenstackKeypairsMgntController;
-import org.openpaas.ieda.openstackMgnt.web.keypairs.service.OpenstackKeypairsMgntService;
+import org.openpaas.ieda.iaasDashboard.openstackMgnt.web.keypairs.service.OpenstackKeypairsMgntService;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

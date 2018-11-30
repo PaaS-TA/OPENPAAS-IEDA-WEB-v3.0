@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openpaas.ieda.azureMgnt.web.resourceGroup.dao.AzureResourceGroupMgntVO;
-import org.openpaas.ieda.azureMgnt.web.resourceGroup.dto.AzureResourceGroupMgntDTO;
-import org.openpaas.ieda.azureMgnt.web.resourceGroup.service.AzureResourceGroupMgntService;
+import org.openpaas.ieda.iaasDashboard.azureMgnt.web.resourceGroup.dao.AzureResourceGroupMgntVO;
+import org.openpaas.ieda.iaasDashboard.azureMgnt.web.resourceGroup.dto.AzureResourceGroupMgntDTO;
+import org.openpaas.ieda.iaasDashboard.azureMgnt.web.resourceGroup.service.AzureResourceGroupMgntService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AzureResourceGroupMgntController{
     @Autowired AzureResourceGroupMgntService azureResourceGroupMgntService;
     private final static Logger LOG = LoggerFactory.getLogger(AzureResourceGroupMgntController.class);
-    
     /***************************************************
     * @project : AZURE 인프라 관리 대시보드
     * @description : AZURE 리소스 그룹 관리 화면 이동
@@ -55,7 +54,6 @@ public class AzureResourceGroupMgntController{
         return new ResponseEntity<HashMap<String, Object>>(map, HttpStatus.OK);
     }
     
-    
     /***************************************************
      * @project : AZURE 관리 대시보드
      * @description : AZURE Resource Group 상세 목록 조회
@@ -65,7 +63,7 @@ public class AzureResourceGroupMgntController{
     @RequestMapping(value="/azureMgnt/resourceGroup/save/detail/{accountId}/{resourceGroupName:.*}", method=RequestMethod.GET)
     public ResponseEntity<HashMap<String, Object>> getAzureResourceGroupDetailInfo(Principal principal, @PathVariable int accountId, @PathVariable String resourceGroupName){
         
-    	HashMap<String, Object> map = azureResourceGroupMgntService.getAzureResourceGroupDetailInfo(principal, accountId, resourceGroupName);
+        HashMap<String, Object> map = azureResourceGroupMgntService.getAzureResourceGroupDetailInfo(principal, accountId, resourceGroupName);
         return new ResponseEntity<HashMap<String, Object>>(map, HttpStatus.OK);
     }
     
@@ -77,14 +75,13 @@ public class AzureResourceGroupMgntController{
      ***************************************************/
     @RequestMapping(value="/azureMgnt/resourceGroup/save/detail/resource/{accountId}/{resourceGroupName:.*}", method=RequestMethod.GET)
     public ResponseEntity<HashMap<String, Object>> getAzureResourceListInfo(Principal principal, @PathVariable int accountId, @PathVariable String resourceGroupName){
-        
-    	List<AzureResourceGroupMgntVO> list  = azureResourceGroupMgntService.getAzureResourceList(principal, accountId, resourceGroupName);
-    	HashMap<String, Object> map = new HashMap<String, Object>();
+        List<AzureResourceGroupMgntVO> list  = azureResourceGroupMgntService.getAzureResourceList(principal, accountId, resourceGroupName);
+        HashMap<String, Object> map = new HashMap<String, Object>();
         if(list != null){
             map.put("total", list.size());
             map.put("records", list);
         }
-    	return new ResponseEntity<HashMap<String, Object>>(map, HttpStatus.OK);
+        return new ResponseEntity<HashMap<String, Object>>(map, HttpStatus.OK);
     }
     
     /***************************************************
@@ -95,7 +92,7 @@ public class AzureResourceGroupMgntController{
      ***************************************************/
     @RequestMapping(value="/azureMgnt/resourceGroup/save", method=RequestMethod.POST)
     public ResponseEntity<?> saveResourceGroupInfo(@RequestBody AzureResourceGroupMgntDTO dto, Principal principal){
-    	azureResourceGroupMgntService.saveResourceGroupInfo(dto, principal);
+        azureResourceGroupMgntService.saveResourceGroupInfo(dto, principal);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
     
@@ -118,26 +115,24 @@ public class AzureResourceGroupMgntController{
      * @title : getAzureResourceListInfo
      * @return : ResponseEntity<?>
      ***************************************************/
-	@RequestMapping(value="/azureMgnt/resourceGroup/save/azure/subscription/list/{accountId:.*}", method=RequestMethod.GET)
+    @RequestMapping(value="/azureMgnt/resourceGroup/save/azure/subscription/list/{accountId:.*}", method=RequestMethod.GET)
     public ResponseEntity<AzureResourceGroupMgntVO>  getAzureResourceListInfo(Principal principal,@PathVariable("accountId") int accountId){
-		AzureResourceGroupMgntVO rgVO  = azureResourceGroupMgntService.getAzureSubscription(principal, accountId);
-    	return new ResponseEntity<AzureResourceGroupMgntVO>(rgVO, HttpStatus.OK);
+        AzureResourceGroupMgntVO rgVO  = azureResourceGroupMgntService.getAzureSubscription(principal, accountId);
+        return new ResponseEntity<AzureResourceGroupMgntVO>(rgVO, HttpStatus.OK);
     }
-	
-	  /***************************************************
+    
+    /***************************************************
      * @project : AZURE 인프라 관리 대시보드
      * @description : AZURE ResourceGroupInfo 삭제
      * @title : deleteAzureResourceGroupInfo
      * @return : ResponseEntity<?>
      ***************************************************/
-	 @RequestMapping(value="/azureMgnt/resouceGroup/delete", method=RequestMethod.DELETE)
-	    public ResponseEntity<?> deleteAzureResourceGroupInfo(Principal principal, @RequestBody AzureResourceGroupMgntDTO dto){
-	        if (LOG.isInfoEnabled()) {
-	            LOG.info("================================================> Azure ResourceGroup 삭제");
-	        }
-	        azureResourceGroupMgntService.deleteAzureResourceGroupInfo(principal, dto);
-	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	    }
-	    
-    
+    @RequestMapping(value="/azureMgnt/resouceGroup/delete", method=RequestMethod.DELETE)
+       public ResponseEntity<?> deleteAzureResourceGroupInfo(Principal principal, @RequestBody AzureResourceGroupMgntDTO dto){
+           if (LOG.isInfoEnabled()) {
+               LOG.info("================================================> Azure ResourceGroup 삭제");
+           }
+           azureResourceGroupMgntService.deleteAzureResourceGroupInfo(principal, dto);
+           return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+       }
 }

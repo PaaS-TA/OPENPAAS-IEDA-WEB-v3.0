@@ -198,6 +198,9 @@ function saveAwsSecurityGroupInfo(){
               if( ($(this).attr("name")).indexOf("Udp") > -1 ){
                   protocol = "udp";
               }
+              if( ($(this).attr("name")).indexOf("Icmp") > -1 ){
+                  protocol = "icmp";
+              }
               var ingressRule = {
                      protocol: protocol
                     ,portRange : $(this).val()
@@ -210,6 +213,9 @@ function saveAwsSecurityGroupInfo(){
               var protocol = "tcp";
               if( ($(this).attr("name")).indexOf("Udp") > -1 ){
                   protocol = "udp";
+              }
+              if( ($(this).attr("name")).indexOf("Icmp") > -1 ){
+                  protocol = "icmp";
               }
               var ingressRule = {
                      protocol: protocol
@@ -480,20 +486,26 @@ $( window ).resize(function() {
                         &nbsp;&nbsp;Security Group 관리<b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu alert-dropdown">
-                        <sec:authorize access="hasAuthority('AWS_KEYPAIR_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/keypair"/>', 'AWS KEYPAIR');">KeyPair 관리</a></li>
+                        <sec:authorize access="hasAuthority('AWS_VPC_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/vpc"/>', 'AWS VPC');">VPC 관리</a></li>
                         </sec:authorize>
                         <sec:authorize access="hasAuthority('AWS_SUBNET_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/awsMgnt/subnet"/>', 'AWS SUBNET');">Subnet 관리</a></li>
-                        </sec:authorize>
-                        <sec:authorize access="hasAuthority('AWS_VPC_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/vpc"/>', 'AWS VPC');">VPC 관리</a></li>
                         </sec:authorize>
                         <sec:authorize access="hasAuthority('AWS_INTERNET_GATEWAY_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/awsMgnt/internetGateway"/>', 'AWS Internet GateWay');">Internet Gateway 관리</a></li>
                         </sec:authorize>
                         <sec:authorize access="hasAuthority('AWS_ELASTIC_IP_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/awsMgnt/elasticIp"/>', 'AWS Elastic Ip');">Elastic Ip 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_KEYPAIR_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/keypair"/>', 'AWS KEYPAIR');">KeyPair 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_NAT_GATEWAY_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/natGateway"/>', 'AWS NAT GateWay');">NAT Gateway 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_ROUTE_TABLE_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/routeTable"/>', 'AWS Route Table');">Route Table 관리</a></li>
                         </sec:authorize>
                     </ul>
                 </div>
@@ -588,11 +600,15 @@ $( window ).resize(function() {
                         <input type="text" name="boshDirector" value="25555" class="bosh_security_rules">
                         <input type="text" name="allTcp" value="0-65535" class="bosh_security_rules">
                         <input type="text" name="allUdp" value="0-65535" class="bosh_security_rules">
+                        <input type="text" name="allIcmp" value="0-65535" class="bosh_security_rules">
                     </div>
                     <div  style="display:none">
                         <input type="text" name="http" value="80" class="cf_security_rules">
                         <input type="text" name="https" value="443" class="cf_security_rules">
                         <input type="text" name="cfLogs" value="4443" class="cf_security_rules">
+                        <input type="text" name="allTcp" value="0-65535" class="cf_security_rules">
+                        <input type="text" name="allUdp" value="0-65535" class="cf_security_rules">
+                        <input type="text" name="allIcmp" value="0-65535" class="cf_security_rules">
                     </div>
                 </div>
             </div>

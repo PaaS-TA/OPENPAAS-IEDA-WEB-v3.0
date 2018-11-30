@@ -1,0 +1,73 @@
+azs:
+- name: z1
+  cloud_properties: {availability_zone: [availabilityzone]}
+
+vm_types:
+- cloud_properties:
+    ephemeral_disk:
+      size: 10240
+      type: gp2
+    instance_type: [small_instance_type]
+    availability_zone: [availabilityzone]
+  name: minimal
+- cloud_properties:
+    ephemeral_disk:
+      size: 30000
+      type: gp2
+    instance_type: [medium_instance_type]
+    availability_zone: [availabilityzone]
+  name: small
+- cloud_properties:
+    ephemeral_disk:
+      size: 50000
+      type: gp2
+    instance_type: [large_instance_type]
+    availability_zone: [availabilityzone]
+  name: small-highmem
+
+disk_types:
+- disk_size: 5000
+  name: 5GB
+- disk_size: 10000
+  name: 10GB
+- disk_size: 100000
+  name: 100GB
+
+networks:
+- name: default
+  type: manual
+  subnets:
+  - range: [range]
+    gateway: [gateway]
+    static: [[static]]
+    reserved: [[reserved]]
+    dns: [[dns]]
+    cloud_properties:
+      subnet: [net_id]
+      default_security_groups: [[security_group]]
+    az: z1
+
+- name: vip
+  type: vip
+
+compilation:
+  workers: 5
+  reuse_compilation_vms: true
+  availability_zone: [availabilityzone]
+  vm_type: small
+  network: default
+  az: z1
+  
+vm_extensions:
+- name: cf-router-network-properties
+- name: cf-tcp-router-network-properties
+- name: diego-ssh-proxy-network-properties
+- name: cf-haproxy-network-properties 
+- cloud_properties:
+    ephemeral_disk:
+      size: 51200
+  name: 50GB_ephemeral_disk
+- cloud_properties:
+    ephemeral_disk:
+      size: 102400
+  name: 100GB_ephemeral_disk

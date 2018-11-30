@@ -117,17 +117,13 @@ public class CfDeleteDeployAsyncServiceUnitTest extends BaseDeployControllerUnit
      ***************************************************/
     public CfVO setCfInfo(String type) {
         CfVO vo = new CfVO();
-        vo.setAppSshFingerprint("fingerprint");
         vo.setCountryCode("seoul");
         vo.setCreateUserId("admin");
-        vo.setDeaDiskMB(8888);
-        vo.setDeaMemoryMB(41768);
         vo.setDeploymentFile("cf-yml");
         vo.setDeploymentName("cf");
         if(type.equalsIgnoreCase("null")) vo.setDeploymentFile("");
         vo.setDeployStatus("deploy");
         vo.setDescription("cf");
-        vo.setDiegoYn("N");
         vo.setDirectorUuid("uuid");
         vo.setDomain("domain");
         vo.setDomainOrganization("paas-ta");
@@ -144,7 +140,6 @@ public class CfDeleteDeployAsyncServiceUnitTest extends BaseDeployControllerUnit
         vo.setReleaseName("cf");
         vo.setPaastaMonitoringUse("yes");
         vo.setOrganizationName("pass-ta");
-        vo.setIngestorIp("172.16.100.100");
         vo.setKeyFile("cf-key.yml");
         vo.setLocalityName("mapo");
         vo.setLoginSecret("test");

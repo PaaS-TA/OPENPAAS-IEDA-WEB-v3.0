@@ -73,16 +73,23 @@ public class BootstrapSaveService {
             vo.setDeploymentName(dto.getDeploymentName().trim());
             vo.setDirectorName(dto.getDirectorName().trim());
             vo.setBoshRelease(dto.getBoshRelease().trim());
+            vo.setCredentialKeyName(dto.getCredentialKeyName());
             vo.setNtp(dto.getNtp());
             vo.setBoshCpiRelease(dto.getBoshCpiRelease().trim());
+            vo.setBoshBpmRelease(dto.getBoshBpmRelease().trim());
             vo.setEnableSnapshots(dto.getEnableSnapshots().trim());
             vo.setSnapshotSchedule(dto.getSnapshotSchedule().trim());
             vo.setUpdateUserId(principal.getName());
             vo.setPaastaMonitoringUse(dto.getPaastaMonitoringUse());
-            vo.setPaastaMonitoringIp(dto.getPaastaMonitoringIp());
-            vo.setInfluxdbIp(dto.getInfluxdbIp());
-            vo.setPaastaMonitoringRelease(dto.getPaastaMonitoringRelease());
+            vo.setPaastaMonitoringAgentRelease(dto.getPaastaMonitoringAgentRelease());
+            vo.setPaastaMonitoringSyslogRelease(dto.getPaastaMonitoringSyslogRelease());
+            vo.setMetricUrl(dto.getMetricUrl());
+            vo.setSyslogAddress(dto.getSyslogAddress());
+            vo.setSyslogPort(dto.getSyslogPort());
+            vo.setSyslogTransport(dto.getSyslogTransport());
             vo.setOsConfRelease(dto.getOsConfRelease());
+            vo.setBoshUaaRelease(dto.getBoshUaaRelease());
+            vo.setBoshCredhubRelease(dto.getBoshCredhubRelease());
         }else{
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA),
                     message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);

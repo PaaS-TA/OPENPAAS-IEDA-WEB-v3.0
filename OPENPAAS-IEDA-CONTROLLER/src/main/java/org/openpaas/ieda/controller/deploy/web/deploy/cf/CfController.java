@@ -42,7 +42,6 @@ public class CfController extends BaseController{
     
     final private static Logger LOGGER = LoggerFactory.getLogger(CfController.class);
     
-    
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
      * @description : CF 설치 화면 이동
@@ -166,20 +165,6 @@ public class CfController extends BaseController{
         if(LOGGER.isInfoEnabled()){ LOGGER.info("==================================> /deploy/cf/install/saveResourceInfo "); }
         HashMap<String, Object> map = cfSaveService.saveResourceInfo(dto,principal);
         return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
-    }
-    
-    /****************************************************************
-     * @project : Paas 플랫폼 설치 자동화
-     * @description : 배포 파일 생성
-     * @title : makeDeploymentFile
-     * @return : ResponseEntity<?>
-    *****************************************************************/
-    @RequestMapping(value="/deploy/cf/install/createSettingFile", method=RequestMethod.POST)
-    public ResponseEntity<?> makeDeploymentFile(@RequestBody CfParamDTO.Install dto){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("====================================> /deploy/cf/install/createSettingFile"); }
-        CfVO vo = cfService.getCfInfo( Integer.parseInt(dto.getId()) );
-        cfService.createSettingFile(vo);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
     /****************************************************************

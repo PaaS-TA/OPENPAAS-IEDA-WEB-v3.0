@@ -1,14 +1,18 @@
 package org.openpaas.ieda.deploy.web.deploy.cf.service;
 
+import java.io.File;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.DeleteMethod;
+import org.openpaas.ieda.common.api.LocalDirectoryConfiguration;
 import org.openpaas.ieda.common.exception.CommonException;
 import org.openpaas.ieda.deploy.api.director.utility.DirectorRestHelper;
 import org.openpaas.ieda.deploy.web.config.setting.dao.DirectorConfigVO;
@@ -37,6 +41,9 @@ public class CfDeleteDeployAsyncService {
     @Autowired private ResourceDAO resourceDao;
     @Autowired private MessageSource message;
     
+    private final static String SEPARATOR = System.getProperty("file.separator");
+    private final static String DEPLOYMENT_DIR = LocalDirectoryConfiguration.getDeploymentDir();
+    final private static String CF_CREDENTIAL_DIR = LocalDirectoryConfiguration.getGenerateCfDeploymentCredentialDir();
     final static private String CF_MESSAGE_ENDPOINT =  "/deploy/cf/delete/logs";
     final static private String CF_DIEGO_MESSAGE_ENDPOINT =  "/deploy/cfDiego/delete/logs";
     
@@ -50,10 +57,10 @@ public class CfDeleteDeployAsyncService {
         String errorMsg = message.getMessage("common.internalServerError.message", null, Locale.KOREA);
         String messageEndpoint = platform.equalsIgnoreCase("cf") ? CF_MESSAGE_ENDPOINT : CF_DIEGO_MESSAGE_ENDPOINT;
         String deploymentName = "";
-        
+        String deploymentFileName = "";
         CfVO vo  = cfDao.selectCfInfoById(Integer.parseInt(dto.getId()));
         deploymentName = vo != null ?vo.getDeploymentName() : "";
-            
+        deploymentFileName = vo != null ? vo.getDeploymentFile() : "";
         if ( StringUtils.isEmpty(deploymentName) ) {
             throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), 
                     message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
@@ -64,21 +71,33 @@ public class CfDeleteDeployAsyncService {
             vo.setUpdateUserId(principal.getName());
             saveDeployStatus(vo);
         }
-        
+        String cloudConfigFile = DEPLOYMENT_DIR + SEPARATOR + deploymentFileName; 
         try {
             DirectorConfigVO defaultDirector = directorConfigService.getDefaultDirector();
+            
+            List<String> cmd = new ArrayList<String>(); //bosh cloud config 명령어 실행 줄 Cloud Config 관련 Rest API를 아직 지원 안하는 것 같음 2018.08.01
+            cmd.add("bosh");
+            cmd.add("-e");
+            cmd.add(defaultDirector.getDirectorName());
+            cmd.add("update-cloud-config");
+            cmd.add(cloudConfigFile);
+            cmd.add("-n");
+            ProcessBuilder builder = new ProcessBuilder(cmd);
+            builder.redirectErrorStream(true);
+            builder.start();
+            
             HttpClient httpClient = DirectorRestHelper.getHttpClient(defaultDirector.getDirectorPort());
             
             DeleteMethod deleteMethod = new DeleteMethod(DirectorRestHelper.getDeleteDeploymentURI(defaultDirector.getDirectorUrl(), defaultDirector.getDirectorPort(), deploymentName));
             deleteMethod = (DeleteMethod)DirectorRestHelper.setAuthorization(defaultDirector.getUserId(), defaultDirector.getUserPassword(), (HttpMethodBase)deleteMethod);
-        
+            
             int statusCode = httpClient.executeMethod(deleteMethod);
             if( statusCode == HttpStatus.MOVED_PERMANENTLY.value() || statusCode == HttpStatus.MOVED_TEMPORARILY.value() ) {
                 Header location = deleteMethod.getResponseHeader("Location");
                 String taskId = DirectorRestHelper.getTaskId(location.getValue());
                 DirectorRestHelper.trackToTask(defaultDirector, messagingTemplate, messageEndpoint, httpClient, taskId, "event", principal.getName());
             }else {
-                DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "done", Arrays.asList("CF 삭제가 완료되었습니다."));
+                DirectorRestHelper.sendTaskOutput(principal.getName(), messagingTemplate, messageEndpoint, "done", Arrays.asList("CF 삭제에 실패 하였습니다."));
             }
             deleteCfInfo(vo);
         } catch(RuntimeException e){
@@ -105,6 +124,17 @@ public class CfDeleteDeployAsyncService {
             map.put("id", vo.getId().toString());
             map.put("deploy_type", cfDeployType);
             cfDao.deleteCfJobSettingListById(map);
+            
+            String cloudConfigFileName = DEPLOYMENT_DIR + SEPARATOR + vo.getDeploymentFile();
+            File file = new File(cloudConfigFileName);
+            if(file.exists()){
+                file.delete();
+            }
+            String runtimeConfigFileName = CF_CREDENTIAL_DIR + SEPARATOR + vo.getDeploymentName()+"runtime-cred.yml";
+            file = new File(runtimeConfigFileName);
+            if(file.exists()){
+                file.delete();
+            }
         }
     }
     

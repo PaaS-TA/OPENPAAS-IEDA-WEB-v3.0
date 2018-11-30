@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentInstanceConfigDAO">
+
+<resultMap id="hbCfDeploymentInstanceConfig" type="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentInstanceConfigVO">
+    <id property="id" column="ID" />
+    <result property="recid" column="id"/>
+    <result property="instanceConfigName" column ="INSTANCE_CONFIG_NAME"/>
+    <result property="iaasType" column="IAAS_TYPE"/>
+    <result property="cfDeploymentName" column="CF_DEPLOYMENT_NAME"/>
+    <result property="cfDeploymentVersion" column="CF_DEPLOYMENT_VERSION"/>
+    <result property="adapter" column="ADAPTER"/>
+    <result property="api" column="API"/>
+    <result property="ccWorker" column="CC_WORKER"/>
+    <result property="consul" column="CONSUL"/>
+    <result property="theDatabase" column="THE_DATABASE"/>
+    <result property="diegoApi" column="DIEGO_API"/>   
+    <result property="diegoCell" column="DIEGO_CELL"/>
+    <result property="doppler" column="DOPPLER"/>
+    <result property="scheduler" column="SCHEDULER"/>
+    <result property="haproxy" column="HAPROXY"/>    
+    <result property="logApi" column="LOG_API"/>
+    <result property="nats" column="NATS"/>
+    <result property="router" column="ROUTER"/>    
+    <result property="singletonBlobstore" column="SINGLETON_BLOBSTORE"/>
+    <result property="tcpRouter" column="TCP_ROUTER"/>    
+    <result property="uaa" column="UAA"/>  
+    <result property="createUserId" column="CREATE_USER_ID"/>
+    <result property="updateUserId" column="UPDATE_USER_ID"/>
+    <result property="createDate" column="CREATE_DATE"/>
+    <result property="updateDate" column="UPDATE_DATE"/>
+</resultMap>
+
+<select id = "selectHbCfDeploymentInstanceConfigInfoList" resultMap="hbCfDeploymentInstanceConfig">
+    select 
+        id as id
+        ,instance_config_name as instance_config_name
+        ,iaas_type as iaas_type
+        ,adapter as adapter
+        ,api as api
+        ,cf_deployment_name as cf_deployment_name
+        ,cf_deployment_version as cf_deployment_version
+        ,cc_worker as cc_worker
+        ,consul as consul
+        ,the_database as the_database
+        ,diego_api as diego_api
+        ,diego_cell as diego_cell
+        ,scheduler as scheduler
+        ,doppler as doppler
+        ,haproxy as haproxy
+        ,log_api as log_api
+        ,nats as nats
+        ,router as router
+        ,singleton_blobstore as singleton_blobstore
+        ,tcp_router as tcp_router
+        ,uaa as uaa
+        ,create_user_id as create_user_id
+        ,create_date as create_date
+        ,update_user_id as update_user_id
+        ,update_date as update_date
+    from ieda_hb_cfDeployment_instance_config
+    ORDER BY id;
+</select>
+
+<select id="selectHbCfDeploymentInstanceConfigInfo" resultMap="hbCfDeploymentInstanceConfig">
+    select 
+        id as id
+        ,instance_config_name as instance_config_name
+        ,iaas_type as iaas_type
+        ,cf_deployment_name as cf_deployment_name
+        ,cf_deployment_version as cf_deployment_version
+        ,adapter as adapter
+        ,api as api
+        ,cc_worker as cc_worker
+        ,consul as consul
+        ,scheduler as scheduler
+        ,the_database as the_database
+        ,diego_api as diego_api
+        ,diego_cell as diego_cell
+        ,doppler as doppler
+        ,haproxy as haproxy
+        ,log_api as log_api
+        ,nats as nats
+        ,router as router
+        ,singleton_blobstore as singleton_blobstore
+        ,tcp_router as tcp_router
+        ,uaa as uaa
+        ,create_user_id as create_user_id
+        ,create_date as create_date
+        ,update_user_id as update_user_id
+        ,update_date as update_date
+    from ieda_hb_cfDeployment_instance_config
+    where id = #{id}
+</select>
+
+<insert id="insertHbCfDeploymentInstanceConfigInfo">
+        insert into
+        ieda_hb_cfDeployment_instance_config(
+            iaas_type
+            ,cf_deployment_name
+            ,cf_deployment_version
+            ,instance_config_name
+            ,adapter
+            ,api 
+            ,cc_worker
+            ,consul
+            ,the_database
+            ,diego_api
+            ,diego_cell
+            ,doppler
+            ,haproxy
+            ,log_api
+            ,nats
+            ,router
+            ,singleton_blobstore
+            ,scheduler
+            ,tcp_router 
+            ,uaa 
+            ,create_user_id
+            ,create_date
+            ,update_user_id
+            ,update_date
+        )value(
+            #{instance.iaasType}
+            ,#{instance.cfDeploymentName}
+            ,#{instance.cfDeploymentVersion}
+            ,#{instance.instanceConfigName}
+            ,#{instance.adapter}
+            ,#{instance.api}
+            ,#{instance.ccWorker}
+            ,#{instance.consul}
+            ,#{instance.theDatabase}
+            ,#{instance.diegoApi}
+            ,#{instance.diegoCell}
+            ,#{instance.doppler}
+            ,#{instance.haproxy}
+            ,#{instance.logApi}
+            ,#{instance.nats}
+            ,#{instance.router}             
+            ,#{instance.singletonBlobstore}
+            ,#{instance.scheduler}
+            ,#{instance.tcpRouter}
+            ,#{instance.uaa} 
+            ,#{instance.createUserId}
+            ,now()
+            ,#{instance.updateUserId}
+            ,now()
+        )
+</insert>
+ 
+<update id="updateHbCfDeploymentInstanceConfigInfo">
+    UPDATE ieda_hb_cfDeployment_instance_config set
+        iaas_type = #{instance.iaasType}
+        ,instance_config_name = #{instance.instanceConfigName}
+        ,cf_deployment_name = #{instance.cfDeploymentName}
+        ,cf_deployment_version = #{instance.cfDeploymentVersion}
+        ,adapter = #{instance.adapter}
+        ,api = #{instance.api}
+        ,cc_worker = #{instance.ccWorker}
+        ,consul = #{instance.consul}
+        ,the_database = #{instance.theDatabase}
+        ,diego_api = #{instance.diegoApi}
+        ,diego_cell = #{instance.diegoCell}
+        ,doppler = #{instance.doppler}
+        ,haproxy = #{instance.haproxy}
+        ,scheduler = #{instance.scheduler}
+        ,log_api = #{instance.logApi}
+        ,nats = #{instance.nats}
+        ,router = #{instance.router}             
+        ,singleton_blobstore = #{instance.singletonBlobstore}
+        ,tcp_router = #{instance.tcpRouter}
+        ,uaa = #{instance.uaa}
+        ,update_user_id = #{instance.updateUserId}
+        ,update_date = now()
+    WHERE id = #{instance.id}
+</update> 
+
+<select id = "selectHbCfDeploymentInstanceConfigByName" resultType="int">
+    select
+        count(*)
+    from
+        ieda_hb_cfDeployment_instance_config
+    where
+        instance_config_name = #{instanceConfigName}
+</select>
+
+
+<select id="selectHbCfJobTemplateByReleaseVersion" resultType="hashMap">
+    /** ieda.hbdeploy.deploy.cfDeployment.selectHbCfJobTemplatesByReleaseVersion  **/
+    <![CDATA[
+         Select
+               id
+              ,seq
+              ,deploy_type
+              ,job_name
+              ,zone_z1
+              ,zone_z2
+              ,zone_z3
+         From ieda_cf_job_template
+        Where deploy_type = #{map.deployType}
+          And 
+            min_release_version <= #{map.releaseVersion}
+          And 
+            max_release_version >= #{map.releaseVersion} 
+        ORDER BY seq;
+    ]]>
+</select>
+
+<delete id="deleteHbCfDeploymentInstanceConfigInfo">
+        delete from 
+            ieda_hb_cfDeployment_instance_config
+        where
+            id = #{instance.id}
+        and
+            instance_config_name = #{instance.instanceConfigName}
+</delete>
+
+</mapper>

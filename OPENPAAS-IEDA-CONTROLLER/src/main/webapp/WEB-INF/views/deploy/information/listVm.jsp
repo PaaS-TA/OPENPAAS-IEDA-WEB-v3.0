@@ -43,20 +43,20 @@ $(function() {
      columns    : [
          {field: 'recid',     caption: 'recid', hidden: true}
          , {field: 'deploymentName', caption: 'deployment', hidden: true}
-         , {field: 'jobName', caption: 'VM', size: '120px', style: 'text-align:center'}
-         , {field: 'jobState', caption: 'State', size: '80px', style: 'text-align:center'}
-         , {field: 'az', caption: 'AZ', size: '50px', style: 'text-align:center'}
-         , {field: 'vmType', caption: 'VM Type', size: '80px', style: 'text-align:center'}
-         , {field: 'ips', caption: 'IPs', size: '100px', style: 'text-align:center'}
-         , {field: 'load', caption: 'Load<br/>(avg01, avg05, avg15)', size: '120px', style: 'text-align:center'}
-         , {field: 'cpuUser', caption: 'Cpu User', size: '80px', style: 'text-align:center'}
-         , {field: 'cpuSys', caption: 'Cpu Sys', size: '80px', style: 'text-align:center'}
-         , {field: 'cpuWait', caption: 'Cpu Wait', size: '80px', style: 'text-align:center'}
-         , {field: 'memoryUsage', caption: 'Memory<br/>Usage', size: '90px', style: 'text-align:center'}
-         , {field: 'swapUsage', caption: 'Swap<br/>Usage', size: '90px', style: 'text-align:center'}
-         , {field: 'diskSystem', caption: 'System<br/>DIsk Usage', size: '90px', style: 'text-align:center'}
-         , {field: 'diskEphemeral', caption: 'Ephemeral<br/>DIsk Usage', size: '90px', style: 'text-align:center'}
-         , {field: 'diskPersistent', caption: 'Persistent<br/>DIsk Usage', size: '90px', style: 'text-align:center'}
+         , {field: 'jobName', caption: 'VM', size: '7%', style: 'text-align:center'}
+         , {field: 'jobState', caption: 'State', size: '7%', style: 'text-align:center'}
+         , {field: 'az', caption: 'AZ', size: '7%', style: 'text-align:center'}
+         , {field: 'vmType', caption: 'VM Type', size: '7%', style: 'text-align:center'}
+         , {field: 'ips', caption: 'IPs', size: '7%', style: 'text-align:center'}
+         , {field: 'load', caption: 'Load<br/>(avg01, avg05, avg15)', size: '10%', style: 'text-align:center'}
+         , {field: 'cpuUser', caption: 'Cpu User', size: '7%', style: 'text-align:center'}
+         , {field: 'cpuSys', caption: 'Cpu Sys', size: '7%', style: 'text-align:center'}
+         , {field: 'cpuWait', caption: 'Cpu Wait', size: '7%', style: 'text-align:center'}
+         , {field: 'memoryUsage', caption: 'Memory<br/>Usage', size: '7%', style: 'text-align:center'}
+         , {field: 'swapUsage', caption: 'Swap<br/>Usage', size: '7%', style: 'text-align:center'}
+         , {field: 'diskSystem', caption: 'System<br/>DIsk Usage', size: '7%', style: 'text-align:center'}
+         , {field: 'diskEphemeral', caption: 'Ephemeral<br/>DIsk Usage', size: '7%', style: 'text-align:center'}
+         , {field: 'diskPersistent', caption: 'Persistent<br/>DIsk Usage', size: '7%', style: 'text-align:center'}
      ],
      onSelect: function(event) {
          var grid = this;
@@ -432,8 +432,8 @@ $( window ).resize(function() {
     <div id="isDefaultDirector"></div>
     
     <div class="pdt20"> 
-        <div class="search_box" align="left" style="padding-left:10px;">
-            <label  style="font-size:11px">배포명</label>
+        <div class="search_box" align="left" style="padding-left:10px; width:100%">
+            <label  style="font-size:11px; color:white; ">배포명</label>
             &nbsp;&nbsp;&nbsp;
             <select name="select" id="deployments" class="select" style="width:300px">
             </select>

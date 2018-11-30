@@ -37,7 +37,7 @@ public static void main(String[] args) {
 
     @Override
     public void run(String... args) throws Exception {
-        LocalDirectoryConfiguration.initialize();
+    	LocalDirectoryConfiguration.initialize();
     }
 
     @Bean

@@ -1,0 +1,167 @@
+- type: replace
+  path: /releases/name=os-conf?
+  value:
+    name: os-conf
+    version: 18
+    url: https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=18
+    sha1: 78d79f08ff5001cc2a24f572837c7a9c59a0e796
+        
+- type: replace
+  path: /instance_groups/name=consul/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+  
+- type: replace
+  path: /instance_groups/name=adapter/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+        
+- type: replace
+  path: /instance_groups/name=database/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+        
+- type: replace
+  path: /instance_groups/name=diego-api/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+
+- type: replace
+  path: /instance_groups/name=nats/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+        
+- type: replace
+  path: /instance_groups/name=uaa/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+
+- type: replace
+  path: /instance_groups/name=singleton-blobstore/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+        
+- type: replace
+  path: /instance_groups/name=api/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+        
+- type: replace
+  path: /instance_groups/name=cc-worker/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+        
+- type: replace
+  path: /instance_groups/name=router/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+        
+- type: replace
+  path: /instance_groups/name=tcp-router/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+        
+- type: replace
+  path: /instance_groups/name=scheduler/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+
+- type: replace
+  path: /instance_groups/name=doppler/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+        
+- type: replace
+  path: /instance_groups/name=diego-cell/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+
+- type: replace
+  path: /instance_groups/name=log-api/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))
+
+- type: replace
+  path: /instance_groups/name=haproxy/jobs/-
+  value:
+    name: user_add
+    release: os-conf
+    properties:
+      users:
+      - name: vcap
+        public_key: ((jumpbox_ssh.public_key))

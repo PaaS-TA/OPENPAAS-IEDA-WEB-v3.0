@@ -265,6 +265,7 @@ $( window ).resize(function() {
 
 </script>
 <div id="main">
+     <div class="page_site">계정 관리 > <strong>Azure 계정 관리 </strong></div>
      <div class="pdt20">
         <div class="fl" style="width:100%">
             <div class="dropdown" >
@@ -281,6 +282,10 @@ $( window ).resize(function() {
                     <sec:authorize access="hasAuthority('IAAS_ACCOUNT_VSPHERE_MENU')">
                         <li><a href="javascript:goPage('<c:url value="/iaasMgnt/account/vSphere"/>', 'vSphere 관리');">vSphere</a></li>
                     </sec:authorize>
+                    <sec:authorize access="hasAuthority('IAAS_ACCOUNT_GOOGLE_MENU')">
+                        <li><a href="javascript:goPage('<c:url value="/iaasMgnt/account/google"/>', 'Google 관리');">Google</a></li>
+                     </sec:authorize>
+                    
                 </ul>
             </div>
         </div> 

@@ -40,7 +40,7 @@ public class StemcellManagementDownloadAsyncService {
     final private static String LOCK_DIR=LocalDirectoryConfiguration.getLockDir();
     final private static String TMPDIRECTORY = LocalDirectoryConfiguration.getTmpDir();
     final private static String STEMCELL_DIR = LocalDirectoryConfiguration.getStemcellDir();
-    final private static String MESSAGE_ENDPOINT = "/config/stemcell/regist/download/logs"; 
+    final private static String MESSAGE_ENDPOINT = "/config/stemcell/regist/download/logs";
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화

@@ -87,7 +87,7 @@ function settingResourceUsageData(data){
               $("."+data[i].iaasType.toLowerCase()+"-instance").html( azureInstance +" VM(s)" );
               $("."+data[i].iaasType.toLowerCase()+"-network").html( azureNetwork + " 개" );
               $("."+data[i].iaasType.toLowerCase()+"-volume").html( bytesToSize(azureVolume) );
-              $("."+data[i].iaasType.toLowerCase()+"-billing").html( azureBilling + "USD" ); 
+              $("."+data[i].iaasType.toLowerCase()+"-billing").html( azureBilling + "KRW" ); 
           }else{
               
           }
@@ -130,7 +130,6 @@ $( window ).resize(function() {
                         <li><img src='<c:url value="images/iaasMgnt/instance.png" />' class="instance-icon" alt="인스턴스"><span></span></li>
                         <li><span class="totalInstance">0</span><span style="font-size:22px;"> VM(s)</span></li>
                     </ul>
-                    
                 </li>
                 <li>
                     <ul class="totalResourceUsage-ul-Div" >
@@ -190,7 +189,7 @@ $( window ).resize(function() {
                     <li class="resource-li"><span class="resource-li-span1">인스턴스 : </span><span class="resource-li-span2 azure-instance">0 VM(s)</span></li>
                     <li class="resource-li network-li"><span class="resource-li-span1">네트워크 : </span><span class="resource-li-span2 azure-network">0 개</span><span class="resource-li-span3"></span></li>
                     <li class="resource-li"><span class="resource-li-span1">볼륨 : </span><span class="resource-li-span2 azure-volume">0 Byte</span></li>
-                    <li class="resource-li"><span class="resource-li-span1">과금 : </span><span class="resource-li-span2 azure-billing">0 USD</span></li>
+                    <li class="resource-li"><span class="resource-li-span1">세금 전 과금(전월) : </span><span class="resource-li-span2 azure-billing">0 KRW</span></li>
                 </ul>
             </div>
         

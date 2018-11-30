@@ -1,0 +1,73 @@
+azs:
+- name: z1
+- name: z2
+
+compilation:
+  network: default
+  reuse_compilation_vms: true
+  vm_type: small
+  workers: 5
+  az: z1
+
+networks:
+- name: default
+  type: manual
+  subnets:
+  - range: [range]
+    dns: [[dns]]
+    gateway: [gateway]
+    reserved: [[reserved]]
+    static: [[static]]
+    cloud_properties:
+      virtual_network_name: [network_name]
+      subnet_name: [subnet_name]
+      security_group: [security_group]
+    az: z1
+  - range: [range2]
+    dns: [[dns2]]
+    gateway: [gateway2]
+    reserved: [[reserved2]]
+    static: [[static2]]
+    cloud_properties:
+      virtual_network_name: [network_name2]
+      subnet_name: [subnet_name2]
+      security_group: [security_group2]
+    az: z2
+
+- name: vip
+  type: vip
+
+vm_extensions:
+- name: cf-router-network-properties
+- name: cf-tcp-router-network-properties
+- name: diego-ssh-proxy-network-properties
+- name: cf-haproxy-network-properties
+- cloud_properties:
+    ephemeral_disk:
+      size: 51200
+  name: 50GB_ephemeral_disk
+- cloud_properties:
+    ephemeral_disk:
+      size: 102400
+  name: 100GB_ephemeral_disk
+
+vm_types:
+- name: minimal
+  cloud_properties:
+    instance_type: [small_instance_type]
+- name: small
+  cloud_properties:
+    instance_type: [medium_instance_type]
+- name: small-highmem
+  cloud_properties:
+    instance_type: [large_instance_type]
+
+disk_types:
+- disk_size: 1024
+  name: 1GB
+- disk_size: 5120
+  name: 5GB
+- disk_size: 10240
+  name: 10GB
+- disk_size: 100240
+  name: 100GB

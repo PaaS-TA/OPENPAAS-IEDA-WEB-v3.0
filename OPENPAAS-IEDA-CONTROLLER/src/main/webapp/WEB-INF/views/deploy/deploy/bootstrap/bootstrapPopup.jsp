@@ -29,7 +29,7 @@ var text_ip_msg = '<spring:message code="common.text.validate.ip.message"/>';//I
  * 설명 : 변수 설정
 ***************************************************************** */
 var bootstrapId= "";
-var iaasConfigInfo="";//인프라 환경 설정 정ㅈ보
+var iaasConfigInfo="";//인프라 환경 설정 정보
 var boshInfo = ""; //기본 정보
 var networkInfo = "";//네트워크 정보
 var resourceInfo = "";//리소스 정보
@@ -54,10 +54,11 @@ function getBootstrapData(record){
         success : function(data, status) {
             initSetting();
             setBootstrapData(data);
+            console.log(data);
         },
         error : function(request, status, error) {
             var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message, "MICRO BOSH 수정");
+            w2alert(errorResult.message, "BOOTSTRAP 수정");
         }
     });
 }
@@ -76,22 +77,28 @@ function setBootstrapData(contents){
             iaasType     : iaas,
             iaasConfigId : contents.iaasConfigId
     }
-    
     boshInfo = {
-            id               : bootstrapId,
-            iaas             : contents.iaasType,
-            deploymentName   : contents.deploymentName,
-            directorName     : contents.directorName,        
-            ntp              : contents.ntp,
-            boshRelease      : contents.boshRelease,
-            boshCpiRelease   : contents.boshCpiRelease,
-            osConfRelease    : contents.osConfRelease,
-            enableSnapshots  : contents.enableSnapshots,
-            snapshotSchedule : contents.snapshotSchedule,
-            paastaMonitoringUse : contents.paastaMonitoringUse,
-            paastaMonitoringIp : contents.paastaMonitoringIp,
-            paastaMonitoringRelease : contents.paastaMonitoringRelease,
-            influxdbIp : contents.influxdbIp
+            id                            : bootstrapId,
+            iaas                          : contents.iaasType,
+            deploymentName                : contents.deploymentName,
+            directorName                  : contents.directorName,
+            credentialKeyName             : contents.credentialKeyName,
+            ntp                           : contents.ntp,
+            boshRelease                   : contents.boshRelease,
+            boshCpiRelease                : contents.boshCpiRelease,
+            boshBpmRelease                : contents.boshBpmRelease,
+            boshCredhubRelease            : contents.boshCredhubRelease,
+            boshUaaRelease                : contents.boshUaaRelease,
+            osConfRelease                 : contents.osConfRelease,
+            enableSnapshots               : contents.enableSnapshots,
+            snapshotSchedule              : contents.snapshotSchedule,
+            paastaMonitoringUse           : contents.paastaMonitoringUse,
+            paastaMonitoringAgentRelease  : contents.paastaMonitoringAgentRelease,
+            paastaMonitoringSyslogRelease : contents.paastaMonitoringSyslogRelease,
+            metricUrl                     : contents.metricUrl,
+            syslogAddress                 : contents.syslogAddress,
+            syslogPort                    : contents.syslogPort,
+            syslogTransport               : contents.syslogTransport
     }
     networkInfo = {
             id                  : bootstrapId,
@@ -110,7 +117,6 @@ function setBootstrapData(contents){
     resourceInfo = {
             id                : bootstrapId,
             stemcell          : contents.stemcell,
-            boshPassword      : contents.boshPassword,
             cloudInstanceType : contents.cloudInstanceType,
             resourcePoolCpu   : contents.resourcePoolCpu,
             resourcePoolRam   : contents.resourcePoolRam,
@@ -131,7 +137,7 @@ function setBootstrapData(contents){
  ***************************************************************** */
 function awsPopup(){
      w2popup.open({
-        title  : "<b>MICRO BOSH 설치</b>",
+        title  : "<b>BOOTSTRAP 설치</b>",
         width  : 730,
         height : 520,
         onClose: popupClose,
@@ -155,7 +161,7 @@ function awsPopup(){
  ***************************************************************** */
 function openstackPopup(){
      w2popup.open({
-        title   : "<b>MICRO BOSH 설치</b>",
+        title   : "<b>BOOTSTRAP 설치</b>",
         width   : 730,
         height  : 580,
         onClose : popupClose,
@@ -179,7 +185,7 @@ function openstackPopup(){
  ***************************************************************** */
 function vSpherePopup(){
      w2popup.open({
-        title   : "<b>MICRO BOSH 설치</b>",
+        title   : "<b>BOOTSTRAP 설치</b>",
         width   : 730,
         height  : 600,
         onClose : popupClose,
@@ -203,7 +209,7 @@ function vSpherePopup(){
  ***************************************************************** */
 function googlePopup(){
      w2popup.open({
-        title   : "<b>MICRO BOSH 설치</b>",
+        title   : "<b>BOOTSTRAP 설치</b>",
         width   : 730,
         height  : 545,
         onClose : popupClose,
@@ -228,7 +234,7 @@ function googlePopup(){
  ***************************************************************** */
 function azurePopup(){
      w2popup.open({
-        title   : "<b>MICRO BOSH 설치</b>",
+        title   : "<b>BOOTSTRAP 설치</b>",
         width   : 730,
         height  : 650,
         onClose : popupClose,
@@ -260,7 +266,6 @@ function getIaasConfigAliasList(iaas){
             if( !checkEmpty(data) ){
                 var options= "";
                 for( var i=0; i<data.length; i++ ){
-                    console.log(data);
                     if( data[i].id == iaasConfigInfo.iaasConfigId ){
                         options+= "<option value='"+data[i].id+"' selected>"+data[i].iaasConfigAlias+"</option>";
                         settingIaasConfigInfo(data[i].id);
@@ -290,14 +295,13 @@ function settingIaasConfigInfo(val){
             url :"/common/deploy/list/iaasConfig/"+iaas+"/"+val, 
             contentType :"application/json",
             success :function(data, status) {
-                console.log(data);
                 if( !checkEmpty(data) ){
                     if( data.openstackKeystoneVersion == "v2" ){
                         $(".w2ui-msg-body commonProject").css("display", "block");
                         $(".w2ui-msg-body div#openstackDomain").css("display", "none");
                         $(".w2ui-msg-body div#commonTenant").css("display", "none");
                         $(".w2ui-msg-body #region").css("display", "none");
-                        $(".w2ui-msg-body input[name=commonRegion]").val("");
+                        $(".w2ui-msg-body  input[name=commonRegion]").val("");
                         $(".w2ui-msg-body input[name=commonProject]").val("");
                     }else{
                         $(".w2ui-msg-body commonProject").css("display", "block");
@@ -364,6 +368,7 @@ function saveIaasConfigInfo(){
         iaasType     : iaas,
         iaasConfigId : $(".w2ui-msg-body select[name=iaasConfigId]").val()
     }
+     console.log(iaasConfigInfo);
     $.ajax({
         type : "PUT",
         url : "/deploy/bootstrap/install/setIaasConfigInfo",
@@ -378,7 +383,7 @@ function saveIaasConfigInfo(){
         },
         error : function( e, status ) {
             w2popup.unlock();
-            w2alert("MICRO BOSH "+iaas+" 정보 등록에 실패 하였습니다.", "BOOTSTRAP 설치");
+            w2alert("BOOTSTRAP "+iaas+" 정보 등록에 실패 하였습니다.", "BOOTSTRAP 설치");
         }
     });
 }
@@ -388,28 +393,30 @@ function saveIaasConfigInfo(){
  * 설명 : Default Info popup
  ***************************************************************** */
 function defaultInfoPop(iaas){
-     settingPopupTab("progressStep_6", iaas);
+     settingPopupTab("progressStep_5", iaas);
      w2popup.open({
-        title   : "<b>MICRO BOSH 설치</b>",
+        title   : "<b>BOOTSTRAP 설치</b>",
         width   : 730,
-        height  : 730,
+        height  : 855,
         onClose : popupClose,
         modal   : true,
         body    : $("#DefaultInfoDiv").html(),
         buttons : $("#DefaultInfoButtonDiv").html(),
         onOpen:function(event){
             event.onComplete = function(){
-                if( iaas == "Google" ){
-                    $(".w2ui-msg-body #osConfDiv").show();
-                }
-                
-                $(".w2ui-msg-body input[name='ingestorIp']").attr("disabled", true);
-                $(".w2ui-msg-body input[name='influxdbIp']").attr("disabled", true);
+                $(".w2ui-msg-body input[name='paastaMonitoring']").attr("checked", false);
+                $(".w2ui-msg-body select[name=paastaMonitoringAgentRelease]").attr("disabled", true);
+                $(".w2ui-msg-body select[name=paastaMonitoringSyslogRelease]").attr("disabled", true);
+                $(".w2ui-msg-body input[name='metricUrl']").attr("disabled", true);
+                $(".w2ui-msg-body input[name='syslogAddress']").attr("disabled", true);
+                $(".w2ui-msg-body input[name='syslogPort']").attr("disabled", true);
+                $(".w2ui-msg-body input[name='syslogTransport']").attr("disabled", true);
                 $('[data-toggle="popover"]').popover();
-                $(".paastaMonitoring-info").attr('data-content', "paasta-controller v3.0 이상에서 지원")
+                $(".paastaMonitoring-info").attr('data-content', "paasta v4.0 이상에서 지원");
                 if( !checkEmpty(boshInfo) && boshInfo != "" ){
                     $(".w2ui-msg-body input[name='deploymentName']").val(boshInfo.deploymentName);
                     $(".w2ui-msg-body input[name='directorName']").val(boshInfo.directorName);
+                    $(".w2ui-msg-body select[name='credentialKeyName']").val(boshInfo.credentialKeyName);
                     $(".w2ui-msg-body input[name='ntp']").val(boshInfo.ntp);
                     $('.w2ui-msg-body input:radio[name=enableSnapshots]:input[value="' +boshInfo.enableSnapshots + '"]').attr("checked", true);    
                     if( !checkEmpty(boshInfo.enableSnapshots) ){
@@ -421,39 +428,63 @@ function defaultInfoPop(iaas){
                     }
                     if( !checkEmpty(boshInfo.paastaMonitoringUse) ){
                         if( boshInfo.paastaMonitoringUse == "true"){
+                        	$(".w2ui-msg-body input:checkbox[name=paastaMonitoring]").removeAttr("disabled");
                             $(".w2ui-msg-body input[name='paastaMonitoring']").attr("checked", true);
-                            $(".w2ui-msg-body input[name='ingestorIp']").removeAttr("disabled");
-                            $(".w2ui-msg-body input[name='ingestorIp']").val(boshInfo.paastaMonitoringIp);
+                            $(".w2ui-msg-body select[name=paastaMonitoringAgentRelease]").removeAttr("disabled");
+                            $(".w2ui-msg-body select[name=paastaMonitoringSyslogRelease]").removeAttr("disabled");
+                            $(".w2ui-msg-body input[name='metricUrl']").removeAttr("disabled");
+                            $(".w2ui-msg-body input[name='syslogAddress']").removeAttr("disabled");
+                            $(".w2ui-msg-body input[name='syslogPort']").removeAttr("disabled");
+                            $(".w2ui-msg-body input[name='syslogTransport']").removeAttr("disabled");
                             
-                            $(".w2ui-msg-body input[name='influxdbIp']").removeAttr("disabled");
-                            $(".w2ui-msg-body input[name='influxdbIp']").val(boshInfo.influxdbIp);
-                            
-                            $(".w2ui-msg-body select[name='paastaMonitoringRelease']").val(boshInfo.paastaMonitoringRelease);
+                            $(".w2ui-msg-body select[name='paastaMonitoringAgentRelease']").val(boshInfo.paastaMonitoringAgentRelease);
+                            $(".w2ui-msg-body select[name='paastaMonitoringSyslogRelease']").val(boshInfo.paastaMonitoringSyslogRelease);
+                            $(".w2ui-msg-body input[name='metricUrl']").val(boshInfo.metricUrl);
+                            $(".w2ui-msg-body input[name='syslogAddress']").val(boshInfo.syslogAddress);
+                            $(".w2ui-msg-body input[name='syslogPort']").val(boshInfo.syslogPort);
+                            $(".w2ui-msg-body input[name='syslogTransport']").val(boshInfo.syslogTransport);
                         }else{
                             $(".w2ui-msg-body input[name='paastaMonitoring']").attr("checked", false);
-                            $(".w2ui-msg-body  select[name=paastaMonitoringRelease]").attr("disabled", true);
+                            $(".w2ui-msg-body select[name=paastaMonitoringAgentRelease]").attr("disabled", true);
+                            $(".w2ui-msg-body select[name=paastaMonitoringSyslogRelease]").attr("disabled", true);
+                            $(".w2ui-msg-body input[name='metricUrl']").attr("disabled", true);
+                            $(".w2ui-msg-body input[name='syslogAddress']").attr("disabled", true);
+                            $(".w2ui-msg-body input[name='syslogPort']").attr("disabled", true);
+                            $(".w2ui-msg-body input[name='syslogTransport']").attr("disabled", true);
                         }
                     }
                 }else{
+                	alert("1");
                     $('input:radio[name=enableSnapshots]:input[value=false]').attr("checked", true);
                     enableSnapshotsFn("false");
                     checkPaasTAMonitoringUseYn();
                 }
+                
+                getCredentialList();
                 //ETC 릴리즈 정보 가져오기(PaaS-TA Monitoring 릴리즈)
                 getLocalPaasTAMonitoringReleaseList('BOSH_MONITORING_AGENT');
                 //BOSH 릴리즈 정보 가져오기
                 getLocalBoshList('bosh');
                 //BOSH CPI 릴리즈 정보 가져오기
                 getLocalBoshCpiList('bosh_cpi', iaas);
-                if( iaas == "Google" ){
-                    getLocalBoshList('os-conf');
-                }
+                //BOSH BPM 릴리즈 정보 가져오기
+                getLocalBoshList('bpm');
+                //BOSH OS-CONF 릴리즈 정보 가져오기
+                getLocalBoshList('os-conf');
+                //BOSH credhub 릴리즈 정보 가져오기
+                //getLocalBoshList('credhub');
+                //BOSH uaa 릴리즈 정보 가져오기
+                //getLocalBoshList('uaa');
+                //ETC 릴리즈 정보 가져오기(PaaS-TA Monitoring 릴리즈)
+                getLocalPaasTAMonitoringReleaseList('PAASTA-MONITORING');
+                getLocalPaasTAMonitoringReleaseList('SYSLOG');
                 $('[data-toggle="popover"]').popover();
                 getReleaseVersionList();
             }
         }
     });
 }
+
 
 /********************************************************
  * 설명 : Bosh 릴리즈 버전 목록 정보 조회
@@ -483,6 +514,34 @@ function getReleaseVersionList(){
     
 }
 
+/********************************************************
+ * 설명 : 디렉터 인증서 목록 조회
+ * 기능 : getReleaseVersionList
+ *********************************************************/
+function getCredentialList(){
+    $.ajax({
+        type : "GET",
+        url : "/common/deploy/creds/list",
+        contentType : "application/json",
+        async : true,
+        success : function(data, status) {
+            if( data.length == 0 ){
+                return;
+            }
+            var options = "<option value=''>디렉터 인증서를 선택하세요.</option>";
+            for( var i=0; i<data.length; i++ ){
+                if( data[i] == boshInfo.credentialKeyName ){
+                    options += "<option value='"+data[i]+"' selected >"+data[i]+"</option>";
+                }else options += "<option value='"+data[i]+"'>"+data[i]+"</option>";
+            }
+            $(".w2ui-msg-body select[name='credentialKeyName']").html(options);
+        },
+        error : function( e, status ) {
+            w2alert("디렉터 인증서 "+search_data_fail_msg, "BOOTSTRAP 설치");
+        }
+    });
+}
+
 /******************************************************************
  * 기능 : getLocalBoshList
  * 설명 : BOSH 릴리즈 정보
@@ -506,20 +565,65 @@ function getLocalBoshList(type){
                     
                 }
                 $(".w2ui-msg-body select[name='boshRelease']").html(options);
-            } else if(type= 'os_conf'){
+            } else if(type == 'os-conf'){
                 var options = "<option value=''>OS CONF 릴리즈를 선택하세요.</option>";
                 for( var i=0; i<data.length; i++ ){
                     if( data[i] == boshInfo.osConfRelease ){
                         options += "<option value='"+data[i]+"' selected>"+data[i]+"</option>";
                     }else options += "<option value='"+data[i]+"'>"+data[i]+"</option>";
                 }
-                $(".w2ui-msg-body select[name='osConfRelease']").html(options)
+                $(".w2ui-msg-body select[name='osConfRelease']").html(options);
+            } else if(type == 'bpm') {
+                var options = "<option value=''>BPM 릴리즈를 선택하세요.</option>";
+                for( var i=0; i<data.length; i++ ){
+                    if( data[i] == boshInfo.boshBpmRelease ){
+                        options += "<option value='"+data[i]+"' selected>"+data[i]+"</option>";
+                    }else options += "<option value='"+data[i]+"'>"+data[i]+"</option>";
+                }
+                $(".w2ui-msg-body select[name='boshBpmRelease']").html(options);
+            } else if(type == 'credhub') {
+                var options = "<option value=''>CredHub 릴리즈를 선택하세요.</option>";
+                for( var i=0; i<data.length; i++ ){
+                    if( data[i] == boshInfo.boshCredhubRelease ){
+                        options += "<option value='"+data[i]+"' selected>"+data[i]+"</option>";
+                    }else options += "<option value='"+data[i]+"'>"+data[i]+"</option>";
+                }
+                $(".w2ui-msg-body select[name='boshCredhubRelease']").html(options);
+            } else if(type == 'uaa') {
+                var options = "<option value=''>uaa 릴리즈를 선택하세요.</option>";
+                for( var i=0; i<data.length; i++ ){
+                    if( data[i] == boshInfo.boshUaaRelease ){
+                        options += "<option value='"+data[i]+"' selected>"+data[i]+"</option>";
+                    }else options += "<option value='"+data[i]+"'>"+data[i]+"</option>";
+                }
+                $(".w2ui-msg-body select[name='boshUaaRelease']").html(options);
             }
         },
         error : function( e, status ) {
             w2alert("Bosh 릴리즈 "+search_data_fail_msg, "BOOTSTRAP 설치");
         }
     });
+}
+
+/******************************************************************
+ * 기능 : checkBoshVersion(selected)
+ * 설명 : BOSH 버전 체크 >> BPM Release 적용 여부 확인
+ ******************************************************************/
+function checkBoshVersion(selected){
+    if(selected == ''){
+       return ;
+    }else{
+        var versionInfo = selected.split("bosh-");
+        versionInfo = versionInfo[1].split(".tgz");
+        versionInfo = parseFloat(versionInfo);
+        if(versionInfo >= 268.2){
+            $(".w2ui-msg-body input:checkbox[name=paastaMonitoring]").removeAttr("disabled");
+        }else{
+            $(".w2ui-msg-body input:checkbox[name=paastaMonitoring]").attr("checked", false);
+            $(".w2ui-msg-body input:checkbox[name=paastaMonitoring]").attr("disabled", true);
+            checkPaasTAMonitoringUseYn();
+        }
+    }
 }
 
  /******************************************************************
@@ -552,7 +656,6 @@ function getLocalBoshCpiList(type, iaas){
     });
 }
 
-
  /******************************************************************
   * 기능 : enableSnapshotsFn
   * 설명 : 스냅샷 가능 사용여부(사용일 경우)
@@ -573,21 +676,30 @@ function enableSnapshotsFn(value){
 function checkPaasTAMonitoringUseYn(){
     var value = $("#paastaMonitoring:checked").val();
     if( value == "on"){
-        $(".w2ui-msg-body  input[name=ingestorIp]").attr("disabled", false);
-        $(".w2ui-msg-body  input[name=influxdbIp]").attr("disabled", false);
-        $(".w2ui-msg-body  select[name=paastaMonitoringRelease]").attr("disabled", false);
-        
-        
+        $(".w2ui-msg-body  select[name=paastaMonitoringAgentRelease]").attr("disabled", false);
+        $(".w2ui-msg-body  select[name=paastaMonitoringSyslogRelease]").attr("disabled", false);
+        $(".w2ui-msg-body  input[name=metricUrl]").attr("disabled", false);
+        $(".w2ui-msg-body  input[name=syslogAddress]").attr("disabled", false);
+        $(".w2ui-msg-body  input[name=syslogPort]").attr("disabled", false);
+        $(".w2ui-msg-body  input[name=syslogTransport]").attr("disabled", false);
         //ETC 릴리즈 정보 가져오기(PaaS-TA Monitoring 릴리즈)
-        getLocalPaasTAMonitoringReleaseList('BOSH_MONITORING_AGENT');
+        getLocalPaasTAMonitoringReleaseList('PAASTA-MONITORING');
+        getLocalPaasTAMonitoringReleaseList('SYSLOG');
     }else{
-        $(".w2ui-msg-body  input[name=ingestorIp]").val("");
-        $(".w2ui-msg-body  select[name=paastaMonitoringRelease]").val("");
-        $(".w2ui-msg-body  input[name=ingestorIp]").attr("disabled", true);
+        $(".w2ui-msg-body  select[name=paastaMonitoringAgentRelease]").val("");
+        $(".w2ui-msg-body  select[name=paastaMonitoringSyslogRelease]").val("");
+        $(".w2ui-msg-body  input[name=metricUrl]").val("");
+        $(".w2ui-msg-body  input[name=syslogAddress]").val("");
+        $(".w2ui-msg-body  input[name=syslogPort]").val("");
+        $(".w2ui-msg-body  input[name=syslogTransport]").val("");
         
-        $(".w2ui-msg-body  input[name=influxdbIp]").attr("disabled", true);
-        $(".w2ui-msg-body  input[name=influxdbIp]").val("");
-        $(".w2ui-msg-body  select[name=paastaMonitoringRelease]").attr("disabled", true);
+        $(".w2ui-msg-body  select[name=paastaMonitoringAgentRelease]").attr("disabled", true);
+        $(".w2ui-msg-body  select[name=paastaMonitoringSyslogRelease]").attr("disabled", true);
+        $(".w2ui-msg-body  input[name=metricUrl]").attr("disabled", true);
+        $(".w2ui-msg-body  input[name=syslogAddress]").attr("disabled", true);
+        $(".w2ui-msg-body  input[name=syslogPort]").attr("disabled", true);
+        $(".w2ui-msg-body  input[name=syslogTransport]").attr("disabled", true);
+        
     }
 }
 
@@ -605,15 +717,24 @@ function getLocalPaasTAMonitoringReleaseList(type){
             if( data.length == 0 ){
                 return;
             }
-            if(type == 'BOSH_MONITORING_AGENT'){
-                var options = '<option value="">PaaS-TA 모니터링 릴리즈를 선택하세요.</option>';
+            if(type == 'PAASTA-MONITORING'){
+                var options = '<option value="">PaaS-TA 모니터링 Agent 릴리즈를 선택하세요.</option>';
                 for( var i=0; i<data.length; i++ ){
-                    if( data[i] == boshInfo.paastaMonitoringRelease){
+                    if( data[i] == boshInfo.paastaMonitoringAgentRelease){
                         options += "<option value='"+data[i]+"' selected >"+data[i]+"</option>";
                     }else options += "<option value='"+data[i]+"'>"+data[i]+"</option>";
                     
                 }
-                $(".w2ui-msg-body select[name='paastaMonitoringRelease']").html(options);
+                $(".w2ui-msg-body select[name='paastaMonitoringAgentRelease']").html(options);
+            }else if(type == 'SYSLOG'){
+                var options = '<option value="">PaaS-TA 모니터링 Syslog 릴리즈를 선택하세요.</option>';
+                for( var i=0; i<data.length; i++ ){
+                    if( data[i] == boshInfo.paastaMonitoringSyslogRelease){
+                        options += "<option value='"+data[i]+"' selected >"+data[i]+"</option>";
+                    }else options += "<option value='"+data[i]+"'>"+data[i]+"</option>";
+                    
+                }
+                $(".w2ui-msg-body select[name='paastaMonitoringSyslogRelease']").html(options);
             }
         },
         error: function(e, status){
@@ -621,36 +742,53 @@ function getLocalPaasTAMonitoringReleaseList(type){
         }
     });
  }
+ 
+ 
+
+ 
 /******************************************************************
  * 기능 : saveDefaultInfo
  * 설명 : Default Info Save
  ***************************************************************** */
 function saveDefaultInfo(type){
+    var monitoringUse = "";
+    var monitoringAgentRelease = "";
+    var monitoringSyslogRelease = "";
+    var metricUrl = "";
+    var syslogAddress = "";
+    var syslogPort = "";
+    var syslogTransport = "";
+    
     if( $("#paastaMonitoring:checked").val() == "on"){
-        var monitoringUse = "true";
-        var ingrestorIp = $(".w2ui-msg-body input[name=ingestorIp]").val();
-        var monitoringRelease = $(".w2ui-msg-body select[name=paastaMonitoringRelease]").val();
-        var influxdbIp = $(".w2ui-msg-body input[name='influxdbIp']").val();
+        monitoringUse = "true";
+        monitoringAgentRelease = $(".w2ui-msg-body select[name=paastaMonitoringAgentRelease]").val();
+        monitoringSyslogRelease = $(".w2ui-msg-body select[name=paastaMonitoringSyslogRelease]").val();
+        metricUrl = $(".w2ui-msg-body input[name=metricUrl]").val();
+        syslogAddress = $(".w2ui-msg-body input[name='syslogAddress']").val();
+        syslogPort = $(".w2ui-msg-body input[name='syslogPort']").val();
+        syslogTransport = $(".w2ui-msg-body input[name='syslogTransport']").val();
     }else{
-        var monitoringUse = "false";
-        var influxdbIp =  "";
-        var ingrestorIp = "";
-        var monitoringRelease = "";
+        monitoringUse = "false";
     }
     boshInfo = {
-            id                  : iaasConfigInfo.id,
-            deploymentName      : $(".w2ui-msg-body input[name=deploymentName]").val(),
-            directorName        : $(".w2ui-msg-body input[name=directorName]").val(),
-            ntp                 : $(".w2ui-msg-body input[name=ntp]").val(),
-            boshRelease         : $(".w2ui-msg-body select[name=boshRelease]").val(),
-            osConfRelease     : $(".w2ui-msg-body select[name=osConfRelease]").val(),
-            boshCpiRelease      : $(".w2ui-msg-body select[name=boshCpiRelease]").val(),
-            enableSnapshots     : $(".w2ui-msg-body input:radio[name=enableSnapshots]:checked").val(),
-            snapshotSchedule    : $(".w2ui-msg-body input[name=snapshotSchedule]").val(),
-            influxdbIp : influxdbIp,
-            paastaMonitoringUse : monitoringUse,
-            paastaMonitoringIp  : ingrestorIp,
-            paastaMonitoringRelease : monitoringRelease
+            id                            : iaasConfigInfo.id,
+            deploymentName                : $(".w2ui-msg-body input[name=deploymentName]").val(),
+            directorName                  : $(".w2ui-msg-body input[name=directorName]").val(),
+            credentialKeyName             : $(".w2ui-msg-body select[name=credentialKeyName]").val(),
+            ntp                           : $(".w2ui-msg-body input[name=ntp]").val(),
+            boshRelease                   : $(".w2ui-msg-body select[name=boshRelease]").val(),
+            osConfRelease                 : $(".w2ui-msg-body select[name=osConfRelease]").val(),
+            boshCpiRelease                : $(".w2ui-msg-body select[name=boshCpiRelease]").val(),
+            boshBpmRelease                : $(".w2ui-msg-body select[name=boshBpmRelease]").val(),
+            enableSnapshots               : $(".w2ui-msg-body input:radio[name=enableSnapshots]:checked").val(),
+            snapshotSchedule              : $(".w2ui-msg-body input[name=snapshotSchedule]").val(),
+            paastaMonitoringUse           : monitoringUse,
+            paastaMonitoringAgentRelease  : monitoringAgentRelease,
+            paastaMonitoringSyslogRelease : monitoringSyslogRelease,
+            metricUrl                     : metricUrl,
+            syslogAddress                 : syslogAddress,
+            syslogPort                    : syslogPort,
+            syslogTransport               : syslogTransport
     }
     if(type == 'before'){
         w2popup.unlock();
@@ -681,7 +819,7 @@ function saveDefaultInfo(type){
             error : function( e, status ) {
                 w2popup.unlock();
                 w2popup.unlock();
-                w2alert("기본정보 등록에 실패 하였습니다.", "MICRO BOSH 설치");
+                w2alert("기본정보 등록에 실패 하였습니다.", "BOOTSTRAP 설치");
             }
         });
     }
@@ -708,9 +846,9 @@ function selectNetworkInfoPopup(iaas){
  * 설명 : Network Info Popup
  ***************************************************************** */
 function networkInfoPopup(div, btn, height){
-    settingPopupTab("progressStep_6", iaas);
+    settingPopupTab("progressStep_5", iaas);
     w2popup.open({
-        title   : "<b>MICRO BOSH 설치</b>",
+        title   : "<b>BOOTSTRAP 설치</b>",
         width   : 730,
         height  : height,
         onClose : popupClose,
@@ -791,7 +929,7 @@ function saveNetworkInfo(type){
             },
             error : function( e, status ) {
                 w2popup.unlock();
-                w2alert("Network 정보 등록에 실패 하였습니다.", "MICRO BOSH 설치");
+                w2alert("Network 정보 등록에 실패 하였습니다.", "BOOTSTRAP 설치");
             }
         });
     }
@@ -805,7 +943,7 @@ function resourceInfoPopup(height){
     settingPopupTab("ResourceInfoDiv", iaas);
     
     w2popup.open({
-        title   : "<b>MICRO BOSH 설치</b>",
+        title   : "<b>BOOTSTRAP 설치</b>",
         width   : 730,
         height  : height,
         onClose : popupClose,
@@ -852,7 +990,7 @@ function getStemcellList(iaas){
             setReourceData();
         },
         error : function( e, status ) {
-            w2alert("스템셀 "+search_data_fail_msg, "MICRO BOSH 설치");
+            w2alert("스템셀 "+search_data_fail_msg, "BOOTSTRAP 설치");
         }
     });
 }
@@ -865,8 +1003,8 @@ function getStemcellList(iaas){
 function setReourceData(){
     if(resourceInfo != ""){
         $(".w2ui-msg-body #stemcell").val(resourceInfo.stemcell);
-//         $(".w2ui-msg-body input[name='stemcell']").data('selected', {text:resourceInfo.stemcell});
-        $(".w2ui-msg-body input[name='boshPassword']").val(resourceInfo.boshPassword);
+//        $(".w2ui-msg-body input[name='stemcell']").data('selected', {text:resourceInfo.stemcell});
+//        $(".w2ui-msg-body input[name='boshPassword']").val(resourceInfo.boshPassword);
         if(iaas.toUpperCase() != 'VSPHERE') { 
             $(".w2ui-msg-body input[name='cloudInstanceType']").val(resourceInfo.cloudInstanceType);
         }else{
@@ -889,7 +1027,6 @@ function saveResourceInfo(type){
     resourceInfo = {
             id                : bootstrapId,
             stemcell          : $(".w2ui-msg-body select[name='stemcell']").val(),
-            boshPassword      : $(".w2ui-msg-body input[name='boshPassword']").val(),
             cloudInstanceType : cloudInstanceType,
             resourcePoolCpu   : $(".w2ui-msg-body input[name='resourcePoolCpu']").val(),
             resourcePoolRam   : $(".w2ui-msg-body input[name='resourcePoolRam']").val(),
@@ -908,13 +1045,13 @@ function saveResourceInfo(type){
             data : JSON.stringify(resourceInfo),
             success : function(data, status) {
                 w2popup.unlock();
-                w2popup.clear();
-                createSettingFile(data);
+                confirmDeploy('after', data);
+                //createSettingFile(data);
             },
             error :function(request, status, error) {
                 w2popup.unlock();
                 var errorResult = JSON.parse(request.responseText);
-                w2alert(errorResult.message, "MICRO BOSH 리소스 정보 저장");
+                w2alert(errorResult.message, "BOOTSTRAP 리소스 정보 저장");
                 
             }
         });
@@ -931,9 +1068,6 @@ function createSettingFile(data){
             iaasType       : data.iaasType,
             deploymentFile : data.deploymentFile
     }
-    var credentialFile = data.deploymentFile.split(".")[0]+"-creds.yml";
-    
-    w2alert("MICRO BOSH 설치 성공 후 <br> 설치 관리자 설정 Credential 파일 명은 <br><strong><font color='red'> "+credentialFile+" </strong></font>입니다.");
     
     $.ajax({
         type : "POST",
@@ -942,12 +1076,14 @@ function createSettingFile(data){
         async : true,
         data : JSON.stringify(deploymentInfo),
         success : function(status) {
+            var credentialFile = data.credentialKeyName;
+            //w2alert("BOOTSTRAP 설치 성공 후 <br> 설치 관리자 설정 Credential 파일 명은 <br><strong><font color='red'> "+credentialFile+" </strong></font>입니다.");
             deployFileName = deploymentInfo.deploymentFile;
-            deployPopup();
+            confirmDeploy('after');
         },
         error :function(request, status, error) {
             var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message, "MICRO BOSH 배포 파일 생성");
+            w2alert(errorResult.message, "BOOTSTRAP 배포 파일 생성");
             if( iaas.toUpperCase() == "VSPHERE" ){
                 resourceInfoPopup(390);
             }else resourceInfoPopup(330);
@@ -964,7 +1100,7 @@ function deployPopup(){
     settingPopupTab("DeployDiv", iaas);
     
     w2popup.open({
-        title   : "<b>MICRO BOSH 설치</b>",
+        title   : "<b>BOOTSTRAP 설치</b>",
         width   : 730,
         height  : 615,
         modal   : true,
@@ -1006,14 +1142,16 @@ function getDeployInfo(){
  * 기능 : confirmDeploy
  * 설명 : bootstrap Install Confirm
  ***************************************************************** */
-function confirmDeploy(type){
+function confirmDeploy(type, data){
     if(type == 'after'){        
         w2confirm({
-            msg          : "MICRO BOSH를 설치하시겠습니까?",
-            title        : w2utils.lang('MICRO BOSH 설치'),
+            msg          : "BOOTSTRAP를 설치하시겠습니까?",
+            title        : w2utils.lang('BOOTSTRAP 설치'),
             yes_text     : "예",
             no_text      : "아니오",
-            yes_callBack : installPopup
+            yes_callBack : function(event){
+                installPopup(data);
+            }
         });
     } else{
         w2popup.clear();
@@ -1031,7 +1169,7 @@ var lockFile = false;
 function lockFileSet(deployFile){
     if(!checkEmpty(deployFile) ){
         var FileName = "bootstrap";
-        var message = "현재 다른 설치 관리자가 해당 MICRO BOSH를 설치 중 입니다.";
+        var message = "현재 다른 설치 관리자가 해당 BOOTSTRAP를 설치 중 입니다.";
         lockFile = commonLockFile("<c:url value='/common/deploy/lockFile/"+FileName+"'/>",message);
     }
     return lockFile;
@@ -1065,17 +1203,22 @@ function popupComplete(){
   * 설명 : Boostrap 설치
   ***************************************************************** */
 var bootstrapInstallSocket = null;
-function installPopup(){
+function installPopup(data){
+    deploymentInfo = {
+            iaasType       : data.iaasType,
+            deploymentFile : data.deploymentFile
+    }
     settingPopupTab("InstallDiv", iaas);
-    
+    console.log('11');
     if(!lockFileSet(deploymentInfo.deploymentFile)) return;
     var message = "BOOTSTRAP ";
     var requestParameter = {
             id : bootstrapId,
             iaasType: iaas
     };
+    console.log('12');
     w2popup.open({
-        title   : "<b>MICRO BOSH 설치</b>",
+        title   : "<b>BOOTSTRAP 설치</b>",
         width   : 800,
         height  : 620,
         modal   : true,
@@ -1105,7 +1248,7 @@ function installPopup(){
                                 $('.w2ui-msg-buttons #deployPopupBtn').prop("disabled", false);
                                     
                                 installClient.disconnect();
-                                w2alert(message, "MICRO BOSH 설치");
+                                w2alert(message, "BOOTSTRAP 설치");
                             }
                         }
                     });
@@ -1147,7 +1290,7 @@ function installPopup(){
             },
             error : function(request, status, error) {
                 var errorResult = JSON.parse(request.responseText);
-                w2alert(errorResult.message, "MICRO BOSH 삭제");
+                w2alert(errorResult.message, "BOOTSTRAP 삭제");
             }
         });
     } else {
@@ -1184,7 +1327,7 @@ function installPopup(){
                                     
                                     installStatus = response.state.toLowerCase();
                                     deleteClient.disconnect();
-                                    w2alert(message, "MICRO BOSH 삭제");
+                                    w2alert(message, "BOOTSTRAP 삭제");
                                    }
                             }
                         });
@@ -1202,7 +1345,7 @@ function installPopup(){
                 }
             } 
         });
-    }        
+    }
 }
  /******************************************************************
   * 기능 : settingPopupTab
@@ -1278,19 +1421,18 @@ function popupClose() {
     gridReload();
     //button Control
     doButtonStyle();
-    
 }
+
 </script>
 <input type="hidden" name="bootstrapId" />
 <input type="hidden" name="iaasType" />
 <div id="AWSInfoDiv" style="width:100%;height:100%;" hidden="true">
     <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-        <ul class="progressStep_6" >
+        <ul class="progressStep_5" >
             <li class="active">AWS 정보</li>
             <li class="before">기본 정보</li>
             <li class="before">네트워크 정보</li>
             <li class="before">리소스 정보</li>
-            <li class="before">배포 파일 정보</li>
             <li class="before">설치</li>
         </ul>
     </div>
@@ -1357,12 +1499,11 @@ function popupClose() {
 </div>
 <div id="OpenstackInfoDiv" style="width:100%;height:100%;" hidden="true">
     <div style="margin-left:2%;display:inline-block;width:97%; padding-top:20px;">
-        <ul class="progressStep_6" >
+        <ul class="progressStep_5" >
             <li class="active">Openstack 정보</li>
             <li class="before">기본 정보</li>
             <li class="before">네트워크 정보</li>
             <li class="before">리소스 정보</li>
-            <li class="before">배포 파일 정보</li>
             <li class="before">설치</li>
         </ul>
     </div>
@@ -1453,12 +1594,11 @@ function popupClose() {
 </div>
 <div id="vSphereInfoDiv" style="width:100%;height:100%;" hidden="true">
     <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-        <ul class="progressStep_6" >
+        <ul class="progressStep_5" >
             <li class="active">vSphere 정보</li>
             <li class="before">기본 정보</li>
             <li class="before">네트워크 정보</li>
             <li class="before">리소스 정보</li>
-            <li class="before">배포 파일 정보</li>
             <li class="before">설치</li>
         </ul>
     </div>
@@ -1543,12 +1683,11 @@ function popupClose() {
 </div>
 <div id="GoogleInfoDiv" style="width:100%;height:100%;" hidden="true">
     <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-        <ul class="progressStep_6" >
+        <ul class="progressStep_5" >
             <li class="active">Google 정보</li>
             <li class="before">기본 정보</li>
             <li class="before">네트워크 정보</li>
             <li class="before">리소스 정보</li>
-            <li class="before">배포 파일 정보</li>
             <li class="before">설치</li>
         </ul>
     </div>
@@ -1610,12 +1749,11 @@ function popupClose() {
 
 <div id="azureInfoDiv" style="width:100%;height:100%;" hidden="true">
     <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-        <ul class="progressStep_6" >
+        <ul class="progressStep_5" >
             <li class="active">Azure 정보</li>
             <li class="before">기본 정보</li>
             <li class="before">네트워크 정보</li>
             <li class="before">리소스 정보</li>
-            <li class="before">배포 파일 정보</li>
             <li class="before">설치</li>
         </ul>
     </div>
@@ -1700,12 +1838,11 @@ function popupClose() {
 <div id="DefaultInfoDiv" style="width:100%;height:100%;" hidden="true">
     <form id="defaultInfoForm" >
         <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-            <ul class="progressStep_6" >
+            <ul class="progressStep_5" >
                 <li class="pass"></li>
                 <li class="active">기본 정보</li>
                 <li class="before">네트워크 정보</li>
                 <li class="before">리소스 정보</li>
-                <li class="before">배포 파일 정보</li>
                 <li class="before">설치</li>
             </ul>
         </div>
@@ -1726,6 +1863,15 @@ function popupClose() {
                         </div>
                     </div>
                     <div class="w2ui-field">
+                        <label style="text-align: left;width:36%;font-size:11px;">디렉터 접속 인증서</label>
+                        <div style="width: 60%">
+                            <select name="credentialKeyName"  style="display:inline-block;width:70%;">
+                            	<option value="">디렉터 인증서를 선택하세요.</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">NTP</label>
                         <div style="width: 60%">
                             <input name="ntp" type="text" style="display:inline-block;width:70%;" placeholder="예) 10.0.0.2"/>
@@ -1736,7 +1882,7 @@ function popupClose() {
                             <span class="glyphicon glyphicon glyphicon-question-sign boshRelase-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="hover" data-html="true" title="설치 지원 버전 목록"></span>
                         </label>
                         <div style="width: 60%">
-                            <select name="boshRelease"  class="form-control select-control">
+                            <select name="boshRelease"  class="form-control select-control" onChange="checkBoshVersion(this.value)">
                                 <option value="">BOSH 릴리즈를 선택하세요.</option>
                             </select>
                         </div>
@@ -1749,8 +1895,15 @@ function popupClose() {
                             </select>
                         </div>
                     </div>
- 
-                    <div class="w2ui-field" id="osConfDiv" hidden="true"> 
+                    <div class="w2ui-field">
+                        <label style="text-align:left; width:36%; font-size:11px;">BOSH BPM 릴리즈</label>
+                        <div style="width: 60%">
+                            <select name="boshBpmRelease" class="form-control select-control">
+                                <option value="">BOSH BPM 릴리즈를 선택하세요.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="w2ui-field"> 
                         <label style="text-align:left; width:36%; font-size:11px;">OS-CONF 릴리즈</label>
                         <div style="width: 60%">
                             <select name="osConfRelease" class="form-control select-control">
@@ -1758,7 +1911,22 @@ function popupClose() {
                             </select>
                         </div>
                     </div>
-                    
+<!--                     <div class="w2ui-field">
+                        <label style="text-align:left; width:36%; font-size:11px;">BOSH Credhub 릴리즈</label>
+                        <div style="width: 60%">
+                            <select name="boshCredhubRelease" class="form-control select-control">
+                                <option value="">BOSH Credhub 릴리즈를 선택하세요.</option>
+                            </select>
+                        </div>
+                    </div> -->
+<!--                     <div class="w2ui-field">
+                        <label style="text-align:left; width:36%; font-size:11px;">BOSH uaa 릴리즈</label>
+                        <div style="width: 60%">
+                            <select name="boshUaaRelease" class="form-control select-control">
+                                <option value="">BOSH uaa 릴리즈를 선택하세요.</option>
+                            </select>
+                        </div>
+                    </div> -->
                     <div class="w2ui-field">
                         <label style="text-align: left;width:36%;font-size:11px;">스냅샷기능 사용여부</label>
                         <div style="width: 60%">
@@ -1779,7 +1947,7 @@ function popupClose() {
                         <span class="glyphicon glyphicon glyphicon-question-sign paastaMonitoring-info" style="cursor:pointer;font-size: 14px;color: #157ad0;" data-toggle="popover"  data-trigger="click" data-html="true"></span>
                         </label>
                         <div style="width: 60%">
-                            <input name="paastaMonitoring" type="checkbox" id="paastaMonitoring" onclick="checkPaasTAMonitoringUseYn()"/>사용
+                            <input name="paastaMonitoring" type="checkbox" id="paastaMonitoring" disabled="disabled" onChange="checkPaasTAMonitoringUseYn()"/>사용
                         </div>
                     </div>
                 </div>
@@ -1789,29 +1957,47 @@ function popupClose() {
                 <div class="panel-heading"><b>PaaS-TA 모니터링 정보</b></div>
                 <div class="panel-body">
                     <div class="w2ui-field">
-                        <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 Ingestor 서버 IP</label>
+                        <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 Agent 릴리즈</label>
                         <div style="width: 60%">
-                            <input name="ingestorIp" type="text" style="display:inline-block; width: 70%;" placeholder="예)10.0.0.0" />
-                        </div>
-                    </div>
-                    <div class="w2ui-field">
-                        <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 Influxdb 서버 IP</label>
-                        <div style="width: 60%">
-                            <input name="influxdbIp" type="text" style="display:inline-block; width: 70%;" placeholder="예)10.0.0.0" />
-                        </div>
-                    </div>
-                    
-                    <div class="w2ui-field">
-                        <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 릴리즈</label>
-                        <div style="width: 60%">
-                            <select name="paastaMonitoringRelease" class="form-control select-control">
-                                <option value="">PaaS-TA 모니터링 릴리즈를 선택하세요.</option>
+                            <select name="paastaMonitoringAgentRelease" class="form-control select-control" >
+                                <option value="">PaaS-TA 모니터링 Agent 릴리즈를 선택하세요.</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="w2ui-field">
+                        <label style="text-align: left; width: 36%; font-size: 11px;">PaaS-TA 모니터링 Syslog 릴리즈</label>
+                        <div style="width: 60%">
+                            <select name="paastaMonitoringSyslogRelease" class="form-control select-control" >
+                                <option value="">PaaS-TA 모니터링 Syslog 릴리즈를 선택하세요.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="w2ui-field">
+                        <label style="text-align: left; width: 36%; font-size: 11px;">Metric URL</label>
+                        <div style="width: 60%">
+                            <input name="metricUrl" type="text" style="display:inline-block; width: 70%;"  placeholder="예)10.0.15.11:8059" />
+                        </div>
+                    </div>
+                    <div class="w2ui-field">
+                        <label style="text-align: left; width: 36%; font-size: 11px;">Syslog Address</label>
+                        <div style="width: 60%">
+                            <input name="syslogAddress" type="text" style="display:inline-block; width: 70%;"  placeholder="예)10.0.0.0" />
+                        </div>
+                    </div>
+                    <div class="w2ui-field">
+                        <label style="text-align: left; width: 36%; font-size: 11px;">Syslog Port</label>
+                        <div style="width: 60%">
+                            <input name="syslogPort" type="text" style="display:inline-block; width: 70%;" placeholder="예)2514" />
+                        </div>
+                    </div>
+                    <div class="w2ui-field">
+                        <label style="text-align: left; width: 36%; font-size: 11px;">Syslog Transport</label>
+                        <div style="width: 60%">
+                            <input name="syslogTransport" type="text" style="display:inline-block; width: 70%;" placeholder="예)relp" />
                         </div>
                     </div>
                 </div>
              </div>
-            
         </div>
     </form>
     <div class="w2ui-buttons" id="DefaultInfoButtonDiv"hidden="true">
@@ -1823,12 +2009,11 @@ function popupClose() {
 <div id="NetworkInfoDiv" style="width:100%;height:100%;" hidden="true">
     <form id="networkInfoForm">
         <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-            <ul class="progressStep_6" >
+            <ul class="progressStep_5" >
                 <li class="pass"></li>
                 <li class="pass">기본 정보</li>
                 <li class="active">네트워크 정보</li>
                 <li class="before">리소스 정보</li>
-                <li class="before">배포 파일 정보</li>
                 <li class="before">설치</li>
             </ul>
         </div>
@@ -1837,7 +2022,7 @@ function popupClose() {
                  <div  class="panel-heading" style="padding:5px 5% 10px 5%;"><b>External 네트워크 정보</b></div>
                  <div class="panel-body">
                      <div class="w2ui-field">
-                         <label style="text-align: left;width:36%;font-size:11px;">설치관리자 IPs</label> 
+                         <label style="text-align: left;width:36%;font-size:11px;">디렉터 공인 IP</label> 
                          <div style="width: 60%">
                              <input name="publicStaticIp" type="text" style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
@@ -1848,7 +2033,7 @@ function popupClose() {
                  <div  class="panel-heading" style="padding:5px 5% 10px 5%;"><b>Internal 네트워크 정보</b></div>
                  <div class="panel-body">
                      <div class="w2ui-field" >
-                         <label style="text-align: left;width:36%;font-size:11px;">설치관리자 내부망 IPs</label> 
+                         <label style="text-align: left;width:36%;font-size:11px;">디렉터 내부 IP</label> 
                          <div style="width: 60%">
                              <input name="privateStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
@@ -1891,12 +2076,11 @@ function popupClose() {
 <div id="GoogleNetworkInfoDiv" style="width:100%;height:100%;" hidden="true">
     <form id="GoogleNetworkInfoForm">
         <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-            <ul class="progressStep_6" >
+            <ul class="progressStep_5" >
                 <li class="pass">Google 정보</li>
                 <li class="pass">기본 정보</li>
                 <li class="active">네트워크 정보</li>
                 <li class="before">리소스 정보</li>
-                <li class="before">배포 파일 정보</li>
                 <li class="before">설치</li>
             </ul>
         </div>
@@ -1905,7 +2089,7 @@ function popupClose() {
                  <div  class="panel-heading" style="padding:5px 5% 10px 5%;"><b>네트워크 External</b></div>
                  <div class="panel-body">
                      <div class="w2ui-field">
-                         <label style="text-align: left;width:36%;font-size:11px;">설치관리자 IPs</label> 
+                         <label style="text-align: left;width:36%;font-size:11px;">디렉터 공인 IP</label> 
                          <div style="width: 60%">
                              <input name="publicStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
@@ -1916,7 +2100,7 @@ function popupClose() {
                  <div  class="panel-heading" style="padding:5px 5% 10px 5%;"><b>네트워크 Internal</b></div>
                  <div class="panel-body">
                      <div class="w2ui-field" >
-                         <label style="text-align: left;width:36%;font-size:11px;">설치관리자 내부망 IPs</label> 
+                         <label style="text-align: left;width:36%;font-size:11px;">디렉터 내부 IP</label> 
                          <div style="width: 60%">
                              <input name="privateStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
@@ -1965,12 +2149,11 @@ function popupClose() {
 <div id="AzureNetworkInfoDiv" style="width:100%;height:100%;" hidden="true">
     <form id="azureNetworkInfoForm">
         <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-            <ul class="progressStep_6" >
+            <ul class="progressStep_5" >
                 <li class="pass">Azure 정보</li>
                 <li class="pass">기본 정보</li>
                 <li class="active">네트워크 정보</li>
                 <li class="before">리소스 정보</li>
-                <li class="before">배포 파일 정보</li>
                 <li class="before">설치</li>
             </ul>
         </div>
@@ -1979,7 +2162,7 @@ function popupClose() {
                  <div  class="panel-heading" style="padding:5px 5% 10px 5%;"><b>네트워크 External</b></div>
                  <div class="panel-body">
                      <div class="w2ui-field">
-                         <label style="text-align: left;width:36%;font-size:11px;">설치관리자 IPs</label> 
+                         <label style="text-align: left;width:36%;font-size:11px;">디렉터 공인 IP</label> 
                          <div style="width: 60%">
                              <input name="publicStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
@@ -1990,7 +2173,7 @@ function popupClose() {
                  <div  class="panel-heading" style="padding:5px 5% 10px 5%;"><b>네트워크 Internal</b></div>
                  <div class="panel-body">
                      <div class="w2ui-field" >
-                         <label style="text-align: left;width:36%;font-size:11px;">설치관리자 내부망 IPs</label> 
+                         <label style="text-align: left;width:36%;font-size:11px;">디렉터 내부 IP</label> 
                          <div style="width: 60%">
                              <input name="privateStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
@@ -2040,21 +2223,20 @@ function popupClose() {
 <div id="VsphereNetworkInfoDiv" style="width:100%;height:100%;" hidden="true">
     <form id="vSphereNetworkInfoForm">
         <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-            <ul class="progressStep_6" >
+            <ul class="progressStep_5" >
                 <li class="pass"></li>
                 <li class="pass">기본 정보</li>
                 <li class="active">네트워크 정보</li>
                 <li class="before">리소스 정보</li>
-                <li class="before">배포 파일 정보</li>
                 <li class="before">설치</li>
             </ul>
         </div>
         <div class="w2ui-page page-0" style="margin-top:15px;padding:0 3%;">
              <div class="panel panel-info" style="margin-bottom:20px;">
-                 <div  class="panel-heading" style="padding:5px 5% 10px 5%;"><b>네트워크 External</b설치관리></div>
+                 <div  class="panel-heading" style="padding:5px 5% 10px 5%;"><b>네트워크 External</b></div>
                  <div class="panel-body">
                      <div class="w2ui-field">
-                         <label style="text-align: left;width:36%;font-size:11px;"> IPs</label> 
+                         <label style="text-align: left;width:36%;font-size:11px;">디렉터 공인 IP</label> 
                          <div style="width: 60%">
                              <input name="publicStaticIp" type="text"  style="display:inline-block;width:70%;" placeholder="예) 10.0.0.20"/>
                          </div>
@@ -2134,12 +2316,11 @@ function popupClose() {
 <div id="ResourceInfoDiv" style="width:100%;height:100%;" hidden="true">
     <form id="resourceInfoForm">
         <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-            <ul class="progressStep_6" >
+            <ul class="progressStep_5" >
                 <li class="pass"></li>
                 <li class="pass">기본 정보</li>
                 <li class="pass">네트워크 정보</li>
                 <li class="active">리소스 정보</li>
-                <li class="before">배포 파일 정보</li>
                 <li class="before">설치</li>
             </ul>
         </div>
@@ -2183,13 +2364,6 @@ function popupClose() {
                             <input name="resourcePoolDisk" type="text"  style="display:inline-block;width:70%;" placeholder="리소스 풀 DISK 예) 20000" onkeydown="return onlyNumber(event);"  onkeyup='removeChar(event)' style='ime-mode:disabled;'  />
                         </div>
                     </div>
-                    
-                    <div class="w2ui-field">
-                        <label style="text-align: left;width:36%;font-size:11px;">VM 비밀번호</label>
-                        <div style="width: 60%">
-                            <input name="boshPassword" type="text"  style="display:inline-block;width:70%;" placeholder="VM 비밀번호를 입력하세요."/>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -2203,7 +2377,7 @@ function popupClose() {
 <!-- Deploy DIV -->
 <div id="DeployDiv" style="width:100%;height:100%;" hidden="true">
     <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-        <ul class="progressStep_6" >
+        <ul class="progressStep_5" >
             <li class="pass"></li>
             <li class="pass">기본 정보</li>
             <li class="pass">네트워크 정보</li>
@@ -2224,12 +2398,11 @@ function popupClose() {
 <!-- Install DIV -->
 <div id="InstallDiv" style="width:100%;height:100%;" hidden="true">
     <div style="margin-left:2%;display:inline-block;width:97%;padding-top:20px;">
-        <ul class="progressStep_6" >
+        <ul class="progressStep_5" >
             <li class="pass"></li>
             <li class="pass">기본 정보</li>
             <li class="pass">네트워크 정보</li>
             <li class="pass">리소스 정보</li>
-            <li class="pass">배포 파일 정보</li>
             <li class="active">설치</li>
         </ul>
     </div>
@@ -2238,7 +2411,7 @@ function popupClose() {
     </div>
     <div class="w2ui-buttons" id="InstallDivButtons" hidden="true">
             <!-- 설치 실패 시 -->
-            <button class="btn" id="deployPopupBtn" style="float: left;" onclick="deployPopup();" disabled>이전</button>
+            <button class="btn" id="deployPopupBtn" style="float: left;" onclick="confirmDeploy('before');" disabled>이전</button>
             <button class="btn" style="float: right; padding-right: 15%" onclick="popupComplete();">닫기</button>
     </div>
 </div>

@@ -11,31 +11,13 @@ $("#defaultInfoForm").validate({
             }, deploymentName: { 
                 required: function(){ return checkEmpty( $(".w2ui-msg-body input[name='deploymentName']").val() ); }
             }, releases: { 
-                required: function(){ return checkEmpty( $(".w2ui-msg-body select[name='releases']").val() ); }
+                required: function(){ return checkEmpty( $(".w2ui-msg-body select[name='cfdeployment']").val() ); }
             }, domainOrganization: { 
                 required: function(){ return checkEmpty( $(".w2ui-msg-body input[name='domainOrganization']").val() ); }
-            }, deaDiskMB: { 
-                required: function(){
-                    if( $(".w2ui-msg-body #deaDiskmbDiv").css("display") == "none"  ){
-                        return false;
-                    }else{
-                        return checkEmpty( $(".w2ui-msg-body input[name='deaDiskMB']").val() ); 
-                    }
-                }
-            }, deaMemoryMB: { 
-                required: function(){
-                    if( $(".w2ui-msg-body #deaMemorymbDiv").css("display") == "none"  ){
-                        return false;
-                    }else{
-                        return checkEmpty( $(".w2ui-msg-body input[name='deaMemoryMB']").val() ); 
-                    }
-                }
             }, domain: { 
                 required: function(){ return checkEmpty( $(".w2ui-msg-body input[name='domain']").val() ); }
-            }, description: { 
-                required: function(){ return checkEmpty( $(".w2ui-msg-body input[name='description']").val() ); }
-            }, loginSecret: { 
-                required: function(){ return checkEmpty( $(".w2ui-msg-body input[name='loginSecret']").val() ); }
+            }, cfDbType: { 
+                required: function(){ return checkEmpty( $(".w2ui-msg-body select[name='cfDbType']").val() ); }
             }, ingestorIp: { 
                 required: function(){
                     if( $(".w2ui-msg-body input:checkbox[name='paastaMonitoring']").is(":checked") ){
@@ -66,20 +48,59 @@ $("#defaultInfoForm").validate({
                         return false;
                     }
                 }
+            }, userAddSsh: {
+                required: function(){
+                    if( $(".w2ui-msg-body #userAddSsh").css("display") == "none"  ){
+                        return false;
+                    }else{
+                        return checkEmpty( $(".w2ui-msg-body textarea[name='userAddSsh']").val() ); 
+                    }
+                }
+            }, osConfReleases: {
+                required: function(){
+                    if( $(".w2ui-msg-body #osConfRelease").css("display") == "none"  ){
+                        return false;
+                    }else{
+                        return checkEmpty( $(".w2ui-msg-body select[name='osConfReleases']").val() ); 
+                    }
+                }
+            }, inceptionOsUserName: {
+                required: function(){
+                    if( $(".w2ui-msg-body #inceptionOsUserNameConfDiv").css("display") == "none"  ){
+                        return false;
+                    }else{
+                        return checkEmpty( $(".w2ui-msg-body input[name='inceptionOsUserName']").val() ); 
+                    }
+                }
+            }, cfAdminPassword: {
+                required: function(){
+                    return checkEmpty( $(".w2ui-msg-body input[name='cfAdminPassword']").val() ); 
+                }
+            }, cfdeployment: {
+                required: function(){
+                    return checkEmpty( $(".w2ui-msg-body select[name='cfdeployment']").val() ); 
+                }
+            }, paastaPortalDomain: {
+                required: function(){
+                    return checkEmpty( $(".w2ui-msg-body input[name='paastaPortalDomain']").val() ); 
+                }
             }
         }, messages: {
              directorUuid        : { required: "설치관리자 UUID" + text_required_msg }
             ,deploymentName      : { required: "배포 명"+text_required_msg }
             ,domainOrganization  : { required: "기본 조직 명"+text_required_msg }
-            ,releases            : { required: "CF 릴리즈" + select_required_msg }
-            ,deaDiskMB           : { required: "DEA DISK 사이즈" + text_required_msg }
-            ,deaMemoryMB         : { required: "DEA MEMORY 사이즈"+text_required_msg }
+            ,releases            : { required: "CF Deployment" + select_required_msg }
+            ,cfDbType            : { required: "CF 데이터베이스 유형" + select_required_msg }
             ,domain              : { required: "도메인"+text_required_msg }
-            ,description         : { required: "도메인 설명"+text_required_msg }
-            ,loginSecret         : { required: "로그인 비밀번호"+text_required_msg }
             ,ingestorIp          : { required: "Ingestor 서버 IP"+text_required_msg } 
             ,ingestorPort        : { required: "Ingestor 서버 PORT"+text_required_msg }
             ,loggregatorReleases : { required: "Loggergator 릴리즈"+select_required_msg }
+            ,userAddSsh          : { required: "Public SSH KEY" +text_required_msg}
+            ,osConfReleases      : { required: "OS-CONF"+select_required_msg}
+            ,inceptionOsUserName : { required: "Inception User Name"+text_required_msg}
+            ,cfAdminPassword     : { required: "CF Admin Password"+text_required_msg}
+            ,cfdeployment        : { required: "CF Deployment Version" + text_required_msg}
+            ,paastaPortalDomain  : { required: "PaaS-TA 포털 버전" + text_required_msg}
         }, unhighlight: function(element) {
             setSuccessStyle(element);
         },errorPlacement: function(error, element) {

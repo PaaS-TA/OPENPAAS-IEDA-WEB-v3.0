@@ -429,6 +429,10 @@ $( window ).resize(function() {
                     <sec:authorize access="hasAuthority('IAAS_ACCOUNT_VSPHERE_MENU')">
                         <li><a href="javascript:goPage('<c:url value="/iaasMgnt/account/vSphere"/>', 'vSphere 관리');">vSphere</a></li>
                     </sec:authorize>
+                    <sec:authorize access="hasAuthority('IAAS_ACCOUNT_AZURE_MENU')">
+                        <li><a href="javascript:goPage('<c:url value="/iaasMgnt/account/azure"/>', 'vSphere 관리');">Azure</a></li>
+                    </sec:authorize>
+                    
                 </ul>
             </div>
         </div> 

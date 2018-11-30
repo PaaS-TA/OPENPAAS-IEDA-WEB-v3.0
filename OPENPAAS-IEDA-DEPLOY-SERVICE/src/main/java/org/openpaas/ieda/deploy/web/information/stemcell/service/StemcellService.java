@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class StemcellService {
-    
     @Autowired 
     private DirectorConfigService directorConfigService;
     @Autowired 

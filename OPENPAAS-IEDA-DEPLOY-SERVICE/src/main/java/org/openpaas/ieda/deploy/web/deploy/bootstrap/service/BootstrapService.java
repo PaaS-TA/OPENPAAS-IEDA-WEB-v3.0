@@ -78,6 +78,7 @@ public class BootstrapService {
                 dto.setIaas(vo.getIaasType());
                 dto.setBoshRelease(vo.getBoshRelease());
                 dto.setBoshCpiRelease(vo.getBoshCpiRelease());
+                dto.setBoshBpmRelease(vo.getBoshBpmRelease());
                 dto.setSubnetId(vo.getSubnetId());
                 dto.setSubnetRange(vo.getSubnetRange());
                 dto.setPublicStaticIp(vo.getPublicStaticIp());
@@ -295,6 +296,7 @@ public class BootstrapService {
         items.add(new ReplaceItemDTO("[directorName]", vo.getDirectorName()));
         items.add(new ReplaceItemDTO("[boshRelease]", RELEASE_DIR + SEPARATOR + vo.getBoshRelease()));
         items.add(new ReplaceItemDTO("[boshCpiRelease]", RELEASE_DIR + SEPARATOR + vo.getBoshCpiRelease()));
+        items.add(new ReplaceItemDTO("[boshBpmRelease]", RELEASE_DIR + SEPARATOR + vo.getBoshBpmRelease()));
         items.add(new ReplaceItemDTO("[enableSnapshot]", vo.getEnableSnapshots()));
         items.add(new ReplaceItemDTO("[snapshotSchedule]", vo.getSnapshotSchedule()));
         items.add(new ReplaceItemDTO("[ntp]", vo.getNtp()));
@@ -302,10 +304,10 @@ public class BootstrapService {
         items.add(new ReplaceItemDTO("[cpiReleaseName]", "bosh-"+vo.getIaasType().toLowerCase()+"-cpi"));
         
         if( vo.getPaastaMonitoringUse().equalsIgnoreCase("true") ) {
-            items.add(new ReplaceItemDTO("[paastaMonitoringIp]", vo.getPaastaMonitoringIp()));
+            //items.add(new ReplaceItemDTO("[paastaMonitoringIp]", vo.getPaastaMonitoringIp()));
             items.add(new ReplaceItemDTO("[paastaMonitoringReleaseName]", "bosh-monitoring-agent"));
-            items.add(new ReplaceItemDTO("[paastaMonitoringRelease]", RELEASE_DIR + SEPARATOR + vo.getPaastaMonitoringRelease()));
-            items.add(new ReplaceItemDTO("[influxdbIp]", vo.getInfluxdbIp()+":8059"));
+            //items.add(new ReplaceItemDTO("[paastaMonitoringRelease]", RELEASE_DIR + SEPARATOR + vo.getPaastaMonitoringRelease()));
+            //items.add(new ReplaceItemDTO("[influxdbIp]", vo.getInfluxdbIp()+":8059"));
         }else {
             items.add(new ReplaceItemDTO("[paastaMonitoringIp]", ""));
             items.add(new ReplaceItemDTO("[paastaMonitoringReleaseName]", ""));

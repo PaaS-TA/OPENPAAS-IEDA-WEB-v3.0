@@ -41,7 +41,6 @@ $(function() {
         columns    : [
                      {field: 'recid',     caption: 'recid', hidden: true}
                    , {field: 'accountId',     caption: 'accountId', hidden: true}
-                   , {field: 'internetGatewayId', size: '50%', caption: 'InternetGateWay Id'}
                    , {field: 'internetGatewayName', caption: 'InternetGateWay Name', size: '50%', style: 'text-align:center', render : function(record){
                        if(record.internetGatewayName == null || record.internetGatewayName == ""){
                            return "-"
@@ -49,6 +48,7 @@ $(function() {
                            return record.internetGatewayName;
                        }}
                    }
+                   , {field: 'internetGatewayId', size: '50%', caption: 'InternetGateWay Id'}
                    , {field: 'status', size: '50%', caption: 'InternetGateWay Status', render : function(record){
                        if(record.status == null || record.status == ""){
                            return "detached"
@@ -274,7 +274,12 @@ function getAwsVpcListInfo(){
             var result = "";
             if(data.length != 0){
                 for(var i=0;i<data.length;i++){
-                    result+="<option value="+data[i].vpcId+">"+data[i].vpcId+"</option>";
+                    result+="<option value="+data[i].vpcId+">"+data[i].vpcId;
+                    console.log(JSON.stringify(data[i])+"TEST NAME TAG");
+                    if(data[i].vpcName != null && data[i].vpcName != ""){
+                      result+=" | "+data[i].vpcName;
+                    }
+                    result+="</option>";
             }
             }else{
                 result+="<option value='noAttachVpc'>연결 할 VPC가 존재 하지 않습니다.</option>"
@@ -421,20 +426,26 @@ function clearMainPage() {
                         &nbsp;&nbsp;Internet Gateway 관리<b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu alert-dropdown">
-                        <sec:authorize access="hasAuthority('AWS_SECURITY_GROUP_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/securityGroup"/>', 'AWS SECURITY GROUP');">Security Group 관리</a></li>
-                        </sec:authorize>
-                        <sec:authorize access="hasAuthority('AWS_KEYPAIR_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/keypair"/>', 'AWS KEYPAIR');">KeyPair 관리</a></li>
+                        <sec:authorize access="hasAuthority('AWS_VPC_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/vpc"/>', 'AWS VPC');">VPC 관리</a></li>
                         </sec:authorize>
                         <sec:authorize access="hasAuthority('AWS_SUBNET_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/awsMgnt/subnet"/>', 'AWS SUBNET');">Subnet 관리</a></li>
                         </sec:authorize>
-                        <sec:authorize access="hasAuthority('AWS_VPC_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/vpc"/>', 'AWS VPC');">VPC 관리</a></li>
+                        <sec:authorize access="hasAuthority('AWS_SECURITY_GROUP_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/securityGroup"/>', 'AWS SECURITY GROUP');">Security Group 관리</a></li>
                         </sec:authorize>
                         <sec:authorize access="hasAuthority('AWS_ELASTIC_IP_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/awsMgnt/elasticIp"/>', 'AWS Elastic Ip');">Elastic Ip 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_KEYPAIR_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/keypair"/>', 'AWS KEYPAIR');">KeyPair 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_NAT_GATEWAY_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/natGateway"/>', 'AWS NAT GateWay');">NAT Gateway 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_ROUTE_TABLE_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/routeTable"/>', 'AWS Route Table');">Route Table 관리</a></li>
                         </sec:authorize>
                     </ul>
                 </div>

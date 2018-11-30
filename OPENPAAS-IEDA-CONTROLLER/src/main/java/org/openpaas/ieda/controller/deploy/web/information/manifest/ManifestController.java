@@ -108,7 +108,7 @@ public class ManifestController extends BaseController{
     ***************************************************/
     @RequestMapping(value="/info/manifest/update", method=RequestMethod.PUT)
     public ResponseEntity<?> updateManifest( @RequestBody @Valid ManifestParamDTO dto, Principal principal){
-        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> Manifest 파일 업로드 요청"); }
+        if(LOGGER.isInfoEnabled()){ LOGGER.info("================================> Manifest 파일 수정 요청"); }
         manifestService.updateManifestContent(dto, principal);
         return new ResponseEntity<>(HttpStatus.OK);
     }

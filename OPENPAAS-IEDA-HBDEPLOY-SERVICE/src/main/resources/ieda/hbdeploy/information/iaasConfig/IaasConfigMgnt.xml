@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+    namespace="org.openpaas.ieda.hbdeploy.web.information.iaasConfig.dao.HbIaasConfigMgntDAO">
+
+    <select id="selectAllIaasConfigInfoList"
+        resultType="org.openpaas.ieda.hbdeploy.web.information.iaasConfig.dao.HbIaasConfigMgntVO">
+        /** ieda.iaas.information.iaasConfig.selectAllIaasConfigInfoList **/
+        Select
+        config.id as id
+        ,config.iaas_config_alias as iaasConfigAlias
+        ,config.iaas_type as iaasType
+        ,config.create_user_id as createUserId
+        ,config.create_date as createDate
+        ,config.update_date as updateDate
+        ,( Select if(count(*) =0, '사용안함', '사용중')
+        From ieda_bootstrap as bootstrap, ieda_iaas_config as c
+        Where bootstrap.iaas_config_id = c.id
+        And c.create_user_id= #{userId}
+        And c.id = config.id
+        And c.iaas_type=config.iaas_type ) as deployStatus
+        From ieda_iaas_config config
+        Where create_user_id= #{userId}
+        And iaas_type = 'AWS'
+        Or iaas_type = 'OPENSTACK'
+        Order by iaas_type asc, update_date asc
+    </select>
+
+    <select id="selectIaasConfigCount" resultType="hashMap">
+        /** ieda.iaas.information.iaasConfig.getIaasConfigCount **/
+        Select
+        (select count(*) from ieda_iaas_config where UPPER(iaas_type)='AWS' And
+        create_user_id= #{userId}) as aws_config_cnt
+        ,(select count(*) from ieda_iaas_config where UPPER(iaas_type)='OPENSTACK' And
+        create_user_id= #{userId}) as openstack_config_cnt
+        From dual
+    </select>
+
+    <select id="selectIaasConfigInfoList"
+        resultType="org.openpaas.ieda.hbdeploy.web.information.iaasConfig.dao.HbIaasConfigMgntVO">
+        /** ieda.iaas.information.iaasConfig.selectIaasConfigInfoList **/
+        Select
+        a.id as id
+        ,a.id as recid
+        ,a.iaas_config_alias as iaasConfigAlias
+        ,a.iaas_type as iaasType
+        ,a.common_security_group as commonSecurityGroup
+        ,a.common_region as commonRegion
+        ,a.common_keypair_name as commonKeypairName
+        ,a.common_keypair_path as commonKeypairPath
+        ,a.common_availability_zone as commonAvailabilityZone
+        ,b.common_project as commonProject
+        ,b.openstack_domain as openstackDomain
+        ,b.openstack_keystone_version as openstackKeystoneVersion
+        ,a.create_user_id as createUserId
+        ,a.create_date as createDate
+        ,a.update_date as updateDate
+        ,b.account_name as accountName
+        ,b.id as accountId
+        ,( Select if(count(*) =0, '사용안함', '사용중')
+        From ieda_bootstrap as bootstrap, ieda_iaas_config as c
+        Where bootstrap.iaas_config_id = c.id
+        And c.create_user_id= #{userId}
+        And c.id = a.id
+        And c.iaas_type=a.iaas_type ) as deployStatus
+        From ieda_iaas_config a LEFT JOIN ieda_iaas_account b
+        ON a.account_id = b.id
+        Where UPPER(a.iaas_type)=UPPER(#{iaasType})
+        And a.create_user_id= #{userId}
+    </select>
+
+    <select id="selectIaasConfigInfo"
+        resultType="org.openpaas.ieda.hbdeploy.web.information.iaasConfig.dao.HbIaasConfigMgntVO">
+        /** ieda.iaas.information.iaasConfig.selectIaasConfigInfo **/
+        Select
+        a.id as id
+        ,a.account_id as accountId
+        ,a.iaas_type as iaasType
+        ,a.iaas_config_alias as iaasConfigAlias
+        ,a.common_security_group as commonSecurityGroup
+        ,a.common_keypair_name as commonKeypairName
+        ,a.common_keypair_path as commonKeypairPath
+        ,a.common_availability_zone as commonAvailabilityZone
+        ,a.common_region as commonRegion
+        ,a.create_user_id as createUserId
+        ,a.create_date as createDate
+        ,a.update_date as updateDate
+        ,b.account_name as accountName
+        ,b.common_project as commonProject
+        ,b.openstack_domain as openstackDomain
+        ,b.openstack_keystone_version as openstackKeystoneVersion
+        From ieda_iaas_config a LEFT JOIN ieda_iaas_account b
+        On a.account_id = b.id
+        Where a.create_user_id= #{userId}
+        And a.id = #{id}
+    </select>
+
+
+    <select id="selectIaasConfigDuplicationByConfigInfo" resultType="int">
+        /**
+        ieda.iaas.information.iaasConfig.selectIaasAccountDuplicationByConfigInfo
+        **/
+        Select count(*)
+        From ieda_iaas_config
+        Where iaas_type=#{config.iaasType}
+        <choose>
+            <when test="config.iaasType == 'AWS'">
+                And common_region = #{config.commonRegion}
+                And common_availability_zone = #{config.commonAvailabilityZone}
+                And common_keypair_name = #{config.commonKeypairName}
+                And common_keypair_path = #{config.commonKeypairPath}
+            </when>
+            <when test="config.iaasType == 'Openstack'">
+                And common_security_group = #{config.commonSecurityGroup}
+                And common_keypair_name = #{config.commonKeypairName}
+                And common_keypair_path = #{config.commonKeypairPath}
+            </when>
+        </choose>
+    </select>
+
+    <select id="selectIaasConfigDuplicationByConfigName" resultType="int">
+        /**
+        ieda.iaas.information.iaasConfig.selectIaasAccountDuplicationByAccountName
+        **/
+        Select count(*)
+        From ieda_iaas_config
+        Where iaas_type = #{config.iaasType}
+        And iaas_config_alias = #{config.iaasConfigAlias}
+    </select>
+
+    <insert id="insertIaasConfigInfo">
+        /** ieda.iaas.information.iaasConfig.insertIaasConfigInfo **/
+        Insert into ieda_iaas_config(
+        id
+        ,iaas_type
+        ,iaas_config_alias
+        ,account_id
+        ,common_security_group
+        ,common_region
+        ,common_keypair_name
+        ,common_keypair_path
+        ,common_availability_zone
+        ,create_user_id
+        ,update_user_id
+        ,create_date
+        ,update_date
+        )Values(
+        #{config.id}
+        ,#{config.iaasType}
+        ,#{config.iaasConfigAlias}
+        ,#{config.accountId}
+        ,#{config.commonSecurityGroup}
+        ,#{config.commonRegion}
+        ,#{config.commonKeypairName}
+        ,#{config.commonKeypairPath}
+        ,#{config.commonAvailabilityZone}
+        ,#{config.createUserId}
+        ,#{config.updateUserId}
+        ,now()
+        ,now()
+        )
+    </insert>
+
+    <update id="updateIaasConfigInfo">
+        /** ieda.iaas.information.iaasConfig.updateIaasConfigInfo **/
+        Update ieda_iaas_config
+        Set
+        iaas_config_alias = #{config.iaasConfigAlias}
+        ,account_id = #{config.accountId}
+        ,common_security_group = #{config.commonSecurityGroup}
+        ,common_region = #{config.commonRegion}
+        ,common_keypair_name = #{config.commonKeypairName}
+        ,common_keypair_path = #{config.commonKeypairPath}
+        ,common_availability_zone = #{config.commonAvailabilityZone}
+        ,update_user_id = #{config.createUserId}
+        ,update_date = now()
+        Where
+        id = #{config.id};
+    </update>
+
+
+    <delete id="deleteIaasConfigInfo">
+        /** ieda.iaas.information.iaasConfig.deleteIaasConfigInfo **/
+        Delete From ieda_iaas_config
+        Where create_user_id = #{createUserId}
+        And id = #{id}
+    </delete>
+
+</mapper>

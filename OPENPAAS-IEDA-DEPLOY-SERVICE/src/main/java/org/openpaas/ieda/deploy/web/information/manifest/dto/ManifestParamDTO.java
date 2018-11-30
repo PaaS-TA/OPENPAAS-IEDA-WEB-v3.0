@@ -10,6 +10,8 @@ public class ManifestParamDTO {
     private String content;
     @NotNull
     private String fileName;
+    @NotNull
+    private String iaas;
     
     public String getId() {
         return id;
@@ -29,4 +31,11 @@ public class ManifestParamDTO {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+    public String getIaas() {
+        return iaas;
+    }
+    public void setIaas(String iaas) {
+        this.iaas = iaas;
+    }
+    
 }

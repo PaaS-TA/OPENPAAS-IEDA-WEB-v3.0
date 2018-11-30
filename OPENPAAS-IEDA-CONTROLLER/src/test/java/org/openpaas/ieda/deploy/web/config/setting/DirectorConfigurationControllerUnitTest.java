@@ -148,7 +148,6 @@ public class DirectorConfigurationControllerUnitTest{
     * @title : testUpdateDirector
     * @return : void
     ***************************************************/
-    @Test 
     public void testUpdateDirector() throws Exception{
         DirectorConfigDTO.Update dto = updateDirectorConfigInfo();
         mockMvc.perform(put(DIRECTOR_UPDATE_URL,1).contentType(MediaType.APPLICATION_JSON)

@@ -24,6 +24,8 @@ public class ManifestTemplateVO {
     private Date createDate;//생성일
     private String updateUserId;//수정자
     private Date updateDate;//수정일
+    private String inputTemplateSecond; //입력값 템플릿2
+    private String inputTemplateThird; //입력값 템플릿3
     
     public Integer getId() {
         return id;
@@ -151,4 +153,17 @@ public class ManifestTemplateVO {
     public void setCfTempleate(String cfTempleate) {
         this.cfTempleate = cfTempleate;
     }
+    public String getInputTemplateSecond() {
+        return inputTemplateSecond;
+    }
+    public void setInputTemplateSecond(String inputTemplateSecond) {
+        this.inputTemplateSecond = inputTemplateSecond;
+    }
+    public String getInputTemplateThird() {
+        return inputTemplateThird;
+    }
+    public void setInputTemplateThird(String inputTemplateThird) {
+        this.inputTemplateThird = inputTemplateThird;
+    }
+    
 }

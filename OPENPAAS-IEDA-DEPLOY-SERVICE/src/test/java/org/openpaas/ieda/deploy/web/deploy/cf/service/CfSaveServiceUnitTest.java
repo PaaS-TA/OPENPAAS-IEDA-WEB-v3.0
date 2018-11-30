@@ -74,8 +74,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
         CfParamDTO.Default dto = setCfDefaultParamInfo("insert");
         when(mockCfDAO.selectCfDeploymentNameDuplication(anyString(), anyString(), anyInt())).thenReturn(0);
         CfVO resultVo = mockCfSaveService.saveDefaultInfo(dto, principal);
-        assertEquals(resultVo.getAppSshFingerprint(), dto.getAppSshFingerprint());
-        assertEquals(resultVo.getDiegoYn(), dto.getDiegoYn());
         assertEquals(resultVo.getDirectorUuid(), dto.getDirectorUuid());
         assertEquals(resultVo.getPaastaMonitoringUse(), dto.getPaastaMonitoringUse());
         assertEquals(resultVo.getReleaseName(), dto.getReleaseName());
@@ -94,8 +92,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
         when(mockCfDAO.selectCfInfoById(anyInt())).thenReturn(expectVo);
         when(mockCfDAO.selectCfDeploymentNameDuplication(anyString(), anyString(), anyInt())).thenReturn(0);
         CfVO resultVo = mockCfSaveService.saveDefaultInfo(dto, principal);
-        assertEquals(resultVo.getAppSshFingerprint(), dto.getAppSshFingerprint());
-        assertEquals(resultVo.getDiegoYn(), dto.getDiegoYn());
         assertEquals(resultVo.getDirectorUuid(), dto.getDirectorUuid());
         assertEquals(resultVo.getPaastaMonitoringUse(), dto.getPaastaMonitoringUse());
         assertEquals(resultVo.getReleaseName(), dto.getReleaseName());
@@ -284,7 +280,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
      * @title : testSaveCfJobsInfo
      * @return : void
     ***************************************************/
-    @Test
     public void testSaveCfJobsInfo() {
         List<HashMap<String, Object>> jobs =  setJobSettingInfoList();
         when(mockMessageSource.getMessage(any(), any(), any())).thenReturn("DEPLOY_TYPE_CF");
@@ -335,9 +330,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
         dto.setMediumDisk("8192");
         dto.setMediumFlavor("m1.medium");
         dto.setMediumRam("111");
-        dto.setRunnerCpu("4");
-        dto.setRunnerDisk("1");
-        dto.setRunnerRam("2313");
         dto.setSmallCpu("1");
         dto.setSmallDisk("123");
         dto.setSmallRam("8192");
@@ -389,7 +381,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
         vo.setId(1);
         vo.setNet("internal");
         vo.setNetworkName("netName");
-        vo.setPublicStaticIP("172.168.100.100");
         vo.setSeq(1);
         vo.setSubnetDns("8.8.8.8");
         vo.setSubnetGateway("192.168.1.1");
@@ -407,7 +398,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
         vo.getId();
         vo.getNet();
         vo.getNetworkName();
-        vo.getPublicStaticIP();
         vo.getSeq();
         vo.getSubnetDns();
         vo.getSubnetGateway();
@@ -423,7 +413,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
             vo = new NetworkVO();
             vo.setNet("internal");
             vo.setNetworkName("netName");
-            vo.setPublicStaticIP("172.168.100.101");
             vo.setSeq(1);
             vo.setSubnetDns("8.8.8.8");
             vo.setSubnetGateway("192.168.2.1");
@@ -437,7 +426,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
             vo = new NetworkVO();
             vo.setNet("internal");
             vo.setNetworkName("netName2");
-            vo.setPublicStaticIP("172.168.100.102");
             vo.setSeq(1);
             vo.setSubnetDns("8.8.8.8");
             vo.setSubnetGateway("192.168.3.1");
@@ -466,14 +454,11 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
         dto.setDeployType("cf");
         dto.setNet("cf-net");
         dto.setSeq("1");
-        dto.setPublicStaticIP("172.16.100.1");
         dto.setSubnetRange("/24");
         dto.setSubnetGateway("1");
         dto.setSubnetDns("8.8.8.8");
         dto.setSubnetReservedFrom("1");
         dto.setSubnetReservedTo("255");
-        dto.setSubnetStaticFrom("1");
-        dto.setSubnetStaticTo("255");
         dto.setSubnetId("1");
         dto.setCloudSecurityGroups("seg");
         dto.setNetworkName("cf-net");
@@ -486,21 +471,17 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
             dto.setDeployType("cf");
             dto.setNet("cf-net");
             dto.setSeq("1");
-            dto.setPublicStaticIP("172.16.100.1");
             dto.setSubnetRange("/24");
             dto.setSubnetGateway("1");
             dto.setSubnetDns("8.8.8.8");
             dto.setSubnetReservedFrom("1");
             dto.setSubnetReservedTo("255");
-            dto.setSubnetStaticFrom("1");
-            dto.setSubnetStaticTo("255");
             dto.setSubnetId("1");
             dto.setCloudSecurityGroups("seg");
             dto.setNetworkName("cf-net");
             dto.setAvailabilityZone("us-west-1");
             list.add(dto);
         }
-        dto.getPublicStaticIP();
         dto.getSeq();
         dto.getBoshId();
         dto.getIaas();
@@ -516,17 +497,13 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
      ***************************************************/
     public CfVO setCfInfo(String type) {
         CfVO vo = new CfVO();
-        vo.setAppSshFingerprint("fingerprint");
         vo.setCountryCode("seoul");
         vo.setCreateUserId("admin");
-        vo.setDeaDiskMB(8888);
-        vo.setDeaMemoryMB(41768);
         vo.setDeploymentFile("cf-yml");
         vo.setDeploymentName("cf");
         if(type.equalsIgnoreCase("null")) vo.setDeploymentFile("");
         vo.setDeployStatus("deploy");
         vo.setDescription("cf");
-        vo.setDiegoYn("N");
         vo.setDirectorUuid("uuid");
         vo.setDomain("domain");
         vo.setDomainOrganization("paas-ta");
@@ -543,7 +520,6 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
         vo.setReleaseName("cf");
         vo.setPaastaMonitoringUse("yes");
         vo.setOrganizationName("pass-ta");
-        vo.setIngestorIp("172.16.100.100");
         vo.setKeyFile("cf-key.yml");
         vo.setLocalityName("mapo");
         vo.setLoginSecret("test");
@@ -573,10 +549,7 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
         vo.setMediumDisk(500);
         vo.setMediumFlavor("m1.medium");
         vo.setMediumRam(500);
-        vo.setRunnerCpu(1500);
-        vo.setRunnerDisk(1500);
         vo.setRunnerFlavor("m1.xlarge");
-        vo.setRunnerRam(1500);
         vo.setSmallFlavor("m1.small");
         vo.setSmallCpu(1);
         vo.setSmallRam(1000);
@@ -595,17 +568,10 @@ public class CfSaveServiceUnitTest extends BaseDeployControllerUnitTest {
     ***************************************************/
     public CfParamDTO.Default setCfDefaultParamInfo(String type) {
         CfParamDTO.Default dto = new CfParamDTO.Default();
-        dto.setAppSshFingerprint("fingerPrint");
-        dto.setDeaDiskMB("32718");
-        dto.setDeaMemoryMB("8192");
         dto.setDeploymentName("cf");
-        dto.setDescription("cf");
-        dto.setDiegoYn("N");
         dto.setDirectorUuid("uuid");
         dto.setDomain("domain");
         dto.setIaas("openstack");
-        dto.setIngestorIp("172.16.100.1");
-        dto.setLoginSecret("login");
         dto.setDomainOrganization("paas-ta");
         dto.setPaastaMonitoringUse("yes");
         dto.setReleaseName("cf");

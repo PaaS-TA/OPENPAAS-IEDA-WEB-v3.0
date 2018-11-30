@@ -122,7 +122,7 @@ function settingResourceUsageData(data){
     $("#networkUsageWrap .networkSummary").html(totalNetwork + "<span>개</span>");
     $("#volumeUsageWrap .volumeUsage").html(volume);
     $("#billingUsageWrap .billingUsage").html(billing);
-    $("#billingUsageWrap .billingSummary").html(totalBilling + "<span>USD</span>");
+    $("#billingUsageWrap .billingSummary").html(totalBilling + "<span>KRW</span>");
     totalVolume = bytesToSize(totalVolume);
     var index = totalVolume.indexOf("B");
     var idx2 = 0;
@@ -218,11 +218,11 @@ $( window ).resize(function() {
         </div>
     </div>
     <div class="pdt20">
-        <div class="title fl">Azure 과금 사용량 정보</div>
+        <div class="title fl">Azure 세금전 과금 정보(전월)</div>
         <div id="billingUsageWrap" style="float:left; width:100%">
              <div class="panel-group">
                 <div class="panel panel-default">
-                    <div class="panel-heading" style="position:relative"><b>Azure 과금 사용량</b><img src='<c:url value="images/iaasMgnt/month-white-icon.png"/>' style="width:107px;position:absolute; right:20px;" alt="CLOCK" /></div>
+                    <div class="panel-heading" style="position:relative"><b>Azure 세금전 과금 정보</b>(Subscription offer 유형에 따라 조회가 안될수도 있습니다.)<img src='<c:url value="images/iaasMgnt/month-white-icon.png"/>' style="width:107px;position:absolute; right:20px;" alt="CLOCK" /></div>
                    <div class="panel-body">
                         <div class="billingUsage"></div>
                         <div style="float:left; width:25%; padding:15px;">

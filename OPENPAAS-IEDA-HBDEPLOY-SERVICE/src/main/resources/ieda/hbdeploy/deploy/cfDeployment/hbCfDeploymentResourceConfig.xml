@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentResourceConfigDAO">
+
+<resultMap id="cfDeploymentResource" type="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentResourceConfigVO">
+    <id property="id" column="id" />
+    <result property="recid" column="id"/>
+    <result property="iaasType" column="iaas_type"/>
+    <result property="resourceConfigName" column="resource_config_name"/>
+    <result property="stemcellName" column="stemcell_name"/>
+    <result property="stemcellVersion" column="stemcell_version"/>
+    <result property="instanceTypeS" column="instance_type_s"/>
+    <result property="instanceTypeM" column="instance_type_m"/>
+    <result property="instanceTypeL" column="instance_type_l"/>
+    <result property="directorInfo" column="director_id"/>
+    <result property="createUserId" column="create_user_id"/>
+    <result property="updateUserId" column="update_user_id"/>
+    <result property="createDate" column="create_date"/>
+    <result property="updateDate" column="update_date"/>
+</resultMap>
+
+<select id = "selectCfDeploymentResourceConfigInfoList" resultMap="cfDeploymentResource">
+    select 
+        id as id
+        ,resource_config_name as resource_config_name
+        ,iaas_type as iaas_Type
+        ,stemcell_name as stemcell_name
+        ,stemcell_version as stemcell_version
+        ,instance_type_s as instance_type_s
+        ,instance_type_m as instance_type_m
+        ,instance_type_l as instance_type_l
+        ,director_id as director_id
+        ,create_user_id as create_user_id
+        ,create_date as create_date
+        ,update_user_id as update_user_id
+        ,update_date as update_date
+    from ieda_hb_cfDeployment_resource_config
+    ORDER BY id;
+</select>
+
+<insert id="insertCfDeploymentResourceConfigInfo">
+    INSERT INTO ieda_hb_cfDeployment_resource_config(
+         iaas_type
+        ,resource_config_name
+        ,stemcell_name
+        ,stemcell_version
+        ,instance_type_s
+        ,instance_type_m
+        ,instance_type_l
+        ,director_id
+        ,create_user_id
+        ,create_date
+        ,update_user_id
+        ,update_date
+        ) VALUES (
+        #{resource.iaasType}
+        ,#{resource.resourceConfigName}
+        ,#{resource.stemcellName}
+        ,#{resource.stemcellVersion}
+        ,#{resource.instanceTypeS}
+        ,#{resource.instanceTypeM}
+        ,#{resource.instanceTypeL}
+        ,#{resource.directorInfo}
+        ,#{resource.createUserId}
+        ,now()
+        ,#{resource.updateUserId}
+        ,now()
+        )
+</insert>
+
+<update id="updateCfDeploymentResourceConfigInfo">
+    UPDATE ieda_hb_cfDeployment_resource_config set
+        iaas_type = #{resource.iaasType}
+        ,resource_config_name = #{resource.resourceConfigName}
+        ,stemcell_name = #{resource.stemcellName}
+        ,stemcell_version = #{resource.stemcellVersion}
+        ,instance_type_s = #{resource.instanceTypeS}
+        ,instance_type_m = #{resource.instanceTypeM}
+        ,instance_type_l = #{resource.instanceTypeL}
+        ,director_id = #{resource.directorInfo}
+        ,update_user_id = #{resource.updateUserId}
+        ,update_date = now()
+    WHERE id = #{resource.id}
+</update>
+
+<select id="selectCfDeploymentResourceConfigInfo" resultMap="cfDeploymentResource">
+    select 
+        id as id
+        ,resource_config_name as resource_config_name
+        ,iaas_type as iaas_type
+        ,stemcell_name as stemcell_name
+        ,stemcell_version as stemcell_version
+        ,instance_type_s as instance_type_s
+        ,instance_type_m as instance_type_m
+        ,instance_type_l as instance_type_l
+        ,director_id as director_id
+        ,create_user_id as create_user_id
+        ,create_date as create_date
+        ,update_user_id as update_user_id
+        ,update_date as update_date
+    from ieda_hb_cfDeployment_resource_config
+    where id = #{id}
+</select> 
+
+<delete id = "deleteCfDeploymentResourceConfigInfo">
+    delete from 
+        ieda_hb_cfDeployment_resource_config
+    where
+        id = #{resource.id}
+    and
+        resource_config_name = #{resource.resourceConfigName}
+</delete>
+
+<select id = "selectCfDeploymentResourceConfigByName" resultType="int">
+    select
+        count(*)
+    from
+        ieda_hb_cfDeployment_resource_config
+    where
+        resource_config_name = #{resourceConfigName}
+</select>
+
+</mapper>

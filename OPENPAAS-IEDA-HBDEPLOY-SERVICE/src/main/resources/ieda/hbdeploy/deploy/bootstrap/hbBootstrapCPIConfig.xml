@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapCpiConfigDAO">
+
+<resultMap id="bootstrapCpi" type="org.openpaas.ieda.hbdeploy.web.deploy.bootstrap.dao.HbBootstrapCpiConfigVO">
+    <id property="cpiInfoId" column="id" />
+    <result property="recid" column="id"/>
+    <result property="iaasType" column="iaas_type"/>
+    <result property="cpiName" column="cpi_name"/>
+    <result property="iaasConfigId" column="iaasconfig_id"/>
+    <result property="iaasConfigAlias" column="iaas_config_alias"/>
+    <result property="commonSecurityGroup" column="common_security_group"/>
+    <result property="commonKeypairName" column="common_keypair_name"/>
+    <result property="commonKeypairPath" column="common_keypair_path"/>
+    <result property="commonAvailabilityZone" column="common_availability_zone"/>
+    <result property="commonAccessUser" column="common_access_user"/>
+    <result property="commonProject" column="common_project"/>
+    <result property="openstackVersion" column="openstack_keystone_version"/>
+    <result property="commonTenant" column="common_tenant"/>
+    <result property="iaasConfigAlias" column="iaas_config_alias"/>
+    <result property="deployStatus" column="deploy_status"/>
+    <result property="createUserId" column ="create_user_id"/>
+    <result property="createDate" column ="create_date"/>
+    <result property="updateUserId" column ="update_user_id"/>
+    <result property="updateDate" column ="update_date"/>
+</resultMap>
+
+<select id = "selectBootstrapCpiConfigInfoList" resultMap="bootstrapCpi">
+    select 
+        cpi.id as id
+        ,cpi.iaas_type as iaas_type
+        ,cpi.iaas_config_id as iaasconfig_id
+        ,cpi.cpi_name as cpi_name
+        ,cpi.create_user_id as create_user_id
+        ,cpi.create_date as create_date
+        ,cpi.update_user_id as update_user_id
+        ,cpi.update_date as update_date
+        ,config.iaas_config_alias as iaasConfigAlias
+        ,config.common_security_group as common_security_group
+        ,config.common_keypair_name as common_keypair_name
+        ,config.common_keypair_path as common_keypair_path
+        ,config.common_availability_zone as common_availability_zone
+        ,account.common_access_user as common_access_user
+        ,account.common_tenant as common_tenant
+        ,account.common_project as common_project
+        ,account.openstack_keystone_version as openstack_keystone_version
+    from ieda_bootstrap_cpi_config as cpi
+    inner join ieda_iaas_config as config
+    inner join ieda_iaas_account as account
+    on cpi.iaas_config_id = config.id
+    and config.account_id = account.id
+    ORDER BY cpi.id;
+</select>
+
+<insert id="insertBootStrapCpiConfigInfo">
+    INSERT INTO ieda_bootstrap_cpi_config(
+         iaas_type
+        ,cpi_name
+        ,iaas_config_id
+        ,create_user_id
+        ,create_date
+        ,update_user_id
+        ,update_date
+        ) VALUES (
+        #{cpi.iaasType}
+        ,#{cpi.cpiName}
+        ,#{cpi.iaasConfigId}
+        ,#{cpi.createUserId}
+        ,now()
+        ,#{cpi.updateUserId}
+        ,now()
+        )
+</insert>
+
+<update id="updateBootStrapCpiConfigInfo">
+    UPDATE ieda_bootstrap_cpi_config set
+        iaas_type = #{cpi.iaasType}
+        ,cpi_name = #{cpi.cpiName}
+        ,iaas_type = #{cpi.iaasType}
+        ,iaas_config_id = #{cpi.iaasConfigId}
+        ,update_user_id = #{cpi.updateUserId}
+        ,update_date = now()
+    WHERE id = #{cpi.cpiInfoId}
+</update>
+
+<select id="selectBootstrapCpiConfigInfo" resultMap="bootstrapCpi">
+    select 
+        id as id
+        ,iaas_type as iaas_type
+        ,iaas_config_id as iaasconfig_id
+        ,cpi_name as cpi_name
+        ,create_user_id as create_user_id
+        ,create_date as create_date
+        ,update_user_id as update_user_id
+        ,update_date as update_date
+    from ieda_bootstrap_cpi_config config
+    where id = #{id}
+</select> 
+
+<delete id = "deleteBootStrapCpiConfigInfo">
+    delete from 
+        ieda_bootstrap_cpi_config
+    where
+        id = #{cpi.cpiInfoId}
+    and
+        cpi_name = #{cpi.cpiName}
+</delete>
+
+<select id = "selectBootstrapCpiConfigByName" resultType="int">
+    select
+        count(*)
+    from
+        ieda_bootstrap_cpi_config
+    where
+        cpi_name = #{cpiName}
+</select>
+
+</mapper>

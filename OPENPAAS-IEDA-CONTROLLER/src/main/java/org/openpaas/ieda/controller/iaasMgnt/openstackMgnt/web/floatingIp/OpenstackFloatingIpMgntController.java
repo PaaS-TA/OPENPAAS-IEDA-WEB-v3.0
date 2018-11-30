@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openpaas.ieda.controller.iaasMgnt.openstackMgnt.web.network.OpenstackNetworkMgntController;
-import org.openpaas.ieda.openstackMgnt.web.floatingIp.dto.OpenstackFloatingIpMgntDTO;
-import org.openpaas.ieda.openstackMgnt.web.floatingIp.service.OpenstackFloatingIpMgntService;
+import org.openpaas.ieda.iaasDashboard.openstackMgnt.web.floatingIp.dto.OpenstackFloatingIpMgntDTO;
+import org.openpaas.ieda.iaasDashboard.openstackMgnt.web.floatingIp.service.OpenstackFloatingIpMgntService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

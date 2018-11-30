@@ -1,11 +1,11 @@
 <%
 /* =================================================================
- * 상세설명 : 설치관리자 조회 및 설정
+ * 상세설명 : 디렉터 조회 및 설정
  * =================================================================
  * 수정일         작성자             내용     
  * ------------------------------------------------------------------
- * 2016-08       지향은      설치관리자 설정 화면 개선
- * 2018-04       배병욱      설치관리자 BOSH_CLI_V2 적용 및 버그 수정
+ * 2016-08       지향은      디렉터 설정 화면 개선
+ * 2018-04       배병욱      디렉터 BOSH_CLI_V2 적용 및 버그 수정
  * =================================================================
  */ 
 %>
@@ -23,11 +23,11 @@ var text_ip_msg = '<spring:message code="common.text.validate.ip.message"/>';
 var fadeOutTime = 3000;
 $(function() {
 /********************************************************
- * 설명 :  설치관리자 목록 조회
+ * 설명 :  디렉터 목록 조회
  *********************************************************/
   $('#config_directorGrid').w2grid({
     name: 'config_directorGrid',
-    header: '<b>설치관리자 목록</b>',
+    header: '<b>디렉터 목록</b>',
      method: 'GET',
      multiSelect: false,
     show: {    
@@ -37,7 +37,7 @@ $(function() {
     columns:[
              {field: 'recid', caption: 'recid', hidden: true},
              {field: 'iedaDirectorConfigSeq', caption: '레코드키', hidden: true},
-             {field: 'defaultYn',     caption: '기본 관리자', size: '10%',
+             {field: 'defaultYn',     caption: '기본 디렉터', size: '10%',
                    render: function(record) {
                        if ( record.defaultYn == 'Y' )
                            return '<span class="btn btn-primary" style="width:70px">기본</span>';
@@ -46,14 +46,14 @@ $(function() {
                    }
                  },
              {field: 'directorCpi' ,caption: 'CPI'      , size: '10%'},
-             {field: 'directorName',caption: '관리자 이름', size: '10%'},
+             {field: 'directorName',caption: '디렉터 이름', size: '10%'},
              {field: 'userId'      ,caption: '계정'      , size: '10%'},
              {field: 'directorUrl' ,caption: 'URL'      , size: '30%',
                  render: function(record) {
                      return 'https://' + record.directorUrl + ':' + record.directorPort;
                      } 
              },
-             {field: 'directorUuid', caption: '관리자 UUID', size: '30%'}
+             {field: 'directorUuid', caption: '디렉터 UUID', size: '30%'}
              ],
     onSelect : function(event) {
         var grid = this;
@@ -92,35 +92,35 @@ $(function() {
       
  initView();
  /********************************************************
-  * 설명 :  기본 설치 관리자 설정
+  * 설명 :  기본 디렉터 설정
   *********************************************************/
  $("#setDefaultDirector").click(function(){
      if($("#setDefaultDirector").attr('disabled') == "disabled") return;
      
      var selected = w2ui['config_directorGrid'].getSelection();
      if( selected.length == 0 ){
-         w2alert("선택된 정보가 없습니다.", "기본 설치 관리자 설정");
+         w2alert("선택된 정보가 없습니다.", "기본 디렉터 설정");
          return;
      }
      else  if ( selected.length > 1 ){
-         w2alert("기본 설치 관리자 설정은 하나만 선택 가능합니다.", "기본 설치 관리자 설정");
+         w2alert("기본 디렉터 설정은 하나만 선택 가능합니다.", "기본 디렉터 설정");
          return;
      }
      else{
          var record = w2ui['config_directorGrid'].get(selected);
          if( record.defaultYn == "Y" ){
              //클릭시 버튼  Disable 다른 페이지 호출
-             w2alert("선택한 설치 관리자는 이미 기본 설치 관리자로 설정되어 있습니다.","기본 설치 관리자 설정");
+             w2alert("선택한 디렉터는 이미 기본 디렉터로 설정되어 있습니다.","기본 디렉터 설정");
              return;
          }
          else{
              w2confirm({
                  title        : "<b>기본관리자 설정</b>",
-                 msg          : record.directorName + "를 " + "기본관리자로 설정하시겠습니까?",
+                 msg          : record.directorName + "를 " + "기본 디렉터로 설정하시겠습니까?",
                  yes_text     : "확인",
                  no_text      : "취소",
                  yes_callBack : function(envent){
-                     w2ui['config_directorGrid'].lock("기본관리자 설정 중입니다.", {
+                     w2ui['config_directorGrid'].lock("기본 디렉터 설정 중입니다.", {
                          spinner: true, opacity : 1
                      });
                      registDefault(record.iedaDirectorConfigSeq, record.directorName);
@@ -136,11 +136,11 @@ $(function() {
 });
      
  /********************************************************
-  * 설명 :  설정관리자 추가 버튼
+  * 설명 :  디렉터 추가 버튼
   *********************************************************/
 $("#addSetting").click(function(){
     w2popup.open({
-        title   : "<b>설치관리자 설정추가</b>",
+        title   : "<b>디렉터 추가</b>",
         width   : 600,
         height  : 380,
         modal   : true,
@@ -164,28 +164,28 @@ $("#updateSetting").click(function(){
     var selected = w2ui['config_directorGrid'].getSelection();
     
     if( selected.length == 0 ){
-        w2alert("선택된 정보가 없습니다.", "설치 관리자 정보 수정");
+        w2alert("선택된 정보가 없습니다.", "디렉터 정보 수정");
         return;
     }
     updateDirectorConfigPopup(w2ui['config_directorGrid'].get(selected));
 });
     
 /********************************************************
- * 설명 :  설정관리자 삭제 버튼
+ * 설명 :  디렉터 삭제 버튼
  *********************************************************/
 $("#deleteSetting").click(function(){
     if($("#deleteSetting").attr('disabled') == "disabled") return;
     var selected = w2ui['config_directorGrid'].getSelection();
     
     if( selected.length == 0 ){
-        w2alert("선택된 정보가 없습니다.", "설치 관리자 삭제");
+        w2alert("선택된 정보가 없습니다.", "디렉터 삭제");
         return;
     }
     else {
         var record = w2ui['config_directorGrid'].get(selected);
         w2confirm({
-            title       : "<b>설치 관리자 삭제</b>",
-            msg         : "설치 관리자(" + record.directorName + ")를 삭제하시겠습니까?",
+            title       : "<b>디렉터 삭제</b>",
+            msg         : "디렉터(" + record.directorName + ")를 삭제하시겠습니까?",
             yes_text    : "확인",
             no_text     : "취소",
             yes_callBack: function(event){
@@ -193,7 +193,7 @@ $("#deleteSetting").click(function(){
                 deleteDirector(record.iedaDirectorConfigSeq);
                 // 기본 관리자일 경우 
                 if ( record.defaultYn == "Y" ) {
-                    // 기본 설치 관리자 정보 조회
+                    // 기본 디렉터 정보 조회
                     $('.defaultDirector').text('');
                 }
                 w2ui['config_directorGrid'].clear();
@@ -206,16 +206,16 @@ $("#deleteSetting").click(function(){
             }
         });
     }
-});// 설정관리자 삭제 버튼 END
+});// 디렉터 삭제 버튼 END
 });
 /********************************************************
  * 설명 : 목록 재조회
  * 기능 : initView
  *********************************************************/
 function initView() {
-    // 기본 설치 관리자 정보 조회
+    // 기본 디렉터 정보 조회
      getDefaultDirector("<c:url value='/common/use/director'/>");
-    // 설치관리자 목록조회
+    // 디렉터 목록조회
     doSearch();
 }
 /********************************************************
@@ -236,7 +236,7 @@ function doButtonStyle(){
     $('#deleteSetting').attr('disabled', true);
 }
 /********************************************************
- * 설명 : 기본 설치 관리자 설정
+ * 설명 : 기본 디렉터 설정
  * 기능 : registDefault
  *********************************************************/
 function registDefault(seq, target){
@@ -245,18 +245,18 @@ function registDefault(seq, target){
         url : "/config/director/setDefault/"+seq,
         contentType : "application/json",
         success : function(data, status) {
-            w2alert("기본 설치 관리자를 \n" + target +"로 설정하였습니다.",  "기본 설치 관리자 설정", doSearch);
+            w2alert("기본 디렉터를 \n" + target +"로 설정하였습니다.",  "기본 디렉터 설정", doSearch);
             getDefaultDirector("<c:url value='/common/use/director'/>");
         },
         error : function(request, status, error) {
             var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message, "기본 설치 관리자 설정");
+            w2alert(errorResult.message, "기본 디렉터 설정");
             doSearch();
         }
     });
 }
 /********************************************************
- * 설명 : 설정관리자 등록
+ * 설명 : 디렉터 등록
  * 기능 : registDirectorConfig
  *********************************************************/
 function registDirectorConfig(){
@@ -280,7 +280,7 @@ function registDirectorConfig(){
             w2popup.close();
             doSearch();
             
-            // 기본 설치 관리자 정보 조회
+            // 기본 디렉터 정보 조회
              getDefaultDirector("<c:url value='/common/use/director'/>");
         },
         error : function(request, status, error) {
@@ -293,12 +293,12 @@ function registDirectorConfig(){
     });
 }
 /********************************************************
- * 설명 : 설정관리자 수정 팝업
+ * 설명 : 디렉터 수정 팝업
  * 기능 : updateDirectorConfigPopup
  *********************************************************/
 function updateDirectorConfigPopup(record) {
              w2popup.open({
-                title     : "<b>설치관리자 정보수정</b>",
+                title     : "<b>디렉터 정보수정</b>",
                 width     : 600,
                 height    : 350,
                 modal     : true,
@@ -322,7 +322,7 @@ function updateDirectorConfigPopup(record) {
             });
 }
 /********************************************************
- * 설명 : 설정관리자 수정 
+ * 설명 : 디렉터 수정 
  * 기능 : updateDirectorConfig
  *********************************************************/
 function updateDirectorConfig() {
@@ -344,7 +344,7 @@ function updateDirectorConfig() {
             w2ui['config_directorGrid'].reset();
             doSearch();
             
-            // 기본 설치 관리자 정보 조회
+            // 기본 디렉터 정보 조회
              getDefaultDirector("<c:url value='/common/use/director'/>");
         },
         error : function(request, status, error) {
@@ -357,7 +357,7 @@ function updateDirectorConfig() {
     });
 }
 /********************************************************
- * 설명 : 설정관리자 삭제 
+ * 설명 : 디렉터 삭제 
  * 기능 : deleteDirector
  *********************************************************/
 function deleteDirector(seq){
@@ -373,7 +373,7 @@ function deleteDirector(seq){
         },
         error : function(request, status, error) {
             var errorResult = JSON.parse(request.responseText);
-            w2alert(errorResult.message, "설치 관리자 삭제");
+            w2alert(errorResult.message, "디렉터 삭제");
             doSearch();
         }
     });
@@ -419,7 +419,37 @@ function getCredsKeyPathFileList(){
             credsChangeKeyPathType("list");
         },
         error : function( e, status ) {
-            w2alert("Credential KeyPath File 목록을 가져오는데 실패하였습니다.", "BOOTSTRAP 설치");
+            w2alert("Credential KeyPath File 목록을 가져오는데 실패하였습니다.", "디렉터 등록");
+        }
+    });
+}
+
+/****************************************************
+ * 기능 : uploadCredentialKey
+ * 설명 : CredentialKey 업로드
+*****************************************************/
+function uploadCredentialKey(){
+    var form = $(".w2ui-msg-body #settingForm")[0];
+    var formData = new FormData(form);
+            
+    var files = document.getElementsByName('keyPathFile')[0].files;
+    console.log("1:"+files[0]);
+    formData.append("file", files[0]);
+            
+    $.ajax({
+        type : "POST",        
+        url : "/config/director/credskey/upload",
+        enctype : 'multipart/formdata',
+        dataType: "text",
+        async : true,
+        processData: false,
+        contentType:false,
+        data : formData,
+        success : function(data, status) {
+            registDirectorConfig();
+        },
+        error : function( e, status ) {
+            w2alert( "Credential Key 업로드에 실패 하였습니다.", "디렉터 설정");
         }
     });
 }
@@ -456,21 +486,28 @@ function credsChangeKeyPathStyle( showDiv, hideDiv ){
      $(".w2ui-msg-body "+ hideDiv +" p").remove();
      $(".w2ui-msg-body "+ showDiv).show();
 }
+/******************************************************************
+ * Function : openBrowse
+ * 설명 : 공통 File upload Browse Button
+ ***************************************************************** */
+function openBrowse(){
+    $(".w2ui-msg-body input[name='keyPathFile']").click();
+}
 </script>
 
 <div id="main">
-    <div class="page_site">환경설정 및 관리 > <strong>설치관리자 설정</strong></div>
+    <div class="page_site">환경설정 및 관리 > <strong>디렉터 설정</strong></div>
     
-    <!-- 설치 관리자 정보 -->
+    <!-- 디렉터 정보 -->
     <div id="isDefaultDirector"></div>
     
-    <!-- 설치관리자 목록-->
+    <!-- 디렉터 목록-->
     <div class="pdt20">
-        <div class="title fl">설치관리자 목록</div>
+        <div class="title fl">디렉터 목록</div>
         <div class="fr"> 
         <!-- Btn -->
         <sec:authorize access="hasAuthority('CONFIG_DIRECTOR_SET')">
-        <span id="setDefaultDirector" class="btn btn-primary" style="width:180px" >기본 설치 관리자로 설정</span>
+        <span id="setDefaultDirector" class="btn btn-primary" style="width:180px" >기본 디렉터로 설정</span>
         </sec:authorize>
         <sec:authorize access="hasAuthority('CONFIG_DIRECTOR_ADD')">
         <span id="addSetting" class="btn btn-primary" style="width:130px" >설정 추가</span>
@@ -485,16 +522,16 @@ function credsChangeKeyPathStyle( showDiv, hideDiv ){
         </div>
     </div>
     
-    <!-- 설치관리자 목록 조회-->
+    <!-- 디렉터 목록 조회-->
     <div id="config_directorGrid" style="width:100%; height:610px"></div>    
 </div>
-<!-- 설치관리자 정보추가/수정 팝업 -->
+<!-- 디렉터 정보추가/수정 팝업 -->
 <div id="regPopupDiv" hidden="true">
-    <form id="settingForm">
+    <form id="settingForm" action="POST">
         <input name="seq" type="hidden"/>
         <div class="w2ui-page page-0">
             <div class="panel panel-info" style="margin-top:5px;">
-                <div class="panel-heading"><b>설치관리자 정보</b></div>
+                <div class="panel-heading"><b>디렉터 정보</b></div>
                 <div class="panel-body" style="overflow-y:auto;height:240px;">
                     <div class="w2ui-field">
                         <label style="width:30%;text-align: left;padding-left: 20px;">디렉터 IP</label>
@@ -533,8 +570,8 @@ function credsChangeKeyPathStyle( showDiv, hideDiv ){
                         <div id="credsKeyPathDiv" style="padding-left: 30%">
                             <div id="credsKeyPathFileDiv" hidden="true">
                                 <input type="text" id="credsKeyFileName" name="credsKeyFileName" style="width: 250px;" readonly onclick="openBrowse();" placeholder="Credential File을 선택하세요"/>
-                                <a href="#" id="browse" onclick="openBrowse();"><span id="BrowseBtn">Browse</span></a>
                                 <input type="file" name="keyPathFile" onchange="setCredentialKeyPath(this);" style="display:none"/>
+                                <a href="#" id="browse" onclick="openBrowse();"><span id="BrowseBtn">Browse</span></a>
                             </div>
                             <div id="credsKeyPathListDiv">
                                 <select name="credsKeyPathList" id="credsKeyPathList" style="width: 250px;" onchange="setCredentialKeyPathList(this)"></select>
@@ -650,10 +687,10 @@ $(function() {
                 setInvalidHandlerStyle(errors, validator);
             }
         }, submitHandler: function (form) {
-            if(checkEmpty( $(".w2ui-msg-body input[name='seq']").val() )){
+            if(checkEmpty( $(".w2ui-msg-body input[name='keyPathFile']").val() )){
                 registDirectorConfig();
             }else{
-                updateDirectorConfig();
+                uploadCredentialKey();
             }
             
         }

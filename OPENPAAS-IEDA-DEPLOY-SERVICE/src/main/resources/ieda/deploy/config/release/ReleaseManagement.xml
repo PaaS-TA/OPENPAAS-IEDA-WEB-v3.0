@@ -15,6 +15,7 @@
         <result property="downloadLink" column ="DOWNLOAD_LINK"/>
         <result property="createDate" column="CREATE_DATE"/>
         <result property="updateDate" column="UPDATE_DATE"/>
+        <result property="iaas" column="IAAS"/>
     </resultMap>
     
     <select id="selectSystemReleaseList" resultMap="releaseManagement">
@@ -87,7 +88,8 @@
             ,create_user_id
             ,create_date
             ,update_user_id
-            ,update_date)
+            ,update_date
+            ,iaas)
         VALUES(
             <if test="release.id != null">
                 #{release.id},
@@ -101,8 +103,8 @@
             ,#{release.createUserId}
             ,now()
             ,#{release.updateUserId}
-            ,now())
-            
+            ,now()
+            ,#{release.iaasType})
         <selectKey keyProperty="release.id" resultType="int" order="AFTER">
             <if test="release.id != null"> SELECT 1 AS id from dual; </if>
             <if test="release.id == null"> SELECT LAST_INSERT_ID(); </if>

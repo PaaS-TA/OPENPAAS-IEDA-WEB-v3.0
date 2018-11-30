@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.config.release.dao.HbReleaseManagementDAO">
+    <resultMap id="releaseManagement" type="org.openpaas.ieda.hbdeploy.web.config.release.dao.HbReleaseManagementVO">
+        <id property="id" column="ID" />
+        <result property="recid" column="ID"/>
+        <result property="releaseName" column ="RELEASE_NAME"/>
+        <result property="releaseType" column ="RELEASE_TYPE"/>
+        <result property="releaseFileName" column ="RELEASE_FILENAME"/>
+        <result property="releaseSize" column ="SIZE"/>
+        <result property="createUserId" column="CREATE_USER_ID"/>
+        <result property="updateUserId" column="UPDATE_USER_ID"/>
+        <result property="downloadStatus" column ="DOWNLOAD_STATUS"/>
+        <result property="downloadLink" column ="DOWNLOAD_LINK"/>
+        <result property="createDate" column="CREATE_DATE"/>
+        <result property="updateDate" column="UPDATE_DATE"/>
+        <result property="iaasType" column="IAAS"/> 
+    </resultMap>
+    
+    <select id="selectHybridReleaseList" resultMap="releaseManagement">
+        /** ReleaseManagement.findAllOrderByReleaseTypeDesc **/
+        Select 
+            id,
+            id as recid,  
+            release_name, 
+            release_type, 
+            size,
+            download_status,
+            release_filename, 
+            create_user_id,
+            create_date,
+            update_user_id,
+            update_date,
+            iaas 
+        From ieda_system_releases
+        where iaas = #{iaasType}
+        order by release_Type desc
+    </select>
+    
+    <select id="selectHybridRelease" resultMap="releaseManagement">
+        /** ReleaseManagement.findOne **/
+        Select 
+            id,
+            id as recid,  
+            release_name, 
+            release_type, 
+            size,
+            download_status,
+            release_filename, 
+            create_user_id,
+            create_date,
+            update_user_id,
+            update_date,
+            iaas 
+        From ieda_system_releases 
+        where release_filename = #{fileName}
+    </select>
+    
+    <select id="selectHybridReleaseById" resultMap="releaseManagement">
+        /** ReleaseManagement.findOneById **/
+        Select 
+            id,
+            id as recid,  
+            release_name, 
+            release_type, 
+            size,
+            download_status,
+            download_link,
+            release_filename, 
+            create_user_id,
+            create_date,
+            update_user_id,
+            update_date,
+            iaas 
+        From ieda_system_releases 
+        where id = #{id}
+    </select>
+    
+    <insert id="insertHybridRelease" useGeneratedKeys="true" keyColumn="id" keyProperty="release.id">
+        /** ReleaseManagement.HybridReleaseSave **/
+        INSERT INTO ieda_system_releases(
+            <if test="release.id != null">
+                id,
+            </if>
+             release_name
+            ,release_type
+            ,size
+            ,release_filename
+            ,download_status
+            ,download_link
+            ,create_user_id
+            ,create_date
+            ,update_user_id
+            ,update_date
+            ,iaas)
+        VALUES(
+            <if test="release.id != null">
+                #{release.id},
+            </if>
+             #{release.releaseName}
+            ,#{release.releaseType}
+            ,#{release.releaseSize}
+            ,#{release.releaseFileName}
+            ,#{release.downloadStatus}
+            ,#{release.downloadLink}
+            ,#{release.createUserId}
+            ,now()
+            ,#{release.updateUserId}
+            ,now()
+            ,#{release.iaasType}
+            )
+        <selectKey keyProperty="release.id" resultType="int" order="AFTER">
+            <if test="release.id != null"> SELECT 1 AS id from dual; </if>
+            <if test="release.id == null"> SELECT LAST_INSERT_ID(); </if>
+        </selectKey>
+    </insert>
+    
+    <update id="updateHybridRelease">
+        /** ReleaseManagement.HybridReleaseUpdate **/
+        update ieda_system_releases set
+             release_name = #{release.releaseName}
+            ,release_type = #{release.releaseType}
+            ,size = #{release.releaseSize}
+            ,release_filename = #{release.releaseFileName}
+            ,download_status=#{release.downloadStatus}
+            ,download_link=#{release.downloadLink}
+            ,update_user_id = #{release.updateUserId}
+            ,update_date = now()
+        where id = #{release.id}
+    </update>
+    
+    <update id="updateHybridReleaseById">
+        /** ReleaseManagement.HybridReleaseUpdateById **/
+        update ieda_system_releases set
+            <if test="release.releaseSize != null">
+                size = #{release.releaseSize},
+            </if>
+            download_status = #{release.downloadStatus},
+            <if test="release.releaseFileName != null">
+                release_filename = #{release.releaseFileName},
+            </if>
+            update_user_id = #{release.updateUserId},
+            update_date = now()
+        where id = #{release.id}
+    </update>
+    
+    
+    <delete id="deleteHybridRelease">
+        /** ReleaseManagement.HybridRelaseDelete **/
+        DELETE FROM ieda_system_releases
+        WHERE id = #{release.id}
+        AND release_filename = #{release.releaseFileName}
+    </delete>
+    
+    <select id="selectLocalReleaseList" resultType="String">
+        /** ReleaseManagement.localReleaseList **/
+        SELECT 
+            release_filename 
+        FROM ieda_system_releases 
+        WHERE release_type = #{type}
+        <if test="iaas != null || iaas != ''">
+            AND release_filename LIKE CONCAT('%',#{iaas},'%')
+        </if>
+    </select>
+    
+</mapper>

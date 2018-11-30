@@ -359,6 +359,10 @@ $( window ).resize(function() {
                     <sec:authorize access="hasAuthority('INFO_IAASCONFIG_GOOGLE_LIST')">
                         <li><a href="javascript:goPage('<c:url value="/info/iaasConfig/google"/>', 'Google 관리');">Google</a></li>
                     </sec:authorize>
+                    <sec:authorize access="hasAuthority('INFO_IAASCONFIG_AZURE_LIST')">
+                        <li><a href="javascript:goPage('<c:url value="/info/iaasConfig/azure"/>', 'Google 관리');">Azure</a></li>
+                    </sec:authorize>
+                    
                 </ul>
             </div>
         </div> 

@@ -78,7 +78,7 @@ public class TaskController extends BaseController {
     @MessageMapping("/info/task/list/eventLog/task")
     @SendTo("/info/task/list/eventLog/socket")
     public ResponseEntity<Object> doGetTaskLog(@RequestBody @Valid TaskDTO.GetLog dto, Principal principal) {
-        taskAsyncservice.doGetTaskLogAsync(dto.getLogType(), dto.getTaskId(), dto.getLineOneYn(), principal);
+        taskAsyncservice.doGetTaskLogAsync(dto, principal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

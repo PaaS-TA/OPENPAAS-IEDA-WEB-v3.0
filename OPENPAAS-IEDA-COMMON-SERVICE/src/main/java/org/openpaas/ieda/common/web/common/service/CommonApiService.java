@@ -27,13 +27,13 @@ import com.google.api.services.compute.ComputeScopes;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
-import com.microsoft.aad.adal4j.UserInfo;
+//import com.microsoft.aad.adal4j.UserInfo;
 import com.microsoft.azure.AzureEnvironment;
 import com.microsoft.azure.credentials.ApplicationTokenCredentials;
 import com.microsoft.azure.credentials.AzureTokenCredentials;
 import com.microsoft.azure.management.Azure;
-import com.microsoft.azure.management.Azure.Authenticated;
-import com.microsoft.azure.management.appservice.LogLevel;
+//import com.microsoft.azure.management.Azure.Authenticated;
+//import com.microsoft.azure.management.appservice.LogLevel;
 
 
 @Service
@@ -43,7 +43,7 @@ public class CommonApiService {
     final private static String BASE_DIR  = System.getProperty("user.home") + SEPARATOR + ".bosh_plugin";
     final private static String KEY_DIR   = BASE_DIR + SEPARATOR + "key";
     final private static Logger LOGGER = LoggerFactory.getLogger(CommonApiService.class);
-	private Azure azure;
+	//private Azure azure;
     
     /***************************************************
      * @project : 인프라 관리 대시보드
@@ -54,6 +54,7 @@ public class CommonApiService {
     public AWSStaticCredentialsProvider getAwsStaticCredentialsProvider(String accessKey, String secret){
         BasicAWSCredentials credential = new BasicAWSCredentials(accessKey, secret);
         AWSStaticCredentialsProvider provider = new AWSStaticCredentialsProvider(credential);
+        
         return provider;
     }
     
@@ -170,7 +171,7 @@ public class CommonApiService {
             }
         } catch (Exception ex) {
                     if( LOGGER.isErrorEnabled() ){ LOGGER.error(ex.getMessage()); }
-    }
+        }
         return credentials;
     }
     
@@ -209,4 +210,14 @@ public class CommonApiService {
     }
 		return azure;
     }
+    
+    /***************************************************
+     * @project : 인프라 관리 대시보드
+     * @description : Azure Location Name으로 리전 정보 조회
+     * @title : getAzureRegionFromAzure
+     * @return : Region
+     ***************************************************/
+    /*public com.microsoft.azure.management.resources.fluentcore.arm.Region getAzureRegionFromAzure(String location){
+        return com.microsoft.azure.management.resources.fluentcore.arm.Region.findByLabelOrName(location);
+    }*/
 }

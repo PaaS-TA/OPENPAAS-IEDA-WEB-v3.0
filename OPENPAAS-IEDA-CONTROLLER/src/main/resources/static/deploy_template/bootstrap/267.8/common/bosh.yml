@@ -1,0 +1,142 @@
+---
+name: bosh
+
+releases:
+- name: bosh
+  url: file:///((boshRelease))
+- name: bpm
+  url: file:///((bpmRelease))
+
+resource_pools:
+- name: vms
+  network: default
+  env:
+    bosh:
+      password: '*'
+      mbus:
+        cert: ((mbus_bootstrap_ssl))
+
+disk_pools:
+- name: disks
+  disk_size: 65_536
+
+networks:
+- name: default
+  type: manual
+  subnets:
+  - range: ((internal_cidr))
+    gateway: ((internal_gw))
+    static: [((internal_ip))]
+    dns: [((internal_dns))]
+
+instance_groups:
+- name: bosh
+  instances: 1
+  jobs:
+  - {name: bpm, release: bpm}
+  - {name: nats, release: bosh}
+  - {name: postgres-9.4, release: bosh}
+  - {name: blobstore, release: bosh}
+  - {name: director, release: bosh}
+  - {name: health_monitor, release: bosh}
+  resource_pool: vms
+  persistent_disk_pool: disks
+  networks:
+  - name: default
+    static_ips: [((internal_ip))]
+  properties:
+    agent:
+      mbus: nats://nats:((nats_password))@((internal_ip)):4222
+      env:
+        bosh:
+          blobstores:
+          - provider: dav
+            options:
+              # todo switch to using https
+              endpoint: http://((internal_ip)):25250
+              user: agent
+              password: ((blobstore_agent_password))
+              tls:
+                cert:
+                  ca: ((blobstore_ca.certificate))
+    nats:
+      address: ((internal_ip))
+      user: nats
+      password: ((nats_password))
+      tls:
+        ca: ((nats_server_tls.ca))
+        client_ca:
+          certificate: ((nats_ca.certificate))
+          private_key: ((nats_ca.private_key))
+        server:
+          certificate: ((nats_server_tls.certificate))
+          private_key: ((nats_server_tls.private_key))
+        director:
+          certificate: ((nats_clients_director_tls.certificate))
+          private_key: ((nats_clients_director_tls.private_key))
+        health_monitor:
+          certificate: ((nats_clients_health_monitor_tls.certificate))
+          private_key: ((nats_clients_health_monitor_tls.private_key))
+    postgres: &db
+      listen_address: 127.0.0.1
+      host: 127.0.0.1
+      user: postgres
+      password: ((postgres_password))
+      database: bosh
+      adapter: postgres
+    blobstore:
+      address: ((internal_ip))
+      port: 25250
+      provider: dav
+      director:
+        user: director
+        password: ((blobstore_director_password))
+      agent:
+        user: agent
+        password: ((blobstore_agent_password))
+      tls:
+        cert:
+          ca: ((blobstore_ca.certificate))
+          certificate: ((blobstore_server_tls.certificate))
+          private_key: ((blobstore_server_tls.private_key))
+    director:
+      address: 127.0.0.1
+      name: ((director_name))
+      db: *db
+      flush_arp: true
+      enable_post_deploy: true
+      generate_vm_passwords: true
+      enable_dedicated_status_worker: true
+      enable_nats_delivered_templates: true
+      workers: 4
+      local_dns:
+        enabled: true
+      events:
+        record_events: true
+      ssl:
+        key: ((director_ssl.private_key))
+        cert: ((director_ssl.certificate))
+      user_management:
+        provider: local
+        local:
+          users:
+          - name: admin
+            password: admin
+          - name: hm
+            password: ((hm_password))
+    hm:
+      director_account:
+        user: hm
+        password: ((hm_password))
+        ca_cert: ((director_ssl.ca))
+      resurrector_enabled: true
+    ntp: &ntp
+    - ((ntp))
+
+cloud_provider:
+  mbus: https://mbus:((mbus_bootstrap_password))@((internal_ip)):6868
+  cert: ((mbus_bootstrap_ssl))
+  properties:
+    agent: {mbus: "https://mbus:((mbus_bootstrap_password))@0.0.0.0:6868"}
+    blobstore: {provider: local, path: /var/vcap/micro_bosh/data/cache}
+    ntp: *ntp

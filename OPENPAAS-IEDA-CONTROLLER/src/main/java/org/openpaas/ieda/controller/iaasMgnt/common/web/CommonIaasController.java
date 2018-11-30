@@ -51,5 +51,4 @@ public class CommonIaasController {
         List<CommonCodeVO> content = commonIaasService.getSubGroupCodeList(parentCode);
         return new ResponseEntity<List<CommonCodeVO>>(content, HttpStatus.OK);
     }
-    
 }

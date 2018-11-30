@@ -345,6 +345,11 @@ function releaseRegist(){
             return;
         }
     }
+    // 릴리즈 iaas가 필요없는 릴리즈일 경우 iaasType에 'COMMON'을 대입
+    if(releaseInfo.iaasType == null){
+        releaseInfo.iaasType = "COMMON";
+    }
+    console.log(releaseInfo);
     releaseInfoSave(releaseInfo);
 }
 
@@ -407,7 +412,8 @@ function socketDwonload(releaseInfo){
     lock( '다운로드 중입니다.', true);
     
     var socket = new SockJS("<c:url value='/config/systemRelease/regist/download/releaseDownloading'/>");
-    downloadClient = Stomp.over(socket); 
+    downloadClient = Stomp.over(socket);
+    console.log(downloadClient);
     var status = 0;
     
     var downloadPercentage = 0;

@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentDAO">
+
+    <resultMap id="cfdeployment" type="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentVO">
+        <id property="id" column="id"/>
+        <result property="recid" column="id"/>
+        <result property="cfDeploymentConfigName" column="cf_deployment_config_name"/>
+        <result property="iaasType" column="iaas_type"/>
+        <result property="networkConfigInfo" column="network_config_name"/>
+        <result property="defaultConfigInfo" column="default_config_name"/>
+        <result property="resourceConfigInfo" column="resource_config_name"/>
+        <result property="instanceConfigInfo" column="instance_config_name"/>
+        <result property="credentialConfigInfo" column="credential_config_name"/>
+        <result property="cloudConfigFile" column="cloud_config_file"/>
+        <result property="deployStatus" column="deploy_status"/>
+        <result property="taskId" column="task_id"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateUserId" column="update_user_id"/>
+        <result property="updateDate" column="update_date"/>
+        <collection property="hbCfDeploymentDefaultConfigVO" ofType="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentDefaultConfigVO"  javaType="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentDefaultConfigVO">
+            <result property="defaultConfigName" column="default_config_name"/>
+            <result property="cfDeploymentVersion" column="cf_deployment_version"/>
+            <result property="domain" column="domain"/>
+            <result property="domainOrganization" column="domain_organization"/>
+            <result property="cfDbType" column="cf_db_type"/>
+            <result property="inceptionOsUserName" column="INCEPTION_OS_USER_NAME"/>
+            <result property="cfAdminPassword" column="CF_ADMIN_PASSWORD"/>
+            <result property="portalDomain" column="PORTAL_DOMAIN"/>
+	        <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE"/>
+	        <result property="metricUrl" column="METRIC_URL"/>
+	        <result property="syslogAddress" column="SYSLOG_ADDRESS"/>
+	        <result property="syslogPort" column="SYSLOG_PORT"/>
+	        <result property="syslogCustomRule" column="SYSLOG_CUSTOM_RULE"/>
+	        <result property="syslogFallbackServers" column="SYSLOG_FALLBACK_SERVERS"/>
+            
+        </collection>
+        <collection property="hbCfDeploymentNetworkConfigVO" ofType="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentNetworkConfigVO" javaType="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentNetworkConfigVO">
+            <result property="networkName" column="NETWORK_NAME" />
+            <result property="publicStaticIp" column="PUBLIC_STATIC_IP" />
+            <result property="subnetReservedIp" column="SUBNET_RESERVED_IP" />
+            <result property="subnetStaticIp" column="SUBNET_STATIC_IP" />
+            <result property="subnetId1" column="SUBNET_ID_1" />
+            <result property="securityGroup1" column="SECURITY_GROUP_1" />
+            <result property="subnetRange1" column="SUBNET_RANGE_1" />
+            <result property="subnetGateway1" column="SUBNET_GATEWAY_1" />
+            <result property="subnetDns1" column="SUBNET_DNS_1" />
+            <result property="subnetReservedFrom1" column="SUBNET_RESERVED_FROM_1" />
+            <result property="subnetReservedTo1" column="SUBNET_RESERVED_TO_1" />
+            <result property="subnetStaticFrom1" column="SUBNET_STATIC_FROM_1" />
+            <result property="subnetStaticTo1" column="SUBNET_STATIC_TO_1" />
+            <result property="availabilityZone1" column="AVAILABILITY_ZONE_1" />
+            <result property="subnetId2" column="SUBNET_ID_2" />
+            <result property="securityGroup2" column="SECURITY_GROUP_2" />
+            <result property="subnetRange2" column="SUBNET_RANGE_2" />
+            <result property="subnetGateway2" column="SUBNET_GATEWAY_2" />
+            <result property="subnetDns2" column="SUBNET_DNS_2" />
+            <result property="subnetReservedFrom2" column="SUBNET_RESERVED_FROM_2" />
+            <result property="subnetReservedTo2" column="SUBNET_RESERVED_TO_2" />
+            <result property="subnetStaticFrom2" column="SUBNET_STATIC_FROM_2" />
+            <result property="subnetStaticTo2" column="SUBNET_STATIC_TO_2" />
+            <result property="availabilityZone2" column="AVAILABILITY_ZONE_2" />
+        </collection>
+        <collection property="hbCfDeploymentInstanceConfigVO" ofType="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentInstanceConfigVO" javaType="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentInstanceConfigVO">
+            <result property="instanceConfigName" column ="INSTANCE_CONFIG_NAME"/>
+            <result property="adapter" column="ADAPTER"/>
+            <result property="api" column="API"/>
+            <result property="ccWorker" column="CC_WORKER"/>
+            <result property="consul" column="CONSUL"/>
+            <result property="theDatabase" column="THE_DATABASE"/>
+            <result property="diegoApi" column="DIEGO_API"/>
+            <result property="diegoCell" column="DIEGO_CELL"/>
+            <result property="doppler" column="DOPPLER"/>
+            <result property="haproxy" column="HAPROXY"/>
+            <result property="logApi" column="LOG_API"/>
+            <result property="nats" column="NATS"/>
+            <result property="router" column="ROUTER"/>
+            <result property="singletonBlobstore" column="SINGLETON_BLOBSTORE"/>
+            <result property="tcpRouter" column="TCP_ROUTER"/>
+            <result property="uaa" column="UAA"/>  
+            <result property="scheduler" column="SCHEDULER"/>
+        </collection>
+        <collection property="hbCfDeploymentCredentialConfigVO" ofType="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentCredentialConfigVO" javaType="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentCredentialConfigVO">
+            <result property="credentialConfigName" column ="CREDENTIAL_CONFIG_NAME"/>
+            <result property="domain" column ="DOMAIN"/>
+            <result property="countryCode" column ="COUNTRY_CODE"/>
+            <result property="city" column ="CITY"/>
+            <result property="company" column ="COMPANY"/>  
+            <result property="jobTitle" column ="JOB_TITLE"/>
+            <result property="credentialConfigKeyFileName" column ="KEY_FILE_NAME"/>
+            <result property="releaseName" column ="RELEASE_NAME"/>
+            <result property="releaseVersion" column ="RELEASE_VERSION"/>
+            <result property="emailAddress" column ="EMAIL_ADDRESS"/>
+        </collection>
+        <collection property="hbCfDeploymentResourceConfigVO" ofType="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentResourceConfigVO" javaType="org.openpaas.ieda.hbdeploy.web.deploy.cfdeployment.dao.HbCfDeploymentResourceConfigVO">
+            <result property="resourceConfigName" column="resource_config_name"/>
+            <result property="stemcellName" column="stemcell_name"/>
+            <result property="stemcellVersion" column="stemcell_version"/>
+            <result property="instanceTypeS" column="instance_type_s"/>
+            <result property="instanceTypeM" column="instance_type_m"/>
+            <result property="instanceTypeL" column="instance_type_l"/>
+            <result property="directorInfo" column="director_id"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="selectCfDeploymentList" resultMap="cfdeployment">
+        select
+            hbCfDeployment.id
+            ,hbCfDeployment.iaas_type
+            ,hbCfDeployment.cf_deployment_config_name
+            ,hbCfDeployment.network_config_name
+            ,hbCfDeployment.default_config_name
+            ,hbCfDeployment.resource_config_name
+            ,hbCfDeployment.instance_config_name
+            ,hbCfDeployment.credential_config_name
+            ,hbCfDeployment.cloud_config_file
+            ,hbCfDeployment.deploy_status
+            ,hbCfDeployment.task_id
+            ,hbCfDeployment.create_user_id
+            ,hbCfDeployment.update_user_id
+            ,cfdefault.default_config_name
+            ,cfdefault.cf_deployment_version
+            ,cfdefault.domain
+            ,cfdefault.domain_organization
+            ,cfdefault.cf_db_type
+            ,cfdefault.inception_os_user_name
+            ,cfdefault.cf_admin_password
+            ,cfdefault.portal_domain
+            ,cfdefault.paasta_monitoring_use 
+            ,cfdefault.metric_url
+            ,cfdefault.syslog_address
+            ,cfdefault.syslog_port
+            ,cfdefault.syslog_custom_rule
+            ,cfdefault.syslog_fallback_servers
+            ,cfnetwork.network_name
+            ,cfnetwork.public_static_ip
+            ,cfnetwork.subnet_reserved_ip
+            ,cfnetwork.subnet_static_ip
+            ,cfnetwork.subnet_id_1
+            ,cfnetwork.security_group_1
+            ,cfnetwork.subnet_range_1 
+            ,cfnetwork.subnet_gateway_1
+            ,cfnetwork.subnet_dns_1
+            ,cfnetwork.subnet_reserved_from_1
+            ,cfnetwork.subnet_reserved_to_1
+            ,cfnetwork.subnet_static_from_1
+            ,cfnetwork.subnet_static_to_1
+            ,cfnetwork.availability_zone_1
+            ,cfnetwork.subnet_id_2
+            ,cfnetwork.security_group_2
+            ,cfnetwork.subnet_range_2 
+            ,cfnetwork.subnet_gateway_2
+            ,cfnetwork.subnet_dns_2
+            ,cfnetwork.subnet_reserved_from_2
+            ,cfnetwork.subnet_reserved_to_2
+            ,cfnetwork.subnet_static_from_2
+            ,cfnetwork.subnet_static_to_2
+            ,cfnetwork.availability_zone_2
+            ,cfcredential.credential_config_name
+            ,cfcredential.domain
+            ,cfcredential.iaas_type
+            ,cfcredential.domain
+            ,cfcredential.country_code
+            ,cfcredential.city
+            ,cfcredential.company
+            ,cfcredential.job_title
+            ,cfcredential.key_file_name
+            ,cfcredential.release_name
+            ,cfcredential.release_version
+            ,cfcredential.email_address
+            ,cfresource.resource_config_name
+            ,cfresource.stemcell_name
+            ,cfresource.stemcell_version
+            ,cfresource.instance_type_s
+            ,cfresource.instance_type_m
+            ,cfresource.instance_type_l
+            ,cfresource.director_id
+            ,cfinstance.instance_config_name
+            ,cfinstance.iaas_type
+            ,cfinstance.adapter
+            ,cfinstance.api
+            ,cfinstance.cc_worker
+            ,cfinstance.consul
+            ,cfinstance.the_database
+            ,cfinstance.diego_api
+            ,cfinstance.diego_cell
+            ,cfinstance.doppler
+            ,cfinstance.haproxy
+            ,cfinstance.log_api
+            ,cfinstance.nats
+            ,cfinstance.router
+            ,cfinstance.singleton_blobstore
+            ,cfinstance.tcp_router
+            ,cfinstance.uaa
+            ,cfinstance.scheduler
+        from ieda_hb_cfDeployment as hbCfDeployment
+        Left join ieda_hb_cfDeployment_default_config as cfdefault
+        on hbCfDeployment.default_config_name = cfdefault.default_config_name
+        Left Join ieda_hb_cfDeployment_network_config as cfnetwork
+        on hbCfDeployment.network_config_name = cfnetwork.network_name
+        Left Join ieda_hb_cfDeployment_credential_config as cfcredential
+        on hbCfDeployment.credential_config_name = cfcredential.credential_config_name
+        Left Join ieda_hb_cfDeployment_resource_config as cfresource
+        on hbCfDeployment.resource_config_name = cfresource.resource_config_name
+        Left Join ieda_hb_cfDeployment_instance_config as cfinstance
+        on hbCfDeployment.instance_config_name = cfinstance.instance_config_name
+        <if test="installStatus == 'installAble'">
+            where deploy_status is null
+            or hbCfDeployment.deploy_status = '';
+        </if>
+        <if test="installStatus != 'installAble'">
+            where hbCfDeployment.deploy_status is not null
+            or hbCfDeployment.deploy_status != '';
+        </if>
+        
+    </select>
+    
+    <select id="selectCfDeploymentConfigInfo" resultMap="cfdeployment">
+        select
+            hbCfDeployment.id
+            ,hbCfDeployment.iaas_type
+            ,hbCfDeployment.cf_deployment_config_name
+            ,hbCfDeployment.network_config_name
+            ,hbCfDeployment.default_config_name
+            ,hbCfDeployment.resource_config_name
+            ,hbCfDeployment.instance_config_name
+            ,hbCfDeployment.credential_config_name
+            ,hbCfDeployment.cloud_config_file
+            ,hbCfDeployment.deploy_status
+            ,hbCfDeployment.task_id
+            ,hbCfDeployment.create_user_id
+            ,hbCfDeployment.update_user_id
+            ,cfdefault.default_config_name
+            ,cfdefault.cf_deployment_version
+            ,cfdefault.domain
+            ,cfdefault.domain_organization
+            ,cfdefault.cf_db_type
+            ,cfdefault.inception_os_user_name
+            ,cfdefault.cf_admin_password
+            ,cfdefault.portal_domain
+            ,cfdefault.paasta_monitoring_use 
+            ,cfdefault.metric_url
+            ,cfdefault.syslog_address
+            ,cfdefault.syslog_port
+            ,cfdefault.syslog_custom_rule
+            ,cfdefault.syslog_fallback_servers
+            ,cfnetwork.network_name
+            ,cfnetwork.public_static_ip
+            ,cfnetwork.subnet_reserved_ip
+            ,cfnetwork.subnet_static_ip
+            ,cfnetwork.subnet_id_1
+            ,cfnetwork.security_group_1
+            ,cfnetwork.subnet_range_1 
+            ,cfnetwork.subnet_gateway_1
+            ,cfnetwork.subnet_dns_1
+            ,cfnetwork.subnet_reserved_from_1
+            ,cfnetwork.subnet_reserved_to_1
+            ,cfnetwork.subnet_static_from_1
+            ,cfnetwork.subnet_static_to_1
+            ,cfnetwork.availability_zone_1
+            ,cfnetwork.subnet_id_2
+            ,cfnetwork.security_group_2
+            ,cfnetwork.subnet_range_2 
+            ,cfnetwork.subnet_gateway_2
+            ,cfnetwork.subnet_dns_2
+            ,cfnetwork.subnet_reserved_from_2
+            ,cfnetwork.subnet_reserved_to_2
+            ,cfnetwork.subnet_static_from_2
+            ,cfnetwork.subnet_static_to_2
+            ,cfnetwork.availability_zone_2
+            ,cfcredential.credential_config_name
+            ,cfcredential.domain
+            ,cfcredential.iaas_type
+            ,cfcredential.domain
+            ,cfcredential.country_code
+            ,cfcredential.city
+            ,cfcredential.company
+            ,cfcredential.job_title
+            ,cfcredential.key_file_name
+            ,cfcredential.release_name
+            ,cfcredential.release_version
+            ,cfcredential.email_address
+            ,cfresource.resource_config_name
+            ,cfresource.stemcell_name
+            ,cfresource.stemcell_version
+            ,cfresource.instance_type_s
+            ,cfresource.instance_type_m
+            ,cfresource.instance_type_l
+            ,cfresource.director_id
+            ,cfinstance.instance_config_name
+            ,cfinstance.iaas_type
+            ,cfinstance.adapter
+            ,cfinstance.api
+            ,cfinstance.cc_worker
+            ,cfinstance.consul
+            ,cfinstance.the_database
+            ,cfinstance.diego_api
+            ,cfinstance.diego_cell
+            ,cfinstance.doppler
+            ,cfinstance.haproxy
+            ,cfinstance.log_api
+            ,cfinstance.nats
+            ,cfinstance.router
+            ,cfinstance.singleton_blobstore
+            ,cfinstance.tcp_router
+            ,cfinstance.uaa
+            ,cfinstance.scheduler
+        from ieda_hb_cfDeployment as hbCfDeployment
+        Left join ieda_hb_cfDeployment_default_config as cfdefault
+        on hbCfDeployment.default_config_name = cfdefault.default_config_name
+        Left Join ieda_hb_cfDeployment_network_config as cfnetwork
+        on hbCfDeployment.network_config_name = cfnetwork.network_name
+        Left Join ieda_hb_cfDeployment_credential_config as cfcredential
+        on hbCfDeployment.credential_config_name = cfcredential.credential_config_name
+        Left Join ieda_hb_cfDeployment_resource_config as cfresource
+        on hbCfDeployment.resource_config_name = cfresource.resource_config_name
+        Left Join ieda_hb_cfDeployment_instance_config as cfinstance
+        on hbCfDeployment.instance_config_name = cfinstance.instance_config_name
+        where hbCfDeployment.id = #{id}
+    </select>
+    
+    <select id="selectCfDeploymentConfigByName" resultType="int">
+        select 
+            count(*)
+        from ieda_hb_cfDeployment
+        where cf_deployment_config_name = #{cfDeploymentConfigName}
+    </select>
+    
+    <insert id="insertCfDeploymentConfigInfo">
+        insert into ieda_hb_cfDeployment (
+            iaas_type
+            ,cf_deployment_config_name
+            ,network_config_name
+            ,default_config_name
+            ,resource_config_name
+            ,instance_config_name
+            ,credential_config_name
+            ,cloud_config_file
+            ,deploy_status
+            ,task_id
+            ,create_user_id
+            ,create_date
+            ,update_user_id
+            ,update_date
+        )value (
+            #{vo.iaasType}
+            ,#{vo.cfDeploymentConfigName}
+            ,#{vo.networkConfigInfo}
+            ,#{vo.defaultConfigInfo}
+            ,#{vo.resourceConfigInfo}
+            ,#{vo.instanceConfigInfo}
+            ,#{vo.credentialConfigInfo}
+            ,#{vo.cloudConfigFile}
+            ,#{vo.deployStatus}
+            ,#{vo.taskId}
+            ,#{vo.createUserId}
+            ,now()
+            ,#{vo.createUserId}
+            ,now()
+        )
+    </insert>
+    
+    <update id="updateCfDeploymentConfigInfo">
+        update ieda_hb_cfDeployment set
+        cf_deployment_config_name = #{vo.cfDeploymentConfigName}
+            ,network_config_name = #{vo.networkConfigInfo}
+            ,default_config_name = #{vo.defaultConfigInfo}
+            ,resource_config_name = #{vo.resourceConfigInfo}
+            ,instance_config_name = #{vo.instanceConfigInfo}
+            ,credential_config_name = #{vo.credentialConfigInfo}
+            ,cloud_config_file = #{vo.cloudConfigFile}
+            ,deploy_status = #{vo.deployStatus}
+            ,task_id = #{vo.taskId}
+            ,create_user_id = #{vo.createUserId}
+            ,create_date = now()
+            ,update_user_id = #{vo.updateUserId}
+            ,update_date = now()
+        where id = #{vo.id}
+    </update>
+    
+    <delete id="deleteCfDeploymentConfigInfo">
+        delete from ieda_hb_cfDeployment
+        where id = #{dto.id}
+    </delete>
+</mapper>

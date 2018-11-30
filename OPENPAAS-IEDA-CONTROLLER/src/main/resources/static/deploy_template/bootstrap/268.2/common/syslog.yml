@@ -1,0 +1,16 @@
+- type: replace
+  path: /releases/-
+  value:
+    name: syslog
+    url: file://((syslogRelease))
+
+- type: replace
+  path: /instance_groups/name=bosh/jobs/-
+  value:
+    name: syslog_forwarder
+    release: syslog
+    properties:
+      syslog:
+        address: ((syslog_address))
+        port: ((syslog_port))
+        transport: ((syslog_transport))

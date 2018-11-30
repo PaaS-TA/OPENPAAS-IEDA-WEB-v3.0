@@ -467,7 +467,13 @@ function initsetting(){
   configInfo="";
   keyPathFileList = "";
 }
-
+/******************************************************************
+ * Function : openBrowse
+ * 설명 : 공통 File upload Browse Button
+ ***************************************************************** */
+function openBrowse(){
+    $(".w2ui-msg-body input[name='keyPathFile']").click();
+}
 /********************************************************
  * 기능 : clearMainPage
  * 설명 : 다른페이지 이동시 호출
@@ -580,9 +586,11 @@ $( window ).resize(function() {
                     <label style="text-align: left;font-size:11px;" class="control-label"></label>
                     <div id="keyPathDiv" style="position:relative; width: 65%; left:220px;">
                         <div id="keyPathFileDiv" hidden="true">
+                        <span>
                          <input type="text" id="keyPathFileName" name="keyPathFileName" style="width:55%;" readonly  onClick="openBrowse();" placeholder="업로드할 Key 파일을 선택하세요."/>
-                         <a href="#" id="browse" onClick="openBrowse();"><span id="BrowseBtn">Browse</span></a>
                          <input type="file" name="keyPathFile" onchange="setPrivateKeyPathFileName(this);" style="display:none;"/>
+                         <span id="BrowseBtn"><a href="#" id="browse" onClick="openBrowse();">Browse</a></span>
+                         </span>
                      </div>
                      <div id="keyPathListDiv">
                          <select name="keyPathList"  id="commonKeypairPathList" onchange="setPrivateKeyPath(this.value);" class="form-control select-control" style="width:55%"></select>

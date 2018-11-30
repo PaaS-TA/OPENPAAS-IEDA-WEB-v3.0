@@ -4,9 +4,9 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openpaas.ieda.openstackMgnt.web.securityGroup.dao.OpenstackSecurityGroupMgntVO;
-import org.openpaas.ieda.openstackMgnt.web.securityGroup.dto.OpenstackSecurityGroupMgntDTO;
-import org.openpaas.ieda.openstackMgnt.web.securityGroup.service.OpenstackSecurityGroupMgntService;
+import org.openpaas.ieda.iaasDashboard.openstackMgnt.web.securityGroup.dao.OpenstackSecurityGroupMgntVO;
+import org.openpaas.ieda.iaasDashboard.openstackMgnt.web.securityGroup.dto.OpenstackSecurityGroupMgntDTO;
+import org.openpaas.ieda.iaasDashboard.openstackMgnt.web.securityGroup.service.OpenstackSecurityGroupMgntService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

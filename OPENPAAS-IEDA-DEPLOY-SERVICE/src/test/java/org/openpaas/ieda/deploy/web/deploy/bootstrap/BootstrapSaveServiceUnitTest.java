@@ -110,7 +110,6 @@ public class BootstrapSaveServiceUnitTest extends BaseDeployControllerUnitTest{
      * @title : testSaveDefaultInfoFromUpdate
      * @return : void
     *****************************************************************/
-    @Test
     public void testSaveDefaultInfoFromUpdate(){
         BootStrapDeployDTO.Default dto = setDefaultInfo();
         BootstrapVO vo = setBootstrapVOInfoFromGoogle("update");

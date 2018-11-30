@@ -10,6 +10,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>  
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+
 <script type="text/javascript">
 
  function goPage(page, title) {
@@ -27,7 +28,7 @@
 }     
  function goWindow(page, title) {
      window.open(page, title);
- }     
+ }
  
 </script>
 
@@ -35,7 +36,7 @@
 <div id="left">
     <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav side-nav">
-           <li class="active"><a href="javascript:goPage('<c:url value="/iaasMgnt/main/dashboard"/>', 'Dashboard');" style="font-weight:600; font-size:20px;"><i class="fa fa-fw fa-home"></i> 플랫폼 설치 관리</a></li>
+           <li class="active"><a href="javascript:goPage('<c:url value="/iaasMgnt/main/dashboard"/>', 'Dashboard');" style="font-weight:600; font-size:20px;"><i class="fa fa-fw fa-home"></i>플랫폼 설치 자동화</a></li>
            <li>
               <a href="javascript:;" data-toggle="collapse" data-target="#adminMgnt" ><i class="fa fa-fw fa fa-user"></i> 플랫폼 관리자 관리 <i class="fa fa-fw fa-caret-down"></i></a>
               <ul id="adminMgnt" class="collapse">
@@ -65,7 +66,24 @@
                 </li>
             </sec:authorize>
               <li><a href="javascript:goWindow('<c:url value="/platform"/>', 'IEDA-WEB');"><i class="fa fa-fw fa-cog"></i>PaaS-TA 설치 자동화</a></li>
-              <li><a href="javascript:goWindow('<c:url value="/hbFlatform"/>', 'HB-IEDA-WEB');"><i class="fa fa-fw fa-cogs"></i> 이기종 PaaS-TA 설치 자동화</a></li>
+              <li><a href="javascript:goWindow('<c:url value="/hbFlatform"/>', 'IEDA-HYBRID-WEB');"><i class="fa fa-fw fa-cogs"></i>이종 PaaS-TA 설치 자동화</a></li>
+              
+<%--               <li>
+              <a href="javascript:;" data-toggle="collapse" data-target="#hybird2" ><i class="fa fa-fw fa fa-cogs"></i> 이종 PaaS-TA 설치 자동화 <i class="fa fa-fw fa-caret-down"></i></a>
+                  <ul id="hybird2" class="collapse">
+                      <sec:authorize access="hasAuthority('ADMIN_CODE_MENU')">
+                          <li><a href="javascript:goPage('<c:url value="/admin/code"/>', 'Code MANAGEMENT');">AWS-OPENSTACK</a></li>
+                      </sec:authorize>
+                      <sec:authorize access="hasAuthority('ADMIN_ROLE_MENU')">
+                          <li><a href="javascript:goPage('<c:url value="/admin/role"/>', 'Openstack MANAGEMENT');">AZURE-OPENSTACK</a></li>
+                      </sec:authorize>
+                  </ul>
+              </li> --%>
+              
+              
+              
+              <%-- <li><a href="javascript:goWindow('<c:url value="/hbFlatform"/>', 'HB-IEDA-WEB');"><i class="fa fa-fw fa-cogs"></i>Layout1</a></li>
+              <li><a href="javascript:goWindow('<c:url value="/hbFlatform2"/>', 'HB-IEDA-WEB');"><i class="fa fa-fw fa-cogs"></i>Layout2</a></li> --%>
         </ul>
     </div>
 </div>

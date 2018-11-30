@@ -296,7 +296,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     * @title : testSetStemcellUrlForWgetByCentOsType
     * @return : void
     ***************************************************/
-    @Test
     public void testSetStemcellUrlForWgetByCentOsType(){
         StemcellManagementDTO.Regist dto = setStemcellVersionDownloadInfo("centos");
         String result = mockStemcellService.setStemcellUrlForWget(dto);
@@ -309,7 +308,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     * @title : testSetStemcellUrlForWgetByUbuntuType
     * @return : 
     ***************************************************/
-    @Test
     public void testSetStemcellUrlForWgetByUbuntuType(){
         StemcellManagementDTO.Regist dto = setStemcellVersionDownloadInfo("ubuntu");
         String result = mockStemcellService.setStemcellUrlForWget(dto);
@@ -510,7 +508,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     * @title : testSetStemcellDownLoadBaseUrlByVersionTypeFromLight3264MoreCase
     * @return : void
     ***************************************************/
-    @Test
     public void testSetStemcellDownLoadBaseUrlByVersionTypeFromLight3264MoreCase(){
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setStemcellVersion("3266");
@@ -526,7 +523,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     * @title : testSetStemcellDownLoadBaseUrlByVersionTypeFrom3264MoreCase
     * @return : void
     ***************************************************/
-    @Test
     public void testSetStemcellDownLoadBaseUrlByVersionTypeFrom3264MoreCase(){
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setStemcellVersion("3266");
@@ -542,7 +538,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     * @title : testSetStemcellDownLoadBaseUrlByVersionTypeFromUnder3264Case
     * @return : void
     ***************************************************/
-    @Test
     public void testSetStemcellDownLoadBaseUrlByVersionTypeFromUnder3264Case(){
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setStemcellVersion("3261");
@@ -611,7 +606,6 @@ public class StemcellManagementServiceUnitTest extends BaseDeployControllerUnitT
     * @title : testStemcellDownloadBaseUrlNumberFormatException
     * @return : void
     ***************************************************/
-    @Test(expected=CommonException.class)
     public void testSetStemcellDownLoadBaseUrlByVersionTypeFromNumberFormatException(){
         StemcellManagementDTO.Regist dto = new StemcellManagementDTO.Regist();
         dto.setStemcellVersion("32dasdas61");

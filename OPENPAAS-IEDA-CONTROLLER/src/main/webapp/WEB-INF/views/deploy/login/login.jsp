@@ -5,7 +5,6 @@
  * 상세설명 : 로그인 정보 입력 화면
  * =================================================================
  * 수정일         작성자             내용     
- * ------------------------------------------------------------------
  * 2016.12       이동현        코드 버그 수정 및 script 기능 개선
  * =================================================================
  */ 
@@ -26,7 +25,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Open PaaS 플랫폼 설치 자동화</title>
+<title>LOGIN</title>
 
 <!-- CSS  -->
 <link rel="stylesheet" type="text/css" href="<c:url value='/webjars/bootstrap/3.3.5/css/bootstrap.min.css'/>"/>

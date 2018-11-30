@@ -376,7 +376,7 @@ function doButtonStyle() {
   * 기능 : registAuthGroup
   *********************************************************/
  function registAuthGroup(){
-      lock( save_lock_msg, true); 
+     lock( save_lock_msg, true); 
      var flag = false;
      authInfo = {
              roleName : $(".w2ui-msg-body input[name='roleName']").val(),            

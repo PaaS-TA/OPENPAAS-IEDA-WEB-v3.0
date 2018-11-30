@@ -135,17 +135,19 @@ public class IaasResourceUsageService {
     ***************************************************/
     public List<IaasResourceUsageVO> getAzureResourceUsageInfoList( Principal principal ){
         List<IaasResourceUsageVO> resources = new ArrayList<IaasResourceUsageVO>();
+        int cost = 0;
         try{ //Azure
             List<HashMap<String, Object>> accounts = commonDao.selectAccountInfoList("azure", principal.getName());
             for( HashMap<String, Object> at : accounts ){
                 IaasResourceUsageVO resource = new IaasResourceUsageVO();
+                Double usageCost = apiService.setAzureBillingInfo(at.get("commonAccessUser").toString(), at.get("commonTenant").toString(), at.get("commonAccessSecret").toString(), at.get("azureSubscriptionId").toString());
+                cost = Math.round(usageCost.intValue());
                 HashMap<String, Object> result = apiService.getResourceInfoFromAzure( at.get("commonAccessUser").toString(), at.get("commonTenant").toString(), at.get("commonAccessSecret").toString(), at.get("azureSubscriptionId").toString());
-                
                 resource.setAccountName( at.get("accountName").toString() );
                 resource.setInstance( Long.parseLong(result.get("instance").toString()) );
                 resource.setNetwork( Long.parseLong(result.get("network").toString()) );
                 resource.setVolume(  Long.parseLong(result.get("volume").toString()) );
-                resource.setBilling(Double.parseDouble(result.get("billing").toString()) );
+                resource.setBilling(Double.parseDouble(String.valueOf(cost)));
                 resource.setIaasType("Azure");
                 resources.add(resource);
             }

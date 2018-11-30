@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 public class CfSaveService {
     
     @Autowired private CfDAO cfDao;
+    @Autowired private CfService cfService;
     @Autowired private NetworkDAO networkDao;
     @Autowired private ResourceDAO resourceDao;
     @Autowired MessageSource message;
@@ -45,7 +46,6 @@ public class CfSaveService {
         if( StringUtils.isEmpty(dto.getId())){
             vo = new CfVO();
             vo.setIaasType(dto.getIaas());
-            vo.setDiegoYn(dto.getDiegoYn());
             vo.setCreateUserId(principal.getName());
         }else{
             vo = cfDao.selectCfInfoById(Integer.parseInt(dto.getId()));
@@ -56,23 +56,23 @@ public class CfSaveService {
         vo.setDirectorUuid(dto.getDirectorUuid());
         vo.setReleaseName(dto.getReleaseName());
         vo.setReleaseVersion(dto.getReleaseVersion());
-        vo.setLoggregatorReleaseName(dto.getLoggregatorReleaseName());
-        vo.setLoggregatorReleaseVersion(dto.getLoggregatorReleaseVersion());
-        vo.setAppSshFingerprint(dto.getAppSshFingerprint());
-        vo.setDeaMemoryMB(dto.getDeaMemoryMB().isEmpty() ? null : Integer.parseInt(dto.getDeaMemoryMB()));
-        vo.setDeaDiskMB(dto.getDeaDiskMB().isEmpty() ? null : Integer.parseInt(dto.getDeaDiskMB()));
-        
+        vo.setUserAddSsh(dto.getUserAddSsh());
+        vo.setCfDbtype(dto.getCfDbType());
+        vo.setInceptionOsUserName(dto.getInceptionOsUserName());
+        vo.setCfAdminPassword(dto.getCfAdminPassword());
+        vo.setPortalDomain(dto.getPortalDomain());
         // 1.2 기본정보
         vo.setDomain(dto.getDomain());
-        vo.setDescription(dto.getDescription());
         vo.setDomainOrganization(dto.getDomainOrganization());
-        vo.setLoginSecret(dto.getLoginSecret());
         
         //1.3 PaaS-TA 모니터링 
         vo.setPaastaMonitoringUse(dto.getPaastaMonitoringUse());
-        vo.setIngestorIp(dto.getIngestorIp());
+        vo.setSyslogAddress(dto.getSyslogAddress());
+        vo.setSyslogCustomRule(dto.getSyslogCustomRule());
+        vo.setSyslogFallbackServers(dto.getSyslogFallbackServers());
+        vo.setSyslogPort(dto.getSyslogPort());
+        vo.setMetricUrl(dto.getMetricUrl());
         vo.setUpdateUserId(principal.getName());
-        
         //배포 명 중복 검사
         int count = cfDao.selectCfDeploymentNameDuplication(vo.getIaasType(), vo.getDeploymentName(), vo.getId());
         if( count > 0 ){
@@ -104,6 +104,7 @@ public class CfSaveService {
                 cfId = Integer.parseInt(network.getCfId());
                 vo.setId(Integer.parseInt(network.getCfId()));
                 vo.setDeployType(network.getDeployType());
+                vo.setPublicStaticIp(network.getPublicStaticIp());
                 vo.setNet(network.getNet());
                 vo.setSubnetRange(network.getSubnetRange());
                 vo.setSubnetGateway(network.getSubnetGateway());
@@ -128,7 +129,7 @@ public class CfSaveService {
             networkDao.insertNetworkList(networkList);
             
             //Internal Network는 1개인데 cf 고급 설정 z2가 존재 할 경우
-            if( networkList.size() < 3 ) {
+            if( networkList.size() < 2 ) {
                 List<HashMap<String, Object>> jobs = cfDao.selectCfJobSettingInfoListBycfId(setMessageSourceValue("common.deploy.type.cf.name"),cfId);
                 for( HashMap<String, Object> job : jobs ) {
                     if( job.get("zone").toString().equalsIgnoreCase("z2") ) {
@@ -174,7 +175,7 @@ public class CfSaveService {
     @Transactional
     public void saveCfJobsInfo(List<HashMap<String, String>> maps, Principal principal){
         if(  maps.size() != 0){
-            String deployType  =setMessageSourceValue("common.deploy.type.cf.name");
+            String deployType = setMessageSourceValue("common.deploy.type.cf.name");
             int cfId = Integer.parseInt(maps.get(0).get("id"));
             int count= cfDao.selectCfJobSettingInfoListBycfId( deployType, cfId).size();
             
@@ -185,6 +186,14 @@ public class CfSaveService {
                 map.put("create_user_id", principal.getName());
                 map.put("update_user_id", principal.getName());
             }
+            
+            CfVO createCloudConfigVo = cfService.getCfInfo(cfId);
+            if(createCloudConfigVo == null){
+                throw new CommonException(message.getMessage("common.badRequest.exception.code", null, Locale.KOREA), 
+                        message.getMessage("common.badRequest.message", null, Locale.KOREA), HttpStatus.BAD_REQUEST);
+            }
+            cfService.commonCreateCloudConfig(createCloudConfigVo);
+            
             cfDao.insertCfJobSettingInfo(maps);
             
         }
@@ -199,20 +208,17 @@ public class CfSaveService {
     @Transactional
     public HashMap<String, Object> saveResourceInfo(ResourceDTO dto, Principal principal){
         String codeName= setMessageSourceValue("common.deploy.type.cf.name");
-        String deploymentFile = null;
         HashMap<String, Object> map  = new HashMap<String, Object>();
         ResourceVO resourceVo = new ResourceVO();
-        
-        //1. select resource Info
+        String deploymentFile = "";
         CfVO vo = cfDao.selectCfResourceInfoById(Integer.parseInt(dto.getId()), codeName);
-        //2. set deploymentFIleName
+        
         if(StringUtils.isEmpty(vo.getDeploymentFile())) {
             deploymentFile = makeDeploymentName(vo);
         }else {
             deploymentFile = vo.getDeploymentFile();
         }
         
-        //3. set resourceVo(insert/update)
         if( vo.getResource().getId() != null ){
             resourceVo = vo.getResource();
         }else{
@@ -236,24 +242,26 @@ public class CfSaveService {
             resourceVo.setLargeCpu(Integer.parseInt(dto.getLargeCpu()));
             resourceVo.setLargeDisk(Integer.parseInt(dto.getLargeDisk()));
             resourceVo.setLargeRam(Integer.parseInt(dto.getLargeRam()));
-            resourceVo.setRunnerCpu(dto.getRunnerCpu().isEmpty() ? null : Integer.parseInt(dto.getRunnerCpu()));
-            resourceVo.setRunnerDisk(dto.getRunnerDisk().isEmpty() ? null : Integer.parseInt(dto.getRunnerDisk()));
-            resourceVo.setRunnerRam(dto.getRunnerRam().isEmpty() ? null : Integer.parseInt(dto.getRunnerRam()));
         }else{
             //openstack/aws Flavor setting
             resourceVo.setSmallFlavor(dto.getSmallFlavor());
             resourceVo.setMediumFlavor(dto.getMediumFlavor());
             resourceVo.setLargeFlavor(dto.getLargeFlavor());
-            resourceVo.setRunnerFlavor(dto.getRunnerFlavor());
+        }
+        //azure windows stemcell setting
+        if("azure".equals(vo.getIaasType().toLowerCase())){
+            resourceVo.setEnableWindowsStemcell(dto.getEnableWindowsStemcell());
+            resourceVo.setWindowsStemcellName(dto.getWindowsStemcellName());
+            resourceVo.setWindowsStemcellVersion(dto.getWindowsStemcellVersion());
+            resourceVo.setWindowsCellInstance(dto.getWindowsCellInstance());
         }
         
         vo.setDeploymentFile(deploymentFile);
         vo.setUpdateUserId(principal.getName());
-        map.put("deploymentFile", deploymentFile);
-        map.put("id", vo.getId());
         
         //4. update Cf Info
         cfDao.updateCfInfo(vo);
+        
         //5. Insert OR Update Cf Resource Info
         if( vo.getResource().getId() == null ){
             resourceDao.insertResourceInfo(resourceVo);
@@ -265,6 +273,17 @@ public class CfSaveService {
     
     /****************************************************************
      * @project : Paas 플랫폼 설치 자동화
+     * @description : message 값 가져오기
+     * @title : setMessageSourceValue
+     * @return : String
+    *****************************************************************/
+    public String setMessageSourceValue(String name){
+        return message.getMessage(name, null, Locale.KOREA);
+    }
+    
+    
+    /****************************************************************
+     * @project : Paas 플랫폼 설치 자동화
      * @description : 배포 파일명 설정
      * @title : makeDeploymentName
      * @return : String
@@ -272,21 +291,11 @@ public class CfSaveService {
     public String makeDeploymentName(CfVO vo ){
         String settingFileName = "";
         if(vo.getIaasType() != null || vo.getId() != null){
-            settingFileName = vo.getIaasType().toLowerCase() + "-cf-"+ vo.getId() +".yml";
+            settingFileName = vo.getIaasType().toLowerCase() + "-cf-"+ vo.getId() +"-cloud-config.yml";
         }else{
             throw new CommonException(setMessageSourceValue("common.badRequest.exception.code"), 
                     setMessageSourceValue("common.badRequest.message"), HttpStatus.BAD_REQUEST);
         }
         return settingFileName;
-    }
-    
-    /****************************************************************
-     * @project : Paas 플랫폼 설치 자동화
-     * @description : message 값 가져오기
-     * @title : setMessageSourceValue
-     * @return : String
-    *****************************************************************/
-    public String setMessageSourceValue(String name){
-        return message.getMessage(name, null, Locale.KOREA);
     }
 }

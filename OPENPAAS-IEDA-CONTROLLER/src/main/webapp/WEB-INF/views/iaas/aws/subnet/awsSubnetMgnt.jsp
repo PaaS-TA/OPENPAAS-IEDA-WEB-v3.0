@@ -41,6 +41,7 @@ var region = "";
             },
             style : 'text-align: center',
             columns : [ {field : 'recid', caption : 'recid', hidden : true}
+                      , {field : 'nameTag', caption : 'Name', size : '20%', style : 'text-align:center'}
                       , {field : 'subnetId', caption : 'Subnet ID', size : '20%', style : 'text-align:center'}
                       , {field : 'state', caption : 'State', size : '20%', style : 'text-align:center'}
                       , {field : 'vpcId',caption : 'VPC',size : '20%',style : 'text-align:center'}
@@ -266,7 +267,7 @@ function showVpcDetails(vpcId){
           options +="<option value=''>존재하지 않습니다.</option>";
       }else{
           for (var i=0; i<data.length; i++){
-              options +="<option value='"+data[i].vpcId+"'>" + data[i].vpcId + "</option>"; 
+              options +="<option value='"+data[i].vpcId+"'>" + data[i].vpcId+" | "+ data[i].nameTag + "</option>"; 
           } 
       }
       vpcsInfo=data;
@@ -402,6 +403,7 @@ function showVpcDetails(vpcId){
              w2popup.unlock();
              w2popup.close();
              accountId = subnetInfo.accountId;
+             w2ui['aws_subnetGrid'].clear();
              doSearch();
          }, error : function(request, status, error) {
              w2popup.unlock();
@@ -463,20 +465,26 @@ td {  width: 280px; }
                         &nbsp;&nbsp;Subnet 관리<b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu alert-dropdown">
-                        <sec:authorize access="hasAuthority('AWS_SECURITY_GROUP_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/securityGroup"/>', 'AWS SECURITY GROUP');">Security Group 관리</a></li>
-                        </sec:authorize>
-                        <sec:authorize access="hasAuthority('AWS_SUBNET_MENU')">
-                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/keypair"/>', 'AWS KEYPAIR');">KeyPair 관리</a></li>
-                        </sec:authorize>
-                        <sec:authorize access="hasAuthority('AWS_VPC_MENU')">
+                         <sec:authorize access="hasAuthority('AWS_VPC_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/awsMgnt/vpc"/>', 'AWS VPC');">VPC 관리</a></li>
                         </sec:authorize>
                         <sec:authorize access="hasAuthority('AWS_INTERNET_GATEWAY_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/awsMgnt/internetGateway"/>', 'AWS Internet GateWay');">Internet Gateway 관리</a></li>
                         </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_SECURITY_GROUP_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/securityGroup"/>', 'AWS SECURITY GROUP');">Security Group 관리</a></li>
+                        </sec:authorize>
                         <sec:authorize access="hasAuthority('AWS_ELASTIC_IP_MENU')">
                             <li><a href="javascript:goPage('<c:url value="/awsMgnt/elasticIp"/>', 'AWS Elastic Ip');">Elastic Ip 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_KEYPAIR_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/keypair"/>', 'AWS KEYPAIR');">KeyPair 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_NAT_GATEWAY_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/natGateway"/>', 'AWS NAT GateWay');">NAT Gateway 관리</a></li>
+                        </sec:authorize>
+                        <sec:authorize access="hasAuthority('AWS_ROUTE_TABLE_MENU')">
+                            <li><a href="javascript:goPage('<c:url value="/awsMgnt/routeTable"/>', 'AWS Route Table');">Route Table 관리</a></li>
                         </sec:authorize>
                     </ul>
                 </div>

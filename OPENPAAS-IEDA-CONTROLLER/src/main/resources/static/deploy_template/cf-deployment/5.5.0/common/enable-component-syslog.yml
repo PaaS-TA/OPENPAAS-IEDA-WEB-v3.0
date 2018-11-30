@@ -1,0 +1,27 @@
+- type: replace
+  path: /addons?/-
+  value:
+    include:
+      stemcell:
+      - os: ubuntu-xenial
+    jobs:
+    - name: syslog_forwarder
+      properties:
+        syslog:
+          address: ((syslog_address))
+          custom_rule: |
+            ((syslog_custom_rule))
+            if ($programname startswith "vcap.") then stop
+          fallback_servers: ((syslog_fallback_servers))
+          port: ((syslog_port))
+          tls_enabled: false 
+          transport: relp 
+      release: syslog
+    name: syslog_forwarder
+- type: replace
+  path: /releases/-
+  value:
+    name: syslog
+    sha1: f00edc8ae2c4abf92bdb8d9037cd8b7aa85e2f89
+    url: file:///home/((inception_os_user_name))/workspace/paasta-4.0/release/monitoring/syslog-release-11.4.0.tgz 
+    version: 11.4.0

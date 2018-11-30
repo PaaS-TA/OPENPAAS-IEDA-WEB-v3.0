@@ -6,11 +6,11 @@
 #infra_account_mgnt_wrap ul > li > ul.vSphere-box {margin-right:0; }
 #infra_account_mgnt_wrap ul > li > ul > li:nth-of-type(2){ border-bottom: 1px solid gray; margin-bottom: 10px;}
 #infra_account_mgnt_wrap ul > li > ul > li { text-align:center; font-size:15px; font-weight:bolder; color:#2196f3  }
-#infra_account_mgnt_wrap .aws-icon {  width:60%; margin-top:15%; margin-bottom:15px;  }
-#infra_account_mgnt_wrap .openstack-icon {  width:60%; margin-top:17%; margin-bottom:10px; }
-#infra_account_mgnt_wrap .google-icon {  width:60%; margin-top:3%; margin-bottom:15px;}
-#infra_account_mgnt_wrap .vSphere-icon {  width:60%; margin-top:20%; margin-bottom:15px; }
-#infra_account_mgnt_wrap .azure-icon {  width:60%; margin-top:20%; margin-bottom:15px; }
+#infra_account_mgnt_wrap .aws-icon {  width:60%; margin-top:10%; margin-bottom:15px;  }
+#infra_account_mgnt_wrap .openstack-icon {  width:60%; margin-top:13%; margin-bottom:10px; }
+#infra_account_mgnt_wrap .google-icon {  width:60%; margin-top:0%; margin-bottom:15px;}
+#infra_account_mgnt_wrap .vSphere-icon {  width:60%; margin-top:18%; margin-bottom:15px; }
+#infra_account_mgnt_wrap .azure-icon {  width:55%; margin-top:20%; margin-bottom:15px; }
 
 #main .well { background-color:#fff; border:1px solid #dcdcdc; border-radius:20px; }
 #main .well:hover { border:1px solid #3e80b5; }
@@ -32,7 +32,7 @@
 #main .iaasTotalResourceUsageDiv .totalResourceUsage-ul-Div  > li:nth-of-type(2) {vertical-align: middle;font-size: 50px;width: 68%;}
 #main .iaasTotalResourceUsageDiv .totalResourceUsage-ul-Div  > li:nth-of-type(2) > span { display:inline-block; }
 #iaasResourceUsageWrap { display: block;float: left; width:100% }
-#iaasResourceUsageWrap .iaasResourceUsageDiv { background-color:#fff; width: 405px; float:left; border-radius: 10px; height: 453px; border: 2px solid; margin-right: 70px !important;cursor:pointer;}    
+#iaasResourceUsageWrap .iaasResourceUsageDiv { background-color:#fff; width: 405px; float:left; border-radius: 10px; height: 453px; border: 2px solid; margin-right: 20px !important;cursor:pointer;}    
 #iaasResourceUsageWrap .iaasResourceUsageDiv > ul { text-overflow: ellipsis;overflow: hidden;height: 100%; }
 #iaasResourceUsageWrap .iaasResourceUsageDiv > ul > li:nth-of-type(1) { border-bottom: 1px dashed #979797 }
 #iaasResourceUsageWrap .iaasResourceUsageDiv > ul > li > ul { margin:60px 20px 10px 20px }
@@ -127,19 +127,19 @@
 #openstackMgnt .dropdown a.iaas-dropdown { width: 210px; text-align:left; border: 1px solid #e1e1e1; padding: 5px 10px; display:block;background-color:#fff; }
 #openstackMgnt ul.alert-dropdown { width:210px; }
 
-#azurekMgnt {  padding: 20px 5px; height: 80px; background-color: #ececec; border:1px dashed #d4d4d4; border-radius:3px; text-align: center;  }
-#azurekMgnt > ul > li { display:inline-block; margin:0 10px; }
-#azurekMgnt .dropdown a.iaas-dropdown { width: 210px; text-align:left; border: 1px solid #e1e1e1; padding: 5px 10px; display:block;background-color:#fff; }
-#azurekMgnt ul.alert-dropdown { width:210px; }
+#azureMgnt {  padding: 20px 5px; height: 80px; background-color: #ececec; border:1px dashed #d4d4d4; border-radius:3px; text-align: center;  }
+#azureMgnt > ul > li { display:inline-block; margin:0 10px; float:left; }
+#azureMgnt .dropdown a.iaas-dropdown { width: 210px; text-align:left; border: 1px solid #e1e1e1; padding: 5px 10px; display:block;background-color:#fff; }
+#azureMgnt ul.alert-dropdown { width:210px; }
 
 #azureMgntWrap { display: block;float: left; width:100%; margin-top: 10px;}
 #azureMgntWrap .azureMgntDiv {width: 260px;float:left;border-radius: 10px;height: 280px;background:#fff; border: 1px solid #dcdcdc; margin: 0 130px 30px 0px; cursor:pointer;}    
-#azureMgntWrap .azureMgntDiv:hover { border: 2px solid #bc1518;border-image-outset: 30; }
-#azureMgntWrap .azureMgntDiv > ul > li:nth-of-type(1) { border-bottom: 1px dashed #F44336; }
+#azureMgntWrap .azureMgntDiv:hover { border: 2px solid #0078D4;border-image-outset: 30; }
+#azureMgntWrap .azureMgntDiv > ul > li:nth-of-type(1) { border-bottom: 1px dashed #0078D4; }
 #azureMgntWrap .azureMgntDiv > ul > li > ul { margin:60px 20px 0 20px }
 #azureMgntWrap .azureMgntDiv li:nth-of-type(1) { text-align:center; margin-bottom:36px; }
 #azureMgntWrap .azureMgntDiv li:nth-of-type(1) img {  width: 293px;  text-align: center; }
-#azureMgntWrap .azureMgntDiv li:nth-of-type(2) img {  width: 100px;  }
+#azureMgntWrap .azureMgntDiv li:nth-of-type(2) img {  width: 80px;  }
 #azureMgntWrap .azureMgntDiv .resource-li { padding: 10px 20px;font-size: 22px;font-weight: 700; color: #666;}
 #azureMgntWrap .azureMgntDiv .network-li { padding-bottom: 0px;}
 #azureMgntWrap .azureMgntDiv .azure-li-span1 {display: inline-block;width: 200px;} 

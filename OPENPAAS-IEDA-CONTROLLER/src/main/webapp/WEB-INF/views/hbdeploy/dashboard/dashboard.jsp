@@ -83,9 +83,9 @@ $(function() {
 //조회기능
 function doSearch() {
     //1.1설치 목록
-    w2ui['main_deploymentsGrid'].load("<c:url value='/main/dashboard/deployments'/>","",function(event){}); 
-    w2ui['main_releasesGrid'].load("<c:url value='/main/dashboard/releases'/>","",function(event){}); //업로드 릴리즈 목록
-    w2ui['main_stemcellsGrid'].load("<c:url value='/main/dashboard/stemcells'/>","",function(event){});    //업로드 스템셀 목록
+    w2ui['main_deploymentsGrid'].load("<c:url value='/main/hbDashboard/deployments'/>","",function(event){}); 
+    w2ui['main_releasesGrid'].load("<c:url value='/main/hbDashboard/releases'/>","",function(event){}); //업로드 릴리즈 목록
+    w2ui['main_stemcellsGrid'].load("<c:url value='/main/hbDashboard/stemcells'/>","",function(event){});    //업로드 스템셀 목록
 }
 //다른페이지 이동시 호출
 function clearMainPage() {

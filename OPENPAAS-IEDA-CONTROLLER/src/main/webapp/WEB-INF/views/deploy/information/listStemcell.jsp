@@ -40,7 +40,6 @@ $(function() {
       }, onUnselect: function(event) {
           event.onComplete = function() {
               $("#doDeleteStemcell").attr("disabled", true);
-              
           }
       }, onLoad:function(event){
           if(event.xhr.status == 403){

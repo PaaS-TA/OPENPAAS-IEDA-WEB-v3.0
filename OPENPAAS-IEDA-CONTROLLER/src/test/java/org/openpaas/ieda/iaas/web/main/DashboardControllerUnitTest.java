@@ -21,7 +21,7 @@ import org.openpaas.ieda.controller.deploy.web.dashboard.DashboardController;
 import org.openpaas.ieda.deploy.api.deployment.DeploymentInfoDTO;
 import org.openpaas.ieda.deploy.api.release.ReleaseInfoDTO;
 import org.openpaas.ieda.deploy.web.config.stemcell.dao.StemcellManagementVO;
-import org.openpaas.ieda.deploy.web.information.deploy.service.DeploymentService;
+import org.openpaas.ieda.deploy.web.information.deployment.service.DeploymentService;
 import org.openpaas.ieda.deploy.web.information.release.service.ReleaseService;
 import org.openpaas.ieda.deploy.web.information.stemcell.service.StemcellService;
 import org.springframework.boot.test.SpringApplicationConfiguration;

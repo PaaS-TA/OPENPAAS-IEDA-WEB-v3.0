@@ -4,11 +4,11 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openpaas.ieda.awsMgnt.web.subnet.dao.AwsSubnetMgntVO;
-import org.openpaas.ieda.awsMgnt.web.subnet.dto.AwsSubnetMgntDTO;
-import org.openpaas.ieda.awsMgnt.web.subnet.service.AwsSubnetMgntService;
-import org.openpaas.ieda.awsMgnt.web.vpc.dao.AwsVpcMgntVO;
-import org.openpaas.ieda.awsMgnt.web.vpc.service.AwsVpcMgntService;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.subnet.dao.AwsSubnetMgntVO;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.subnet.dto.AwsSubnetMgntDTO;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.subnet.service.AwsSubnetMgntService;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.vpc.dao.AwsVpcMgntVO;
+import org.openpaas.ieda.iaasDashboard.awsMgnt.web.vpc.service.AwsVpcMgntService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class AwsSubnetMgntController {
         return "iaas/aws/subnet/awsSubnetMgnt";
     }
     
-    /***************************************************
+    /*********************************************s*****
      * @project : AWS 관리 대시보드
      * @description : AWS Subnet 목록 조회
      * @title : getAwsSubnetInfoList

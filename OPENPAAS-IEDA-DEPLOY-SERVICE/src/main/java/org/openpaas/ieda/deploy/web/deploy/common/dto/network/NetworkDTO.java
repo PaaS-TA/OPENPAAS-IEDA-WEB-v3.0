@@ -15,7 +15,7 @@ public class NetworkDTO {
     @NotNull
     private String net;//Internal/External
     private String seq; //시퀀스
-    private String publicStaticIP;
+    private String publicStaticIp;
     @NotNull
     private String subnetRange; //서브넷 범위
     @NotNull
@@ -26,10 +26,9 @@ public class NetworkDTO {
     private String subnetReservedFrom; //할당된 IP대역 From
     @NotNull
     private String subnetReservedTo; //할당된 IP대역 To
-    @NotNull
-    private String subnetStaticFrom; //VM 할당 IP대역 From
-    @NotNull
-    private String subnetStaticTo; //VM 할당 IP대역 To
+    private String subnetStaticFrom; //할당된 IP대역 From
+    private String subnetStaticTo; //할당된 IP대역 To
+    
     @NotNull
     private String subnetId; //네트워크 ID
     private String cloudSecurityGroups; //시큐리티 그룹
@@ -85,11 +84,11 @@ public class NetworkDTO {
         this.seq = seq;
     }
     
-    public String getPublicStaticIP() {
-        return publicStaticIP;
+    public String getPublicStaticIp() {
+        return publicStaticIp;
     }
-    public void setPublicStaticIP(String publicStaticIP) {
-        this.publicStaticIP = publicStaticIP;
+    public void setPublicStaticIp(String publicStaticIP) {
+        this.publicStaticIp = publicStaticIP;
     }
     public String getSubnetRange() {
         return subnetRange;

@@ -9,10 +9,6 @@ $(function(){
                 required : function(){
                     return checkEmpty( $(".w2ui-msg-body select[name='stemcell']").val() );
                 }
-            }, boshPassword: { 
-                required: function(){
-                    return checkEmpty( $(".w2ui-msg-body input[name='boshPassword']").val() );
-                }
             }, cloudInstanceType: { 
                 required: function(){
                     if( $(".w2ui-msg-body .vsphereResourceDiv").css("display") == "none"  ){
@@ -41,8 +37,6 @@ $(function(){
         }, messages: {
             stemcell: { 
                 required:  "스템셀"+text_required_msg
-            }, boshPassword: { 
-                required:  "VM 비밀번호"+text_required_msg,
             }, cloudInstanceType: { 
                 required:  "인스턴스 유형" + select_required_msg,
             }, resourcePoolCpu: { 

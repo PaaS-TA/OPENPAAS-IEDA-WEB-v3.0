@@ -12,14 +12,21 @@
     <result property="updateUserId" column="UPDATE_USER_ID"/>
     <result property="updateDate" column="UPDATE_DATE" />
     <result property="paastaMonitoringUse" column="PAASTA_MONITORING_USE" />
-    <result property="paastaMonitoringIp" column="PAASTA_MONITORING_IP" />
-    <result property="influxdbIp" column="influxdb_ip" />
-    <result property="paastaMonitoringRelease" column="PAASTA_MONITORING_RELEASE" />
+    <result property="paastaMonitoringAgentRelease" column="PAASTA_MONITORING_AGENT_RELEASE" />
+    <result property="paastaMonitoringSyslogRelease" column="PAASTA_MONITORING_SYSLOG_RELEASE" />
+    <result property="metricUrl" column="METRIC_URL" />
+    <result property="syslogAddress" column="SYSLOG_ADDRESS" />
+    <result property="syslogPort" column="SYSLOG_PORT"/>
+    <result property="syslogTransport" column="SYSLOG_TRANSPORT"/>
     <result property="deploymentName" column ="DEPLOYMENT_NAME"/>
     <result property="directorName" column ="DIRECTOR_NAME"/>
+    <result property="credentialKeyName" column ="CREDENTIAL_KEY_NAME"/>
     <result property="boshRelease" column ="BOSH_RELEASE"/>
     <result property="boshCpiRelease" column ="BOSH_CPI_RELEASE"/>
+    <result property="boshBpmRelease" column ="BOSH_BPM_RELEASE"/>
+    <result property="boshUaaRelease" column ="BOSH_UAA_RELEASE"/>
     <result property="osConfRelease" column ="OS_CONF_RELEASE"/>
+    <result property="boshCredhubRelease" column ="BOSH_CRED_HUB_RELEASE" />
     <result property="snapshotSchedule" column ="SNAPSHOT_SCHEDULE"/>
     <result property="enableSnapshots" column ="ENABLE_SNAPSHOTS"/>
     <result property="privateStaticIp" column ="PRIVATE_STATIC_IP"/>
@@ -86,7 +93,10 @@
     Select  bootstrap.id as id
         ,bootstrap.iaas_type as iaas_type
         ,bootstrap.bosh_cpi_release as bosh_cpi_release
+        ,bootstrap.bosh_bpm_release as bosh_bpm_release
+        ,bootstrap.bosh_uaa_release as bosh_uaa_release
         ,bootstrap.os_conf_release as os_conf_release
+        ,bootstrap.bosh_cred_hub_release as bosh_cred_hub_release
         ,bootstrap.bosh_password as bosh_password
         ,bootstrap.bosh_release as bosh_release
         ,bootstrap.cloud_instance_type as cloud_instance_type
@@ -95,6 +105,7 @@
         ,bootstrap.deployment_file as deployment_file
         ,bootstrap.deployment_name as deployment_name
         ,bootstrap.director_name as director_name
+        ,bootstrap.credential_key_name as credential_key_name
         ,bootstrap.ntp as ntp
         ,bootstrap.private_static_ip as private_static_ip
         ,bootstrap.public_static_ip as public_static_ip
@@ -107,9 +118,12 @@
         ,bootstrap.create_date as create_date
         ,bootstrap.update_date as update_date
         ,bootstrap.paasta_monitoring_use as paasta_monitoring_use
-        ,bootstrap.paasta_monitoring_ip as paasta_monitoring_ip
-        ,bootstrap.influxdb_ip as influxdb_ip
-        ,bootstrap.paasta_monitoring_release as paasta_monitoring_release
+        ,bootstrap.paasta_monitoring_agent_release as paasta_monitoring_agent_release
+        ,bootstrap.paasta_monitoring_syslog_release as paasta_monitoring_syslog_release
+        ,bootstrap.metric_url as metric_url
+        ,bootstrap.syslog_address as syslog_address
+        ,bootstrap.syslog_port as syslog_port
+        ,bootstrap.syslog_transport as syslog_transport
         ,config.iaas_config_alias as iaas_config_alias
         ,config.id as iaas_config_id
     From ieda_bootstrap bootstrap Left Join ieda_iaas_config config
@@ -123,7 +137,10 @@ Order by iaas_type asc, update_date asc
             ,bootstrap.iaas_config_id as config_id
             ,bootstrap.iaas_type as iaas_type
             ,bootstrap.bosh_cpi_release as bosh_cpi_release
+            ,bootstrap.bosh_bpm_release as bosh_bpm_release
+            ,bootstrap.bosh_uaa_release as bosh_uaa_release
             ,bootstrap.os_conf_release as os_conf_release
+            ,bootstrap.bosh_cred_hub_release as bosh_cred_hub_release
             ,bootstrap.bosh_password as bosh_password
             ,bootstrap.bosh_release as bosh_release
             ,bootstrap.enable_snapshots as enable_snapshots
@@ -137,6 +154,7 @@ Order by iaas_type asc, update_date asc
             ,bootstrap.deployment_file as deployment_file
             ,bootstrap.deployment_name as deployment_name
             ,bootstrap.director_name as director_name
+            ,bootstrap.credential_key_name as credential_key_name
             ,bootstrap.ntp as ntp
             ,bootstrap.private_static_ip as private_static_ip
             ,bootstrap.public_static_ip as public_static_ip
@@ -154,9 +172,12 @@ Order by iaas_type asc, update_date asc
             ,bootstrap.create_date as create_date
             ,bootstrap.update_date as update_date
             ,bootstrap.paasta_monitoring_use as paasta_monitoring_use
-            ,bootstrap.paasta_monitoring_ip as paasta_monitoring_ip
-            ,bootstrap.influxdb_ip as influxdb_ip
-            ,bootstrap.paasta_monitoring_release as paasta_monitoring_release
+            ,bootstrap.paasta_monitoring_agent_release as paasta_monitoring_agent_release
+            ,bootstrap.paasta_monitoring_syslog_release as paasta_monitoring_syslog_release
+            ,bootstrap.metric_url as metric_url
+            ,bootstrap.syslog_address as syslog_address
+            ,bootstrap.syslog_port as syslog_port
+            ,bootstrap.syslog_transport as syslog_transport
             ,config.iaas_config_alias as iaas_config_alias
             ,config.id as iaas_config_id
             ,config.account_id as account_id
@@ -205,9 +226,12 @@ Order by iaas_type asc, update_date asc
         ,update_user_id
         ,update_date
         ,paasta_monitoring_use
-        ,paasta_monitoring_ip
-        ,influxdb_ip
-        ,paasta_monitoring_release
+        ,paasta_monitoring_agent_release
+        ,paasta_monitoring_syslog_release
+        ,metric_url
+        ,syslog_address
+        ,syslog_port
+        ,syslog_transport
         ) 
     VALUES(
          <if test="bootstrap.testFlag != null">1</if>
@@ -219,9 +243,12 @@ Order by iaas_type asc, update_date asc
         ,#{bootstrap.updateUserId}
         ,now()
         ,#{bootstrap.paastaMonitoringUse}
-        ,#{bootstrap.paastaMonitoringIp}
-        ,#{bootstrap.influxdbIp}
-        ,#{bootstrap.paastaMonitoringRelease}
+        ,#{bootstrap.paastaMonitoringAgentRelease}
+        ,#{bootstrap.paastaMonitoringSyslogRelease}
+        ,#{bootstrap.metricUrl}
+        ,#{bootstrap.syslogAddress}
+        ,#{bootstrap.syslogPort}
+        ,#{bootstrap.syslogTransport}
     )
     <selectKey keyProperty="bootstrap.id" resultType="int" order="AFTER">
         <if test="bootstrap.id != 1"> SELECT LAST_INSERT_ID(); </if>
@@ -234,6 +261,9 @@ Order by iaas_type asc, update_date asc
     Update ieda_bootstrap Set
         iaas_config_id = #{bootstrap.iaasConfigId}
         ,bosh_cpi_release = #{bootstrap.boshCpiRelease}
+        ,bosh_bpm_release = #{bootstrap.boshBpmRelease}
+        ,bosh_uaa_release = #{bootstrap.boshUaaRelease}
+        ,bosh_cred_hub_release = #{bootstrap.boshCredhubRelease}
         ,bosh_password = #{bootstrap.boshPassword}
         ,ntp= #{bootstrap.ntp}
         ,bosh_release = #{bootstrap.boshRelease}
@@ -246,6 +276,7 @@ Order by iaas_type asc, update_date asc
         ,deployment_file = #{bootstrap.deploymentFile}
         ,deployment_name = #{bootstrap.deploymentName}
         ,director_name = #{bootstrap.directorName}
+        ,credential_key_name = #{bootstrap.credentialKeyName}
         ,stemcell= #{bootstrap.stemcell}
         ,resource_pool_cpu = #{bootstrap.resourcePoolCpu}
         ,resource_pool_ram = #{bootstrap.resourcePoolRam}
@@ -264,9 +295,12 @@ Order by iaas_type asc, update_date asc
         ,update_user_id=#{bootstrap.updateUserId}
         ,update_date= now()
         ,paasta_monitoring_use=#{bootstrap.paastaMonitoringUse}
-        ,paasta_monitoring_ip=#{bootstrap.paastaMonitoringIp}
-        ,influxdb_ip=#{bootstrap.influxdbIp}
-        ,paasta_monitoring_release=#{bootstrap.paastaMonitoringRelease}
+        ,paasta_monitoring_agent_release=#{bootstrap.paastaMonitoringAgentRelease}
+        ,paasta_monitoring_syslog_release=#{bootstrap.paastaMonitoringSyslogRelease}
+        ,metric_url=#{bootstrap.metricUrl}
+        ,syslog_address=#{bootstrap.syslogAddress}
+        ,syslog_port=#{bootstrap.syslogPort}
+        ,syslog_transport=#{bootstrap.syslogTransport}
     WHERE
     id=#{bootstrap.id}
 </update>
